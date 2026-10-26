@@ -222,6 +222,188 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------- 父母关爱大字极简模式 ----------
+  bool _seniorMode = false;
+  bool get seniorMode => _seniorMode;
+  set seniorMode(bool v) {
+    _seniorMode = v;
+    prefs.setBool('kSeniorMode', v);
+    notifyListeners();
+  }
+
+  // ---------- 用户个性化排除集合 (Card Custom Exclusion / Pruning) ----------
+  final Set<int> _excludedAdviceIds = {};
+  Set<int> get excludedAdviceIds => Set.unmodifiable(_excludedAdviceIds);
+
+  bool isExcluded(int id) => _excludedAdviceIds.contains(id);
+
+  /// 排除某条建议（不进日常所有流）
+  void excludeAdvice(int id) {
+    _excludedAdviceIds.add(id);
+    _persistExcluded();
+    notifyListeners();
+  }
+
+  /// 恢复某条被排除的建议
+  void restoreAdvice(int id) {
+    _excludedAdviceIds.remove(id);
+    _persistExcluded();
+    notifyListeners();
+  }
+
+  void _persistExcluded() {
+    prefs.setStringList(
+      'kExcludedAdviceIds',
+      _excludedAdviceIds.map((id) => id.toString()).toList(),
+    );
+  }
+
+  // ---------- 建议自定义触发方式与触发周期 (Custom Triggers) ----------
+  final Map<int, CustomTriggerConfig> _customTriggers = {};
+
+  CustomTriggerConfig? triggerConfigOf(int id) => _customTriggers[id];
+
+  /// 获取建议生效的触发配置（有自定义取自定义，否则推断原生默认）
+  CustomTriggerConfig effectiveTriggerOf(Advice a) {
+    if (_customTriggers.containsKey(a.id)) {
+      return _customTriggers[a.id]!;
+    }
+    // 原生推断
+    if (a.tags.contains('每天') || a.tags.contains('每日多次')) {
+      final periods = <String>[];
+      final text = '${a.title} ${a.tags.join(" ")} ${a.timingBadge}';
+      if (['出发', '早餐', '晨', '安全带', '头盔', '步行'].any(text.contains)) periods.add('morning');
+      if (['工作', '工位', '久坐', '专注', '单线程'].any(text.contains)) periods.add('focus');
+      if (['午后', '站立', '远眺', '喝茶', '快走', '舒展'].any(text.contains)) periods.add('afternoon');
+      if (['归途', '晚餐', '家人', '沟通'].any(text.contains)) periods.add('evening');
+      if (['睡眠', '屏幕', '夜里', '褪黑素', '安稳'].any(text.contains)) periods.add('night');
+      if (periods.isEmpty) periods.add('morning');
+      return CustomTriggerConfig(mode: TriggerMode.daily, dailyPeriods: periods);
+    }
+    if (a.tags.contains('每周')) {
+      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'weekly');
+    }
+    if (a.tags.contains('每月')) {
+      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'monthly');
+    }
+    if (a.tags.contains('每年') || a.tags.contains('筛查') || a.tags.contains('日历时点')) {
+      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'yearly');
+    }
+    // 其余均属于未明确触发日期的静默储备态
+    return const CustomTriggerConfig(mode: TriggerMode.dormant);
+  }
+
+  /// 设置自定义触发方式与周期
+  void setTriggerConfig(int id, CustomTriggerConfig cfg) {
+    _customTriggers[id] = cfg;
+    _persistCustomTriggers();
+    notifyListeners();
+  }
+
+  /// 恢复系统默认触发与周期
+  void resetTriggerConfig(int id) {
+    _customTriggers.remove(id);
+    _persistCustomTriggers();
+    notifyListeners();
+  }
+
+  void _persistCustomTriggers() {
+    final map = <String, String>{};
+    _customTriggers.forEach((id, cfg) {
+      map['$id'] = jsonEncode(cfg.toJson());
+    });
+    prefs.setString('kCustomTriggers', jsonEncode(map));
+  }
+
+  // ---------- 90 天周期培养体系 (90-Day Plan) ----------
+  NinetyDayPlan _ninetyDayPlan = NinetyDayPlan(
+    startDate: DateTime.now(),
+    goalAdviceIds: const [1, 387, 13], // 安全底线(安全带) + 财务防线(法律财产) + 健康关系(练平衡)
+  );
+  NinetyDayPlan get ninetyDayPlan => _ninetyDayPlan;
+
+  void updateNinetyDayPlan(NinetyDayPlan plan) {
+    _ninetyDayPlan = plan;
+    prefs.setString('kNinetyDayPlan', jsonEncode(plan.toJson()));
+    notifyListeners();
+  }
+
+  /// 替换本周期某个动作
+  void swapCycleGoal(int oldId, int newId) {
+    final list = List<int>.from(_ninetyDayPlan.goalAdviceIds);
+    final idx = list.indexOf(oldId);
+    if (idx != -1) {
+      list[idx] = newId;
+    } else if (list.length < 3) {
+      list.add(newId);
+    }
+    updateNinetyDayPlan(_ninetyDayPlan.copyWith(goalAdviceIds: list));
+  }
+
+  /// 标记启动期节点复盘完成
+  void markKickoffReview(int day) {
+    if (day == 7) {
+      updateNinetyDayPlan(_ninetyDayPlan.copyWith(kickoffReviewDay7: true));
+    } else if (day == 14) {
+      updateNinetyDayPlan(_ninetyDayPlan.copyWith(kickoffReviewDay14: true));
+    } else if (day == 21) {
+      updateNinetyDayPlan(_ninetyDayPlan.copyWith(kickoffReviewDay21: true));
+    }
+  }
+
+  // ---------- 卡内基式 4 步周复盘 (Carnegie Review) ----------
+  final List<CarnegieReviewItem> _carnegieReviews = [];
+  List<CarnegieReviewItem> get carnegieReviews => List.unmodifiable(_carnegieReviews);
+
+  void addCarnegieReview({
+    required String eventFact,
+    required String myAction,
+    required String theirReaction,
+    required String nextOneSentence,
+    String tag = '日常自检',
+  }) {
+    final item = CarnegieReviewItem(
+      id: 'review_${DateTime.now().millisecondsSinceEpoch}',
+      createdAt: DateTime.now(),
+      eventFact: eventFact.trim(),
+      myAction: myAction.trim(),
+      theirReaction: theirReaction.trim(),
+      nextOneSentence: nextOneSentence.trim(),
+      tag: tag,
+    );
+    _carnegieReviews.insert(0, item);
+    _persistCarnegieReviews();
+    notifyListeners();
+  }
+
+  void _persistCarnegieReviews() {
+    final list = _carnegieReviews.map((r) => r.toJson()).toList();
+    prefs.setString('kCarnegieReviews', jsonEncode(list));
+  }
+
+  // ---------- 紧急联系人 (Emergency Contacts) ----------
+  final List<EmergencyContact> _emergencyContacts = [];
+  List<EmergencyContact> get emergencyContacts => List.unmodifiable(_emergencyContacts);
+
+  void addEmergencyContact(String name, String phone, String relation) {
+    _emergencyContacts.add(EmergencyContact(name: name, phone: phone, relation: relation));
+    _persistEmergencyContacts();
+    notifyListeners();
+  }
+
+  void removeEmergencyContact(int index) {
+    if (index >= 0 && index < _emergencyContacts.length) {
+      _emergencyContacts.removeAt(index);
+      _persistEmergencyContacts();
+      notifyListeners();
+    }
+  }
+
+  void _persistEmergencyContacts() {
+    final list = _emergencyContacts.map((c) => c.toJson()).toList();
+    prefs.setString('kEmergencyContacts', jsonEncode(list));
+  }
+
   // ---------- 用户自建待办清单 (User Behavior & Todo Layer) ----------
   final List<UserTodoItem> _userTodos = [];
   List<UserTodoItem> get userTodos => List.unmodifiable(_userTodos);
@@ -284,73 +466,88 @@ class AppStore extends ChangeNotifier {
   StreakState streakOf(int id) => _streaks[id] ?? const StreakState();
   DateTime? windowAnchorOf(int id) => _windowAnchors[id];
 
-  /// 真实动态今天待办流（零 Mock 数据，随画像动态求值）
+  /// 真实动态今天待办流（严格准入：绝不塞入无明确日期的偶发建议）
   List<Advice> get todayAdvices {
     return catalog.adviceList.where((a) {
-      final isDaily = a.tags.contains('每天') ||
-          a.tags.contains('每日多次') ||
-          a.tags.contains('打卡');
-      if (!isDaily) return false;
-      if (_profile.prunedOnly) {
-        return matchPersona(a);
+      if (isExcluded(a.id)) return false;
+      if (_profile.prunedOnly && !matchPersona(a)) return false;
+
+      final trig = effectiveTriggerOf(a);
+      switch (trig.mode) {
+        case TriggerMode.dormant:
+          return false; // 静默储备态严禁进入今日流
+        case TriggerMode.daily:
+          return true;
+        case TriggerMode.windowed:
+          if (trig.targetDate == null) return false;
+          final target = DateTime.tryParse(trig.targetDate!);
+          if (target == null) return false;
+          final now = DateTime.now();
+          final diff = target.difference(DateTime(now.year, now.month, now.day)).inDays;
+          return diff >= 0 && diff <= trig.leadDays;
+        case TriggerMode.cadence:
+          return false; // 周期循环态在周期页查看，不直接占位今日流
       }
-      return true;
     }).toList();
   }
 
-  /// 真实动态周期流（零 Mock 数据）
+  /// 真实动态周期流（严格准入：绝不塞入无明确周期的偶发建议）
   List<Advice> cycleAdvicesOf(PeriodScope scope) {
     return catalog.adviceList.where((a) {
-      final matchesScope = switch (scope) {
-        PeriodScope.today => a.tags.contains('每天') ||
-            a.tags.contains('每日多次') ||
-            a.tags.contains('打卡'),
-        PeriodScope.weekly => a.tags.contains('每周'),
-        PeriodScope.monthly => a.tags.contains('每月'),
-        PeriodScope.yearly => a.tags.contains('每年') ||
-            a.tags.contains('日历时点') ||
-            a.tags.contains('筛查'),
-      };
-      if (!matchesScope) return false;
-      if (_profile.prunedOnly) {
-        return matchPersona(a);
+      if (isExcluded(a.id)) return false;
+      if (_profile.prunedOnly && !matchPersona(a)) return false;
+
+      final trig = effectiveTriggerOf(a);
+      switch (trig.mode) {
+        case TriggerMode.cadence:
+          return trig.cadenceScopeKey == scope.name;
+        case TriggerMode.daily:
+          return scope == PeriodScope.today;
+        case TriggerMode.windowed:
+          // 窗口期若设置在当年，可在 yearly 中列出
+          return scope == PeriodScope.yearly;
+        case TriggerMode.dormant:
+          return false; // 静默储备态严禁进入周期流
       }
-      return true;
     }).toList();
   }
 
-  /// 真实动态时段建议流（零 Mock 数据）
+  /// 真实动态时段建议流（严格准入：绝不塞入无明确时段的偶发建议）
   List<Advice> periodAdvicesOf(String periodKey) {
     final list = catalog.adviceList.where((a) {
+      if (isExcluded(a.id)) return false;
       if (_profile.prunedOnly && !matchPersona(a)) return false;
-      final text = '${a.title} ${a.tags.join(" ")} ${a.timingBadge}';
-      return switch (periodKey) {
-        'morning' => a.tags.any(['在路上', '交通', '安全', '饮食', '打卡'].contains) ||
-            ['安全带', '头盔', '出发', '早餐', '步行', '鸡蛋', '果蔬'].any(text.contains),
-        'focus' => a.tags.any(['在职场', '职场', '效率', '时间管理', '打卡'].contains) ||
-            ['工作', '工位', '久坐', '深度工作', '单线程', '批量收发', '专注'].any(text.contains),
-        'afternoon' => a.tags.any(['健康', '运动', '打卡', '日常'].contains) ||
-            ['久坐', '远眺', '站立', '喝茶', '运动', '力量训练', '快走', '舒展', '放松'].any(text.contains),
-        'evening' => a.tags.any(['家庭', '伴侣', '生活', '在路上', '安全'].contains) ||
-            ['归途', '晚餐', '家人', '沟通', '安全带', '复盘'].any(text.contains),
-        'night' => a.tags.any(['健康', '日常', '安全'].contains) ||
-            ['睡眠', '屏幕', '夜里', '褪黑素', '起床', '安稳', '门锁', '黑暗'].any(text.contains),
-        _ => true,
-      };
+
+      final trig = effectiveTriggerOf(a);
+      if (trig.mode == TriggerMode.dormant || trig.mode == TriggerMode.cadence) {
+        return false; // 严禁进入时钟时段流
+      }
+
+      if (trig.mode == TriggerMode.daily) {
+        return trig.dailyPeriods.contains(periodKey);
+      }
+
+      if (trig.mode == TriggerMode.windowed && trig.targetDate != null) {
+        final target = DateTime.tryParse(trig.targetDate!);
+        if (target != null) {
+          final now = DateTime.now();
+          final diff = target.difference(DateTime(now.year, now.month, now.day)).inDays;
+          if (diff >= 0 && diff <= trig.leadDays) {
+            return periodKey == 'morning' || periodKey == 'evening';
+          }
+        }
+      }
+
+      return false;
     }).toList();
 
     if (list.isEmpty) {
-      // 兜底保护：当画像极端时，保证至少展现当前时段通用健康/安全条目
+      // 兜底保护：当该时段无特定项目时，仅从通用日常建议中优雅展现对应动作，绝不抽取偶发建议
       return catalog.adviceList.where((a) {
-        final text = '${a.title} ${a.tags.join(" ")} ${a.timingBadge}';
-        return switch (periodKey) {
-          'morning' => ['安全带', '头盔', '出发', '早餐'].any(text.contains),
-          'focus' => ['工作', '工位', '久坐', '效率'].any(text.contains),
-          'afternoon' => ['久坐', '远眺', '站立', '快走'].any(text.contains),
-          'evening' => ['归途', '家人', '沟通', '安全带'].any(text.contains),
-          'night' => ['睡眠', '屏幕', '褪黑素', '安稳'].any(text.contains),
-          _ => true,
-        };
+        if (isExcluded(a.id)) return false;
+        final trig = effectiveTriggerOf(a);
+        if (trig.mode != TriggerMode.daily) return false;
+        return trig.dailyPeriods.contains(periodKey);
       }).toList();
     }
     return list;
@@ -439,6 +636,64 @@ class AppStore extends ChangeNotifier {
         _userTodos.clear();
         for (final item in list) {
           _userTodos.add(UserTodoItem.fromJson(item as Map<String, dynamic>));
+        }
+      } catch (_) {}
+    }
+
+    _seniorMode = prefs.getBool('kSeniorMode') ?? false;
+
+    final exList = prefs.getStringList('kExcludedAdviceIds');
+    if (exList != null) {
+      _excludedAdviceIds.clear();
+      for (final s in exList) {
+        final id = int.tryParse(s);
+        if (id != null) _excludedAdviceIds.add(id);
+      }
+    }
+
+    final trRaw = prefs.getString('kCustomTriggers');
+    if (trRaw != null) {
+      try {
+        final map = jsonDecode(trRaw) as Map<String, dynamic>;
+        _customTriggers.clear();
+        map.forEach((k, v) {
+          final id = int.tryParse(k);
+          if (id != null) {
+            _customTriggers[id] =
+                CustomTriggerConfig.fromJson(jsonDecode(v as String) as Map<String, dynamic>);
+          }
+        });
+      } catch (_) {}
+    }
+
+    final p90Raw = prefs.getString('kNinetyDayPlan');
+    if (p90Raw != null) {
+      try {
+        _ninetyDayPlan =
+            NinetyDayPlan.fromJson(jsonDecode(p90Raw) as Map<String, dynamic>);
+      } catch (_) {}
+    }
+
+    final revRaw = prefs.getString('kCarnegieReviews');
+    if (revRaw != null) {
+      try {
+        final list = jsonDecode(revRaw) as List;
+        _carnegieReviews.clear();
+        for (final item in list) {
+          _carnegieReviews.add(
+              CarnegieReviewItem.fromJson(item as Map<String, dynamic>));
+        }
+      } catch (_) {}
+    }
+
+    final emRaw = prefs.getString('kEmergencyContacts');
+    if (emRaw != null) {
+      try {
+        final list = jsonDecode(emRaw) as List;
+        _emergencyContacts.clear();
+        for (final item in list) {
+          _emergencyContacts.add(
+              EmergencyContact.fromJson(item as Map<String, dynamic>));
         }
       } catch (_) {}
     }

@@ -86,6 +86,8 @@ class Catalog {
     for (final a in adviceList) a.id: a,
   };
 
+  Advice? adviceById(int id) => byId[id];
+
   /// 34 章节名（按首现顺序）。
   late final List<String> chapters = [
     ...{for (final a in adviceList) a.chapter}

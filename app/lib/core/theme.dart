@@ -40,6 +40,13 @@ class AppPalettes {
   final Color pillBg; // 胶囊底
   final Color searchBg; // 搜索框底
 
+  // DESIGN.md 语义对齐别名
+  Color get done => emerald;
+  Color get gold => amber;
+  Color get ash => inkSub;
+  Color get surfaceGrey => pillBg;
+  Color get error => rose;
+
   static const dark = AppPalettes(
     brightness: Brightness.dark,
     canvas: Color(0xFF0C0F17),

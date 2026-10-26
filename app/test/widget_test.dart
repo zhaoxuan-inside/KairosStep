@@ -3,6 +3,8 @@ import 'package:kairo_step/app.dart';
 import 'package:kairo_step/data/catalog.dart';
 import 'package:kairo_step/models/advice.dart';
 import 'package:kairo_step/state/app_store.dart';
+import 'package:kairo_step/ui/cards/advice_card.dart';
+import 'package:kairo_step/ui/now/gear_ruler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -197,6 +199,131 @@ void main() {
     expect(store.userTodos.first.isDone, isTrue);
     store.removeUserTodo(store.userTodos.first.id);
     expect(store.userTodos.isEmpty, isTrue);
+  });
+
+  testWidgets('当下页时间尺：置顶展示、1.5小时视窗与推演回到此刻交互闭环', (tester) async {
+    final prefs = await _emptyPrefs();
+    await prefs.setBool('kHasCompletedOnboarding', true);
+    await prefs.setString(
+      'kProfile',
+      '{"gender":"男","age":28,"roles":["全民"],"livingConditions":[],"healthConcerns":[],"prunedOnly":true,"parentsOnly":false}',
+    );
+
+    final store = AppStore(catalog, prefs);
+    await store.restore();
+
+    await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    // 默认在当下页
+    expect(find.text('1.5h 视窗'), findsOneWidget);
+    expect(find.text('-45分 ‹ 此刻 › +45分'), findsOneWidget);
+    expect(find.text('实时同步中'), findsOneWidget);
+
+    // 验证时间尺处于最顶部：时间尺顶端 Y 坐标小于核心行动卡与问候的 Y 坐标
+    final rulerTop = tester.getTopLeft(find.byType(GearRuler)).dy;
+    final cardTop = tester.getTopLeft(find.byType(AdviceCard).first).dy;
+    expect(rulerTop, lessThan(cardTop), reason: '时间尺必须放置在最上面');
+
+    // 模拟在时间尺上轻触进行时间推演
+    await tester.tapAt(tester.getCenter(find.byType(GearRuler)).translate(-100, 10));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    // 验证切换为预演模式并展示「回到此刻」按钮
+    expect(find.text('预演模式'), findsOneWidget);
+    expect(find.text('回到此刻'), findsOneWidget);
+
+    // 点击回到此刻恢复实时同步
+    await tester.tap(find.text('回到此刻'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    expect(find.text('实时同步中'), findsOneWidget);
+    expect(find.text('回到此刻'), findsNothing);
+  });
+
+  test('严格准入规则与 3D 翻转卡片自定义触发周期闭环', () async {
+    final prefs = await _emptyPrefs();
+    final store = AppStore(catalog, prefs);
+
+    // 建议 46: 下化粪池先通风检测（偶发/单次安全建议，无固定日常周期）
+    final septicAdvice = catalog.byId[46]!;
+    expect(septicAdvice.title, contains('化粪池'));
+
+    // 验证严格准入：在未经自定义配置前，绝不进入今日流、时段流、周期流
+    expect(store.todayAdvices.any((a) => a.id == 46), isFalse, reason: '偶发无日期建议绝不进入今日流');
+    expect(store.periodAdvicesOf('morning').any((a) => a.id == 46), isFalse, reason: '偶发建议绝不进入早晨时段');
+    expect(store.cycleAdvicesOf(PeriodScope.weekly).any((a) => a.id == 46), isFalse, reason: '偶发建议绝不进入每周周期');
+
+    // 模拟用户点击 3D 翻转卡片配置触发周期：将其显式配置为【日常节律 · 早晨】
+    store.setTriggerConfig(
+      46,
+      const CustomTriggerConfig(
+        mode: TriggerMode.daily,
+        dailyPeriods: ['morning'],
+      ),
+    );
+
+    // 验证即时编入：配置后动态重算，立刻进入今日流与早晨时段
+    expect(store.todayAdvices.any((a) => a.id == 46), isTrue, reason: '用户显式配置为日常后进入今日待办');
+    expect(store.periodAdvicesOf('morning').any((a) => a.id == 46), isTrue, reason: '进入早晨时段流');
+    expect(store.periodAdvicesOf('night').any((a) => a.id == 46), isFalse, reason: '未配置夜间时段不进入夜间');
+
+    // 模拟重置配置：恢复系统默认
+    store.resetTriggerConfig(46);
+    expect(store.todayAdvices.any((a) => a.id == 46), isFalse, reason: '恢复默认后退出日常流');
+  });
+
+  test('卡片个性化移除与排除库管理闭环（补全画像不足）', () async {
+    final prefs = await _emptyPrefs();
+    final store = AppStore(catalog, prefs);
+
+    final todayList = store.todayAdvices;
+    expect(todayList.isNotEmpty, isTrue);
+    final targetId = todayList.first.id;
+
+    // 用户在卡片右上角点击「移除」
+    store.excludeAdvice(targetId);
+    expect(store.isExcluded(targetId), isTrue);
+    expect(store.excludedAdviceIds.contains(targetId), isTrue);
+
+    // 验证日常所有流已动态过滤该项
+    expect(store.todayAdvices.any((a) => a.id == targetId), isFalse, reason: '已排除条目从今日流中移除');
+    expect(store.periodAdvicesOf('morning').any((a) => a.id == targetId), isFalse, reason: '从时段流中移除');
+
+    // 用户在「我的」已排除管理中点击「重新启用」
+    store.restoreAdvice(targetId);
+    expect(store.isExcluded(targetId), isFalse);
+    expect(store.todayAdvices.any((a) => a.id == targetId), isTrue, reason: '恢复后重新编入今日流');
+  });
+
+  test('90 天培养周期体系与卡内基周复盘数据模型闭环', () async {
+    final prefs = await _emptyPrefs();
+    final store = AppStore(catalog, prefs);
+
+    // 90 天计划初始状态与阶段
+    final plan = store.ninetyDayPlan;
+    expect(plan.currentDay, 1);
+    expect(plan.phase, CyclePhase.kickoff);
+    expect(plan.goalAdviceIds.length, 3);
+
+    // 替换本周期某个动作
+    store.swapCycleGoal(plan.goalAdviceIds.first, 19);
+    expect(store.ninetyDayPlan.goalAdviceIds.contains(19), isTrue);
+
+    // 标记节点复盘
+    store.markKickoffReview(7);
+    expect(store.ninetyDayPlan.kickoffReviewDay7, isTrue);
+
+    // 卡内基 4 步周复盘写入与持久化
+    store.addCarnegieReview(
+      eventFact: '跨部门协作发生分歧',
+      myAction: '急于反驳对方数据',
+      theirReaction: '对方态度转为防御',
+      nextOneSentence: '先复述对方观点，再讨论折中方案。',
+      tag: '职场沟通',
+    );
+    expect(store.carnegieReviews.length, 1);
+    expect(store.carnegieReviews.first.nextOneSentence, '先复述对方观点，再讨论折中方案。');
   });
 }
 

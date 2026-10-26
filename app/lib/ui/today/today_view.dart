@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../app.dart';
+import '../../core/icons.dart';
 import '../../core/theme.dart';
 import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
+import '../review/carnegie_review_sheet.dart';
+import '../tools/tools_sheet.dart';
 
 /// 今天页：今日聚光流 + 完成量胶囊。
 ///
@@ -51,6 +54,59 @@ class TodayView extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: done >= total && total > 0 ? p.emerald : p.ink,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // 功能快捷入口：决策树工具箱 & 卡内基周复盘
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => ToolsSheet.show(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: p.hairline),
+                  ),
+                  child: Row(
+                    children: [
+                      AppHairlineIcons.tree(color: p.action, size: 14),
+                      const SizedBox(width: 8),
+                      Text(
+                        '决策树与工具',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.ink),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => CarnegieReviewSheet.show(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: p.hairline),
+                  ),
+                  child: Row(
+                    children: [
+                      AppHairlineIcons.carnegie(color: p.gold, size: 14),
+                      const SizedBox(width: 8),
+                      Text(
+                        '卡内基周复盘',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.ink),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -108,7 +164,50 @@ class TodayView extends StatelessWidget {
                 scope: PeriodScope.today,
               ),
             ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 14),
+        // 本周复盘卡片入口
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: p.hairline),
+          ),
+          child: Row(
+            children: [
+              AppHairlineIcons.carnegie(color: p.gold, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('卡内基式 4 步周复盘', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text(
+                      store.carnegieReviews.isNotEmpty
+                          ? '已沉淀 ${store.carnegieReviews.length} 次认知跃迁 · 最近：${store.carnegieReviews.first.nextOneSentence}'
+                          : '事实 → 反应 → 反思 → 下次只改一句话',
+                      style: TextStyle(fontSize: 11, color: p.inkSub),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: p.hairline),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                ),
+                onPressed: () => CarnegieReviewSheet.show(context),
+                child: const Text('开始复盘', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

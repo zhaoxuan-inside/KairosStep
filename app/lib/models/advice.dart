@@ -449,3 +449,254 @@ enum LifeDomain {
     return health;
   }
 }
+
+// ============================================================================
+// 6. 建议触发方式与周期配置模型 (Trigger Mode & Custom Cadence Config)
+// ============================================================================
+
+/// 建议触发模式
+enum TriggerMode {
+  /// 静默储备态：无明确触发日期/偶发情境，绝不进入 Now/今天/每周/每月，仅在全景库中随用随查
+  dormant,
+
+  /// 日常节律态：明确进入“今天”与“当下 Now”指定时段
+  daily,
+
+  /// 周期循环态：明确进入“周期”页面（每周/每月/每年）
+  cadence,
+
+  /// 到期窗口期：到期日前设定天数开始浮出
+  windowed,
+}
+
+/// 用户自定义触发与周期配置
+@immutable
+class CustomTriggerConfig {
+  const CustomTriggerConfig({
+    required this.mode,
+    this.dailyPeriods = const [], // 'morning', 'focus', 'afternoon', 'evening', 'night'
+    this.cadenceScopeKey = 'weekly', // 'weekly', 'monthly', 'yearly'
+    this.targetDate, // yyyy-mm-dd
+    this.leadDays = 15,
+    this.weekday = 1, // 1~7
+    this.monthDay = 1, // 1~31
+  });
+
+  final TriggerMode mode;
+  final List<String> dailyPeriods;
+  final String cadenceScopeKey;
+  final String? targetDate;
+  final int leadDays;
+  final int weekday;
+  final int monthDay;
+
+  CustomTriggerConfig copyWith({
+    TriggerMode? mode,
+    List<String>? dailyPeriods,
+    String? cadenceScopeKey,
+    String? targetDate,
+    int? leadDays,
+    int? weekday,
+    int? monthDay,
+  }) =>
+      CustomTriggerConfig(
+        mode: mode ?? this.mode,
+        dailyPeriods: dailyPeriods ?? this.dailyPeriods,
+        cadenceScopeKey: cadenceScopeKey ?? this.cadenceScopeKey,
+        targetDate: targetDate ?? this.targetDate,
+        leadDays: leadDays ?? this.leadDays,
+        weekday: weekday ?? this.weekday,
+        monthDay: monthDay ?? this.monthDay,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'mode': mode.name,
+        'dailyPeriods': dailyPeriods,
+        'cadenceScopeKey': cadenceScopeKey,
+        'targetDate': targetDate,
+        'leadDays': leadDays,
+        'weekday': weekday,
+        'monthDay': monthDay,
+      };
+
+  factory CustomTriggerConfig.fromJson(Map<String, dynamic> json) =>
+      CustomTriggerConfig(
+        mode: TriggerMode.values.firstWhere(
+          (m) => m.name == json['mode'],
+          orElse: () => TriggerMode.dormant,
+        ),
+        dailyPeriods: (json['dailyPeriods'] as List?)?.cast<String>() ?? const [],
+        cadenceScopeKey: json['cadenceScopeKey'] as String? ?? 'weekly',
+        targetDate: json['targetDate'] as String?,
+        leadDays: json['leadDays'] as int? ?? 15,
+        weekday: json['weekday'] as int? ?? 1,
+        monthDay: json['monthDay'] as int? ?? 1,
+      );
+}
+
+// ============================================================================
+// 7. 90 天周期培养体系与卡内基复盘模型 (90-Day Plan & Carnegie Review)
+// ============================================================================
+
+/// 90 天培养周期阶段
+enum CyclePhase {
+  /// 启动期（第 1–21 天）：只练最小动作，第 7/14/21 天轻复盘
+  kickoff('启动期', '建立肌肉记忆 · 只练最小动作', 1, 21),
+
+  /// 巩固期（第 22–66 天）：情景模拟与红线间隔复习
+  consolidate('巩固期', '强化防线 · 红线复习与模拟', 22, 66),
+
+  /// 评估期（第 67–90 天）：压力测试与报告生成
+  evaluate('评估期', '减少提醒 · 压力测试与评估', 67, 90),
+
+  /// 维护期（第 90 天之后）：常态化自律
+  maintenance('维护期', '常态自检与年度筛查', 91, 9999);
+
+  const CyclePhase(this.label, this.desc, this.startDay, this.endDay);
+  final String label;
+  final String desc;
+  final int startDay;
+  final int endDay;
+
+  static CyclePhase ofDay(int day) {
+    if (day <= 21) return kickoff;
+    if (day <= 66) return consolidate;
+    if (day <= 90) return evaluate;
+    return maintenance;
+  }
+}
+
+/// 90 天周期计划
+@immutable
+class NinetyDayPlan {
+  const NinetyDayPlan({
+    required this.startDate,
+    required this.goalAdviceIds, // [安全底线ID, 财务防线ID, 健康/关系ID]
+    this.kickoffReviewDay7 = false,
+    this.kickoffReviewDay14 = false,
+    this.kickoffReviewDay21 = false,
+    this.isCompleted = false,
+  });
+
+  final DateTime startDate;
+  final List<int> goalAdviceIds;
+  final bool kickoffReviewDay7;
+  final bool kickoffReviewDay14;
+  final bool kickoffReviewDay21;
+  final bool isCompleted;
+
+  int get currentDay {
+    final diff = DateTime.now().difference(startDate).inDays + 1;
+    return diff < 1 ? 1 : diff;
+  }
+
+  CyclePhase get phase => CyclePhase.ofDay(currentDay);
+
+  NinetyDayPlan copyWith({
+    DateTime? startDate,
+    List<int>? goalAdviceIds,
+    bool? kickoffReviewDay7,
+    bool? kickoffReviewDay14,
+    bool? kickoffReviewDay21,
+    bool? isCompleted,
+  }) =>
+      NinetyDayPlan(
+        startDate: startDate ?? this.startDate,
+        goalAdviceIds: goalAdviceIds ?? this.goalAdviceIds,
+        kickoffReviewDay7: kickoffReviewDay7 ?? this.kickoffReviewDay7,
+        kickoffReviewDay14: kickoffReviewDay14 ?? this.kickoffReviewDay14,
+        kickoffReviewDay21: kickoffReviewDay21 ?? this.kickoffReviewDay21,
+        isCompleted: isCompleted ?? this.isCompleted,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'startDate': startDate.toIso8601String(),
+        'goalAdviceIds': goalAdviceIds,
+        'kickoffReviewDay7': kickoffReviewDay7,
+        'kickoffReviewDay14': kickoffReviewDay14,
+        'kickoffReviewDay21': kickoffReviewDay21,
+        'isCompleted': isCompleted,
+      };
+
+  factory NinetyDayPlan.fromJson(Map<String, dynamic> json) => NinetyDayPlan(
+        startDate: DateTime.tryParse(json['startDate'] as String? ?? '') ??
+            DateTime.now(),
+        goalAdviceIds:
+            (json['goalAdviceIds'] as List?)?.cast<int>() ?? const [1, 387, 13],
+        kickoffReviewDay7: json['kickoffReviewDay7'] as bool? ?? false,
+        kickoffReviewDay14: json['kickoffReviewDay14'] as bool? ?? false,
+        kickoffReviewDay21: json['kickoffReviewDay21'] as bool? ?? false,
+        isCompleted: json['isCompleted'] as bool? ?? false,
+      );
+}
+
+/// 卡内基式 4 步周复盘条目
+@immutable
+class CarnegieReviewItem {
+  const CarnegieReviewItem({
+    required this.id,
+    required this.createdAt,
+    required this.eventFact,
+    required this.myAction,
+    required this.theirReaction,
+    required this.nextOneSentence,
+    this.tag = '职场沟通',
+  });
+
+  final String id;
+  final DateTime createdAt;
+  final String eventFact;
+  final String myAction;
+  final String theirReaction;
+  final String nextOneSentence;
+  final String tag;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'createdAt': createdAt.toIso8601String(),
+        'eventFact': eventFact,
+        'myAction': myAction,
+        'theirReaction': theirReaction,
+        'nextOneSentence': nextOneSentence,
+        'tag': tag,
+      };
+
+  factory CarnegieReviewItem.fromJson(Map<String, dynamic> json) =>
+      CarnegieReviewItem(
+        id: json['id'] as String,
+        createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+            DateTime.now(),
+        eventFact: json['eventFact'] as String? ?? '',
+        myAction: json['myAction'] as String? ?? '',
+        theirReaction: json['theirReaction'] as String? ?? '',
+        nextOneSentence: json['nextOneSentence'] as String? ?? '',
+        tag: json['tag'] as String? ?? '日常自检',
+      );
+}
+
+/// 紧急联系人
+@immutable
+class EmergencyContact {
+  const EmergencyContact({
+    required this.name,
+    required this.phone,
+    required this.relation,
+  });
+
+  final String name;
+  final String phone;
+  final String relation;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'phone': phone,
+        'relation': relation,
+      };
+
+  factory EmergencyContact.fromJson(Map<String, dynamic> json) => EmergencyContact(
+        name: json['name'] as String? ?? '',
+        phone: json['phone'] as String? ?? '',
+        relation: json['relation'] as String? ?? '',
+      );
+}
+

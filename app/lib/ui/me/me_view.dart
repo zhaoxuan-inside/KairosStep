@@ -7,6 +7,8 @@ import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import '../detail/advice_detail_sheet.dart';
 import '../onboarding/onboarding_view.dart';
+import '../tools/tools_sheet.dart';
+import 'excluded_advices_view.dart';
 
 /// 我的页：本地安全画像中枢。
 ///
@@ -221,6 +223,72 @@ class MeView extends StatelessWidget {
                   on: store.themeMode == ThemeMode.system,
                   onTap: () => store.themeMode = ThemeMode.system),
             ]),
+          ],
+        )),
+        const SizedBox(height: 12),
+
+        // ---- 个性化管理与离线工具箱 ----
+        _card(context, child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.tune, size: 15, color: p.action),
+                const SizedBox(width: 6),
+                Text('个性化掌控与工具箱', style: _cardTitle(context)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () => ExcludedAdvicesView.show(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.visibility_off_outlined, size: 15, color: p.inkSub),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('已排除建议管理', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                          Text(
+                            '当前已手动移出日常视图：${store.excludedAdviceIds.length} 条 · 可随时恢复',
+                            style: TextStyle(fontSize: 11, color: p.inkMute),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                  ],
+                ),
+              ),
+            ),
+            Divider(color: p.hairline, height: 16),
+            InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () => ToolsSheet.show(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.account_tree_outlined, size: 15, color: p.action),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('决策树向导与精算工具箱', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                          Text('离线劳动维权决策树、清单生成器、真实年化利率换算', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                  ],
+                ),
+              ),
+            ),
           ],
         )),
         const SizedBox(height: 12),

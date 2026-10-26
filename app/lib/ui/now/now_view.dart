@@ -9,7 +9,7 @@ import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
 import 'gear_ruler.dart';
 
-/// 当下页：时段问候 + 当下 Hero 卡 + 齿轮时间尺。
+/// 当下页：1.5小时齿轮时间尺（置顶） + 时段问候 + 当下 Hero 卡。
 ///
 /// 时段划分与 Demo getPeriodInfo 一致：晨 05:00-09:30 / 上午 09:30-12:00 /
 /// 午后 12:00-18:00 / 傍晚 18:00-22:00 / 夜间 22:00-05:00。
@@ -64,15 +64,15 @@ class _NowViewState extends State<NowView> {
   @override
   void initState() {
     super.initState();
-    _ticker = Timer.periodic(const Duration(seconds: 10), (_) {
+    // 每秒驱动实时呼吸与时钟更新
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _scrub != null) return;
       final now = DateTime.now();
-      if (NowPeriod.of(now).key != NowPeriod.of(_now).key) {
-        setState(() {
-          _now = now;
-          _heroOffset = 0;
-        });
-      }
+      final periodChanged = NowPeriod.of(now).key != NowPeriod.of(_now).key;
+      setState(() {
+        _now = now;
+        if (periodChanged) _heroOffset = 0;
+      });
     });
   }
 
@@ -94,9 +94,26 @@ class _NowViewState extends State<NowView> {
         : (store.todayAdvices.isNotEmpty ? store.todayAdvices.first : null);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 52, 16, 24),
       children: [
-        // 时段徽标 + 问候
+        // 1. 齿轮时间尺（放在最上面，时间范围 1.5 小时聚焦视窗）
+        GearRuler(
+          now: effectiveNow,
+          live: _scrub == null,
+          onChanged: (dt) => setState(() {
+            _scrub = dt;
+            _heroOffset = 0;
+          }),
+          onReset: _scrub == null
+              ? null
+              : () => setState(() {
+                    _scrub = null;
+                    _heroOffset = 0;
+                  }),
+        ),
+        const SizedBox(height: 16),
+
+        // 2. 时段徽标
         Row(
           children: [
             Container(
@@ -114,36 +131,11 @@ class _NowViewState extends State<NowView> {
                 ),
               ),
             ),
-            const Spacer(),
-            if (_scrub != null)
-              GestureDetector(
-                onTap: () => setState(() {
-                  _scrub = null;
-                  _heroOffset = 0;
-                }),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: p.emerald.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.my_location, size: 12, color: p.emerald),
-                      const SizedBox(width: 4),
-                      Text('回到此刻',
-                          style: TextStyle(
-                              fontSize: 10.5,
-                              color: p.emerald,
-                              fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                ),
-              ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
+
+        // 3. 拟人化时段问候与守护提示
         Text(
           period.greeting,
           style: Theme.of(context).textTheme.displaySmall,
@@ -152,7 +144,7 @@ class _NowViewState extends State<NowView> {
         Text(period.sub, style: TextStyle(fontSize: 12, color: p.inkSub)),
         const SizedBox(height: 18),
 
-        // 当下 Hero 卡标题与换一换切换
+        // 4. 当下 Hero 卡标题与换一换切换
         if (periodAdvices.length > 1)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -191,30 +183,11 @@ class _NowViewState extends State<NowView> {
             ),
           ),
 
-        // 当下 Hero 卡
+        // 5. 当下 Hero 核心行动卡
         if (hero != null)
           AdviceCard(advice: hero, scope: PeriodScope.today),
-        const SizedBox(height: 18),
 
-        // 齿轮时间尺
-        Text('当下时间尺',
-            style: TextStyle(fontSize: 10.5, color: p.inkMute, letterSpacing: 1)),
-        const SizedBox(height: 8),
-        GearRuler(
-          now: effectiveNow,
-          live: _scrub == null,
-          onChanged: (dt) => setState(() {
-            _scrub = dt;
-            _heroOffset = 0;
-          }),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          '拖动刻度可预演其他时段的行动 · 点「回到此刻」恢复实时',
-          style: TextStyle(fontSize: 10, color: p.inkMute),
-        ),
-
-        // 当前时段其他关联建议
+        // 6. 当前时段其他待命建议
         if (periodAdvices.length > 1) ...[
           const SizedBox(height: 24),
           Row(
