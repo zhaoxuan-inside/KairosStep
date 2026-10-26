@@ -22,6 +22,14 @@ class UserProfile {
     this.roles = const ['全民', '上班族', '伴侣', '家人'],
     this.livingConditions = const ['租房人'],
     this.healthConcerns = const ['久坐伏案'],
+    this.focusDomains = const [
+      'health',
+      'career',
+      'family',
+      'finance',
+      'emergency',
+      'cadence',
+    ],
     this.prunedOnly = true,
     this.parentsOnly = false,
   });
@@ -31,6 +39,7 @@ class UserProfile {
   final List<String> roles;
   final List<String> livingConditions;
   final List<String> healthConcerns;
+  final List<String> focusDomains; // 关注的人生领域，默认 6 大支柱全覆盖
   final bool prunedOnly; // 全景库默认「画像专属」
   final bool parentsOnly; // 父母适用清单
 
@@ -60,6 +69,7 @@ class UserProfile {
     List<String>? roles,
     List<String>? livingConditions,
     List<String>? healthConcerns,
+    List<String>? focusDomains,
     bool? prunedOnly,
     bool? parentsOnly,
   }) =>
@@ -69,6 +79,7 @@ class UserProfile {
         roles: roles ?? this.roles,
         livingConditions: livingConditions ?? this.livingConditions,
         healthConcerns: healthConcerns ?? this.healthConcerns,
+        focusDomains: focusDomains ?? this.focusDomains,
         prunedOnly: prunedOnly ?? this.prunedOnly,
         parentsOnly: parentsOnly ?? this.parentsOnly,
       );
@@ -79,6 +90,7 @@ class UserProfile {
         'roles': roles,
         'livingConditions': livingConditions,
         'healthConcerns': healthConcerns,
+        'focusDomains': focusDomains,
         'prunedOnly': prunedOnly,
         'parentsOnly': parentsOnly,
       };
@@ -92,6 +104,15 @@ class UserProfile {
             const ['租房人'],
         healthConcerns: (json['healthConcerns'] as List?)?.cast<String>() ??
             const ['久坐伏案'],
+        focusDomains: (json['focusDomains'] as List?)?.cast<String>() ??
+            const [
+              'health',
+              'career',
+              'family',
+              'finance',
+              'emergency',
+              'cadence',
+            ],
         prunedOnly: json['prunedOnly'] as bool? ?? true,
         parentsOnly: json['parentsOnly'] as bool? ?? false,
       );
@@ -462,6 +483,12 @@ class AppStore extends ChangeNotifier {
   /// 画像专属：人生阶段 ∩ 社会角色 ∩ 适用群体，且不命中排除维度。
   bool matchPersona(Advice a) {
     final p = profile;
+
+    // 0. 关注领域过滤（若设置了特定关注领域且未全选）
+    if (p.focusDomains.isNotEmpty && p.focusDomains.length < 6) {
+      final domain = LifeDomain.ofChapter(a.chapter);
+      if (!p.focusDomains.contains(domain.id)) return false;
+    }
 
     // 1. 硬性排除
     if (a.tags.any(p.exclude.contains)) return false;

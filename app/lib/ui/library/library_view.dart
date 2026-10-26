@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../app.dart';
 import '../../core/theme.dart';
@@ -6,6 +7,7 @@ import '../../data/catalog.dart';
 import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
+import 'guidance_sheet.dart';
 import 'jump_deck.dart';
 
 /// 全景库：767 条建议全景流。
@@ -111,6 +113,44 @@ class _LibraryViewState extends State<LibraryView> {
                     store.profile = store.profile.copyWith(
                         prunedOnly: false, parentsOnly: false);
                   }),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      AdviceGuidanceSheet.show(
+                        context,
+                        onSelectDomainChapter: (ch) {
+                          setState(() {
+                            _chapter = ch;
+                            _limit = 40;
+                          });
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: p.action.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(9999),
+                        border: Border.all(color: p.action.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.explore_outlined, size: 13, color: p.action),
+                          const SizedBox(width: 4),
+                          Text(
+                            '767 全景引导',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: p.action,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),

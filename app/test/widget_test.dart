@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairo_step/app.dart';
 import 'package:kairo_step/data/catalog.dart';
+import 'package:kairo_step/models/advice.dart';
 import 'package:kairo_step/state/app_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,6 +28,27 @@ void main() {
     // 详情层存在
     expect(catalog.detailOf(7)!.grade, 'A');
     expect(catalog.nodePackages.length, 5);
+  });
+
+  test('767 建议全景六大支柱覆盖全库：100% 覆盖 767 条建议与 34 章节无遗漏', () async {
+    // 验证六大支柱包含全部 34 章
+    final domainChapters = LifeDomain.values.expand((d) => d.chapters).toList();
+    expect(domainChapters.length, 34);
+    expect(domainChapters.toSet().length, 34, reason: '章节在领域间互斥无重复');
+    expect(domainChapters.toSet(), catalog.chapters.toSet(), reason: '34 章节 100% 映射');
+
+    // 验证各支柱加总恰好 767 条
+    final totalDomainCount = LifeDomain.values.fold<int>(0, (sum, d) => sum + d.totalCount);
+    expect(totalDomainCount, 767);
+
+    // 验证真实计算各领域条数
+    for (final domain in LifeDomain.values) {
+      final actualCount = catalog.adviceList
+          .where((a) => domain.chapters.contains(a.chapter))
+          .length;
+      expect(actualCount, domain.totalCount,
+          reason: '领域 ${domain.title} 实际条数与元数据强一致');
+    }
   });
 
   test('画像匹配：已婚未育男性不出现孕产条目，女性排除特定规则', () async {
@@ -78,7 +100,14 @@ void main() {
     expect(find.text('居住与日常情境'), findsOneWidget);
     expect(find.textContaining('日常最大的风险往往藏在最熟悉的习惯里'), findsOneWidget);
 
-    // 点击继续下一步进入第 5 步：罗盘校准与生成
+    // 点击继续下一步进入第 5 步：全景六大支柱定制（100%覆盖767建议）
+    await tester.tap(find.text('继续下一步 ›'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
+    expect(find.text('人生六大支柱完整定制'), findsOneWidget);
+    expect(find.textContaining('全书 767 条建议由六大支柱严密咬合'), findsOneWidget);
+    expect(find.textContaining('已点亮领域覆盖'), findsOneWidget);
+
+    // 点击继续下一步进入第 6 步：罗盘校准与生成
     await tester.tap(find.text('继续下一步 ›'));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 400));
@@ -96,6 +125,15 @@ void main() {
     expect(find.text('周期'), findsOneWidget);
     expect(find.text('库'), findsOneWidget);
     expect(find.text('我的'), findsOneWidget);
+
+    // 切到库 Tab，验证 767 全景引导入口
+    await tester.tap(find.text('库'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
+    expect(find.text('767 全景引导'), findsOneWidget);
+    await tester.tap(find.text('767 全景引导'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
+    expect(find.text('767 条建议全景引导罗盘'), findsOneWidget);
+    expect(find.textContaining('六大支柱完整覆盖'), findsOneWidget);
   });
 
   testWidgets('真实交付数据流：零 Mock 数据，全量 767 建议动态求值与打卡闭环', (tester) async {
