@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HowToLiveBetter · 组件验收（扁平化 v5）</title>
+<style>
+:root{--sb:#006241;--acc:#00754a;--house:#1e3932;--up:#2b5148;
+ --glight:#d4e9e2;--gold:#cba258;--goldlight:#dfc49d;--goldw:#faf6ee;
+ --canvas:#f2f0eb;--ceramic:#edebe9;--cool:#f9f9f9;--sf:#ffffff;
+ --ink:rgba(0,0,0,.87);--soft:rgba(0,0,0,.58);--hair:#e3e1dc;--br:#d6dbde;
+ --red:#c82014;--red-t:hsl(4 82% 43% / 5%);--warn:#fbbc05;--missbg:#eef0ee;--miss:#cfd8d3}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"SoDoSans","Helvetica Neue",-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+ letter-spacing:-.01em;background:var(--canvas);color:var(--ink);padding:22px 12px 96px}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:24px;font-weight:600;color:var(--sb);letter-spacing:-.016em}
+.ver{font-size:13px;color:var(--soft);margin-top:2px}
+.legend{display:flex;gap:15px;margin:13px 0 2px;flex-wrap:wrap}
+.lg{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--soft)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.d-done{background:var(--acc)}.d-part{background:var(--warn)}.d-miss{background:#cfd8d3}
+.d-bad{background:var(--red)}.d-run{background:var(--gold)}.d-off{background:var(--house)}
+.pulse{animation:pu 1.6s ease-in-out infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes pu-gold{0%,100%{box-shadow:0 0 0 0 rgba(203,162,88,.55)}50%{box-shadow:0 0 0 8px rgba(203,162,88,0)}}
+@keyframes pu-red{0%,100%{box-shadow:0 0 0 0 rgba(200,32,20,.4)}50%{box-shadow:0 0 0 9px rgba(200,32,20,0)}}
+@keyframes scin{from{transform:scale(1.7) rotate(6deg);opacity:0}to{transform:scale(1) rotate(-6deg);opacity:1}}
+.nav{position:sticky;top:0;z-index:5;display:flex;gap:6px;flex-wrap:wrap;font-size:13px;
+ background:rgba(242,240,235,.96);padding:10px 0;border-bottom:1px solid var(--hair);
+ box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.nav a{color:var(--house);text-decoration:none;background:var(--sf);border:1px solid var(--br);padding:4px 13px;border-radius:999px}
+section{margin-top:40px}
+h2{font-size:17px;font-weight:600;color:var(--sb);display:flex;align-items:baseline;gap:9px;letter-spacing:-.016em}
+h2::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none;transform:translateY(-1px)}
+.phone{width:100%;max-width:400px;background:var(--sf);border-radius:12px;padding:16px;
+ box-shadow:0 1px 2px rgba(0,0,0,.06),0 2px 6px rgba(0,0,0,.05)}
+.card{background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:13px;margin-bottom:10px;transition:border-color .25s,background-color .25s}
+.card.s-done{background:var(--glight);border-color:#9ec6b8}
+.card.s-part{background:#fdf2cf;border-color:var(--warn)}
+.card.s-miss{background:var(--missbg);border-color:var(--hair)}
+.card.s-run{background:#fdf2cf;border-color:var(--gold);animation:pu-gold 1.8s infinite}
+.card.s-bad{background:hsl(4 82% 43% / 7%);border-color:var(--red);animation:pu-red 1.8s infinite}
+.tag{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);background:var(--ceramic);border-radius:999px;padding:2px 9px;margin:2px 3px 0 0}
+.title{font-weight:600;font-size:15px;letter-spacing:-.016em}
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.14em}
+.btn{border:0;border-radius:999px;padding:11px 20px;font-size:14px;font-weight:600;color:#fff;background:var(--acc);cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:transform .12s,box-shadow .2s}
+.btn:active{transform:scale(.95)}
+.btn.stone{background:var(--house)}
+.btn.sec{background:var(--sf);color:var(--ink);border:1px solid var(--br)}
+.btn.small{padding:8px 14px;font-size:13px}
+.btn.bad{background:var(--red)}
+.btn.g{background:var(--gold)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:var(--house);color:#fff;padding:12px 18px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:.2s;z-index:99;pointer-events:none;display:flex;gap:7px;align-items:center;
+ box-shadow:0 1px 2px rgba(0,0,0,.24),0 4px 10px rgba(0,0,0,.14)}
+.toast.on{opacity:1}
+.stamps{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.stamp{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--house);background:var(--gold);font-size:10px;font-weight:700;transform:rotate(-6deg);animation:scin .3s cubic-bezier(.2,1.5,.4,1);
+ border:2px solid var(--goldlight)}
+.stamp.done{background:var(--acc);color:#fff;border-color:var(--glight)}
+.stamp.miss{background:var(--ceramic);color:var(--soft);border-color:var(--hair)}
+.bigcount{font-size:24px;font-weight:600;color:var(--sb);letter-spacing:-.016em}
+.meals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.meal{border:1px solid var(--br);border-radius:12px;padding:11px 8px;text-align:center;cursor:pointer;transition:.2s;background:var(--sf)}
+.meal svg{width:26px;height:26px;stroke:var(--soft);transition:.2s}
+.meal.done{background:var(--glight);border-color:var(--acc)}
+.meal.done svg{stroke:var(--acc);animation:scin .3s cubic-bezier(.2,1.5,.4,1)}
+.meal .cap{font-size:13px;color:var(--soft);margin-top:4px}
+.prog{height:8px;background:var(--ceramic);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--acc);width:0;transition:.3s}
+.hist{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.hist i{width:9px;height:9px;border-radius:50%;display:inline-block}
+/* 日历 */
+.caltop{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.seg-b{border:1px solid var(--br);background:var(--sf);border-radius:999px;padding:5px 13px;font-size:13px;cursor:pointer;font-weight:600;color:var(--soft)}
+.seg-b.on{border-color:var(--acc);color:var(--acc);background:var(--glight)}
+.tp{border:1px solid var(--br);border-radius:999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--sf);color:var(--soft);transition:.15s}
+.tp svg{width:17px;height:17px}
+.tp.on{color:#fff;border-color:transparent}
+.tp.on.w{background:#1f7fb8}.tp.on.k{background:var(--acc)}.tp.on.f{background:var(--house)}
+.cal5{display:grid;grid-template-columns:26px repeat(6,26px);gap:12px 4px;user-select:none;max-height:340px;overflow:auto;padding:2px 4px}
+.cal5 .h{color:var(--soft);font-size:10px;text-align:right;line-height:26px}
+.cal5 .c{width:26px;height:26px;border-radius:8px;background:var(--cool);border:1px solid var(--ceramic);cursor:pointer;transition:background .15s,transform .12s}
+.cal5 .c:hover{transform:scale(1.15)}
+.cal5 .c.w{background:#1f7fb8;border-color:transparent}.cal5 .c.k{background:var(--acc);border-color:transparent}.cal5 .c.f{background:var(--house);border-color:transparent}
+.cal5 .c.u{box-shadow:0 0 0 3px rgba(203,162,88,.9);border-color:transparent}
+.cal5 .c.done{background:var(--acc);border-color:transparent}
+.cal5 .c.part{background:var(--gold);border-color:transparent}
+.cal5 .c.miss{background:var(--ceramic);border-color:transparent}
+.timer{display:flex;justify-content:center;margin:6px 0}
+.ring{width:96px;height:96px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .rn{fill:none;stroke:var(--ceramic);stroke-width:8}
+.ring .rp{fill:none;stroke:var(--gold);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .4s}
+.ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.banner{position:fixed;top:10px;left:10px;right:10px;z-index:98;border-radius:12px;padding:13px 15px;display:none;align-items:center;gap:11px;color:#fff;background:var(--red);
+ box-shadow:0 1px 2px rgba(0,0,0,.24),0 4px 10px rgba(0,0,0,.14)}
+.banner.on{display:flex;animation:sd .25s}
+@keyframes sd{from{transform:translateY(-12px);opacity:0}to{transform:none;opacity:1}}
+.banner svg{width:22px;height:22px;flex:none}
+.qa .opt{display:flex;align-items:center;gap:9px;width:100%;text-align:left;margin:7px 0;border:1px solid var(--br);background:var(--sf);border-radius:999px;padding:12px 16px;font-size:14px;cursor:pointer}
+.qa .opt:active{border-color:var(--acc);background:var(--glight)}
+.vbox{margin-top:10px;border-radius:12px;padding:18px;text-align:center;transition:.2s}
+.v-bad{background:var(--red-t);border:1px solid var(--red)}
+.v-bad .big{font-size:44px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums;font-family:"Lander Tall","Iowan Old Style",Georgia,serif}
+.v-calm{background:var(--cool);border:1px solid var(--hair)}
+.v-calm .big{font-size:18px;font-weight:600;color:var(--soft)}
+.dial{width:54px;height:54px;border-radius:999px;border:0;background:var(--red);color:#fff;font-size:20px;display:inline-flex;align-items:center;justify-content:center;margin-top:10px;cursor:pointer;
+ box-shadow:0 0 6px rgba(0,0,0,.24),0 8px 12px rgba(0,0,0,.14)}
+.dots{display:flex;gap:5px;margin-bottom:8px}
+.dots i{flex:1;height:4px;border-radius:99px;background:var(--ceramic)}
+.dots i.d{background:var(--acc)}
+.dots i.c{background:var(--gold);animation:pu 1.6s infinite}
+.step{display:flex;gap:9px;align-items:center;padding:9px 12px;border-radius:999px;margin-bottom:6px;background:var(--cool);border:1px solid var(--br);cursor:pointer;font-size:14px}
+.step .no{width:26px;height:26px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;background:var(--sf);border:1px solid var(--br);color:var(--soft)}
+.step.cur{background:var(--glight);border-color:var(--acc)}
+.step.cur .no{background:var(--acc);color:#fff;border-color:transparent;animation:pu-gold 1.8s infinite}
+.step.fin{opacity:.7}.step.fin .no{background:var(--acc);color:#fff;border-color:transparent}
+.who{display:flex;align-items:center;gap:9px}
+.who .a{width:32px;height:32px;border-radius:999px;background:var(--ceramic);display:flex;align-items:center;justify-content:center;color:var(--house);flex:none}
+.who .a svg{width:15px;height:15px}
+.evalw{position:fixed;inset:0;background:rgba(30,57,50,.5);z-index:90;display:flex;align-items:center;justify-content:center}
+.eval{background:var(--canvas);border-radius:16px;padding:22px 24px;text-align:center;animation:scin .22s cubic-bezier(.2,1.3,.3,1);
+ box-shadow:0 1px 6px rgba(0,0,0,.14),0 10px 22px rgba(0,0,0,.14)}
+.eval .q{font-size:14px;margin-bottom:13px;font-weight:600}
+.eval .opts{display:flex;gap:10px}
+.eval .e{width:66px;height:66px;border-radius:999px;border:1px solid var(--br);background:var(--sf);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.eval .e svg{width:28px;height:28px;stroke:var(--soft)}
+.eval .e.d{background:var(--glight);border-color:var(--acc)}.eval .e.d svg{stroke:var(--acc)}
+.eval .e.p{background:#fdf2cf;border-color:var(--gold)}.eval .e.p svg{stroke:var(--gold)}
+.eval .e:active{transform:scale(.93)}
+.sharecard{width:280px;margin:10px auto 0;border-radius:12px;padding:18px;background:var(--house);color:#fff;opacity:0;transform:translateY(12px);transition:.3s;
+ box-shadow:0 1px 6px rgba(0,0,0,.14),0 10px 22px rgba(0,0,0,.14)}
+.sharecard.on{opacity:1;transform:none}
+.sharecard .stamps{justify-content:center}
+.sharecard .big{font-size:36px;font-weight:600;line-height:1.1;font-family:"Lander Tall","Iowan Old Style",Georgia,serif;color:var(--goldlight)}
+.sharecard .cap{font-size:11px;opacity:.7;margin-top:2px}
+.sharecard .tile{display:flex;gap:6px;justify-content:center;margin-top:11px}
+.sharetg{display:flex;gap:10px;justify-content:center;margin-top:13px;opacity:0;max-height:0;overflow:hidden;transition:.3s}
+.sharetg.on{opacity:1;max-height:70px}
+.sharetg .s{width:52px;height:52px;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;border:0;transition:transform .15s,box-shadow .2s;
+ box-shadow:0 0 6px rgba(0,0,0,.24),0 8px 12px rgba(0,0,0,.14)}
+.sharetg .s:active{transform:scale(.95)}
+.s.wx{background:var(--acc)}
+.s.img{background:var(--house)}
+.s.hit{transform:scale(1.15)}
+.switch{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.switch label{font-size:13px;background:var(--sf);border:1px solid var(--br);border-radius:999px;padding:5px 11px;cursor:pointer;display:flex;gap:5px;align-items:center;color:var(--soft)}
+.switch label.on{border-color:var(--acc);color:var(--acc);background:var(--glight);font-weight:600}
+.itemrow{display:flex;align-items:center;gap:9px;border:1px solid var(--br);border-radius:999px;padding:9px 13px;margin:5px 0;background:var(--sf);transition:.25s;font-size:14px}
+.itemrow.off{opacity:.25}
+.kdot{width:9px;height:9px;border-radius:50%;flex:none}
+.hits .hit{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:1px solid var(--br);background:var(--sf);border-radius:999px;padding:10px 15px;margin:5px 0;font-size:14px;cursor:pointer}
+.hits .hit:hover{background:var(--ceramic)}
+.searchbox{width:100%;border:1px solid var(--br);background:var(--sf);border-radius:999px;padding:11px 17px;font-size:14px}
+.searchbox:focus{outline:none;border-color:var(--acc)}
+.offchip{position:fixed;top:10px;right:10px;z-index:97;border-radius:999px;padding:6px 11px;display:flex;gap:6px;align-items:center;background:var(--house);color:#fff;
+ box-shadow:0 1px 2px rgba(0,0,0,.24)}
+.offchip .dot{background:var(--glight)}
+.frap{position:fixed;right:20px;bottom:24px;z-index:96;width:56px;height:56px;border-radius:999px;border:0;background:var(--acc);color:#fff;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
+ box-shadow:0 0 6px rgba(0,0,0,.24),0 8px 12px rgba(0,0,0,.14);transition:transform .15s,box-shadow .2s;transform:translateY(0)}
+.frap::after{margin-top:calc(-1 * .8rem);content:"";position:absolute;inset:-8px;border-radius:50%}
+.frap:active{transform:scale(.95);box-shadow:0 0 6px rgba(0,0,0,.24)}
+.frap svg{width:24px;height:24px}
+.wave{display:inline-flex;gap:2px;align-items:flex-end;height:16px}
+.wave i{width:3px;background:var(--acc);border-radius:2px;animation:w .7s infinite ease-in-out}
+.wave i:nth-child(2){animation-delay:.12s}.wave i:nth-child(3){animation-delay:.24s}.wave i:nth-child(4){animation-delay:.36s}
+@keyframes w{0%,100%{height:4px}50%{height:15px}}
+.beats{display:flex;gap:3px}
+.beats i{width:7px;height:7px;border-radius:999px;background:var(--ceramic);display:inline-block}
+.beats i.hot{background:var(--warn)}
+</style>
+</head>
+<body>
+<div class="offchip"><i class="dot"></i></div>
+<div class="wrap">
+<h1>HowToLiveBetter · 组件验收</h1>
+<div class="ver">v5 · 扁平化 · 图标语言 · 状态=色彩效果而非文字</div>
+<div class="legend">
+<span class="lg"><i class="dot d-done"></i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span class="lg"><i class="dot d-part"></i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7.5 12h9"/></svg></span>
+<span class="lg"><i class="dot d-miss"></i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg></span>
+<span class="lg"><i class="dot d-bad"></i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.9 19.9 0 0 1 3.1 3.2 2 2 0 0 1 5.1 1H8a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L9 8.6a16 16 0 0 0 6.4 6.4l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg></span>
+<span class="lg"><i class="dot d-off"></i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2.4 2.4 0 0 0 4 0"/></svg></span>
+</div>
+<div class="nav">
+<a href="#c1">手势打卡</a><a href="#c2">印章</a><a href="#c3">三餐</a><a href="#c4">多次</a>
+<a href="#c5">五分钟日历</a><a href="#c6">倒计时</a><a href="#c7">紧急通知</a><a href="#c8">问答树</a>
+<a href="#c9">CPR</a><a href="#c10">搜索</a><a href="#c11">办事流</a><a href="#c12">分享卡</a>
+<a href="#c13">代做</a><a href="#c14">红线</a><a href="#c15">画像</a>
+</div>
+
+<!-- 1 -->
+<section id="c1"><h2>手势打卡</h2>
+<div class="phone"><div class="card" id="g1card">
+<div class="title">每天走到 7000–8000 步</div>
+<div style="margin:2px 0 8px"><span class="tag">分时段</span><span class="tag">长期坚持</span></div>
+<div class="row">
+<button class="btn p small" id="g1tap" title="直接打卡"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></button>
+<button class="btn sec small" id="g1shake" title="晃动打卡"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 8 2 2-2 2 2 2-2 2 2 2"/><path d="m22 8-2 2 2 2-2 2 2 2-2 2"/><rect x="9" y="2" width="6" height="20" rx="2"/></svg></button>
+<button class="btn sec small" id="g1flip" title="翻转打卡"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.7 9.7 0 0 0-6.7 2.8L3 8"/><path d="M3 3v5h5"/></svg></button>
+<button class="btn sec small" id="g1tap2" title="双击背面"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/></svg></button>
+</div>
+<div class="row" style="margin-top:10px"><span class="bigcount" id="g1c">0</span><span style="color:var(--sub);font-size:12px">/今日</span></div>
+</div></div></section>
+
+<!-- 2 -->
+<section id="c2"><h2>打卡印章（连续·不清零）</h2>
+<div class="phone"><div class="card">
+<div class="row"><span class="bigcount" id="st_len">6</span><span style="color:var(--sub);font-size:12px">连击</span>
+<div class="stamps" id="st_wall" style="margin-top:0;margin-left:auto"></div></div>
+<div class="row" style="margin-top:8px"><button class="btn p small" id="st_add">＋1</button><button class="btn sec small" id="st_break" title="断签演示"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+</div></div></section>
+
+<!-- 3 -->
+<section id="c3"><h2>三餐独立（#每餐）</h2>
+<div class="phone"><div class="card">
+<div class="title">全谷物 / 低钠盐</div>
+<div class="meals" id="meals" style="margin-top:9px"></div>
+</div></div></section>
+
+<!-- 4 -->
+<section id="c4"><h2>日内多次（间隔提醒可配）</h2>
+<div class="phone"><div class="card" id="wcard">
+<div class="title">喝水 2.5–3 升</div>
+<div style="margin:2px 0 10px"><span class="tag">多次</span><span class="tag">分时段</span></div>
+<div class="prog"><i id="w_bar"></i></div>
+<div class="row" style="margin-top:9px">
+<button class="btn p small" id="w_add"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2s6 6.6 6 11a6 6 0 0 1-12 0C6 8.6 12 2 12 2z"/></svg>250</button>
+<button class="btn sec small" id="w_fired" title="演示间隔提醒"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2.4 2.4 0 0 0 4 0"/></svg></button>
+<span class="bigcount" id="w_ml" style="color:var(--sub)">0</span><span style="font-size:12px;color:var(--sub)">/2500ml</span>
+</div>
+<div class="hist" id="w_log"></div>
+</div></div></section>
+
+<!-- 5 -->
+<section id="c5"><h2>五分钟日历 · 小方块 · 番茄钟</h2>
+<div class="phone" style="max-width:430px"><div class="card">
+<div class="caltop">
+<button class="seg-b on" id="sg5">5′·2行/时</button>
+<button class="seg-b" id="sg10">10′·1行/时</button>
+<span style="flex:none;width:10px"></span>
+<button class="tp w on" data-t="water" id="tpw" title="水"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2s6 6.6 6 11a6 6 0 0 1-12 0C6 8.6 12 2 12 2z"/></svg></button>
+<button class="tp k" data-t="walk" id="tpk" title="步"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 6l-3 6 3.5 2.5V21M10 12l-2.5 6"/><path d="M12.5 9.5 17 12l2 3"/></svg></button>
+<button class="tp f" data-t="focus" id="tpf" title="专注"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+<span style="margin-left:auto;display:flex;gap:6px">
+<button class="btn sec small" id="c5_water" title="自动铺计划"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7L4 20a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L14 9V2"/><path d="M8 2h8"/></svg></button>
+<button class="btn sec small" id="c5_step" title="铺步数块"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 6l-3 6 3.5 2.5V21M10 12l-2.5 6"/><path d="M12.5 9.5 17 12l2 3"/></svg></button>
+<button class="btn sec small" id="c5_clear" title="清空"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+</span>
+</div>
+<div class="cal5" id="c5_grid"></div>
+<div class="timer" id="c5_timer" style="display:none">
+<div class="ring">
+<svg width="96" height="96" viewBox="0 0 96 96">
+<circle class="rn" cx="48" cy="48" r="41"/>
+<circle class="rp" id="c5rp" cx="48" cy="48" r="41" stroke-dasharray="257.6" stroke-dashoffset="0"/>
+</svg>
+<div class="num" id="c5t">05:00</div>
+</div>
+</div>
+<div class="card" style="display:flex;gap:14px;align-items:center;margin-bottom:0">
+<span class="lg"><i class="dot" style="background:var(--blue)"></i><span class="bigcount" style="font-size:18px" id="c5w_ml">0</span><span style="color:var(--sub)">/2500</span></span>
+<span class="lg"><i class="dot d-done"></i><span class="bigcount" style="font-size:18px" id="c5w_steps">0</span><span style="color:var(--sub)">/7000</span></span>
+<span class="stamps" id="c5_stamps" style="margin-top:0;margin-left:auto"></span>
+</div>
+</div></div></section>
+
+<!-- 6 -->
+<section id="c6"><h2>窗口期倒计时</h2>
+<div class="phone"><div class="card s-part" id="c6card">
+<div class="title">肠癌筛查窗口</div>
+<div class="row" style="margin-top:6px"><span class="bigcount" id="c6t">--</span><span style="font-size:12px;color:var(--sub)">天</span><i class="dot d-part" id="c6dot" style="width:13px;height:13px"></i></div>
+<div class="row" style="margin-top:8px">
+<button class="btn sec small" id="c6skip" title="快进逾期"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M13 6l6 6-6 6"/></svg></button>
+<button class="btn p small" id="c6ok" title="完成归档"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></button>
+</div>
+</div></div></section>
+
+<!-- 7 -->
+<section id="c7"><h2>时间敏感通知</h2>
+<div class="phone"><div class="card">
+<button class="btn bad" id="nt_btn" title="触发通知"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2.4 2.4 0 0 0 4 0"/></svg></button>
+</div></div></section>
+
+<!-- 8 -->
+<section id="c8"><h2>规则问答树 + 语音</h2>
+<div class="phone"><div class="card qa" id="qa">
+<div id="qa_body"></div>
+<div class="row" style="margin-top:9px">
+<button class="btn sec small" id="qa_sp" title="本地语音播报"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></button>
+<button class="btn sec small" id="qa_re" title="回到开头"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.7 9.7 0 0 0-6.7 2.8L3 8"/><path d="M3 3v5h5"/></svg></button>
+<span id="qa_wave"></span>
+</div>
+</div></div></section>
+
+<!-- 9 -->
+<section id="c9"><h2>CPR 节拍 / AED</h2>
+<div class="phone"><div class="card">
+<div class="row">
+<button class="btn bad small" id="cp_on" title="开始节拍"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></button>
+<span class="wave" id="cp_wave" style="display:none"><i></i><i></i><i></i><i></i><i></i></span>
+<div class="beats" id="cp_beats" style="margin-left:auto"></div>
+</div>
+<div class="row" style="margin-top:10px;color:var(--sub);font-size:11px;align-items:center">
+<i class="dot d-run"></i>
+<svg class="ic" style="stroke:#5d6a79;width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h11a3 3 0 0 1 3 3v4"/><path d="M14 15h6v5h-6zM4 20a5 5 0 0 0 5-5"/></svg>
+<span>300m</span>
+</div>
+</div></div></section>
+
+<!-- 10 -->
+<section id="c10"><h2>本地 NLP 搜索</h2>
+<div class="phone"><div class="card">
+<input class="searchbox" id="s_in" placeholder="症状 / 需求，如：胸疼·欠薪·退保">
+<div class="hits" id="s_hits"></div>
+</div></div></section>
+
+<!-- 11 -->
+<section id="c11"><h2>办事分步（事后时间线）</h2>
+<div class="phone"><div class="card">
+<div class="dots" id="st_dots"></div>
+<div id="steplist"></div>
+</div></div></section>
+
+<!-- 12 -->
+<section id="c12"><h2>生成分享卡 → 外发微信</h2>
+<div class="phone"><div class="card">
+<div class="title">我的坚持 · 印章卡</div>
+<div class="row" style="margin-top:8px"><button class="btn p small" id="sc_gen"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8h16v-8"/><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/></svg></button></div>
+<div class="sharecard" id="sc">
+<div style="font-size:10px;letter-spacing:2px;opacity:.55;word-spacing:4px">HOW·TO·LIVE·BETTER</div>
+<div class="big" id="sc_days">7</div>
+<div class="cap">连续天数 · 全谷物/低钠盐</div>
+<div class="stamps" id="sc_stamps"></div>
+<div class="tile" id="sc_tile"></div>
+</div>
+<div class="sharetg" id="sharetg">
+<button class="s wx" title="发送到微信" id="sc_wx"><svg class="ic" style="width:19px;height:19px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.6 0-3.1-.4-4.4-1.1L3 20l1.1-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+<button class="s img" title="保存图片" id="sc_img"><svg class="ic" style="width:19px;height:19px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5-5-9 9"/></svg></button>
+</div>
+</div></div></section>
+
+<!-- 13 -->
+<section id="c13"><h2>代办 / 家长代做</h2>
+<div class="phone">
+<div class="card" id="p1card">
+<div class="title">给妈妈换低钠盐</div>
+<div class="row" style="margin-top:8px">
+<button class="btn p small" id="p1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></button>
+<div class="who"><span class="a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><span style="font-size:12px;color:var(--sub)" id="p1s">待完成</span></div>
+</div></div>
+<div class="card" id="p2card">
+<div class="title">维生素 D 每日</div>
+<div class="row" style="margin-top:8px">
+<button class="btn p small" id="p2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></button>
+<div class="who"><span class="a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="7" r="3.4"/><path d="M5 21c1.4-3.6 4-5.4 7-5.4s5.6 1.8 7 5.4"/></svg></span><span style="font-size:12px;color:var(--sub)" id="p2s">今日未记</span></div>
+</div></div>
+</div></section>
+
+<!-- 14 -->
+<section id="c14"><h2>红线后果对照</h2>
+<div class="phone"><div class="card s-bad">
+<div class="title">不借卡 · 不跑分</div>
+<div style="display:flex;gap:6px;margin-top:9px">
+<div style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:9px 6px;text-align:center;background:var(--sf)"><svg class="ic" style="width:17px;height:17px;color:var(--sub)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></div>
+<div style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:9px 6px;text-align:center;background:var(--sf)"><svg class="ic" style="width:17px;height:17px;color:var(--sub)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></div>
+<div style="flex:1;border:1.5px solid var(--line);border-radius:12px;padding:9px 6px;text-align:center;background:var(--sf)"><svg class="ic" style="width:17px;height:17px;color:var(--sub)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></div>
+</div>
+</div></div></section>
+
+<!-- 15 -->
+<section id="c15"><h2>画像开关（显隐）</h2>
+<div class="phone" style="max-width:480px"><div class="card">
+<div class="switch" id="sw"></div>
+<div id="sw_list"></div>
+</div></div></section>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="banner" id="banner" onclick="location.hash='c8';hideBanner();qa.jump(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2.4 2.4 0 0 0 4 0"/></svg><span>胸痛 15 分钟</span></div>
+
+<button class="frap" id="fab" title="今日待办" aria-label="今日待办"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.001M3.5 12h.001M3.5 18h.001"/></svg></button>
+<script>
+/* ---------- icons ---------- */
+const I={
+ chk:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>',
+ ck:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M20 6L9 17l-5-5" transform="translate(1.5 0)"/></svg>',
+ half:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7.5 12h9"/></svg>',
+ ring:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>',
+ club:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>',
+ dot:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>',
+};
+function toast(ic,txt){const t=$("#toast");t.innerHTML=(I[ic]||I.dot)+"<span>"+txt+"</span>";t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),1200)}
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let tT;
+function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function speak(x){try{const u=new SpeechSynthesisUtterance(x);u.lang="zh-CN";speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function offchip(){$(".offchip .dot").style.background=navigator.onLine?"var(--done)":"var(--bad)"}
+offchip();
+
+/* 1 手势 */
+let g1c=0;
+function gHit(src){g1c++;$("#g1c").textContent=g1c;stAddPopup();vibrate(25);
+ const c=$("#g1card");c.className="card s-done";setTimeout(()=>c.className="card",600);
+ toast("chk",src)}
+["#g1tap|直接打卡","#g1shake|晃动","#g1flip|翻转","#g1tap2|双击背面"].forEach(x=>{const[a,b]=x.split("|");$(a).onclick=()=>gHit(b)});
+try{if(window.DeviceMotionEvent){
+ let last=0,base=null;
+ addEventListener("devicemotion",e=>{const a=e.accelerationIncludingGravity;if(!a)return;
+  const m=Math.hypot(a.x||0,a.y||0,a.z||0),n=Date.now();if(n-last<600)return;
+  if(base===null)base=m;
+  if(Math.abs(m-base)>14){last=n;base=m;gHit("真机晃动")}});
+ DeviceMotionEvent.requestPermission&&document.addEventListener("click",function o(){DeviceMotionEvent.requestPermission().catch(()=>{});removeEventListener("click",o,true)},{once:true, capture:true});
+}
+if(screen.orientation)screen.orientation.addEventListener("change",()=>{if(["landscape-primary","landscape-secondary"].includes(screen.orientation.type))gHit("翻转")});
+}catch(e){}
+
+/* 2 印章 */
+let st_days=6;
+function stAddPopup(){st_days++;drawSt()}
+function drawSt(){const w=$("#st_wall");w.innerHTML="";
+ for(let i=0;i<Math.min(14,st_days);i++)w.innerHTML+=`<span class="stamp">${i+1}</span>`;
+ $("#st_len").textContent=st_days}
+$("#st_add").onclick=()=>{stAddPopup();toast("chk","盖章")};
+$("#st_break").onclick=()=>{st_days=Math.max(0,st_days-1);drawSt();toast("ring","断签不清零")};
+drawSt();
+
+/* 3 三餐 */
+const meals=[["早",false,'<path d="M12 4v3M5.6 9 7 10.4 4.4 10.2A8 8 0 0 1 12 2a8 8 0 0 1 7.6 8.2"/><path d="M2 20h20M6 20a6 6 0 0 1 12 0"/>'],
+["午",false,'<path d="M4 12h16"/><path d="M5 15a7 7 0 0 0 14 0z"/><path d="M12 3v5"/>'],
+["晚",false,'<path d="M20.4 13.2A8.4 8.4 0 1 1 10.8 3.6a6.6 6.6 0 0 0 9.6 9.6z"/>']];
+function mealsDraw(){const w=$("#meals");w.innerHTML=meals.map((m,i)=>
+ `<div class="meal ${m[1]?"done":""}" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m[2]}</svg><div class="cap">${m[0]}</div></div>`).join("")}
+function mealHit(i){meals[i][1]=!meals[i][1];meals[i][1]?(toast("chk",meals[i][0]+"餐"),vibrate(20)):0;
+ mealsDraw()}
+document.addEventListener("click",e=>{const m=e.target.closest(".meal");m&&mealHit(+m.dataset.i)});
+mealsDraw();
+
+/* 4 喝水 */
+let wml=0;
+const wlog=[];
+$("#w_add").onclick=()=>{wml=Math.min(3000,wml+250);wlog.push("d-done");wDraw()};
+$("#w_fired").onclick=()=>{wlog.push("d-run");wDraw();toast("half","间隔提醒")};
+function wDraw(){$("#w_ml").textContent=wml;$("#w_bar").style.width=Math.min(100,wml/2500*100)+"%";
+ $("#w_log").innerHTML=wlog.slice(-9).map(c=>`<i class="dot ${c}" style="display:inline-block"></i>`).join("")}
+wDraw();
+
+/* 5 五分钟日历 */
+const g5={gran:5,type:"water"};
+const H0=6,H1=24;let blocks5=[],run5=null,t5=null;
+const rowsN=()=> (H1-H0)*(g5.gran===5?2:1), cellN=()=>g5.gran, mpr=()=>6*cellN();
+function cellMin(r,c){return H0*60+r*mpr()+c*cellN()}
+function blockAt(min){return blocks5.find(b=>b.min===min)}
+const grid5=$("#c5_grid");
+function renderGrid(){grid5.innerHTML="";const R=rowsN();
+ for(let r=0;r<R;r++){
+  const show=!(g5.gran===5&&r%2===1);
+  grid5.insertAdjacentHTML("beforeend",`<div class="h">${show?String(6+Math.floor(r*mpr()/60)).padStart(2,"0"):""}</div>`);
+  for(let c=0;c<6;c++){const el=document.createElement("div");el.className="c"+(g5.gran==10&&c%2?" hidden10":"");el.dataset.min=cellMin(r,c);grid5.appendChild(el)}}}
+function paint5(){$$("#c5_grid .c").forEach(el=>{const b=blockAt(+el.dataset.min);let cl="c";
+ if(b){const M={water:"w",walk:"k",focus:"f"};cl+=" "+M[b.type];
+  if(run5===b)cl+=" u";
+  else if(b.state==="done")cl+=" done";
+  else if(b.state==="part")cl+=" part";
+  else if(b.state==="miss")cl+=" miss";}
+ el.className=cl})}
+let down5=false;
+grid5.addEventListener("mousedown",e=>{const el=e.target;if(!el.classList.contains("c"))return;e.preventDefault();
+ const min=+el.dataset.min,b=blockAt(min);
+ if(b&&!run5&&b.state===null){startRun5(b);return}
+ if(!b){down5=true;create5(min)}});
+grid5.addEventListener("mousemove",e=>{if(!down5)return;const el=e.target;
+ if(el.classList.contains("c")&&!blockAt(+el.dataset.min))create5(+el.dataset.min)});
+document.addEventListener("mouseup",()=>down5=false);
+function create5(min){blocks5.push({min,type:g5.type,state:null,m:null});paint5();vibrate(12)}
+function startRun5(b){run5=b;$("#c5_timer").style.display="flex";let left=cellN()*60;
+ const rp=$("#c5rp"),C=257.6,ti=$("#c5t");paint5();
+ rp.style.strokeDashoffset=0;
+ t5=setInterval(()=>{left--;rp.style.strokeDashoffset=C*(1-left/(cellN()*60));ti.textContent=fmt(left);
+  if(left<=0){clearInterval(t5);askEval5(b)}},1000);
+ function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}}
+function askEval5(b){run5=null;$("#c5_timer").style.display="none";paint5();vibrate([30,40,30]);
+ const w=document.createElement("div");w.className="evalw";w.innerHTML=`<div class="eval">
+ <div class="q">${b.min%100<15?"水":"块"} · ${cellN()} 分钟</div>
+ <div class="opts">
+ <button class="e d" data-v="done">${I.ck}</button>
+ <button class="e p" data-v="part">${I.half}</button>
+ <button class="e" data-v="miss">${I.ring}</button>
+ </div></div>`;document.body.appendChild(w);
+ w.querySelectorAll(".e").forEach(btn=>btn.onclick=()=>{const v=btn.dataset.v;
+  b.state=v;b.m=v==="done"?1:v==="part"?.5:0;w.remove();paint5();agg5();
+  toast(v==="done"?"chk":"half",v==="done"?"回填":"半量")})}
+function agg5(){let ml=0,steps=0,cnt=0;blocks5.forEach(b=>{if(!b.m&&b.m!==0)return;cnt++;
+  if(b.type==="water")ml+=250*b.m;
+  if(b.type==="walk")steps+=(g5.gran===5?300:600)*b.m});
+ $("#c5w_ml").textContent=ml;$("#c5w_steps").textContent=steps;
+ const wall=$("#c5_stamps");wall.innerHTML="";for(let i=0;i<Math.min(14,cnt);i++)wall.innerHTML+=`<span class="stamp done">${i+1}</span>`}
+$("#c5_water").onclick=()=>{[480,600,720,840,960,1080].forEach(mn=>!blockAt(mn)&&blocks5.push({min:mn,type:"water",state:null,m:null}));paint5()};
+$("#c5_step").onclick=()=>{for(let k=0;k<5;k++){const mn=1080+k*cellN();!blockAt(mn)&&blocks5.push({min:mn,type:"walk",state:null,m:null})}paint5()};
+$("#c5_clear").onclick=()=>{blocks5=[];run5=null;clearInterval(t5);$("#c5_timer").style.display="none";renderGrid();paint5();agg5()};
+function setGran(g){g5.gran=g;blocks5=[];run5=null;clearInterval(t5);$("#c5_timer").style.display="none";
+ $("#sg5").className="seg-b"+(g===5?" on":"");$("#sg10").className="seg-b"+(g===10?" on":"");renderGrid();paint5();agg5()}
+$("#sg5").onclick=()=>setGran(5);$("#sg10").onclick=()=>setGran(10);
+$$(".tp").forEach(btn=>btn.onclick=()=>{g5.type=btn.dataset.t;$$(".tp").forEach(x=>x.classList.toggle("on",x===btn))});
+renderGrid();paint5();agg5();
+
+/* 6 倒计时 */
+let dd=new Date(Date.now()+38*864e5);
+function c6(){const d=Math.ceil((dd-Date.now())/864e5);
+ $("#c6t").textContent=Math.max(0,d);
+ const k=d<=21?(d<0?"bad":"part"):"done";
+ $("#c6dot").className="dot d-"+k+(d<=7?" pulse":"");
+ const card=$("#c6card");card.className="card "+(d<0?"s-bad":"s-part");
+ card.querySelectorAll("button")[0].style.display=d<0?"none":""}
+$("#c6skip").onclick=()=>{dd=new Date(Date.now()-7*864e5);c6();vibrate([30,50,30]);toast("club","已逾期 → 自动归档")};
+$("#c6ok").onclick=()=>{dd=Date.now();c6();$("#c6card").className="card s-done";$("#c6t").textContent="✓";toast("chk","已归档")};
+c6();
+
+/* 7 通知 */
+function showB(){$("#banner").classList.add("on");vibrate([40,60,40]);setTimeout(()=>$("#banner").classList.remove("on"),2600)}
+$("#nt_btn").onclick=showB;
+$("#banner").onclick=()=>{$("#banner").classList.remove("on");location.hash="c8";qa.jump(1)};
+
+/* 8 问答树 */
+const qa={step:0,
+ render(){const b=$("#qa_body");
+  if(this.step===0)b.innerHTML=`<div class="stat" style="font-size:11px;color:var(--sub);margin-bottom:6px">胸痛 · 本地规则</div>
+   <div style="font-size:13px;margin-bottom:2px">疼痛持续超过 15 分钟吗？</div>
+   <button class="opt" data-j="1">是 · ≥15 分钟</button><button class="opt" data-j="2">不到 15 分钟</button>`;
+  else if(this.step===1)b.innerHTML=`<div style="font-size:13px">出冷汗 / 恶心 / 喘不上气？</div>
+   <button class="opt" data-j="3">有</button><button class="opt" data-j="4">没有</button>`;
+  else if(this.step===2)b.innerHTML=`<div class="vbox v-calm"><div class="big">反复发作 → 就医</div></div><button class="opt" data-j="0">↺ 再答</button>`;
+  else if(this.step>=3)b.innerHTML=`<div class="vbox v-bad"><div class="big">120</div>
+   <div style="font-size:12px;color:var(--bad);margin-top:3px">不要自己开车</div>
+   <button class="dial" id="d1">${I.utc||""}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.9 19.9 0 0 1 3.1 3.2 2 2 0 0 1 5.1 1H8a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L9 8.6a16 16 0 0 0 6.4 6.4l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg></button></div>
+   <button class="opt" data-j="0">↺ 再答</button>`;
+  b.querySelectorAll(".opt").forEach(o=>o.onclick=()=>qa.jump(+o.dataset.j));
+  const d1=$("#d1");d1&&(d1.onclick=()=>toast("club","外拨"))},
+ jump(n){this.step=n;vibrate(15);this.render()}};
+qa.render();
+$("#qa_re").onclick=()=>qa.jump(0);
+$("#qa_sp").onclick=()=>{speak(qa.step>=3?"现在打120，不要自己扛，也不要自己开车":"疼痛持续超过15分钟吗？");
+ $("#qa_wave").innerHTML='<span class="wave"><i></i><i></i><i></i><i></i><i></i></span>';
+ setTimeout(()=>$("#qa_wave").innerHTML="",1900)};
+
+/* 9 CPR */
+let ac=null,cpT=null,beats=0;
+$("#cp_on").onclick=()=>{if(cpT){clearInterval(cpT);cpT=null;$("#cp_wave").style.display="none";return}
+ ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+ $("#cp_wave").style.display="inline-flex";beats=0;
+ cpT=setInterval(()=>{const o=ac.createOscillator(),g=ac.createGain();
+  o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(ac.destination);
+  o.start();g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.08);o.stop(ac.currentTime+.1);
+  beats=beats+1;const w=$("#cp_beats");w.innerHTML="";
+  for(let i=0;i<6;i++){const hot=i===5&&(beats%2==0);w.innerHTML+=`<i class="${hot?"hot":""}"></i>`}},550);
+ toast("half","按 110 次/分");
+
+};
+
+/* FAB */
+$("#fab").onclick=()=>{location.hash="c1";toast("todo","今日待办 +6")};
+
+/* 10 搜索 */
+const CORPUS=[
+ {t:"胸痛 15 分钟不缓解",c:"d-bad",syn:["胸疼","胸口","心口","闷"],go:"#c8"},
+ {t:"被欠薪先投诉劳动监察",c:"d-part",syn:["欠薪","工资","讨薪","仲裁"],go:"#c11"},
+ {t:"犹豫期退保",c:"d-part",syn:["退保","犹豫期","保险"],go:"#c6"},
+ {t:"老人被骗·推辞话术",c:"d-part",syn:["老人","被骗","保健品"],go:"#c13"},
+ {t:"喝水 2.5–3 升",c:"d-done",syn:["喝水","口渴","饮水"],go:"#c4"}];
+$("#s_in").addEventListener("input",e=>{const q=e.target.value.trim();const box=$("#s_hits");
+ if(!q){box.innerHTML="";return}
+ const hits=CORPUS.filter(c=>c.syn.some(s=>q.includes(s)||s.includes(q))||c.t.includes(q)).slice(0,4);
+ box.innerHTML=hits.map(c=>`<button class="hit" onclick="location.hash='${c.go}'"><i class="dot ${c.c}"></i>${c.t}</button>`).join("")||( '<div style="font-size:12px;color:var(--sub);padding:6px">词库未命中</div>')});
+
+/* 11 办事 */
+const STEPTXT=["报警留证","监察投诉","劳动仲裁","强制执行"];
+let stepCur=0;
+function stepsDraw(){
+ $("#st_dots").innerHTML=STEPTXT.map((_,i)=>`<i class="${i<stepCur?"d":i===stepCur?"c":""}"></i>`).join("");
+ $("#steplist").innerHTML=STEPTXT.map((s,i)=>`<div class="step ${i<stepCur?"fin":i===stepCur?"cur":""}"><div class="no">${i<stepCur?"✓":i+1}</div><span>${s}</span></div>`).join("")}
+$("#steplist").addEventListener("click",()=>{if(stepCur<3){stepCur++;stepsDraw();vibrate(15)}else if(stepCur===3){stepCur=4;stepsDraw();toast("chk","闭环")}else{stepCur=0;stepsDraw()}});
+stepsDraw();
+
+/* 12 分享卡 */
+$("#sc_gen").onclick=()=>{
+ const days=Math.max(st_days,6);
+ $("#sc_days").textContent=days;
+ const w=$("#sc_stamps");w.innerHTML="";
+ for(let i=0;i<Math.min(10,days);i++)w.innerHTML+=`<span class="stamp done">${i+1}</span>`;
+ $("#sc_tile").innerHTML=`<span style="font-size:11px;opacity:.75;display:flex;gap:8px;align-items:center"><i class="dot" style="background:#4a9ff2"></i>250ml</span>
+ <span style="font-size:11px;opacity:.75;display:flex;gap:8px;align-items:center"><i class="dot d-done"></i>7000步</span>`;
+ $("#sc").classList.add("on");$("#sharetg").classList.add("on");toast("chk","卡片已生成")};
+$("#sc_wx").onclick=()=>{toast("msg","→ 微信");};
+$("#sc_img").onclick=()=>{toast("img","已存图")};
+I.msg='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.6 0-3.1-.4-4.4-1.1L3 20l1.1-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg>';
+I.todo='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.001M3.5 12h.001M3.5 18h.001"/></svg>';
+I.img='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5-5-9 9"/></svg>';
+
+/* 13 代做 */
+$("#p1").onclick=()=>{$("#p1card").className="card s-done";$("#p1s").textContent="✓ 已回执";$("#p1").style.display="none";toast("chk","妈妈的印章墙 +1")};
+$("#p2").onclick=()=>{$("#p2card").className="card s-done";$("#p2s").textContent="✓ 今日已记";$("#p2").style.display="none";toast("chk","记好")};
+
+/* 15 画像 */
+const SW=[["male",1],["rent",1],["yibao",1],["woman",0],["smk",0],["chr",0]];
+const ITEMS=[["35 岁空腹血糖","male","d-done"],["押金合同","rent","d-part"],["医保家庭共济","yibao","d-done"],["HPV 疫苗","woman","d-part"],["戒烟门诊","smk","d-miss"],["痛风长程","chr","d-miss"]];
+function swDraw(){
+ $("#sw").innerHTML=SW.map((s,i)=>`<label class="${s[1]?"on":""}"><input type="checkbox" ${s[1]?"checked":""} onchange="swRead(${i},this.checked)">${s[0]}</label>`).join("");
+ const on=new Set(SW.filter(s=>s[1]).map(s=>s[0]));
+ $("#sw_list").innerHTML=ITEMS.map(it=>`<div class="itemrow ${on.has(it[1])?"":"off"}"><i class="kdot dot ${it[2]}"></i><span>${it[0]}</span><span style="margin-left:auto">${on.has(it[1])?I.chk:I.ring}</span></div>`).join("")}
+function swRead(i,v){SW[i][1]=v?1:0;swDraw()}
+swDraw();
+</script>
+</body>
+</html>

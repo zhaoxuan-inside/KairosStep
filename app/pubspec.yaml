@@ -1,0 +1,32 @@
+name: kairo_step
+description: "数字阶跃 KairosStep —— 把 767 条人生建议转化为可交互的行动系统。本地优先，不访问网络。"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.13.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  # 本地持久化：全平台支持（Android/iOS/macOS/Windows/Linux/Web）
+  shared_preferences: ^2.5.3
+  # 系统分享：全平台支持，Web 端自动降级
+  share_plus: ^12.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/advice.json
+    - assets/data/detail.json
+    - assets/data/node_packages.json
+    - assets/data/pinyin.json
