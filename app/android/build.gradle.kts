@@ -2,6 +2,11 @@ allprojects {
     repositories {
         maven("https://maven.aliyun.com/repository/google")
         maven("https://maven.aliyun.com/repository/public")
+        maven("https://storage.flutter-io.cn/download.flutter.io") {
+            content {
+                includeGroup("io.flutter")
+            }
+        }
         google()
         mavenCentral()
     }
