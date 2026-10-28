@@ -24,5 +24,17 @@ void main() {
     final sleep = advices.cast<Map<String, dynamic>>()
         .firstWhere((a) => a['id'] == 103);
     expect(sleep['act_type'], 'daily-streak');
+    expect(sleep['cron'], '30 21 * * *');
+
+    final nap = advices.cast<Map<String, dynamic>>()
+        .firstWhere((a) => a['id'] == 85);
+    expect(nap['act_type'], 'daily-streak');
+    expect(nap['cron'], '45 12 * * *');
+    expect(nap['timing_badge'], contains('12:45'));
+
+    final duration = advices.cast<Map<String, dynamic>>()
+        .firstWhere((a) => a['id'] == 98);
+    expect(duration['act_type'], 'daily-streak');
+    expect(duration['cron'], '0 22 * * *');
   });
 }

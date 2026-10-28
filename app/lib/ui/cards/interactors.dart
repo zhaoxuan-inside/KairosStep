@@ -383,6 +383,12 @@ class DailyStreakInteractor extends StatelessWidget {
   (String, String) _alarmPreset() {
     final t = advice.title;
     if (advice.id == 97 || t.contains('起床')) return ('晨间闹钟', '07:00');
+    if (t.contains('午睡') || t.contains('午休') || t.contains('小憩')) {
+      return ('午休提醒', '12:45');
+    }
+    if (t.contains('睡前一小时') || (t.contains('屏幕') && t.contains('睡'))) {
+      return ('离屏打卡', '21:30');
+    }
     if (t.contains('睡')) return ('睡前提醒', '23:00');
     if (t.contains('刷牙') || t.contains('牙缝')) return ('早晚洗漱', '07:30 / 22:30');
     if (t.contains('步') || t.contains('力量') || t.contains('运动')) {

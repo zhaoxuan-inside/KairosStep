@@ -834,6 +834,7 @@ class AppStore extends ChangeNotifier {
         periods.add('focus');
       }
       if ([
+        '午睡',
         '午后',
         '站立',
         '远眺',
@@ -864,9 +865,7 @@ class AppStore extends ChangeNotifier {
       ].any(text.contains)) {
         periods.add('evening');
       }
-      if ([
-        '睡眠',
-        '屏幕',
+      final isNightSleep = [
         '夜里',
         '褪黑素',
         '安稳',
@@ -876,8 +875,14 @@ class AppStore extends ChangeNotifier {
         '失眠',
         '入眠',
         '23:00',
+        '熬夜',
         '放松',
-      ].any(text.contains)) {
+      ].any(text.contains) ||
+          (text.contains('睡眠') &&
+              !text.contains('午睡') &&
+              !text.contains('小憩') &&
+              !text.contains('下午困'));
+      if (isNightSleep) {
         periods.add('night');
       }
       if (periods.isEmpty) {
@@ -898,21 +903,35 @@ class AppStore extends ChangeNotifier {
           text.contains('远眺') ||
           text.contains('视力')) {
         reminderTimes.addAll(['10:30', '15:30']);
+      } else if (text.contains('午睡') ||
+          text.contains('午休') ||
+          text.contains('小憩') ||
+          text.contains('打盹')) {
+        // 午休/午睡必须在午睡前定点提醒，绝不能落在夜间
+        reminderTimes.add('12:45');
       } else if (text.contains('饮水') ||
           text.contains('喝水') ||
-          text.contains('水')) {
+          text.contains('补水') ||
+          text.contains('白开水')) {
         reminderTimes.addAll(['09:30', '11:30', '14:30', '16:30']);
-      } else if (text.contains('午休') ||
-          text.contains('小憩') ||
-          text.contains('午后')) {
-        reminderTimes.add('12:45');
+      } else if (text.contains('咖啡因') &&
+          (text.contains('两点') || text.contains('下午'))) {
+        reminderTimes.add('13:30');
+      } else if ((text.contains('0 到 3 岁') || text.contains('中小学生')) &&
+          text.contains('屏幕')) {
+        reminderTimes.add('18:30');
+      } else if (text.contains('睡前一小时') ||
+          (text.contains('屏幕') && (text.contains('睡') || text.contains('夜')))) {
+        // 睡前一小时（如 103 题：不看发光屏幕/墨水屏）提醒时间在 21:30，绝不能被“水”误伤
+        reminderTimes.add('21:30');
       } else if (text.contains('散步') ||
           text.contains('运动') ||
           text.contains('慢跑') ||
           text.contains('快走')) {
         reminderTimes.add('19:00');
       } else if (text.contains('睡') ||
-          text.contains('屏幕') ||
+          text.contains('失眠') ||
+          text.contains('褪黑素') ||
           text.contains('23:00')) {
         reminderTimes.add('22:00');
       } else {

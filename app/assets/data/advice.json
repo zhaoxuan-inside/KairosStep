@@ -3178,8 +3178,8 @@
         "别超过一小时",
         "非得睡一两小时才撑得住就去查原因"
       ],
-      "timing_badge": "持续事件 · 14天窗口期",
-      "act_type": "windowed-cadence",
+      "timing_badge": "每日午间 · 12:45 节律",
+      "act_type": "daily-streak",
       "tags": [
         "每天",
         "情境触发",
@@ -3202,7 +3202,7 @@
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
       "prerequisites": {},
-      "cron": "0 12,18 * * *",
+      "cron": "45 12 * * *",
       "tree_paths": [
         "health/prevention/sleep"
       ]
@@ -3691,7 +3691,7 @@
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
       "prerequisites": {},
-      "cron": "0 9 * * 1",
+      "cron": "0 22 * * *",
       "tree_paths": [
         "health/prevention/sleep",
         "daily/digital/time_energy"
@@ -3848,7 +3848,7 @@
         "睡前一小时不用发光屏幕",
         "改看纸质书或不开屏幕灯的墨水屏"
       ],
-      "timing_badge": "睡前一小时 · 完成后打卡",
+      "timing_badge": "睡前一小时 · 21:30 打卡",
       "act_type": "daily-streak",
       "tags": [
         "每天",
@@ -3874,7 +3874,7 @@
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
       "prerequisites": {},
-      "cron": "0 9 * * 1",
+      "cron": "30 21 * * *",
       "tree_paths": [
         "health/prevention/sleep",
         "daily/digital/screen_time"
@@ -3987,7 +3987,7 @@
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
       "prerequisites": {},
-      "cron": "0 9 * * 1",
+      "cron": "30 13 * * *",
       "tree_paths": [
         "health/prevention/sleep"
       ]
