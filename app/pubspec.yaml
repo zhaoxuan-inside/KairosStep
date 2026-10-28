@@ -2,7 +2,7 @@ name: kairo_step
 description: "数字阶跃 KairosStep —— 把 767 条人生建议转化为可交互的行动系统。本地优先，不访问网络。"
 publish_to: 'none'
 
-version: 1.0.6+7
+version: 1.0.7+8
 
 environment:
   sdk: '>=3.13.0 <4.0.0'
