@@ -15,9 +15,9 @@
     "app/assets/data/taxonomy_tree.json": "6ca1d5e582a8c85f2c6e85c2b7ec5753c0a0181fd7cafde1ca0c87ce6f9739c7",
     "docs/HowToLiveBetter.md": "2b8d47da12fa56a432bd50b001614ddb1c8d82f48fa55329dbed0ae8c2966b9e",
     "app/lib/models/advice.dart": "27cd62a67bf180f050b2893a6cb4006580c36fa9de2f9c26cc3beeb3552ff638",
-    "app/lib/state/app_store.dart": "c8c7dae150edfa88ff651b236ac9001251903efc43b527078e7a6ce841f3ec38",
+    "app/lib/state/app_store.dart": "b29fd7b8d6200ce308dfc48cec65a01b0a75c51e26663e1219726c2259d1619d",
     "app/lib/data/catalog.dart": "aae37f2632903ee0191ea6995c4075aa8d434cfdc1f7cb740238989e4c4fd4ba",
-    "app/lib/ui/emergency/emergency_sheet.dart": "b3e5c42c6df1ee182b9b2dc63266bab809f1d2e96b8d3886ca6d11e30fc8e2ad"
+    "app/lib/ui/emergency/emergency_sheet.dart": "f4a3778213f273d92a8af570f963e0d8eef81b711b6239f5f8197f87ed71c4b9"
   },
   "summary": {
     "advice_count": 767,

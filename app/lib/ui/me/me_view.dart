@@ -283,6 +283,136 @@ class MeView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
+        // ---- 我的生活防线（已养成的习惯资产） ----
+        _card(
+          context,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.shield, size: 16, color: Color(0xFF48BB78)),
+                  const SizedBox(width: 6),
+                  Text('我的生活防线', style: _cardTitle(context)),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E7D47).withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(9999),
+                      border: Border.all(
+                        color: const Color(0xFF2E7D47).withValues(alpha: 0.4),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Text(
+                      '已筑牢 ${store.formedHabits.length} 项本能',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF48BB78),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '已沉淀为潜意识本能的习惯 · 自动从日常待办中剪枝移出，不再反复打扰',
+                style: TextStyle(fontSize: 11, color: p.inkMute, height: 1.4),
+              ),
+              const SizedBox(height: 14),
+              if (store.formedHabits.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: p.surfaceGrey,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '正在日常中练习微动作。\n在建议卡片点击【🛡️ 我已养成】即可沉淀为生活防线并移出每日待办。',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 11.5, color: p.inkSub, height: 1.5),
+                    ),
+                  ),
+                )
+              else
+                Column(
+                  children: [
+                    for (final id in store.formedHabits)
+                      Builder(
+                        builder: (ctx) {
+                          final a = catalogOf(context).byId[id];
+                          final dateStr = store.habitFormedDate(id);
+                          if (a == null) return const SizedBox.shrink();
+
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: p.surfaceGrey,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: p.hairline),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.check_circle_outline, size: 14, color: Color(0xFF48BB78)),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        a.title,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: p.ink,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        '已形成肌肉记忆${dateStr != null ? " · $dateStr 养成" : ""} · 待办已免打扰',
+                                        style: TextStyle(fontSize: 9.5, color: p.inkMute),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    store.relearnHabit(id);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('已将“${a.title}”恢复至今日待办流，重新练习'),
+                                        duration: const Duration(seconds: 3),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    '重新练习',
+                                    style: TextStyle(fontSize: 10.5, color: Color(0xFFBC924C)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
         // ---- 外观 ----
         _card(
           context,

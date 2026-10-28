@@ -104,6 +104,47 @@ class _AdviceCardState extends State<AdviceCard>
     );
   }
 
+  void _handleMarkHabitFormed(BuildContext context, AppStore store) {
+    HapticFeedback.mediumImpact();
+    setState(() => _isCollapsed = true);
+
+    final id = widget.advice.id;
+    store.markHabitFormed(id);
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: const Color(0xFF132A1C),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9999),
+          side: const BorderSide(color: Color(0xFF2E7D47), width: 1),
+        ),
+        duration: const Duration(seconds: 5),
+        content: const Row(
+          children: [
+            Icon(Icons.shield, color: Color(0xFF48BB78), size: 16),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '🎉 已形成习惯！已为您移出日常待办，沉淀入【我的生活防线】',
+                style: TextStyle(fontSize: 12.5, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        action: SnackBarAction(
+          label: '撤销',
+          textColor: const Color(0xFF48BB78),
+          onPressed: () {
+            store.relearnHabit(id);
+            if (mounted) setState(() => _isCollapsed = false);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isCollapsed) {
@@ -265,6 +306,8 @@ class _AdviceCardState extends State<AdviceCard>
     bool hasDetail,
     bool isExcluded,
   ) {
+    final isHabitFormed = store.isHabitFormed(widget.advice.id);
+
     return Row(
       children: [
         Container(
@@ -301,7 +344,53 @@ class _AdviceCardState extends State<AdviceCard>
             ),
           ),
         ],
+        if (isHabitFormed) ...[
+          const SizedBox(width: 5),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E7D47).withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(9999),
+              border: Border.all(
+                color: const Color(0xFF2E7D47).withValues(alpha: 0.5),
+                width: 0.6,
+              ),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.shield, size: 9, color: Color(0xFF48BB78)),
+                SizedBox(width: 3),
+                Text(
+                  '已形成习惯',
+                  style: TextStyle(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF48BB78),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const Spacer(),
+        _hairlineBtn(
+          tip: isHabitFormed
+              ? '已成为习惯 · 移出待办中（点击重新带我练习）'
+              : '我已养成该习惯（移出日常待办，沉淀入生活防线）',
+          icon: Icon(
+            isHabitFormed ? Icons.shield : Icons.shield_outlined,
+            color: isHabitFormed ? const Color(0xFF48BB78) : p.inkMute,
+            size: 14,
+          ),
+          onTap: () {
+            if (isHabitFormed) {
+              store.relearnHabit(widget.advice.id);
+            } else {
+              _handleMarkHabitFormed(context, store);
+            }
+          },
+        ),
         if (hasDetail)
           _hairlineBtn(
             tip: '证据出处',

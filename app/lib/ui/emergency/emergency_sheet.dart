@@ -663,6 +663,7 @@ class _EmergencySheetState extends State<EmergencySheet> {
               }
               if (!launched && context.mounted) {
                 await Clipboard.setData(ClipboardData(text: numStr));
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: const Color(0xFFE33A22),

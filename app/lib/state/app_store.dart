@@ -49,6 +49,7 @@ class UserProfile {
     this.hasDiabetes = false,
     this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
     this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
+    this.formedHabits = const [],
   });
 
   final String gender;
@@ -73,6 +74,7 @@ class UserProfile {
   final bool hasDiabetes; // 是否关注/确诊高血糖
   final String childAgeStage; // 孩子年龄阶段
   final String relationshipStatus; // 亲密关系状态
+  final List<int> formedHabits; // 已养成并沉淀为生活防线的习惯条目 ID 列表
 
   /// 归一化同步生活实体与旧标签池
   UserProfile normalized() {
@@ -144,6 +146,7 @@ class UserProfile {
     bool? hasDiabetes,
     String? childAgeStage,
     String? relationshipStatus,
+    List<int>? formedHabits,
   }) => UserProfile(
     gender: gender ?? this.gender,
     age: age ?? this.age,
@@ -167,6 +170,7 @@ class UserProfile {
     hasDiabetes: hasDiabetes ?? this.hasDiabetes,
     childAgeStage: childAgeStage ?? this.childAgeStage,
     relationshipStatus: relationshipStatus ?? this.relationshipStatus,
+    formedHabits: formedHabits ?? this.formedHabits,
   );
 
   Map<String, dynamic> toJson() => {
@@ -192,6 +196,7 @@ class UserProfile {
     'hasDiabetes': hasDiabetes,
     'childAgeStage': childAgeStage,
     'relationshipStatus': relationshipStatus,
+    'formedHabits': formedHabits,
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -223,6 +228,7 @@ class UserProfile {
     hasDiabetes: json['hasDiabetes'] as bool? ?? false,
     childAgeStage: json['childAgeStage'] as String? ?? 'none',
     relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
+    formedHabits: (json['formedHabits'] as List?)?.map((e) => (e as num).toInt()).toList() ?? const [],
   );
 
   String get label =>
@@ -497,6 +503,83 @@ class AppStore extends ChangeNotifier {
       'kExcludedAdviceIds',
       _excludedAdviceIds.map((id) => id.toString()).toList(),
     );
+  }
+
+  // ---------- 已养成习惯与生活防线 (Formed Habits & Dynamic Pruning) ----------
+  final Set<int> _formedHabits = {};
+  final Map<int, String> _formedHabitDates = {};
+
+  Set<int> get formedHabits => Set.unmodifiable(_formedHabits);
+  bool isHabitFormed(int id) => _formedHabits.contains(id);
+  String? habitFormedDate(int id) => _formedHabitDates[id];
+
+  /// 标记某项建议已成为习惯：从今日/当下待办中剪枝移出，沉淀为生活防线，并联动演进用户画像
+  void markHabitFormed(int id, {DateTime? date}) {
+    final now = date ?? DateTime.now();
+    _formedHabits.add(id);
+    _formedHabitDates[id] =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    _persistFormedHabits();
+    _evolveProfileByHabit(id);
+    notifyListeners();
+  }
+
+  /// 重新带我练习一周（当用户生活节奏被打乱松懈时，温和恢复至今日待办）
+  void relearnHabit(int id) {
+    _formedHabits.remove(id);
+    _formedHabitDates.remove(id);
+    _persistFormedHabits();
+
+    _profile = _profile.copyWith(
+      formedHabits: _formedHabits.toList(),
+    );
+    _persistProfile();
+    notifyListeners();
+  }
+
+  void _persistFormedHabits() {
+    prefs.setStringList(
+      'kFormedHabits',
+      _formedHabits.map((id) => id.toString()).toList(),
+    );
+    final dateMap = <String, String>{};
+    _formedHabitDates.forEach((id, d) {
+      dateMap['$id'] = d;
+    });
+    prefs.setString('kFormedHabitDates', jsonEncode(dateMap));
+  }
+
+  /// 根据已养成的建议演化用户画像特质
+  void _evolveProfileByHabit(int adviceId) {
+    var p = _profile;
+    final nextFormed = Set<int>.from(p.formedHabits)..add(adviceId);
+
+    if (adviceId >= 49 && adviceId <= 54) {
+      // 戒烟系列习惯毕业：画像更新为非吸烟者，健康关注移除吸烟者
+      final nextHealth = Set<String>.from(p.healthConcerns)..remove('吸烟者');
+      p = p.copyWith(
+        isSmoker: false,
+        healthConcerns: nextHealth.toList(),
+      );
+    } else if (adviceId == 7 || adviceId == 57) {
+      // 血压达标/低钠盐习惯毕业
+      final nextHealth = Set<String>.from(p.healthConcerns)..remove('血压关注');
+      p = p.copyWith(
+        hasHypertension: false,
+        healthConcerns: nextHealth.toList(),
+      );
+    } else if (adviceId == 61 || adviceId == 97 || adviceId == 98) {
+      // 睡眠规律/固定起床习惯养成
+      final nextHealth = Set<String>.from(p.healthConcerns)..add('作息规律');
+      p = p.copyWith(healthConcerns: nextHealth.toList());
+    }
+
+    _profile = p.copyWith(formedHabits: nextFormed.toList());
+    _persistProfile();
+  }
+
+  void _persistProfile() {
+    prefs.setString('kProfile', jsonEncode(_profile.toJson()));
   }
 
   // Topic preferences are independent of single-card exclusions and never erase content.
@@ -897,6 +980,7 @@ class AppStore extends ChangeNotifier {
     checkPeriodRollover();
     final list = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退，不再每日反复提醒
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       // 应急/急救/突发处置建议（如中暑），除非显式自定义，否则严禁进入今日流
@@ -938,6 +1022,7 @@ class AppStore extends ChangeNotifier {
   List<Advice> cycleAdvicesOf(PeriodScope scope) {
     final list = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       final trig = effectiveTriggerOf(a);
@@ -977,6 +1062,7 @@ class AppStore extends ChangeNotifier {
     // 筛选严格与 1.5 小时视窗 [centerTime-45m, centerTime+45m] 发生时段交叠的建议
     final matched = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退，不在时钟视窗流打扰
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       // 应急/急救/突发处置建议（如中暑处理），除非用户显式手动自定义配置，否则严禁进入当下日常视窗流
@@ -1122,6 +1208,7 @@ class AppStore extends ChangeNotifier {
   List<Advice> periodAdvicesOf(String periodKey) {
     final list = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退，不在时段流打扰
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       // 应急/急救建议严禁进入日常时段流
@@ -1286,6 +1373,28 @@ class AppStore extends ChangeNotifier {
       if (catalog.topics.byPath.containsKey(path)) {
         _excludedTopicPaths.add(path);
       }
+    }
+
+    final fhList = prefs.getStringList('kFormedHabits');
+    if (fhList != null) {
+      _formedHabits.clear();
+      for (final s in fhList) {
+        final id = int.tryParse(s);
+        if (id != null) _formedHabits.add(id);
+      }
+    }
+    final fhDatesJson = prefs.getString('kFormedHabitDates');
+    if (fhDatesJson != null) {
+      try {
+        final map = jsonDecode(fhDatesJson) as Map<String, dynamic>;
+        _formedHabitDates.clear();
+        map.forEach((k, v) {
+          final id = int.tryParse(k);
+          if (id != null && v is String) {
+            _formedHabitDates[id] = v;
+          }
+        });
+      } catch (_) {}
     }
 
     final trRaw = prefs.getString('kCustomTriggers');
