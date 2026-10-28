@@ -757,44 +757,38 @@ class AppStore extends ChangeNotifier {
     if (_customTriggers.containsKey(a.id)) {
       return _customTriggers[a.id]!;
     }
-    // 突发急救、重大变故、自杀心理干预、工伤辞职维权、偶发用药警戒等条目，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
+    // 1. 静默储备架构门禁 (Dormant Gatekeeper)：
+    // 突发急救、重大变故、身后事、残疾照护、法律红线、反面清单、合规防线
+    // 以及非微习惯卡片形态（红线盖章、决策核对、办事步骤、情境拦截、应急直达、举证清单）
+    // 原生推断一律为静默储备态（TriggerMode.dormant），严禁污染每日待办时间流！
+    const dormantChapters = {
+      '紧急情况：先做什么',
+      '遭遇重大打击之后',
+      '人走了以后要办什么',
+      '残疾之后怎么活',
+      '反面清单',
+      '别把自己搭进去：法律与财产安全',
+      '普通人容易踩的法律红线',
+      '创业与做生意：别把家底赔进去',
+      '做一个网站或平台：资质、备案和服务器',
+      '在职、离职和工伤',
+      '看病：怎么少花钱少走弯路',
+      '没钱的时候怎么活',
+      '租房与买房',
+    };
+
+    const nonDailyActTypes = {
+      'redline-stamp',
+      'decision-check',
+      'process-steps',
+      'context-guard',
+      'emergency-action',
+      'evidence-checklist',
+    };
+
     if (a.isEmergencyOrIncident ||
-        a.chapter == '紧急情况：先做什么' ||
-        a.chapter == '遭遇重大打击之后' ||
-        a.chapter == '人走了以后要办什么' ||
-        a.chapter == '残疾之后怎么活' ||
-        a.id == 15 ||
-        a.id == 25 ||
-        a.id == 44 ||
-        a.id == 121 ||
-        a.id == 199 ||
-        a.id == 264 ||
-        a.id == 288 ||
-        a.id == 333 ||
-        a.id == 335 ||
-        a.id == 463 ||
-        a.id == 474 ||
-        a.id == 515 ||
-        a.id == 519 ||
-        a.id == 532 ||
-        a.id == 545 ||
-        a.id == 568 ||
-        a.id == 644 ||
-        a.id == 646 ||
-        a.id == 647 ||
-        a.id == 663 ||
-        a.id == 665 ||
-        a.id == 675 ||
-        a.id == 680 ||
-        a.id == 681 ||
-        a.id == 686 ||
-        a.id == 704 ||
-        a.id == 732 ||
-        a.id == 734 ||
-        a.id == 755 ||
-        a.id == 757 ||
-        a.id == 760 ||
-        a.id == 763) {
+        dormantChapters.contains(a.chapter) ||
+        nonDailyActTypes.contains(a.actType)) {
       return const CustomTriggerConfig(mode: TriggerMode.dormant);
     }
     // 原生推断

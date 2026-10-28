@@ -36,5 +36,21 @@ void main() {
         .firstWhere((a) => a['id'] == 98);
     expect(duration['act_type'], 'daily-streak');
     expect(duration['cron'], '0 22 * * *');
+
+    final regularity = advices.cast<Map<String, dynamic>>()
+        .firstWhere((a) => a['id'] == 61);
+    expect(regularity['act_type'], 'daily-streak');
+    expect(regularity['cron'], '0 23 * * *');
+    expect(regularity['t'], '固定作息时间，减少工作日与周末的睡眠时差');
+
+    final consent = advices.cast<Map<String, dynamic>>()
+        .firstWhere((a) => a['id'] == 280);
+    expect(consent['act_type'], 'redline-stamp');
+    expect(consent['t'], '对方喝到意识不清、睡着，绝对不要发生关系');
+
+    final statutoryAge = advices.cast<Map<String, dynamic>>()
+        .firstWhere((a) => a['id'] == 313);
+    expect(statutoryAge['act_type'], 'redline-stamp');
+    expect(statutoryAge['t'], '对方不满 14 岁就不能发生关系，「她同意」不是理由');
   });
 }

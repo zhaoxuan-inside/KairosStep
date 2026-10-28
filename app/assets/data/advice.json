@@ -1853,8 +1853,8 @@
         "戒烟",
         "越早越好"
       ],
-      "timing_badge": "每日全天 · 戒烟连击",
-      "act_type": "daily-streak",
+      "timing_badge": "健康底线 · 越早越好",
+      "act_type": "redline-stamp",
       "tags": [
         "偶发",
         "突发事件",
@@ -1932,7 +1932,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "用药",
@@ -1949,7 +1948,8 @@
         "不限场景",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "health/mental/addiction",
       "tree_display": "健康与身心 > 心理精神 > 成瘾戒断",
@@ -2304,12 +2304,12 @@
     {
       "id": 61,
       "c": "不要慢慢死",
-      "t": "每晚睡 7 小时左右，作息固定",
+      "t": "固定作息时间，减少工作日与周末的睡眠时差",
       "parts": [
-        "每晚睡 7 小时左右",
-        "作息固定"
+        "固定每天作息时间",
+        "减少工作日与周末的睡眠时差"
       ],
-      "timing_badge": "每日睡前 · 23:00 节律",
+      "timing_badge": "作息恒定 · 23:00 节律",
       "act_type": "daily-streak",
       "tags": [
         "每天",
@@ -2334,7 +2334,7 @@
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
       "prerequisites": {},
-      "cron": "0 12,18 * * *",
+      "cron": "0 23 * * *",
       "tree_paths": [
         "health/prevention/sleep"
       ]
@@ -4574,7 +4574,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "心理",
         "效率",
@@ -4591,7 +4590,8 @@
         "不限场景",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
@@ -5525,7 +5525,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "理财",
         "自身",
@@ -6067,7 +6066,6 @@
       "timing_badge": "持续事件 · 14天窗口期",
       "act_type": "windowed-cadence",
       "tags": [
-        "每天",
         "情境触发",
         "理财",
         "自身",
@@ -6101,7 +6099,6 @@
       "timing_badge": "日常自检 · 闲暇时段",
       "act_type": "quick-checkin",
       "tags": [
-        "每天",
         "情境触发",
         "理财",
         "自身",
@@ -7168,7 +7165,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7186,7 +7182,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "鱼油"
+        "鱼油",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7318,7 +7315,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7336,7 +7332,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "维生素"
+        "维生素",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7392,7 +7389,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7408,7 +7404,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7501,7 +7498,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7519,7 +7515,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "益生菌"
+        "益生菌",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7614,7 +7611,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7631,7 +7627,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7690,7 +7687,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7706,7 +7702,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7878,7 +7875,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -7894,7 +7890,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -7988,7 +7985,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "消费",
         "理财",
@@ -8003,7 +7999,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -8062,7 +8059,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "日历时点",
         "消费",
         "理财",
@@ -8079,7 +8075,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -8213,7 +8210,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "消费",
         "理财",
@@ -8231,7 +8227,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/spending",
       "tree_display": "财富与财产 > 收支预算 > 消费决策与备用金",
@@ -8776,7 +8773,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "突发事件",
         "法律",
         "社会保障",
@@ -8792,7 +8788,8 @@
         "不限场景",
         "需机构窗口",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/insurance/policy",
       "tree_display": "财富与财产 > 保险保障 > 条款核对与免责",
@@ -8849,7 +8846,6 @@
       "timing_badge": "月度周期 · 发薪留痕",
       "act_type": "evidence-checklist",
       "tags": [
-        "每天",
         "突发事件",
         "法律",
         "社会保障",
@@ -8865,7 +8861,8 @@
         "不限场景",
         "需机构窗口",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "finance/budget/social_security",
       "tree_display": "财富与财产 > 收支预算 > 低谷保障与救济",
@@ -8923,7 +8920,6 @@
       "timing_badge": "情境感知 · 出发即扣",
       "act_type": "haptic-toggle",
       "tags": [
-        "每天",
         "情境触发",
         "法律",
         "社会保障",
@@ -8938,7 +8934,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "决策点"
       ],
       "tree_path": "finance/budget/social_security",
       "tree_display": "财富与财产 > 收支预算 > 低谷保障与救济",
@@ -9534,7 +9531,6 @@
       "timing_badge": "决策触发 · 测算直达",
       "act_type": "slider-calc",
       "tags": [
-        "每天",
         "突发事件",
         "安全",
         "法律",
@@ -9550,7 +9546,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "情境触发"
       ],
       "tree_path": "safety/legal/red_line",
       "tree_display": "安全与合规 > 法律合规红线 > 普法与治安红线",
@@ -10452,14 +10449,13 @@
     {
       "id": 280,
       "c": "别把自己搭进去：法律与财产安全",
-      "t": "对方喝到意识不清、睡着，或者可能不满 14 岁，就不要发生关系",
+      "t": "对方喝到意识不清、睡着，绝对不要发生关系",
       "parts": [
         "对方喝到意识不清、睡着",
-        "或者可能不满 14 岁",
-        "就不要发生关系"
+        "绝对不要发生关系"
       ],
-      "timing_badge": "情境感知 · 出发即扣",
-      "act_type": "haptic-toggle",
+      "timing_badge": "刑事红线 · 违背意志",
+      "act_type": "redline-stamp",
       "tags": [
         "每次",
         "日历时点",
@@ -10656,7 +10652,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "情境触发",
         "安全",
         "法律",
@@ -10673,7 +10668,8 @@
         "不限场景",
         "需机构窗口",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "safety/legal/red_line",
       "tree_display": "安全与合规 > 法律合规红线 > 普法与治安红线",
@@ -13617,7 +13613,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "法律",
         "职场",
@@ -13634,7 +13629,8 @@
         "在职场",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "safety/legal/tech_boundary",
       "tree_display": "安全与合规 > 法律合规红线 > 技术人红线",
@@ -14122,7 +14118,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "日历时点",
         "创业",
         "法律",
@@ -14138,7 +14133,8 @@
         "在职场",
         "需机构窗口",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "career/business/founder",
       "tree_display": "职场与学业 > 创业经营 > 合规与风控",
@@ -14915,7 +14911,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "情境触发",
         "创业",
         "法律",
@@ -14932,7 +14927,8 @@
         "在职场",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "career/business/founder",
       "tree_display": "职场与学业 > 创业经营 > 合规与风控",
@@ -16900,7 +16896,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "网络安全",
         "防骗",
@@ -16917,7 +16912,8 @@
         "在线上",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "daily/digital/security",
       "tree_display": "日常与起居 > 数字生活与效能 > 账号与隐私安全",
@@ -18343,7 +18339,6 @@
       "timing_badge": "日常自检 · 闲暇时段",
       "act_type": "quick-checkin",
       "tags": [
-        "每天",
         "情境触发",
         "医疗",
         "慢性病",
@@ -18855,7 +18850,6 @@
       "timing_badge": "情境感知 · 出发即扣",
       "act_type": "haptic-toggle",
       "tags": [
-        "每天",
         "突发事件",
         "家庭",
         "老人",
@@ -18871,7 +18865,8 @@
         "在医院",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/family/parents",
       "tree_display": "人际与家庭 > 亲子与长辈 > 父母长辈照护",
@@ -19142,7 +19137,6 @@
       "timing_badge": "月度周期 · 发薪留痕",
       "act_type": "evidence-checklist",
       "tags": [
-        "每天",
         "决策点",
         "家庭",
         "育儿",
@@ -19162,7 +19156,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "法律底线"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -19187,7 +19182,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "情境触发",
         "家庭",
         "育儿",
@@ -19203,7 +19197,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "决策点"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -20291,7 +20286,6 @@
       "timing_badge": "持续事件 · 14天窗口期",
       "act_type": "windowed-cadence",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "育儿",
@@ -20307,7 +20301,8 @@
         "在医院",
         "需医生介入",
         "窗口期",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -22265,7 +22260,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "日历时点",
         "教育",
         "职业",
@@ -22281,7 +22275,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "决策点"
       ],
       "tree_path": "career/growth/skill",
       "tree_display": "职场与学业 > 学业进阶 > 技能与学业投资",
@@ -23322,7 +23317,6 @@
       "timing_badge": "决策触发 · 测算直达",
       "act_type": "slider-calc",
       "tags": [
-        "每天",
         "决策点",
         "医疗",
         "省钱",
@@ -23340,7 +23334,8 @@
         "在医院",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "情境触发"
       ],
       "tree_path": "health/treatment/clinic",
       "tree_display": "健康与身心 > 诊疗干预 > 就医与问诊",
@@ -23865,7 +23860,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "技术",
         "法律",
@@ -23882,7 +23876,8 @@
         "在线上",
         "需机构窗口",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "career/business/founder",
       "tree_display": "职场与学业 > 创业经营 > 合规与风控",
@@ -24023,7 +24018,6 @@
       "timing_badge": "日常自检 · 闲暇时段",
       "act_type": "quick-checkin",
       "tags": [
-        "每天",
         "突发事件",
         "技术",
         "法律",
@@ -24039,7 +24033,8 @@
         "在线上",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "法律底线"
       ],
       "tree_path": "career/business/founder",
       "tree_display": "职场与学业 > 创业经营 > 合规与风控",
@@ -25384,7 +25379,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "美容",
@@ -25402,7 +25396,8 @@
         "在医院",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/prevention/body_care",
       "tree_display": "健康与身心 > 预防保健 > 身体护理与防坑",
@@ -26159,7 +26154,6 @@
       "timing_badge": "日常自检 · 闲暇时段",
       "act_type": "quick-checkin",
       "tags": [
-        "每天",
         "情境触发",
         "教育",
         "育儿",
@@ -26174,7 +26168,8 @@
         "不限场景",
         "需医生介入",
         "窗口期",
-        "泛指"
+        "泛指",
+        "决策点"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -26469,7 +26464,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "教育",
         "育儿",
@@ -26484,7 +26478,8 @@
         "在职场",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "情境拦截"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -28137,7 +28132,6 @@
       "timing_badge": "持续事件 · 14天窗口期",
       "act_type": "windowed-cadence",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "法律",
@@ -28155,7 +28149,8 @@
         "在家",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "单次"
       ],
       "tree_path": "relationships/society/disability_support",
       "tree_display": "人际与家庭 > 社会交互与保障 > 残障保障与权益",
