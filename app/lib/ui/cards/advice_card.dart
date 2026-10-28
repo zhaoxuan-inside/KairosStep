@@ -566,6 +566,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
   late String _cadenceScope;
   late String? _targetDate;
   late int _leadDays;
+  late List<String> _reminderTimes;
 
   @override
   void initState() {
@@ -576,6 +577,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
     _cadenceScope = cfg.cadenceScopeKey;
     _targetDate = cfg.targetDate;
     _leadDays = cfg.leadDays;
+    _reminderTimes = List<String>.from(cfg.reminderTimes);
   }
 
   @override
@@ -685,6 +687,107 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                 _customChip(pk, p),
             ],
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text(
+                '弹窗提醒时刻',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: p.inkSub,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: const TimeOfDay(hour: 8, minute: 0),
+                  );
+                  if (picked != null) {
+                    final tStr =
+                        '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                    if (!_reminderTimes.contains(tStr)) {
+                      setState(() {
+                        _reminderTimes.add(tStr);
+                        _reminderTimes.sort();
+                      });
+                    }
+                  }
+                },
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 2,
+                    horizontal: 4,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.alarm_add_outlined, size: 12, color: p.action),
+                      const SizedBox(width: 3),
+                      Text(
+                        '添加提醒',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: p.action,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          if (_reminderTimes.isEmpty)
+            Text(
+              '未设定精准提醒（仅在日常时段视窗内浮出）',
+              style: TextStyle(fontSize: 10.5, color: p.inkMute),
+            )
+          else
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final t in _reminderTimes)
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 3, 4, 3),
+                    decoration: BoxDecoration(
+                      color: p.action.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(9999),
+                      border: Border.all(
+                        color: p.action.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.alarm, size: 11, color: p.action),
+                        const SizedBox(width: 4),
+                        Text(
+                          t,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: p.action,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        GestureDetector(
+                          onTap: () => setState(() => _reminderTimes.remove(t)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2),
+                            child: Icon(Icons.close, size: 12, color: p.action),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
         ],
         if (_mode == TriggerMode.cadence) ...[
           Text('周期频次', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
@@ -761,6 +864,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                   cadenceScopeKey: _cadenceScope,
                   targetDate: _targetDate,
                   leadDays: _leadDays,
+                  reminderTimes: _reminderTimes,
                 );
                 widget.store.setTriggerConfig(widget.advice.id, newCfg);
                 widget.onClose();

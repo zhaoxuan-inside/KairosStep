@@ -46,6 +46,8 @@ class _OnboardingViewState extends State<OnboardingView>
   late bool _isSmoker;
   late bool _hasHypertension;
   late bool _hasDiabetes;
+  late bool _hasKidneyStones;
+  late bool _hasGout;
   late bool _hasDeskJob;
   late bool _prunedOnly;
 
@@ -78,6 +80,8 @@ class _OnboardingViewState extends State<OnboardingView>
     _isSmoker = false;
     _hasHypertension = false;
     _hasDiabetes = false;
+    _hasKidneyStones = false;
+    _hasGout = false;
     _hasDeskJob = true;
     _prunedOnly = true;
 
@@ -144,6 +148,8 @@ class _OnboardingViewState extends State<OnboardingView>
       _isSmoker = cur.isSmoker;
       _hasHypertension = cur.hasHypertension || cur.healthConcerns.contains('血压关注');
       _hasDiabetes = cur.hasDiabetes || cur.healthConcerns.contains('血糖关注');
+      _hasKidneyStones = cur.hasKidneyStones || cur.healthConcerns.contains('肾结石');
+      _hasGout = cur.hasGout || cur.healthConcerns.contains('痛风');
       _hasDeskJob = cur.healthConcerns.contains('久坐伏案');
       _prunedOnly = cur.prunedOnly;
     }
@@ -182,6 +188,8 @@ class _OnboardingViewState extends State<OnboardingView>
     if (_isSmoker) health.add('吸烟者');
     if (_hasHypertension) health.add('血压关注');
     if (_hasDiabetes) health.add('血糖关注');
+    if (_hasKidneyStones) health.add('肾结石');
+    if (_hasGout) health.add('痛风');
 
     return UserProfile(
       gender: _gender,
@@ -202,6 +210,8 @@ class _OnboardingViewState extends State<OnboardingView>
       isEntrepreneur: _careerType == 'entrepreneur',
       hasHypertension: _hasHypertension,
       hasDiabetes: _hasDiabetes,
+      hasKidneyStones: _hasKidneyStones,
+      hasGout: _hasGout,
       childAgeStage: _hasChildren ? _childAgeStage : 'none',
       relationshipStatus: _relationshipStatus,
     ).normalized();
@@ -987,14 +997,41 @@ class _OnboardingViewState extends State<OnboardingView>
             const SizedBox(height: 10),
             _toggleCard(
               p,
-              title: '🩸 关注高血糖 / 高尿酸痛风',
-              subtitle: '体检血糖/尿酸偏高或已有代谢指标异常',
+              title: '🩸 关注高血糖 / 糖尿病',
+              subtitle: '体检空腹血糖偏高或已有糖尿病指标',
               selected: _hasDiabetes,
               onTap: () => setState(() => _hasDiabetes = !_hasDiabetes),
               cascadeContent: _hasDiabetes
                   ? _cascadeBox(p, [
                       '已激活：35 岁以上空腹血糖常规复查',
-                      '已激活：低嘌呤饮食与痛风降尿酸科学方案',
+                      '已激活：科学饮食与慢病随访管理',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🥩 关注高尿酸 / 痛风病史',
+              subtitle: '尿酸偏高、发作过痛风或常需低嘌呤控制',
+              selected: _hasGout,
+              onTap: () => setState(() => _hasGout = !_hasGout),
+              cascadeContent: _hasGout
+                  ? _cascadeBox(p, [
+                      '已激活：聚餐与烧烤低嘌呤低醇饮食防御',
+                      '已激活：痛风发作期科学应对与降尿酸防线',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '💧 关注肾结石 / 泌尿系结石病史',
+              subtitle: '曾得过肾结石或有多发结石体质',
+              selected: _hasKidneyStones,
+              onTap: () => setState(() => _hasKidneyStones = !_hasKidneyStones),
+              cascadeContent: _hasKidneyStones
+                  ? _cascadeBox(p, [
+                      '已激活：每日 2.5~3 升充足饮水与低盐防复发防线',
                     ])
                   : null,
             ),

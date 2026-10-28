@@ -520,6 +520,7 @@ class CustomTriggerConfig {
     this.leadDays = 15,
     this.weekday = 1, // 1~7
     this.monthDay = 1, // 1~31
+    this.reminderTimes = const [], // 提醒时间列表，如 ['07:30', '12:30']
   });
 
   final TriggerMode mode;
@@ -529,6 +530,7 @@ class CustomTriggerConfig {
   final int leadDays;
   final int weekday;
   final int monthDay;
+  final List<String> reminderTimes;
 
   CustomTriggerConfig copyWith({
     TriggerMode? mode,
@@ -538,6 +540,7 @@ class CustomTriggerConfig {
     int? leadDays,
     int? weekday,
     int? monthDay,
+    List<String>? reminderTimes,
   }) => CustomTriggerConfig(
     mode: mode ?? this.mode,
     dailyPeriods: dailyPeriods ?? this.dailyPeriods,
@@ -546,6 +549,7 @@ class CustomTriggerConfig {
     leadDays: leadDays ?? this.leadDays,
     weekday: weekday ?? this.weekday,
     monthDay: monthDay ?? this.monthDay,
+    reminderTimes: reminderTimes ?? this.reminderTimes,
   );
 
   Map<String, dynamic> toJson() => {
@@ -556,6 +560,7 @@ class CustomTriggerConfig {
     'leadDays': leadDays,
     'weekday': weekday,
     'monthDay': monthDay,
+    'reminderTimes': reminderTimes,
   };
 
   factory CustomTriggerConfig.fromJson(Map<String, dynamic> json) =>
@@ -571,6 +576,8 @@ class CustomTriggerConfig {
         leadDays: json['leadDays'] as int? ?? 15,
         weekday: json['weekday'] as int? ?? 1,
         monthDay: json['monthDay'] as int? ?? 1,
+        reminderTimes:
+            (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
       );
 }
 

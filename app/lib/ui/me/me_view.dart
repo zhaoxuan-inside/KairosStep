@@ -220,6 +220,75 @@ class MeView extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              Text('健康关注与慢病防线', style: _fieldLabel(p)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _pill(
+                    context,
+                    '🪑 久坐伏案',
+                    on: profile.healthConcerns.contains('久坐伏案'),
+                    onTap: () {
+                      final next = Set<String>.from(profile.healthConcerns);
+                      if (next.contains('久坐伏案')) {
+                        next.remove('久坐伏案');
+                      } else {
+                        next.add('久坐伏案');
+                      }
+                      store.profile = profile.copyWith(
+                        healthConcerns: next.toList(),
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🩺 血压关注',
+                    on:
+                        profile.hasHypertension ||
+                        profile.healthConcerns.contains('血压关注'),
+                    onTap: () {
+                      final cur = profile.hasHypertension;
+                      store.profile = profile.copyWith(hasHypertension: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🩸 血糖关注',
+                    on:
+                        profile.hasDiabetes ||
+                        profile.healthConcerns.contains('血糖关注'),
+                    onTap: () {
+                      final cur = profile.hasDiabetes;
+                      store.profile = profile.copyWith(hasDiabetes: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🥩 痛风/高尿酸',
+                    on:
+                        profile.hasGout ||
+                        profile.healthConcerns.contains('痛风'),
+                    onTap: () {
+                      final cur = profile.hasGout;
+                      store.profile = profile.copyWith(hasGout: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '💧 肾结石病史',
+                    on:
+                        profile.hasKidneyStones ||
+                        profile.healthConcerns.contains('肾结石'),
+                    onTap: () {
+                      final cur = profile.hasKidneyStones;
+                      store.profile = profile.copyWith(hasKidneyStones: !cur);
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.symmetric(

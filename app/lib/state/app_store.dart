@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/catalog.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
+import 'reminder_registry.dart';
 
 /// 周期作用域：打卡记录天然按周期归零（今天跨天清空、周/月/年各自滚动）。
 enum PeriodScope { today, weekly, monthly, yearly }
@@ -47,6 +48,8 @@ class UserProfile {
     this.isEntrepreneur = false,
     this.hasHypertension = false,
     this.hasDiabetes = false,
+    this.hasKidneyStones = false,
+    this.hasGout = false,
     this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
     this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
     this.formedHabits = const [],
@@ -72,6 +75,8 @@ class UserProfile {
   final bool isEntrepreneur; // 是否创业者/合伙人
   final bool hasHypertension; // 是否关注/确诊高血压
   final bool hasDiabetes; // 是否关注/确诊高血糖
+  final bool hasKidneyStones; // 是否有肾结石病史
+  final bool hasGout; // 是否有痛风/高尿酸
   final String childAgeStage; // 孩子年龄阶段
   final String relationshipStatus; // 亲密关系状态
   final List<int> formedHabits; // 已养成并沉淀为生活防线的习惯条目 ID 列表
@@ -95,6 +100,8 @@ class UserProfile {
     if (isSmoker) nextHealth.add('吸烟者');
     if (hasHypertension) nextHealth.add('血压关注');
     if (hasDiabetes) nextHealth.add('血糖关注');
+    if (hasKidneyStones) nextHealth.add('肾结石');
+    if (hasGout) nextHealth.add('痛风');
 
     return copyWith(
       roles: nextRoles.toList(),
@@ -144,6 +151,8 @@ class UserProfile {
     bool? isEntrepreneur,
     bool? hasHypertension,
     bool? hasDiabetes,
+    bool? hasKidneyStones,
+    bool? hasGout,
     String? childAgeStage,
     String? relationshipStatus,
     List<int>? formedHabits,
@@ -168,6 +177,8 @@ class UserProfile {
     isEntrepreneur: isEntrepreneur ?? this.isEntrepreneur,
     hasHypertension: hasHypertension ?? this.hasHypertension,
     hasDiabetes: hasDiabetes ?? this.hasDiabetes,
+    hasKidneyStones: hasKidneyStones ?? this.hasKidneyStones,
+    hasGout: hasGout ?? this.hasGout,
     childAgeStage: childAgeStage ?? this.childAgeStage,
     relationshipStatus: relationshipStatus ?? this.relationshipStatus,
     formedHabits: formedHabits ?? this.formedHabits,
@@ -194,6 +205,8 @@ class UserProfile {
     'isEntrepreneur': isEntrepreneur,
     'hasHypertension': hasHypertension,
     'hasDiabetes': hasDiabetes,
+    'hasKidneyStones': hasKidneyStones,
+    'hasGout': hasGout,
     'childAgeStage': childAgeStage,
     'relationshipStatus': relationshipStatus,
     'formedHabits': formedHabits,
@@ -226,6 +239,8 @@ class UserProfile {
     isEntrepreneur: json['isEntrepreneur'] as bool? ?? false,
     hasHypertension: json['hasHypertension'] as bool? ?? false,
     hasDiabetes: json['hasDiabetes'] as bool? ?? false,
+    hasKidneyStones: json['hasKidneyStones'] as bool? ?? false,
+    hasGout: json['hasGout'] as bool? ?? false,
     childAgeStage: json['childAgeStage'] as String? ?? 'none',
     relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
     formedHabits: (json['formedHabits'] as List?)?.map((e) => (e as num).toInt()).toList() ?? const [],
@@ -433,6 +448,14 @@ class AppStore extends ChangeNotifier {
   final Catalog catalog;
   final SharedPreferences prefs;
 
+  /// 弹窗提示与提醒注册器
+  late final ReminderRegistry reminderRegistry = ReminderRegistry(this);
+
+  /// 同步当前活跃防线至提醒注册器（零全盘扫描开销，仅注册剪枝后的活跃条目）
+  void syncReminderRegistry() {
+    reminderRegistry.registerActiveReminders(todayAdvices);
+  }
+
   // ---------- 偏好 ----------
   ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
@@ -447,6 +470,7 @@ class AppStore extends ChangeNotifier {
   set profile(UserProfile v) {
     _profile = v;
     prefs.setString('kProfile', jsonEncode(v.toJson()));
+    syncReminderRegistry();
     notifyListeners();
   }
 
@@ -459,6 +483,7 @@ class AppStore extends ChangeNotifier {
     _hasProfile = true;
     prefs.setString('kProfile', jsonEncode(_profile.toJson()));
     prefs.setBool('kHasCompletedOnboarding', true);
+    syncReminderRegistry();
     notifyListeners();
   }
 
@@ -466,6 +491,7 @@ class AppStore extends ChangeNotifier {
   void updateProfile(UserProfile p) {
     _profile = p.normalized();
     prefs.setString('kProfile', jsonEncode(_profile.toJson()));
+    syncReminderRegistry();
     notifyListeners();
   }
 
@@ -725,9 +751,56 @@ class AppStore extends ChangeNotifier {
       if (periods.isEmpty) {
         periods.addAll(['morning', 'focus', 'afternoon']);
       }
+
+      // 智能预设黄金提醒时刻 (Smart Golden Reminder Hours)
+      final reminderTimes = <String>[];
+      if (text.contains('血压')) {
+        reminderTimes.add('07:30');
+      } else if (text.contains('早餐') ||
+          text.contains('起床') ||
+          text.contains('洗漱')) {
+        reminderTimes.add('07:30');
+      } else if (text.contains('安全带') || text.contains('头盔')) {
+        reminderTimes.addAll(['08:15', '18:15']);
+      } else if (text.contains('久坐') ||
+          text.contains('远眺') ||
+          text.contains('视力')) {
+        reminderTimes.addAll(['10:30', '15:30']);
+      } else if (text.contains('饮水') ||
+          text.contains('喝水') ||
+          text.contains('水')) {
+        reminderTimes.addAll(['09:30', '11:30', '14:30', '16:30']);
+      } else if (text.contains('午休') ||
+          text.contains('小憩') ||
+          text.contains('午后')) {
+        reminderTimes.add('12:45');
+      } else if (text.contains('散步') ||
+          text.contains('运动') ||
+          text.contains('慢跑') ||
+          text.contains('快走')) {
+        reminderTimes.add('19:00');
+      } else if (text.contains('睡') ||
+          text.contains('屏幕') ||
+          text.contains('23:00')) {
+        reminderTimes.add('22:00');
+      } else {
+        if (periods.contains('morning')) {
+          reminderTimes.add('08:00');
+        } else if (periods.contains('focus')) {
+          reminderTimes.add('10:00');
+        } else if (periods.contains('afternoon')) {
+          reminderTimes.add('14:30');
+        } else if (periods.contains('evening')) {
+          reminderTimes.add('19:00');
+        } else if (periods.contains('night')) {
+          reminderTimes.add('22:00');
+        }
+      }
+
       return CustomTriggerConfig(
         mode: TriggerMode.daily,
         dailyPeriods: periods,
+        reminderTimes: reminderTimes,
       );
     }
     if (a.tags.contains('每周')) {
@@ -758,6 +831,7 @@ class AppStore extends ChangeNotifier {
   void setTriggerConfig(int id, CustomTriggerConfig cfg) {
     _customTriggers[id] = cfg;
     _persistCustomTriggers();
+    syncReminderRegistry();
     notifyListeners();
   }
 
@@ -765,6 +839,7 @@ class AppStore extends ChangeNotifier {
   void resetTriggerConfig(int id) {
     _customTriggers.remove(id);
     _persistCustomTriggers();
+    syncReminderRegistry();
     notifyListeners();
   }
 
@@ -1493,6 +1568,7 @@ class AppStore extends ChangeNotifier {
         }
       }
     }
+    syncReminderRegistry();
   }
 
   static String _dayKey(DateTime d) =>
@@ -1564,6 +1640,59 @@ class AppStore extends ChangeNotifier {
       }
     }
 
+    // 0.6 慢性病与特殊病理史强门禁 (Condition Strong Gating)
+    // 凡涉及特定确诊疾病、慢性病或特殊病理史的条目，一票否决「全民/通用」穿透特权
+    final text = '${a.title} ${a.tags.join(" ")} ${a.chapter}';
+    final hasChronic = a.tags.contains('确诊慢病') ||
+        a.tags.contains('慢性病') ||
+        a.chapter == '得了慢性病之后怎么活' ||
+        a.chapter == '残疾之后怎么活';
+
+    if (hasChronic ||
+        text.contains('肾结石') ||
+        text.contains('痛风') ||
+        text.contains('高尿酸')) {
+      if (text.contains('肾结石')) {
+        if (!p.hasKidneyStones && !p.healthConcerns.contains('肾结石')) {
+          return false;
+        }
+      }
+      if (text.contains('痛风') || text.contains('高尿酸')) {
+        if (!p.hasGout && !p.healthConcerns.contains('痛风')) {
+          return false;
+        }
+      }
+      if (text.contains('高血压') || (text.contains('血压') && hasChronic)) {
+        if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) {
+          return false;
+        }
+      }
+      if (text.contains('糖尿病') ||
+          text.contains('血糖') ||
+          text.contains('胰岛素')) {
+        if (!p.hasDiabetes && !p.healthConcerns.contains('血糖关注')) {
+          return false;
+        }
+      }
+      if (a.chapter == '残疾之后怎么活' ||
+          a.tags.contains('残疾') ||
+          a.tags.contains('残障人士')) {
+        if (!p.roles.contains('残障人士') &&
+            !p.healthConcerns.contains('残疾照护')) {
+          return false;
+        }
+      }
+      // 如果属于《得了慢性病之后怎么活》且用户未勾选慢病关注，默认拦截
+      if (a.chapter == '得了慢性病之后怎么活' &&
+          !p.hasHypertension &&
+          !p.hasDiabetes &&
+          !p.hasKidneyStones &&
+          !p.hasGout &&
+          !p.healthConcerns.contains('确诊慢病')) {
+        return false;
+      }
+    }
+
     // 1. 硬性排除
     if (a.tags.any(p.exclude.contains)) return false;
 
@@ -1606,7 +1735,8 @@ class AppStore extends ChangeNotifier {
         ...p.livingConditions,
         ...p.healthConcerns,
       };
-      final isGeneric = a.tags.contains('全民') || a.tags.contains('通用');
+      final isGeneric =
+          !hasChronic && (a.tags.contains('全民') || a.tags.contains('通用'));
       final matchesUserRole = adviceSpecificRoles.any(userAllRoles.contains);
       if (!isGeneric && !matchesUserRole) {
         return false;
