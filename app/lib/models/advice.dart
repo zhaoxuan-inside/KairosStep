@@ -208,13 +208,25 @@ class Advice {
         t.contains('触电') ||
         t.contains('溺水') ||
         t.contains('毒蛇咬伤') ||
-        t.contains('骨折制动') ||
+        t.contains('被狗') ||
+        t.contains('被蛇') ||
+        t.contains('破伤风') ||
+        t.contains('失温') ||
+        t.contains('火灾') ||
+        t.contains('化学品') ||
+        t.contains('骨折') ||
         t.contains('破水') ||
         t.contains('洗胃') ||
         t.contains('催吐') ||
         t.contains('工伤认定') ||
         t.contains('上班受伤') ||
         t.contains('路上被撞') ||
+        t.contains('醉酒') ||
+        t.contains('喝醉') ||
+        t.contains('牙掉') ||
+        t.contains('自杀念头') ||
+        t.contains('主动辞职') ||
+        t.contains('欺凌') ||
         t.contains('打 120') ||
         t.contains('打120') ||
         t.contains('打 12356') ||

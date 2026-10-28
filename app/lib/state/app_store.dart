@@ -751,21 +751,44 @@ class AppStore extends ChangeNotifier {
     if (_customTriggers.containsKey(a.id)) {
       return _customTriggers[a.id]!;
     }
-    // 突发事件、急救处置、中暑处理、工伤认定、用药警戒等应急建议，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
+    // 突发急救、重大变故、自杀心理干预、工伤辞职维权、偶发用药警戒等条目，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
     if (a.isEmergencyOrIncident ||
+        a.chapter == '紧急情况：先做什么' ||
+        a.chapter == '遭遇重大打击之后' ||
+        a.chapter == '人走了以后要办什么' ||
+        a.chapter == '残疾之后怎么活' ||
+        a.id == 15 ||
+        a.id == 25 ||
+        a.id == 44 ||
+        a.id == 121 ||
+        a.id == 199 ||
+        a.id == 264 ||
+        a.id == 288 ||
+        a.id == 333 ||
+        a.id == 335 ||
+        a.id == 463 ||
+        a.id == 474 ||
+        a.id == 515 ||
         a.id == 519 ||
+        a.id == 532 ||
+        a.id == 545 ||
         a.id == 568 ||
-        a.id == 675 ||
-        a.id == 760 ||
-        a.id == 763 ||
+        a.id == 644 ||
+        a.id == 646 ||
+        a.id == 647 ||
         a.id == 663 ||
         a.id == 665 ||
-        a.id == 199 ||
-        a.id == 25 ||
-        a.id == 37 ||
-        a.id == 113 ||
-        a.id == 263 ||
-        a.id == 680) {
+        a.id == 675 ||
+        a.id == 680 ||
+        a.id == 681 ||
+        a.id == 686 ||
+        a.id == 704 ||
+        a.id == 732 ||
+        a.id == 734 ||
+        a.id == 755 ||
+        a.id == 757 ||
+        a.id == 760 ||
+        a.id == 763) {
       return const CustomTriggerConfig(mode: TriggerMode.dormant);
     }
     // 原生推断
@@ -2001,9 +2024,44 @@ class AppStore extends ChangeNotifier {
 
     // 0.12 抑郁重度干预与心理热线（由情绪晴雨表弹窗交互触发，严禁直接无故推送到日常任务）
     if (a.id == 568 ||
+        a.id == 25 ||
+        a.id == 264 ||
         (text.contains('心情差到抑郁') && a.chapter == '怎么放松：娱乐场所和减压') ||
-        (text.contains('12356') && a.chapter == '遭遇重大打击之后')) {
+        (text.contains('12356') && a.chapter == '遭遇重大打击之后') ||
+        text.contains('有自杀念头时打 12356') ||
+        text.contains('带着孩子一起走')) {
       return false;
+    }
+
+    // 0.13 孕产专科急重症与子痫用药强门禁 (ID 644, 646, 647)
+    if (a.id == 644 || a.id == 646 || a.id == 647 || text.contains('破水了就地平躺') || text.contains('子痫前期')) {
+      if (p.gender != '女' || (!p.isPregnantOrPlanning && !p.roles.contains('孕产') && !p.roles.contains('准父母'))) {
+        return false;
+      }
+    }
+
+    // 0.14 婴幼儿与学龄儿童突发及欺凌门禁 (ID 545, 686, 704)
+    if (a.id == 545 || a.id == 686 || a.id == 704 || text.contains('新生儿黄疸') || text.contains('孩子被欺凌') || text.contains('撞了头、之后头痛')) {
+      if (!p.hasChildren && !p.roles.contains('家长') && !p.roles.contains('准父母')) {
+        return false;
+      }
+    }
+
+    // 0.15 专病与特殊高危用药强门禁 (ID 44 房颤, ID 121 失眠安眠药, ID 757 60岁布洛芬)
+    if (a.id == 44 || text.contains('查出房颤请医生评估吃抗凝药')) {
+      if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) {
+        return false;
+      }
+    }
+    if (a.id == 121 || text.contains('别一上来就长期吃安眠药')) {
+      if (!p.healthConcerns.contains('心理减压') && !p.hasCrisisOrMentalStress) {
+        return false;
+      }
+    }
+    if (a.id == 757 || text.contains('60 岁以上、胃出过血、在吃抗凝药')) {
+      if (p.age < 60 && !p.hasGastroAcidOrStomach) {
+        return false;
+      }
     }
 
     // 1. 硬性排除

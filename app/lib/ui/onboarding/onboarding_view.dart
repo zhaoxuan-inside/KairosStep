@@ -365,6 +365,36 @@ class _OnboardingViewState extends State<OnboardingView>
       if (p.relationshipStatus != 'single' && !p.livingConditions.contains('独居')) return false;
     }
 
+    // 抑郁危机与自杀干预 (ID 25, 264, 568)
+    if (a.id == 568 || a.id == 25 || a.id == 264 || text.contains('有自杀念头时打 12356') || text.contains('带着孩子一起走')) {
+      return false;
+    }
+
+    // 孕产专科急重症与子痫用药强门禁 (ID 644, 646, 647)
+    if (a.id == 644 || a.id == 646 || a.id == 647 || text.contains('破水了就地平躺') || text.contains('子痫前期')) {
+      if (p.gender != '女' || (!p.isPregnantOrPlanning && !p.roles.contains('孕产') && !p.roles.contains('准父母'))) {
+        return false;
+      }
+    }
+
+    // 婴幼儿与学龄儿童突发及欺凌门禁 (ID 545, 686, 704)
+    if (a.id == 545 || a.id == 686 || a.id == 704 || text.contains('新生儿黄疸') || text.contains('孩子被欺凌') || text.contains('撞了头、之后头痛')) {
+      if (!p.hasChildren && !p.roles.contains('家长') && !p.roles.contains('准父母')) {
+        return false;
+      }
+    }
+
+    // 专病与特殊高危用药强门禁 (ID 44 房颤, ID 121 失眠安眠药, ID 757 60岁布洛芬)
+    if (a.id == 44 || text.contains('查出房颤请医生评估吃抗凝药')) {
+      if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) return false;
+    }
+    if (a.id == 121 || text.contains('别一上来就长期吃安眠药')) {
+      if (!p.healthConcerns.contains('心理减压') && !p.hasCrisisOrMentalStress) return false;
+    }
+    if (a.id == 757 || text.contains('60 岁以上、胃出过血、在吃抗凝药')) {
+      if (p.age < 60 && !p.hasGastroAcidOrStomach) return false;
+    }
+
     final chap = a.chapter;
     if (chap == '程序员和技术人容易踩的红线') {
       if (!p.isProgrammer && !p.roles.contains('程序员')) return false;

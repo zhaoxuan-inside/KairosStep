@@ -556,7 +556,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "安全",
         "疫苗",
@@ -573,7 +572,8 @@
         "不限场景",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "daily/lifestyle/diet",
       "tree_display": "日常与起居 > 衣食养生 > 饮食营养与贮存",
@@ -935,7 +935,6 @@
       "timing_badge": "搜索秒开 · 黄金救治",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "情境触发",
         "安全",
         "心理",
@@ -1661,7 +1660,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "突发事件",
         "安全",
         "筛查",
@@ -1678,7 +1676,8 @@
         "不限场景",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/treatment/chronic",
       "tree_display": "健康与身心 > 诊疗干预 > 慢病管理",
@@ -4534,7 +4533,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "突发事件",
         "心理",
         "效率",
@@ -4553,7 +4551,8 @@
         "不限场景",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/prevention/sleep",
       "tree_display": "健康与身心 > 预防保健 > 节律与睡眠",
@@ -9842,7 +9841,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "安全",
         "法律",
@@ -9861,7 +9859,8 @@
         "不限场景",
         "需家人配合",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "safety/legal/red_line",
       "tree_display": "安全与合规 > 法律合规红线 > 普法与治安红线",
@@ -10773,7 +10772,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "安全",
         "法律",
@@ -12465,7 +12463,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "婚恋",
         "家庭",
@@ -12541,7 +12538,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "婚恋",
         "家庭",
@@ -15113,7 +15109,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -15129,7 +15124,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "眼缺血"
+        "眼缺血",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15152,7 +15148,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -15168,7 +15163,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "急性青光眼"
+        "急性青光眼",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15420,7 +15416,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "疫苗",
@@ -15439,7 +15434,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15744,7 +15740,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -15762,7 +15757,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "化学品溅伤"
+        "化学品溅伤",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15824,7 +15820,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "运动",
@@ -15843,7 +15838,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15865,7 +15861,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -15883,7 +15878,8 @@
         "在家",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -15946,7 +15942,6 @@
       "timing_badge": "P0 紧急 · 海姆立克",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -15965,7 +15960,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/emergency/golden_window",
       "tree_display": "健康与身心 > 应急急救 > 黄金抢救",
@@ -15990,7 +15986,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -16007,7 +16002,8 @@
         "在户外",
         "可独立完成",
         "长期有效",
-        "迷路求救"
+        "迷路求救",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -16030,7 +16026,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -16048,7 +16043,8 @@
         "在户外",
         "可独立完成",
         "长期有效",
-        "失温"
+        "失温",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -16070,7 +16066,6 @@
       "timing_badge": "P0 紧急 · 毒蛇咬伤",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "用药",
@@ -16089,7 +16084,8 @@
         "在户外",
         "可独立完成",
         "长期有效",
-        "蛇咬"
+        "蛇咬",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -16232,7 +16228,6 @@
       "timing_badge": "情境感知 · 出发即扣",
       "act_type": "haptic-toggle",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -16248,7 +16243,8 @@
         "在户外",
         "可独立完成",
         "长期有效",
-        "高原反应"
+        "高原反应",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -16745,7 +16741,6 @@
       "timing_badge": "搜索秒开 · 黄金救治",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -16763,7 +16758,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "醉酒看护"
+        "醉酒看护",
+        "偶发"
       ],
       "tree_path": "health/emergency/golden_window",
       "tree_display": "健康与身心 > 应急急救 > 黄金抢救",
@@ -16826,7 +16822,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "急救",
         "自身",
@@ -16844,7 +16839,8 @@
         "不限场景",
         "可独立完成",
         "长期有效",
-        "牙齿磕脱"
+        "牙齿磕脱",
+        "偶发"
       ],
       "tree_path": "health/emergency/first_aid",
       "tree_display": "健康与身心 > 应急急救 > 突发救治",
@@ -17547,7 +17543,6 @@
       "timing_badge": "日常自检 · 闲暇时段",
       "act_type": "quick-checkin",
       "tags": [
-        "每天",
         "情境触发",
         "房产",
         "理财",
@@ -17962,7 +17957,6 @@
       "timing_badge": "持续事件 · 14天窗口期",
       "act_type": "windowed-cadence",
       "tags": [
-        "每天",
         "情境触发",
         "房产",
         "自身",
@@ -19578,7 +19572,6 @@
       "timing_badge": "情境拦截 · 场景自检",
       "act_type": "context-guard",
       "tags": [
-        "每天",
         "情境触发",
         "法律",
         "职场",
@@ -20222,7 +20215,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "情境触发",
         "法律",
         "职场",
@@ -20723,7 +20715,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "健康",
         "育儿",
@@ -20738,7 +20729,8 @@
         "在医院",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -24519,7 +24511,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "日历时点",
         "健康",
         "生育",
@@ -24538,7 +24529,8 @@
         "在医院",
         "需医生介入",
         "窗口期",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/family/pregnancy",
       "tree_display": "人际与家庭 > 亲子与长辈 > 怀孕与生产",
@@ -24605,7 +24597,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "健康",
         "生育",
@@ -24623,7 +24614,8 @@
         "在医院",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/family/pregnancy",
       "tree_display": "人际与家庭 > 亲子与长辈 > 怀孕与生产",
@@ -24647,7 +24639,6 @@
       "timing_badge": "搜索秒开 · 黄金救治",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "突发事件",
         "健康",
         "生育",
@@ -24665,7 +24656,8 @@
         "在家",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/emergency/golden_window",
       "tree_display": "健康与身心 > 应急急救 > 黄金抢救",
@@ -25973,7 +25965,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "心理",
@@ -26013,7 +26004,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "情境触发",
         "健康",
         "心理",
@@ -26209,7 +26199,6 @@
       "timing_badge": "决策规则 · 用前核对",
       "act_type": "decision-check",
       "tags": [
-        "每天",
         "情境触发",
         "教育",
         "育儿",
@@ -26916,7 +26905,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "教育",
         "育儿",
@@ -26934,7 +26922,8 @@
         "在户外",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/family/children",
       "tree_display": "人际与家庭 > 亲子与长辈 > 子女抚育与学业",
@@ -27917,7 +27906,6 @@
       "timing_badge": "持续事件 · 14天窗口期",
       "act_type": "windowed-cadence",
       "tags": [
-        "每天",
         "突发事件",
         "教育",
         "旅行",
@@ -27931,7 +27919,8 @@
         "不限场景",
         "可独立完成",
         "窗口期",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "career/growth/study_abroad",
       "tree_display": "职场与学业 > 学业进阶 > 留学与跨境发展",
@@ -27989,7 +27978,6 @@
       "timing_badge": "搜索秒开 · 黄金救治",
       "act_type": "emergency-action",
       "tags": [
-        "每天",
         "突发事件",
         "健康",
         "法律",
@@ -28007,7 +27995,8 @@
         "在医院",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "relationships/society/disability_support",
       "tree_display": "人际与家庭 > 社会交互与保障 > 残障保障与权益",
@@ -28834,7 +28823,6 @@
       "timing_badge": "红线知识 · 背熟即防",
       "act_type": "redline-stamp",
       "tags": [
-        "每天",
         "突发事件",
         "健康",
         "用药",
@@ -28852,7 +28840,8 @@
         "在家",
         "可独立完成",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/treatment/medication",
       "tree_display": "健康与身心 > 诊疗干预 > 用药安全",
@@ -28914,7 +28903,6 @@
       "timing_badge": "办事流程 · 分步推进",
       "act_type": "process-steps",
       "tags": [
-        "每天",
         "日历时点",
         "健康",
         "用药",
@@ -28931,7 +28919,8 @@
         "在家",
         "需医生介入",
         "长期有效",
-        "泛指"
+        "泛指",
+        "偶发"
       ],
       "tree_path": "health/treatment/medication",
       "tree_display": "健康与身心 > 诊疗干预 > 用药安全",
