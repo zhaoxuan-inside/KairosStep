@@ -8,6 +8,7 @@ import '../cards/advice_card.dart';
 import '../custom_todo/custom_todo_dialog.dart';
 import '../mood/mood_checkin_dialog.dart';
 import '../review/carnegie_review_sheet.dart';
+import '../tools/decision_tree_sheet.dart';
 import '../tools/tools_sheet.dart';
 
 /// 今天页：今日聚光流 + 完成量胶囊。
@@ -62,83 +63,102 @@ class TodayView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // 功能快捷入口：决策树工具箱、心情关怀与卡内基周复盘
+        // 功能快捷入口：决策树向导、实用精算工具、心情关怀与卡内基周复盘
         Row(
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () => ToolsSheet.show(context),
+                onTap: () => DecisionTreeSheet.show(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
                   decoration: BoxDecoration(
                     color: p.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: p.hairline),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AppHairlineIcons.tree(color: p.action, size: 14),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          '决策树工具',
-                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      AppHairlineIcons.tree(color: p.action, size: 13),
+                      const SizedBox(width: 4),
+                      Text(
+                        '决策树',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => ToolsSheet.show(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: p.hairline),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calculate_outlined, color: p.amber, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        '工具箱',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
             Expanded(
               child: GestureDetector(
                 onTap: () => MoodCheckinDialog.show(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
                   decoration: BoxDecoration(
                     color: p.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: p.hairline),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.spa_outlined, color: p.emerald, size: 15),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          '心情晴雨表',
-                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Icon(Icons.spa_outlined, color: p.emerald, size: 13),
+                      const SizedBox(width: 4),
+                      Text(
+                        '心情晴雨表',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Expanded(
               child: GestureDetector(
                 onTap: () => CarnegieReviewSheet.show(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
                   decoration: BoxDecoration(
                     color: p.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: p.hairline),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AppHairlineIcons.carnegie(color: p.gold, size: 14),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          '周复盘',
-                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      AppHairlineIcons.carnegie(color: p.gold, size: 13),
+                      const SizedBox(width: 4),
+                      Text(
+                        '周复盘',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
                       ),
                     ],
                   ),

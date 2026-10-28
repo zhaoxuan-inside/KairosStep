@@ -7,6 +7,7 @@ import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import '../detail/advice_detail_sheet.dart';
 import '../onboarding/onboarding_view.dart';
+import '../tools/decision_tree_sheet.dart';
 import '../tools/tools_sheet.dart';
 import 'excluded_advices_view.dart';
 import '../library/topic_tree_sheet.dart';
@@ -783,7 +784,7 @@ class MeView extends StatelessWidget {
               Divider(color: p.hairline, height: 16),
               InkWell(
                 borderRadius: BorderRadius.circular(10),
-                onTap: () => ToolsSheet.show(context),
+                onTap: () => DecisionTreeSheet.show(context),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
@@ -799,14 +800,54 @@ class MeView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '决策树向导与精算工具箱',
+                              '离线决策树向导',
                               style: TextStyle(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              '离线劳动维权决策树、清单生成器、真实年化利率换算',
+                              '劳动争议与欠薪、租房押金退还、工伤认定维权',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                    ],
+                  ),
+                ),
+              ),
+              Divider(color: p.hairline, height: 16),
+              InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () => ToolsSheet.show(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.calculate_outlined,
+                        size: 15,
+                        color: p.amber,
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '实用精算工具箱',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '个税测算、房贷月供对比、补充养老金、基本养老金领取',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey,

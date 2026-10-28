@@ -14,6 +14,7 @@ import 'me/me_view.dart';
 import 'now/now_view.dart';
 import 'search/search_delegate.dart';
 import 'today/today_view.dart';
+import 'widgets/concentric_progress_ring.dart';
 
 /// 五 Tab 壳：当下 / 今天 / 周期 / 库 / 我的。
 ///
@@ -80,11 +81,14 @@ class _AppShellState extends State<AppShell> {
         bottom: false,
         child: Column(
           children: [
-            // 顶栏常驻：搜索栏与紧急按钮占据完整一行，全页面通用
+            // 顶栏常驻：同心四环进度框、搜索栏、加号自建待办与紧急按钮
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
               child: Row(
                 children: [
+                  // 同心四层圆环进度表示框 (从内到外：当下、每天、本周、本月)
+                  const ConcentricProgressRingWidget(),
+                  const SizedBox(width: 8),
                   // 全局自然语言搜索栏
                   Expanded(
                     child: GestureDetector(
