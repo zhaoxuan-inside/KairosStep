@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "task_id": "20261028_094625_788024",
+  "title": "树状主题标签搜索与可恢复分支剪枝",
+  "created_at": "2026-10-28T09:46:25.791632Z",
+  "status": "ACTIVE",
+  "activities": [
+    "G1",
+    "G2"
+  ],
+  "current_activity": "G1",
+  "verification": null,
+  "mode": "mute",
+  "updated_at": "2026-10-28T09:46:50.464787Z",
+  "snapshot_id": "20261028_094626_126765",
+  "dependencies": [
+    {
+      "consumer": "G1",
+      "producer": "F4",
+      "path": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "unit_id": "file:docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "unit_revision": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "actor": "model",
+      "confirmation": "复用方案中的兼容迁移与数据备份约束，当前任务创建时已保存恢复快照，修改限定树标签与搜索剪枝切片。",
+      "bound_at": "2026-10-28T09:46:50.377893Z"
+    },
+    {
+      "consumer": "G2",
+      "producer": "E5",
+      "path": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "unit_id": "file:docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "unit_revision": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "actor": "model",
+      "confirmation": "复用画像剪枝、乘客场景、跨对象查找和旧数据兼容的验收场景；本轮增加父子树检索与分支恢复测试。",
+      "bound_at": "2026-10-28T09:46:50.464769Z"
+    }
+  ]
+}

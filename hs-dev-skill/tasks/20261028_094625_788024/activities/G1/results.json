@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "checks": [
+    {
+      "check_id": "G1.1",
+      "rule_digest": "ac0489a9b4649a950d17f598df621561e20efb7bdbbb13d6d11b22effbd84920",
+      "result": "PENDING",
+      "evidence": "",
+      "evidence_digest": "",
+      "reason": ""
+    },
+    {
+      "check_id": "G1.2",
+      "rule_digest": "13dd9949ab75c3fc815f9b2c61f9e818d50df9aaf8537d5d7b7bd5b829c2af49",
+      "result": "PENDING",
+      "evidence": "",
+      "evidence_digest": "",
+      "reason": ""
+    },
+    {
+      "check_id": "G1.3",
+      "rule_digest": "251e4d5a6b5ccbcbb02bfb2ab441adcd53aeb45a63d895c1a0add78f42cfb857",
+      "result": "PENDING",
+      "evidence": "",
+      "evidence_digest": "",
+      "reason": ""
+    }
+  ]
+}

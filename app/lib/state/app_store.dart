@@ -6,12 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/catalog.dart';
 import '../models/advice.dart';
+import '../models/topic_tree.dart';
 
 /// 周期作用域：打卡记录天然按周期归零（今天跨天清空、周/月/年各自滚动）。
 enum PeriodScope { today, weekly, monthly, yearly }
 
-PeriodScope scopeFromKey(String key) =>
-    PeriodScope.values.firstWhere((s) => s.name == key, orElse: () => PeriodScope.today);
+PeriodScope scopeFromKey(String key) => PeriodScope.values.firstWhere(
+  (s) => s.name == key,
+  orElse: () => PeriodScope.today,
+);
 
 /// 用户画像：年龄 + 性别 + 角色 + 居住与生活情境，驱动「画像专属」过滤与健康节点包触发。
 @immutable
@@ -32,6 +35,20 @@ class UserProfile {
     ],
     this.prunedOnly = true,
     this.parentsOnly = false,
+    this.hasCar = false,
+    this.hasTwowheeler = false,
+    this.hasChildren = false,
+    this.hasAgingParents = false,
+    this.isSmoker = false,
+    this.hasPets = false,
+    this.hasPipedGas = true,
+    this.hasMortgage = false,
+    this.isTenant = true,
+    this.isEntrepreneur = false,
+    this.hasHypertension = false,
+    this.hasDiabetes = false,
+    this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
+    this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
   });
 
   final String gender;
@@ -42,6 +59,47 @@ class UserProfile {
   final List<String> focusDomains; // 关注的人生领域，默认 6 大支柱全覆盖
   final bool prunedOnly; // 全景库默认「画像专属」
   final bool parentsOnly; // 父母适用清单
+  final bool hasCar; // 是否拥有/常开机动车
+  final bool hasTwowheeler; // 是否拥有/常骑电动车或摩托车
+  final bool hasChildren; // 是否有子女/育儿中
+  final bool hasAgingParents; // 是否家有老人需关照
+  final bool isSmoker; // 是否吸烟（开启戒烟干预）
+  final bool hasPets; // 是否养猫犬宠物
+  final bool hasPipedGas; // 是否有厨房管道燃气设施
+  final bool hasMortgage; // 是否有房贷/购房人
+  final bool isTenant; // 是否租房人
+  final bool isEntrepreneur; // 是否创业者/合伙人
+  final bool hasHypertension; // 是否关注/确诊高血压
+  final bool hasDiabetes; // 是否关注/确诊高血糖
+  final String childAgeStage; // 孩子年龄阶段
+  final String relationshipStatus; // 亲密关系状态
+
+  /// 归一化同步生活实体与旧标签池
+  UserProfile normalized() {
+    final nextRoles = Set<String>.from(roles)..add('全民');
+    final nextLiving = Set<String>.from(livingConditions);
+    final nextHealth = Set<String>.from(healthConcerns);
+
+    if (hasCar) nextRoles.add('司机');
+    if (hasChildren || childAgeStage != 'none') nextRoles.add('家长');
+    if (relationshipStatus == 'married' || relationshipStatus == 'in_love') {
+      nextRoles.add('伴侣');
+    }
+    if (hasAgingParents) nextLiving.add('家有老人');
+    if (isTenant) nextLiving.add('租房人');
+    if (hasMortgage) nextLiving.add('购房人');
+    if (hasPets) nextLiving.add('养犬人');
+    if (isEntrepreneur) nextRoles.add('创业者');
+    if (isSmoker) nextHealth.add('吸烟者');
+    if (hasHypertension) nextHealth.add('血压关注');
+    if (hasDiabetes) nextHealth.add('血糖关注');
+
+    return copyWith(
+      roles: nextRoles.toList(),
+      livingConditions: nextLiving.toList(),
+      healthConcerns: nextHealth.toList(),
+    );
+  }
 
   /// 人生阶段标签（口径同产品设计文档 §2）。
   List<String> get stages {
@@ -72,50 +130,100 @@ class UserProfile {
     List<String>? focusDomains,
     bool? prunedOnly,
     bool? parentsOnly,
-  }) =>
-      UserProfile(
-        gender: gender ?? this.gender,
-        age: age ?? this.age,
-        roles: roles ?? this.roles,
-        livingConditions: livingConditions ?? this.livingConditions,
-        healthConcerns: healthConcerns ?? this.healthConcerns,
-        focusDomains: focusDomains ?? this.focusDomains,
-        prunedOnly: prunedOnly ?? this.prunedOnly,
-        parentsOnly: parentsOnly ?? this.parentsOnly,
-      );
+    bool? hasCar,
+    bool? hasTwowheeler,
+    bool? hasChildren,
+    bool? hasAgingParents,
+    bool? isSmoker,
+    bool? hasPets,
+    bool? hasPipedGas,
+    bool? hasMortgage,
+    bool? isTenant,
+    bool? isEntrepreneur,
+    bool? hasHypertension,
+    bool? hasDiabetes,
+    String? childAgeStage,
+    String? relationshipStatus,
+  }) => UserProfile(
+    gender: gender ?? this.gender,
+    age: age ?? this.age,
+    roles: roles ?? this.roles,
+    livingConditions: livingConditions ?? this.livingConditions,
+    healthConcerns: healthConcerns ?? this.healthConcerns,
+    focusDomains: focusDomains ?? this.focusDomains,
+    prunedOnly: prunedOnly ?? this.prunedOnly,
+    parentsOnly: parentsOnly ?? this.parentsOnly,
+    hasCar: hasCar ?? this.hasCar,
+    hasTwowheeler: hasTwowheeler ?? this.hasTwowheeler,
+    hasChildren: hasChildren ?? this.hasChildren,
+    hasAgingParents: hasAgingParents ?? this.hasAgingParents,
+    isSmoker: isSmoker ?? this.isSmoker,
+    hasPets: hasPets ?? this.hasPets,
+    hasPipedGas: hasPipedGas ?? this.hasPipedGas,
+    hasMortgage: hasMortgage ?? this.hasMortgage,
+    isTenant: isTenant ?? this.isTenant,
+    isEntrepreneur: isEntrepreneur ?? this.isEntrepreneur,
+    hasHypertension: hasHypertension ?? this.hasHypertension,
+    hasDiabetes: hasDiabetes ?? this.hasDiabetes,
+    childAgeStage: childAgeStage ?? this.childAgeStage,
+    relationshipStatus: relationshipStatus ?? this.relationshipStatus,
+  );
 
   Map<String, dynamic> toJson() => {
-        'gender': gender,
-        'age': age,
-        'roles': roles,
-        'livingConditions': livingConditions,
-        'healthConcerns': healthConcerns,
-        'focusDomains': focusDomains,
-        'prunedOnly': prunedOnly,
-        'parentsOnly': parentsOnly,
-      };
+    'gender': gender,
+    'age': age,
+    'roles': roles,
+    'livingConditions': livingConditions,
+    'healthConcerns': healthConcerns,
+    'focusDomains': focusDomains,
+    'prunedOnly': prunedOnly,
+    'parentsOnly': parentsOnly,
+    'hasCar': hasCar,
+    'hasTwowheeler': hasTwowheeler,
+    'hasChildren': hasChildren,
+    'hasAgingParents': hasAgingParents,
+    'isSmoker': isSmoker,
+    'hasPets': hasPets,
+    'hasPipedGas': hasPipedGas,
+    'hasMortgage': hasMortgage,
+    'isTenant': isTenant,
+    'isEntrepreneur': isEntrepreneur,
+    'hasHypertension': hasHypertension,
+    'hasDiabetes': hasDiabetes,
+    'childAgeStage': childAgeStage,
+    'relationshipStatus': relationshipStatus,
+  };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        gender: json['gender'] as String? ?? '男',
-        age: json['age'] as int? ?? 28,
-        roles: (json['roles'] as List?)?.cast<String>() ??
-            const ['全民', '上班族', '伴侣', '家人'],
-        livingConditions: (json['livingConditions'] as List?)?.cast<String>() ??
-            const ['租房人'],
-        healthConcerns: (json['healthConcerns'] as List?)?.cast<String>() ??
-            const ['久坐伏案'],
-        focusDomains: (json['focusDomains'] as List?)?.cast<String>() ??
-            const [
-              'health',
-              'career',
-              'family',
-              'finance',
-              'emergency',
-              'cadence',
-            ],
-        prunedOnly: json['prunedOnly'] as bool? ?? true,
-        parentsOnly: json['parentsOnly'] as bool? ?? false,
-      );
+    gender: json['gender'] as String? ?? '男',
+    age: json['age'] as int? ?? 28,
+    roles:
+        (json['roles'] as List?)?.cast<String>() ??
+        const ['全民', '上班族', '伴侣', '家人'],
+    livingConditions:
+        (json['livingConditions'] as List?)?.cast<String>() ?? const ['租房人'],
+    healthConcerns:
+        (json['healthConcerns'] as List?)?.cast<String>() ?? const ['久坐伏案'],
+    focusDomains:
+        (json['focusDomains'] as List?)?.cast<String>() ??
+        const ['health', 'career', 'family', 'finance', 'emergency', 'cadence'],
+    prunedOnly: json['prunedOnly'] as bool? ?? true,
+    parentsOnly: json['parentsOnly'] as bool? ?? false,
+    hasCar: json['hasCar'] as bool? ?? false,
+    hasTwowheeler: json['hasTwowheeler'] as bool? ?? false,
+    hasChildren: json['hasChildren'] as bool? ?? false,
+    hasAgingParents: json['hasAgingParents'] as bool? ?? false,
+    isSmoker: json['isSmoker'] as bool? ?? false,
+    hasPets: json['hasPets'] as bool? ?? false,
+    hasPipedGas: json['hasPipedGas'] as bool? ?? true,
+    hasMortgage: json['hasMortgage'] as bool? ?? false,
+    isTenant: json['isTenant'] as bool? ?? true,
+    isEntrepreneur: json['isEntrepreneur'] as bool? ?? false,
+    hasHypertension: json['hasHypertension'] as bool? ?? false,
+    hasDiabetes: json['hasDiabetes'] as bool? ?? false,
+    childAgeStage: json['childAgeStage'] as String? ?? 'none',
+    relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
+  );
 
   String get label =>
       '$age 岁 · $gender · ${roles.where((r) => r != '全民').take(3).join('/')}';
@@ -123,16 +231,145 @@ class UserProfile {
 
 /// 父母适用清单（人工复核，来源 HowToLiveBetterFor35Dev.md，139 条）。
 const List<int> parentsAdviceIds = [
-  13, 20, 22, 37, 40, 58, 111, 138, 153, 232, 233, 259, 264, 342, 397, 398, 399,
-  400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414,
-  415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 430,
-  431, 432, 433, 435, 436, 437, 438, 442, 443, 444, 475, 476, 477, 478, 479,
-  480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494,
-  495, 496, 497, 498, 499, 501, 560, 614, 615, 616, 617, 618, 619, 620, 621,
-  622, 623, 624, 625, 626, 670, 671, 673, 674, 675, 677, 678, 679, 680, 681,
-  682, 683, 734, 735, 736, 737, 738, 739, 740, 742, 743, 744, 745, 746, 747,
-  748, 749, 750, 751, 752, 753, 754, 755, 757, 760, 761, 762, 763, 764, 765,
-  766, 767,
+  13,
+  20,
+  22,
+  37,
+  40,
+  58,
+  111,
+  138,
+  153,
+  232,
+  233,
+  259,
+  264,
+  342,
+  397,
+  398,
+  399,
+  400,
+  401,
+  402,
+  403,
+  404,
+  405,
+  406,
+  407,
+  408,
+  409,
+  410,
+  411,
+  412,
+  413,
+  414,
+  415,
+  416,
+  417,
+  418,
+  419,
+  420,
+  421,
+  422,
+  423,
+  424,
+  425,
+  426,
+  427,
+  428,
+  430,
+  431,
+  432,
+  433,
+  435,
+  436,
+  437,
+  438,
+  442,
+  443,
+  444,
+  475,
+  476,
+  477,
+  478,
+  479,
+  480,
+  481,
+  482,
+  483,
+  484,
+  485,
+  486,
+  487,
+  488,
+  489,
+  490,
+  491,
+  492,
+  493,
+  494,
+  495,
+  496,
+  497,
+  498,
+  499,
+  501,
+  560,
+  614,
+  615,
+  616,
+  617,
+  618,
+  619,
+  620,
+  621,
+  622,
+  623,
+  624,
+  625,
+  626,
+  670,
+  671,
+  673,
+  674,
+  675,
+  677,
+  678,
+  679,
+  680,
+  681,
+  682,
+  683,
+  734,
+  735,
+  736,
+  737,
+  738,
+  739,
+  740,
+  742,
+  743,
+  744,
+  745,
+  746,
+  747,
+  748,
+  749,
+  750,
+  751,
+  752,
+  753,
+  754,
+  755,
+  757,
+  760,
+  761,
+  762,
+  763,
+  764,
+  765,
+  766,
+  767,
 ];
 
 /// 卡片交互状态：某个作用域内一张卡的完成部件集合 + 附加数据。
@@ -142,8 +379,8 @@ const List<int> parentsAdviceIds = [
 class CardState {
   /// 默认集合必须是可变的：交互器会在其上直接 add/remove。
   CardState({Set<String>? doneParts, Map<String, dynamic>? extra})
-      : doneParts = doneParts ?? <String>{},
-        extra = extra ?? <String, dynamic>{};
+    : doneParts = doneParts ?? <String>{},
+      extra = extra ?? <String, dynamic>{};
 
   Set<String> doneParts;
   Map<String, dynamic> extra;
@@ -157,12 +394,16 @@ class CardState {
 
   set completionRatio(double v) => _completionRatio = v.clamp(0.0, 1.0);
 
-  Map<String, dynamic> toJson() => {'p': doneParts.toList(), 'x': extra, 'r': _completionRatio};
+  Map<String, dynamic> toJson() => {
+    'p': doneParts.toList(),
+    'x': extra,
+    'r': _completionRatio,
+  };
 
   factory CardState.fromJson(Map<String, dynamic> json) => CardState(
-        doneParts: ((json['p'] as List?) ?? const []).cast<String>().toSet(),
-        extra: (json['x'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{},
-      )..completionRatio = (json['r'] as num?)?.toDouble() ?? 0;
+    doneParts: ((json['p'] as List?) ?? const []).cast<String>().toSet(),
+    extra: (json['x'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{},
+  )..completionRatio = (json['r'] as num?)?.toDouble() ?? 0;
 }
 
 /// 每日连击记录。
@@ -180,8 +421,8 @@ class StreakState {
 ///
 /// 全部数据仅落在本地 SharedPreferences，不上云、不联网。
 class AppStore extends ChangeNotifier {
-  AppStore(this.catalog, this.prefs, {ThemeMode mode = ThemeMode.dark})
-      : _themeMode = mode;
+  AppStore(this.catalog, this.prefs, {ThemeMode mode = ThemeMode.system})
+    : _themeMode = mode;
 
   final Catalog catalog;
   final SharedPreferences prefs;
@@ -208,17 +449,17 @@ class AppStore extends ChangeNotifier {
 
   /// 完成初始画像引导并持久化
   void completeOnboarding(UserProfile p) {
-    _profile = p;
+    _profile = p.normalized();
     _hasProfile = true;
-    prefs.setString('kProfile', jsonEncode(p.toJson()));
+    prefs.setString('kProfile', jsonEncode(_profile.toJson()));
     prefs.setBool('kHasCompletedOnboarding', true);
     notifyListeners();
   }
 
   /// 更新画像
   void updateProfile(UserProfile p) {
-    _profile = p;
-    prefs.setString('kProfile', jsonEncode(p.toJson()));
+    _profile = p.normalized();
+    prefs.setString('kProfile', jsonEncode(_profile.toJson()));
     notifyListeners();
   }
 
@@ -258,6 +499,49 @@ class AppStore extends ChangeNotifier {
     );
   }
 
+  // Topic preferences are independent of single-card exclusions and never erase content.
+  final Set<String> _excludedTopicPaths = {};
+  Set<String> get excludedTopicPaths => Set.unmodifiable(_excludedTopicPaths);
+
+  String? hiddenAncestorOf(String path) {
+    for (final hidden in _excludedTopicPaths) {
+      if (TopicNode.containsPath(hidden, path)) return hidden;
+    }
+    return null;
+  }
+
+  bool matchesTopicPreferences(Advice a) =>
+      catalog.topics.isVisible(a, _excludedTopicPaths);
+
+  void excludeTopic(String path) {
+    if (!catalog.topics.byPath.containsKey(path)) {
+      throw ArgumentError.value(path, 'path', 'Unknown topic');
+    }
+    if (hiddenAncestorOf(path) != null) return;
+    _excludedTopicPaths.removeWhere(
+      (child) => TopicNode.containsPath(path, child),
+    );
+    _excludedTopicPaths.add(path);
+    _persistTopicPreferences();
+  }
+
+  void restoreTopic(String path) {
+    if (_excludedTopicPaths.remove(path)) _persistTopicPreferences();
+  }
+
+  void restoreAllTopics() {
+    _excludedTopicPaths.clear();
+    _persistTopicPreferences();
+  }
+
+  void _persistTopicPreferences() {
+    prefs.setStringList(
+      'kExcludedTopicPaths',
+      _excludedTopicPaths.toList()..sort(),
+    );
+    notifyListeners();
+  }
+
   // ---------- 建议自定义触发方式与触发周期 (Custom Triggers) ----------
   final Map<int, CustomTriggerConfig> _customTriggers = {};
 
@@ -268,26 +552,120 @@ class AppStore extends ChangeNotifier {
     if (_customTriggers.containsKey(a.id)) {
       return _customTriggers[a.id]!;
     }
+    // 突发事件、急救处置、中暑处理等应急建议，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
+    if (a.isEmergencyOrIncident) {
+      return const CustomTriggerConfig(mode: TriggerMode.dormant);
+    }
     // 原生推断
     if (a.tags.contains('每天') || a.tags.contains('每日多次')) {
       final periods = <String>[];
-      final text = '${a.title} ${a.tags.join(" ")} ${a.timingBadge}';
-      if (['出发', '早餐', '晨', '安全带', '头盔', '步行'].any(text.contains)) periods.add('morning');
-      if (['工作', '工位', '久坐', '专注', '单线程'].any(text.contains)) periods.add('focus');
-      if (['午后', '站立', '远眺', '喝茶', '快走', '舒展'].any(text.contains)) periods.add('afternoon');
-      if (['归途', '晚餐', '家人', '沟通'].any(text.contains)) periods.add('evening');
-      if (['睡眠', '屏幕', '夜里', '褪黑素', '安稳'].any(text.contains)) periods.add('night');
-      if (periods.isEmpty) periods.add('morning');
-      return CustomTriggerConfig(mode: TriggerMode.daily, dailyPeriods: periods);
+      final text =
+          '${a.title} ${a.tags.join(" ")} ${a.timingBadge} ${a.chapter}';
+      if ([
+        '晨',
+        '早餐',
+        '出发',
+        '起床',
+        '安全带',
+        '头盔',
+        '出行',
+        '上班',
+        '步行',
+        '早起',
+      ].any(text.contains)) {
+        periods.add('morning');
+      }
+      if ([
+        '工作',
+        '工位',
+        '久坐',
+        '专注',
+        '单线程',
+        '视力',
+        '办公',
+        '开会',
+        '同事',
+        '屏幕',
+        '咖啡',
+        '饮水',
+        '体态',
+      ].any(text.contains)) {
+        periods.add('focus');
+      }
+      if ([
+        '午后',
+        '站立',
+        '远眺',
+        '喝茶',
+        '快走',
+        '舒展',
+        '午休',
+        '小憩',
+        '下午',
+        '步数',
+        '散步',
+        '活动',
+      ].any(text.contains)) {
+        periods.add('afternoon');
+      }
+      if ([
+        '归途',
+        '晚餐',
+        '家人',
+        '沟通',
+        '回家',
+        '下班',
+        '安全带',
+        '头盔',
+        '散步',
+        '运动',
+        '锻炼',
+      ].any(text.contains)) {
+        periods.add('evening');
+      }
+      if ([
+        '睡眠',
+        '屏幕',
+        '夜里',
+        '褪黑素',
+        '安稳',
+        '睡前',
+        '刷牙',
+        '洗漱',
+        '失眠',
+        '入眠',
+        '23:00',
+        '放松',
+      ].any(text.contains)) {
+        periods.add('night');
+      }
+      if (periods.isEmpty) {
+        periods.addAll(['morning', 'focus', 'afternoon']);
+      }
+      return CustomTriggerConfig(
+        mode: TriggerMode.daily,
+        dailyPeriods: periods,
+      );
     }
     if (a.tags.contains('每周')) {
-      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'weekly');
+      return const CustomTriggerConfig(
+        mode: TriggerMode.cadence,
+        cadenceScopeKey: 'weekly',
+      );
     }
     if (a.tags.contains('每月')) {
-      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'monthly');
+      return const CustomTriggerConfig(
+        mode: TriggerMode.cadence,
+        cadenceScopeKey: 'monthly',
+      );
     }
-    if (a.tags.contains('每年') || a.tags.contains('筛查') || a.tags.contains('日历时点')) {
-      return const CustomTriggerConfig(mode: TriggerMode.cadence, cadenceScopeKey: 'yearly');
+    if (a.tags.contains('每年') ||
+        a.tags.contains('筛查') ||
+        a.tags.contains('日历时点')) {
+      return const CustomTriggerConfig(
+        mode: TriggerMode.cadence,
+        cadenceScopeKey: 'yearly',
+      );
     }
     // 其余均属于未明确触发日期的静默储备态
     return const CustomTriggerConfig(mode: TriggerMode.dormant);
@@ -353,7 +731,8 @@ class AppStore extends ChangeNotifier {
 
   // ---------- 卡内基式 4 步周复盘 (Carnegie Review) ----------
   final List<CarnegieReviewItem> _carnegieReviews = [];
-  List<CarnegieReviewItem> get carnegieReviews => List.unmodifiable(_carnegieReviews);
+  List<CarnegieReviewItem> get carnegieReviews =>
+      List.unmodifiable(_carnegieReviews);
 
   void addCarnegieReview({
     required String eventFact,
@@ -383,10 +762,13 @@ class AppStore extends ChangeNotifier {
 
   // ---------- 紧急联系人 (Emergency Contacts) ----------
   final List<EmergencyContact> _emergencyContacts = [];
-  List<EmergencyContact> get emergencyContacts => List.unmodifiable(_emergencyContacts);
+  List<EmergencyContact> get emergencyContacts =>
+      List.unmodifiable(_emergencyContacts);
 
   void addEmergencyContact(String name, String phone, String relation) {
-    _emergencyContacts.add(EmergencyContact(name: name, phone: phone, relation: relation));
+    _emergencyContacts.add(
+      EmergencyContact(name: name, phone: phone, relation: relation),
+    );
     _persistEmergencyContacts();
     notifyListeners();
   }
@@ -409,7 +791,12 @@ class AppStore extends ChangeNotifier {
   List<UserTodoItem> get userTodos => List.unmodifiable(_userTodos);
 
   /// 添加用户自建行动项或从建议转化的待办
-  void addUserTodo(String title, {int? adviceId, String? note, String? targetDate}) {
+  void addUserTodo(
+    String title, {
+    int? adviceId,
+    String? note,
+    String? targetDate,
+  }) {
     if (title.trim().isEmpty) return;
     final item = UserTodoItem(
       id: 'todo_${DateTime.now().millisecondsSinceEpoch}',
@@ -428,7 +815,9 @@ class AppStore extends ChangeNotifier {
   void toggleUserTodo(String id) {
     final idx = _userTodos.indexWhere((t) => t.id == id);
     if (idx != -1) {
-      _userTodos[idx] = _userTodos[idx].copyWith(isDone: !_userTodos[idx].isDone);
+      _userTodos[idx] = _userTodos[idx].copyWith(
+        isDone: !_userTodos[idx].isDone,
+      );
       _persistUserTodos();
       notifyListeners();
     }
@@ -452,25 +841,68 @@ class AppStore extends ChangeNotifier {
     for (final s in PeriodScope.values) s: {},
   };
 
+  // scope → 周期纪元键（今天: yyyy-MM-dd，本周: w_yyyy-MM-dd，本月: m_yyyy-MM，每年: y_yyyy）
+  final Map<PeriodScope, String> _lastScopeEpochs = {};
+
+  static String _scopeEpochKey(PeriodScope s, DateTime now) {
+    switch (s) {
+      case PeriodScope.today:
+        return _dayKey(now);
+      case PeriodScope.weekly:
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        return 'w_${_dayKey(monday)}';
+      case PeriodScope.monthly:
+        return 'm_${now.year}-${now.month.toString().padLeft(2, '0')}';
+      case PeriodScope.yearly:
+        return 'y_${now.year}';
+    }
+  }
+
+  /// 周期跨期检测：跨天/跨周/跨月/跨年时自然清空打卡记录，业务上完全不影响次日展示。
+  void checkPeriodRollover([DateTime? customNow]) {
+    final now = customNow ?? DateTime.now();
+    for (final s in PeriodScope.values) {
+      final currentEpoch = _scopeEpochKey(s, now);
+      final lastEpoch = _lastScopeEpochs[s];
+      if (lastEpoch != null && lastEpoch != currentEpoch) {
+        _lastScopeEpochs[s] = currentEpoch;
+        _cards[s]?.clear();
+        prefs.remove('kScope.${s.name}');
+        prefs.setString('kScopeEpoch.${s.name}', currentEpoch);
+      }
+    }
+  }
+
   // adviceId → StreakState（跨周期属于习惯本体）
   final Map<int, StreakState> _streaks = {};
 
   // 窗口期锚点：adviceId → 首次浮出日（决定窗口进度）
   final Map<int, DateTime> _windowAnchors = {};
 
-  Map<int, CardState> cardsOf(PeriodScope s) => _cards[s] ?? {};
+  Map<int, CardState> cardsOf(PeriodScope s) {
+    checkPeriodRollover();
+    return _cards[s] ?? {};
+  }
 
-  CardState cardState(PeriodScope s, int id) =>
-      _cards[s]![id] ??= CardState();
+  CardState cardState(PeriodScope s, int id) {
+    checkPeriodRollover();
+    return _cards[s]![id] ??= CardState();
+  }
 
   StreakState streakOf(int id) => _streaks[id] ?? const StreakState();
   DateTime? windowAnchorOf(int id) => _windowAnchors[id];
 
   /// 真实动态今天待办流（严格准入：绝不塞入无明确日期的偶发建议）
   List<Advice> get todayAdvices {
-    return catalog.adviceList.where((a) {
-      if (isExcluded(a.id)) return false;
+    checkPeriodRollover();
+    final list = catalog.adviceList.where((a) {
+      if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
       if (_profile.prunedOnly && !matchPersona(a)) return false;
+
+      // 应急/急救/突发处置建议（如中暑），除非显式自定义，否则严禁进入今日流
+      if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
+        return false;
+      }
 
       final trig = effectiveTriggerOf(a);
       switch (trig.mode) {
@@ -483,18 +915,29 @@ class AppStore extends ChangeNotifier {
           final target = DateTime.tryParse(trig.targetDate!);
           if (target == null) return false;
           final now = DateTime.now();
-          final diff = target.difference(DateTime(now.year, now.month, now.day)).inDays;
+          final diff = target
+              .difference(DateTime(now.year, now.month, now.day))
+              .inDays;
           return diff >= 0 && diff <= trig.leadDays;
         case TriggerMode.cadence:
           return false; // 周期循环态在周期页查看，不直接占位今日流
       }
     }).toList();
+
+    // 已经打卡完成的排在下面（未完成优先置顶，已完成沉底）
+    list.sort((a, b) {
+      final aDone = cardState(PeriodScope.today, a.id).isDone ? 1 : 0;
+      final bDone = cardState(PeriodScope.today, b.id).isDone ? 1 : 0;
+      return aDone.compareTo(bDone);
+    });
+
+    return list;
   }
 
   /// 真实动态周期流（严格准入：绝不塞入无明确周期的偶发建议）
   List<Advice> cycleAdvicesOf(PeriodScope scope) {
-    return catalog.adviceList.where((a) {
-      if (isExcluded(a.id)) return false;
+    final list = catalog.adviceList.where((a) {
+      if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       final trig = effectiveTriggerOf(a);
@@ -510,16 +953,185 @@ class AppStore extends ChangeNotifier {
           return false; // 静默储备态严禁进入周期流
       }
     }).toList();
+
+    // 已经打卡完成的排在下面（未完成优先，已完成沉底）
+    list.sort((a, b) {
+      final aDone = cardState(scope, a.id).isDone ? 1 : 0;
+      final bDone = cardState(scope, b.id).isDone ? 1 : 0;
+      return aDone.compareTo(bDone);
+    });
+
+    return list;
+  }
+
+  /// 根据 1.5 小时聚焦视窗（中心时刻前后各 45 分钟）动态筛选严格属于该视窗的建议流
+  List<Advice> advicesForWindow(DateTime centerTime) {
+    final windowStart = centerTime.subtract(const Duration(minutes: 45));
+    final windowEnd = centerTime.add(const Duration(minutes: 45));
+    final winStartMin = windowStart.hour * 60 + windowStart.minute;
+    final winEndMin = windowEnd.hour * 60 + windowEnd.minute;
+
+    final mCenter = centerTime.hour * 60 + centerTime.minute;
+    final centerHour = centerTime.hour;
+
+    // 筛选严格与 1.5 小时视窗 [centerTime-45m, centerTime+45m] 发生时段交叠的建议
+    final matched = catalog.adviceList.where((a) {
+      if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+      if (_profile.prunedOnly && !matchPersona(a)) return false;
+
+      // 应急/急救/突发处置建议（如中暑处理），除非用户显式手动自定义配置，否则严禁进入当下日常视窗流
+      if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
+        return false;
+      }
+
+      final trig = effectiveTriggerOf(a);
+      if (trig.mode == TriggerMode.dormant ||
+          trig.mode == TriggerMode.cadence) {
+        return false; // 严禁进入时钟视窗流
+      }
+
+      if (trig.mode == TriggerMode.daily) {
+        // 检查该建议配置的任何时段（标准规范时段或自定义时段）是否与 1.5 小时视窗相交
+        for (final pk in trig.dailyPeriods) {
+          final def = PeriodDefinition.byKey(pk);
+          if (def != null) {
+            if (def.overlaps(winStartMin, winEndMin)) return true;
+          }
+          final custom = PeriodDefinition.parseCustomPeriod(pk);
+          if (custom != null) {
+            if (PeriodDefinition.timeRangesOverlap(
+              custom.$1,
+              custom.$2,
+              winStartMin,
+              winEndMin,
+            )) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      if (trig.mode == TriggerMode.windowed && trig.targetDate != null) {
+        final target = DateTime.tryParse(trig.targetDate!);
+        if (target != null) {
+          final now = DateTime.now();
+          final diff = target
+              .difference(DateTime(now.year, now.month, now.day))
+              .inDays;
+          if (diff >= 0 && diff <= trig.leadDays) {
+            return PeriodDefinition.morning.overlaps(winStartMin, winEndMin) ||
+                PeriodDefinition.evening.overlaps(winStartMin, winEndMin);
+          }
+        }
+      }
+
+      return false;
+    }).toList();
+
+    // 按照与中心时刻的相关性与精准锚点排序
+    matched.sort((a, b) {
+      // 已经打卡完成的排在下面（未完成优先充当 Hero，全部完成才轮到已完成）
+      final aDone = cardState(PeriodScope.today, a.id).isDone ? 1 : 0;
+      final bDone = cardState(PeriodScope.today, b.id).isDone ? 1 : 0;
+      if (aDone != bDone) {
+        return aDone.compareTo(bDone);
+      }
+
+      int score(Advice adv) {
+        int s = 0;
+        final trig = effectiveTriggerOf(adv);
+
+        // 如果建议配置了自定义时段，距离 centerTime 越近权重越高
+        for (final pk in trig.dailyPeriods) {
+          final custom = PeriodDefinition.parseCustomPeriod(pk);
+          if (custom != null) {
+            final customMid = (custom.$1 + custom.$2) ~/ 2;
+            final dist = (customMid - mCenter).abs();
+            s += (300 - dist).clamp(0, 300);
+          }
+        }
+
+        final badge = adv.timingBadge;
+        final title = adv.title;
+
+        // 针对不同时段的关键行动加权
+        if (centerHour >= 22 || centerHour < 5) {
+          if (badge.contains('23:00') ||
+              title.contains('屏幕') ||
+              title.contains('睡')) {
+            s += 60;
+          }
+          if (badge.contains('洗漱') || title.contains('刷牙')) s += 30;
+        } else if (centerHour >= 6 && centerHour <= 8) {
+          if (badge.contains('07:00') ||
+              badge.contains('晨') ||
+              title.contains('安全带') ||
+              title.contains('头盔')) {
+            s += 60;
+          }
+          if (title.contains('早餐') || title.contains('血压')) s += 40;
+        } else if (centerHour >= 9 && centerHour < 12) {
+          if (title.contains('久坐') ||
+              title.contains('专注') ||
+              title.contains('工位') ||
+              title.contains('单线程')) {
+            s += 60;
+          }
+          if (title.contains('喝水') || title.contains('视力')) s += 30;
+        } else if (centerHour >= 12 && centerHour <= 14) {
+          if (badge.contains('13:00') ||
+              title.contains('午') ||
+              title.contains('小憩')) {
+            s += 60;
+          }
+          if (title.contains('坐') || title.contains('远眺')) s += 30;
+        } else if (centerHour > 14 && centerHour < 17) {
+          if (title.contains('快走') ||
+              title.contains('步数') ||
+              title.contains('舒展') ||
+              title.contains('远眺')) {
+            s += 60;
+          }
+        } else if (centerHour >= 17 && centerHour <= 19) {
+          if (title.contains('安全带') ||
+              title.contains('头盔') ||
+              title.contains('晚') ||
+              title.contains('归途')) {
+            s += 60;
+          }
+          if (title.contains('家人') || title.contains('晚餐')) s += 30;
+        } else if (centerHour > 19 && centerHour < 22) {
+          if (title.contains('家人') ||
+              title.contains('散步') ||
+              title.contains('沟通') ||
+              title.contains('放松')) {
+            s += 60;
+          }
+        }
+        return s;
+      }
+
+      return score(b).compareTo(score(a));
+    });
+
+    return matched;
   }
 
   /// 真实动态时段建议流（严格准入：绝不塞入无明确时段的偶发建议）
   List<Advice> periodAdvicesOf(String periodKey) {
     final list = catalog.adviceList.where((a) {
-      if (isExcluded(a.id)) return false;
+      if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
+      // 应急/急救建议严禁进入日常时段流
+      if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
+        return false;
+      }
+
       final trig = effectiveTriggerOf(a);
-      if (trig.mode == TriggerMode.dormant || trig.mode == TriggerMode.cadence) {
+      if (trig.mode == TriggerMode.dormant ||
+          trig.mode == TriggerMode.cadence) {
         return false; // 严禁进入时钟时段流
       }
 
@@ -531,7 +1143,9 @@ class AppStore extends ChangeNotifier {
         final target = DateTime.tryParse(trig.targetDate!);
         if (target != null) {
           final now = DateTime.now();
-          final diff = target.difference(DateTime(now.year, now.month, now.day)).inDays;
+          final diff = target
+              .difference(DateTime(now.year, now.month, now.day))
+              .inDays;
           if (diff >= 0 && diff <= trig.leadDays) {
             return periodKey == 'morning' || periodKey == 'evening';
           }
@@ -545,12 +1159,20 @@ class AppStore extends ChangeNotifier {
       // 兜底保护：当该时段无特定项目时，仅从通用日常建议中优雅展现对应动作，绝不抽取偶发建议
       return catalog.adviceList.where((a) {
         if (isExcluded(a.id)) return false;
+        if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
+          return false;
+        }
         final trig = effectiveTriggerOf(a);
         if (trig.mode != TriggerMode.daily) return false;
         return trig.dailyPeriods.contains(periodKey);
       }).toList();
     }
     return list;
+  }
+
+  /// 全量应急/急救/突发处置条目（供紧急面板或突发模式使用，如中暑、骨折、海姆立克等）
+  List<Advice> get emergencyAdvices {
+    return catalog.adviceList.where((a) => a.isEmergencyOrIncident).toList();
   }
 
   /// 某作用域的完成数 / 总数（动态根据真实建议统计，零写死 Mock）。
@@ -586,10 +1208,13 @@ class AppStore extends ChangeNotifier {
   /// 每日连击打卡（跨天自然续接，不惩罚断签——只记录）。
   void checkinStreak(int id, DateTime now) {
     final today = _dayKey(now);
-    final next = _streaks[id]?.bump(today) ?? StreakState(lastDay: today, days: 1);
+    final next =
+        _streaks[id]?.bump(today) ?? StreakState(lastDay: today, days: 1);
     _streaks[id] = next;
-    prefs.setString('kStreak.$id', jsonEncode(
-        {'lastDay': next.lastDay, 'days': next.days}));
+    prefs.setString(
+      'kStreak.$id',
+      jsonEncode({'lastDay': next.lastDay, 'days': next.days}),
+    );
     notifyListeners();
   }
 
@@ -606,6 +1231,9 @@ class AppStore extends ChangeNotifier {
     final map = <String, String>{};
     _cards[s]?.forEach((id, st) => map['$id'] = jsonEncode(st.toJson()));
     prefs.setString('kScope.${s.name}', jsonEncode(map));
+    final epoch = _scopeEpochKey(s, DateTime.now());
+    prefs.setString('kScopeEpoch.${s.name}', epoch);
+    _lastScopeEpochs[s] = epoch;
   }
 
   Future<void> restore() async {
@@ -613,7 +1241,7 @@ class AppStore extends ChangeNotifier {
     if (mode != null) {
       _themeMode = ThemeMode.values.firstWhere(
         (m) => m.name == mode,
-        orElse: () => ThemeMode.dark,
+        orElse: () => ThemeMode.system,
       );
     }
     final completed = prefs.getBool('kHasCompletedOnboarding') ?? false;
@@ -651,6 +1279,15 @@ class AppStore extends ChangeNotifier {
       }
     }
 
+    _excludedTopicPaths.clear();
+    for (final path
+        in prefs.getStringList('kExcludedTopicPaths') ?? <String>[]) {
+      // Ignore removed/unknown taxonomy nodes instead of pruning unrelated content.
+      if (catalog.topics.byPath.containsKey(path)) {
+        _excludedTopicPaths.add(path);
+      }
+    }
+
     final trRaw = prefs.getString('kCustomTriggers');
     if (trRaw != null) {
       try {
@@ -659,8 +1296,9 @@ class AppStore extends ChangeNotifier {
         map.forEach((k, v) {
           final id = int.tryParse(k);
           if (id != null) {
-            _customTriggers[id] =
-                CustomTriggerConfig.fromJson(jsonDecode(v as String) as Map<String, dynamic>);
+            _customTriggers[id] = CustomTriggerConfig.fromJson(
+              jsonDecode(v as String) as Map<String, dynamic>,
+            );
           }
         });
       } catch (_) {}
@@ -669,8 +1307,9 @@ class AppStore extends ChangeNotifier {
     final p90Raw = prefs.getString('kNinetyDayPlan');
     if (p90Raw != null) {
       try {
-        _ninetyDayPlan =
-            NinetyDayPlan.fromJson(jsonDecode(p90Raw) as Map<String, dynamic>);
+        _ninetyDayPlan = NinetyDayPlan.fromJson(
+          jsonDecode(p90Raw) as Map<String, dynamic>,
+        );
       } catch (_) {}
     }
 
@@ -681,7 +1320,8 @@ class AppStore extends ChangeNotifier {
         _carnegieReviews.clear();
         for (final item in list) {
           _carnegieReviews.add(
-              CarnegieReviewItem.fromJson(item as Map<String, dynamic>));
+            CarnegieReviewItem.fromJson(item as Map<String, dynamic>),
+          );
         }
       } catch (_) {}
     }
@@ -693,19 +1333,32 @@ class AppStore extends ChangeNotifier {
         _emergencyContacts.clear();
         for (final item in list) {
           _emergencyContacts.add(
-              EmergencyContact.fromJson(item as Map<String, dynamic>));
+            EmergencyContact.fromJson(item as Map<String, dynamic>),
+          );
         }
       } catch (_) {}
     }
 
+    final now = DateTime.now();
     for (final s in PeriodScope.values) {
+      final currentEpoch = _scopeEpochKey(s, now);
+      final savedEpoch = prefs.getString('kScopeEpoch.${s.name}');
+      if (savedEpoch != null && savedEpoch != currentEpoch) {
+        // 跨周期：自然清空该周期的打卡记录，不将旧周期的打卡带入新周期
+        prefs.remove('kScope.${s.name}');
+        prefs.setString('kScopeEpoch.${s.name}', currentEpoch);
+        _lastScopeEpochs[s] = currentEpoch;
+        continue;
+      }
+      _lastScopeEpochs[s] = savedEpoch ?? currentEpoch;
       final raw = prefs.getString('kScope.${s.name}');
       if (raw == null) continue;
       try {
         final map = jsonDecode(raw) as Map<String, dynamic>;
         for (final e in map.entries) {
-          _cards[s]?[int.parse(e.key)] =
-              CardState.fromJson(jsonDecode(e.value as String) as Map<String, dynamic>);
+          _cards[s]?[int.parse(e.key)] = CardState.fromJson(
+            jsonDecode(e.value as String) as Map<String, dynamic>,
+          );
         }
       } catch (_) {}
     }
@@ -716,8 +1369,10 @@ class AppStore extends ChangeNotifier {
         if (id != null && raw != null) {
           try {
             final m = jsonDecode(raw) as Map<String, dynamic>;
-            _streaks[id] =
-                StreakState(lastDay: m['lastDay'] as String, days: m['days'] as int);
+            _streaks[id] = StreakState(
+              lastDay: m['lastDay'] as String,
+              days: m['days'] as int,
+            );
           } catch (_) {}
         }
       } else if (key.startsWith('kWindow.')) {
@@ -736,13 +1391,68 @@ class AppStore extends ChangeNotifier {
 
   // ---------- 画像过滤 ----------
   /// 画像专属：人生阶段 ∩ 社会角色 ∩ 适用群体，且不命中排除维度。
-  bool matchPersona(Advice a) {
+  bool matchPersona(Advice a, {bool includeTopicPreferences = true}) {
     final p = profile;
+    if (includeTopicPreferences && !matchesTopicPreferences(a)) return false;
 
     // 0. 关注领域过滤（若设置了特定关注领域且未全选）
     if (p.focusDomains.isNotEmpty && p.focusDomains.length < 6) {
       final domain = LifeDomain.ofChapter(a.chapter);
       if (!p.focusDomains.contains(domain.id)) return false;
+    }
+
+    // 0.5 树节点画像前置守卫 (Prerequisites Gating)
+    final prereqs = a.prerequisites;
+    if (prereqs.isNotEmpty) {
+      if (prereqs['has_car'] == true && !p.hasCar) return false;
+      if (prereqs['has_twowheeler'] == true && !p.hasTwowheeler) return false;
+      if (prereqs['is_smoker'] == true && !p.isSmoker) return false;
+      if (prereqs['has_children'] == true &&
+          !p.hasChildren &&
+          !p.roles.contains('家长') &&
+          !p.roles.contains('准父母')) {
+        return false;
+      }
+      if (prereqs['is_pregnant_or_parent'] == true &&
+          !p.hasChildren &&
+          !p.roles.contains('孕产') &&
+          !p.roles.contains('准父母') &&
+          !p.roles.contains('家长')) {
+        return false;
+      }
+      if (prereqs['has_aging_parents'] == true &&
+          !p.hasAgingParents &&
+          !p.livingConditions.contains('家有老人') &&
+          !p.roles.contains('照护者')) {
+        return false;
+      }
+      if (prereqs['is_tenant'] == true &&
+          !p.isTenant &&
+          !p.livingConditions.contains('租房人')) {
+        return false;
+      }
+      if (prereqs['has_mortgage'] == true &&
+          !p.hasMortgage &&
+          !p.livingConditions.contains('购房人')) {
+        return false;
+      }
+      if (prereqs['has_pets'] == true &&
+          !p.hasPets &&
+          !p.livingConditions.contains('养犬人')) {
+        return false;
+      }
+      if (prereqs['has_piped_gas'] == true && !p.hasPipedGas) return false;
+      if (prereqs['is_entrepreneur'] == true &&
+          !p.isEntrepreneur &&
+          !p.roles.contains('创业者') &&
+          !p.roles.contains('合伙人')) {
+        return false;
+      }
+      if (prereqs['gender_female'] == true && p.gender != '女') return false;
+      if (prereqs['gender_male'] == true && p.gender != '男') return false;
+      if (prereqs['min_age'] is int && p.age < (prereqs['min_age'] as int)) {
+        return false;
+      }
     }
 
     // 1. 硬性排除
@@ -760,13 +1470,33 @@ class AppStore extends ChangeNotifier {
 
     // 3. 角色与群体匹配：建议若包含特定角色标签，且非全民通用，则检查用户是否具备该角色
     final specificRoleTags = const [
-      '程序员', '创业者', '学生', '求职者', '家长', '准父母', '孕产', '照护者',
-      '家有老人', '残障人士', '租房人', '购房人', '司机', '出境者', '灵活就业者',
-      '雇主', '合伙人'
+      '程序员',
+      '创业者',
+      '学生',
+      '求职者',
+      '家长',
+      '准父母',
+      '孕产',
+      '照护者',
+      '家有老人',
+      '残障人士',
+      '租房人',
+      '购房人',
+      '司机',
+      '出境者',
+      '灵活就业者',
+      '雇主',
+      '合伙人',
     ];
-    final adviceSpecificRoles = a.tags.where(specificRoleTags.contains).toList();
+    final adviceSpecificRoles = a.tags
+        .where(specificRoleTags.contains)
+        .toList();
     if (adviceSpecificRoles.isNotEmpty) {
-      final userAllRoles = {...p.roles, ...p.livingConditions, ...p.healthConcerns};
+      final userAllRoles = {
+        ...p.roles,
+        ...p.livingConditions,
+        ...p.healthConcerns,
+      };
       final isGeneric = a.tags.contains('全民') || a.tags.contains('通用');
       final matchesUserRole = adviceSpecificRoles.any(userAllRoles.contains);
       if (!isGeneric && !matchesUserRole) {
@@ -784,7 +1514,9 @@ class AppStore extends ChangeNotifier {
       return (show: false, reason: '女性专属 · 已按画像过滤', note: null);
     }
     if (it.bone) {
-      if (p.gender == '女' && p.age >= 65) return (show: true, reason: null, note: null);
+      if (p.gender == '女' && p.age >= 65) {
+        return (show: true, reason: null, note: null);
+      }
       if (p.gender == '男' && p.age >= 70) {
         return (
           show: true,

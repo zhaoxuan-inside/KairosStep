@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "approvals": {
+    "A": {
+      "actor": "model",
+      "confirmation": "核验完成：四类目标来自用户原话；方案、全库结构审计与图标资源已交付，未把提案当成业务实现或全库事实审核。",
+      "confirmed_at": "2026-10-28T09:29:40.319277Z",
+      "checklist_digest": "4e72163776906d449e166905e57f31117b67aa2f100c7c8aaa1c3284b68f1863",
+      "material_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "dependency_digest": "7e392f746eaad1caf0691946d39738d82cbde3b8bba7477d705c739dba72241a"
+    }
+  },
+  "material_reviews": {},
+  "acceptance_history": []
+}

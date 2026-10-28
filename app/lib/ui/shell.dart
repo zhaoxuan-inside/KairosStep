@@ -41,47 +41,92 @@ class _AppShellState extends State<AppShell> {
     final (doneToday, _) = store.countersOf(PeriodScope.today);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(top: false, child: _views[_index]),
-          // 全局右上角常驻紧急模式直拨小盾
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            right: 16,
-            child: Tooltip(
-              message: '一键紧急模式',
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.heavyImpact();
-                  EmergencySheet.show(context);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: p.error.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(9999),
-                    border: Border.all(color: p.error.withValues(alpha: 0.5), width: 1.1),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AppHairlineIcons.emergencyBell(color: p.error, size: 12),
-                      const SizedBox(width: 4),
-                      Text(
-                        '紧急',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: p.error,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // 顶栏常驻：搜索栏与紧急按钮占据完整一行，全页面通用
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+              child: Row(
+                children: [
+                  // 全局自然语言搜索栏
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        showGlobalSearch(context);
+                      },
+                      child: Container(
+                        height: 38,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: p.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: p.hairline),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search, size: 16, color: p.inkSub),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '询问任何突发或生活决策（如：欠薪、胸痛）',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: p.inkSub.withValues(alpha: 0.8),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  // 右侧紧急模式直达按钮
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      HapticFeedback.heavyImpact();
+                      EmergencySheet.show(context);
+                    },
+                    child: Container(
+                      height: 38,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: p.error.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: p.error.withValues(alpha: 0.45), width: 1.1),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppHairlineIcons.emergencyBell(color: p.error, size: 13),
+                          const SizedBox(width: 4),
+                          Text(
+                            '紧急',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: p.error,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            // 各页面视图流
+            Expanded(
+              child: _views[_index],
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
@@ -127,15 +172,6 @@ class _AppShellState extends State<AppShell> {
           ),
         ],
       ),
-      floatingActionButton: _index == 0
-          ? FloatingActionButton.small(
-              backgroundColor: p.pillBg,
-              foregroundColor: p.ink,
-              elevation: 0,
-              child: const Icon(Icons.search),
-              onPressed: () => showGlobalSearch(context),
-            )
-          : null,
     );
   }
 }

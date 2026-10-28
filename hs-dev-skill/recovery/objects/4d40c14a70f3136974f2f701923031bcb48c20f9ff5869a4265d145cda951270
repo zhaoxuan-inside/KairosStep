@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "task_id": "20261028_094625_788024",
+  "title": "树状主题标签搜索与可恢复分支剪枝",
+  "created_at": "2026-10-28T09:46:25.791632Z",
+  "status": "ACTIVE",
+  "activities": [
+    "G1",
+    "G2"
+  ],
+  "current_activity": "G1",
+  "verification": null,
+  "mode": "mute",
+  "updated_at": "2026-10-28T09:46:26.002567Z"
+}

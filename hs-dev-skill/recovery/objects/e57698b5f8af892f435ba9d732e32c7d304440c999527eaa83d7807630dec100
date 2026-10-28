@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "checks": [
+    {
+      "check_id": "A2.1",
+      "rule_digest": "236d1abf7e2a84c82ae965a12f371b511e62578ab33f0e6955c2c7253cf55c6b",
+      "result": "NA",
+      "evidence": "",
+      "evidence_digest": "",
+      "reason": "本任务未开展竞品或市场研究；未作竞品事实主张"
+    },
+    {
+      "check_id": "A2.2",
+      "rule_digest": "036a0f6f16c8c07e9c3db68f9ce0c587886e9623d531e8efa66cb46590121524",
+      "result": "PASS",
+      "evidence": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "evidence_digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "reason": "定位围绕用户明确的四类目标，适用边界和未知项显式记录"
+    },
+    {
+      "check_id": "A2.3",
+      "rule_digest": "27a8cdc73c9fc97721d744a4c60dbe3eb85242ae3e1d0da0a1c732e9d183cf7c",
+      "result": "PASS",
+      "evidence": "app/assets/branding/README.md",
+      "evidence_digest": "8deaab01d9f82d8310de13c7d356d1ee1454784f393d2356e9cffbfd74c86423",
+      "reason": "新图标生成说明、主图人工查看、32 PNG 和 ICO 七帧已验证；设备验收边界已记录"
+    }
+  ]
+}

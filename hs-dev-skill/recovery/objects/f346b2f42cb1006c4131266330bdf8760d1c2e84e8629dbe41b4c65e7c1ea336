@@ -1,0 +1,564 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""KairosStep 树状标签体系与画像前置守卫 (Prerequisites) 全量构建脚本。
+
+设计核心：
+1. 树状层级：6 大主支柱 (Health, Daily, Relationships, Career, Finance, Safety) -> 二级领域 -> 三级情境
+2. 画像前置守卫 (Prerequisites)：
+   - has_car: 机动车出行、安全带、驾驶、车辆养护
+   - has_twowheeler: 电动自行车、摩托车、骑行头盔、楼道充电防范
+   - has_children: 育儿、新生儿、儿童安全座椅、防坠楼窗锁、学业教育
+   - has_aging_parents: 家有老人、父母体检、适老化改造、防跌扶手
+   - is_smoker: 吸烟者专属、戒烟用药门诊、低剂量胸部CT
+   - is_tenant: 租房人、租房合同、押金退还、公租房
+   - has_mortgage: 购房人、房贷提前还款、产权与维修基金
+   - has_pets: 养犬人、宠物狂犬疫苗、体内外驱虫
+   - has_piped_gas: 管道燃气与自采暖、燃气波纹管、一氧化碳报警器
+   - is_entrepreneur: 创业者、合伙人协议、资质备案、有限责任隔离
+   - gender_female: 女性专属（HPV、乳腺钼靶、宫颈癌筛查、妇科孕产）
+   - gender_male: 男性专属（前列腺、勃起功能与心血管）
+   - min_age: 年龄门槛（如 35岁血糖、40岁乳腺、45岁肠镜、50岁带状疱疹、65岁骨密度/肺炎疫苗）
+"""
+
+import json
+import re
+
+TAXONOMY_TREE = {
+    "health": {
+        "name": "健康与身心",
+        "description": "涵盖防病筛查、科学用药、就医防坑、运动体态与心理减压",
+        "sub": {
+            "prevention": {
+                "name": "预防保健",
+                "sub": {
+                    "exercise": {"name": "运动与体态", "cron": "0 10,15 * * 1-5"},
+                    "screening": {"name": "筛查与体检", "cron": "0 9 15 10 *"},
+                    "vaccine": {"name": "疫苗防护", "cron": "0 9 1 9 *"},
+                    "sleep": {"name": "节律与睡眠", "cron": "0 23 * * *"},
+                    "body_care": {"name": "身体护理与防坑", "cron": "0 20 * * 0"}
+                }
+            },
+            "treatment": {
+                "name": "诊疗干预",
+                "sub": {
+                    "medication": {"name": "用药安全", "cron": "0 7,19 * * *"},
+                    "chronic": {"name": "慢病管理", "cron": "0 7,19 * * *"},
+                    "clinic": {"name": "就医与问诊", "cron": "0 9 1 * *"}
+                }
+            },
+            "mental": {
+                "name": "心理精神",
+                "sub": {
+                    "stress": {"name": "压力与情绪调节", "cron": "30 20 * * 5"},
+                    "relaxation": {"name": "娱乐与身心放松", "cron": "0 21 * * 5"},
+                    "trauma_recovery": {"name": "创伤复原与危机", "cron": "0 19 * * *"},
+                    "addiction": {"name": "成瘾戒断", "cron": "0 8 * * *"}
+                }
+            },
+            "emergency": {
+                "name": "应急急救",
+                "sub": {
+                    "golden_window": {"name": "黄金抢救", "cron": "* * * * *"},
+                    "first_aid": {"name": "突发救治", "cron": "* * * * *"}
+                }
+            }
+        }
+    },
+    "daily": {
+        "name": "日常与起居",
+        "description": "衣食住行细节、通勤防护、居家设施与数字生活节律",
+        "sub": {
+            "commute": {
+                "name": "交通出行",
+                "sub": {
+                    "vehicle": {"name": "机动车出行", "cron": "30 7,18 * * 1-5"},
+                    "twowheeler": {"name": "两轮骑行", "cron": "30 7,18 * * 1-5"},
+                    "transit": {"name": "公共交通与步行", "cron": "45 7,18 * * 1-5"}
+                }
+            },
+            "lifestyle": {
+                "name": "衣食养生",
+                "sub": {
+                    "diet": {"name": "饮食营养与贮存", "cron": "0 12,18 * * *"},
+                    "pet": {"name": "宠物陪伴与防护", "cron": "0 9 1 * *"}
+                }
+            },
+            "housing": {
+                "name": "居住设施",
+                "sub": {
+                    "facility": {"name": "燃气与家居设施", "cron": "30 19 15 * *"},
+                    "rental": {"name": "租房生活", "cron": "0 10 1 * *"}
+                }
+            },
+            "home_safety": {
+                "name": "居家安全",
+                "sub": {
+                    "fire": {"name": "消防与燃气安全", "cron": "0 9 1 10 *"},
+                    "fall_prevention": {"name": "防跌防坠改造", "cron": "0 10 * * 6"}
+                }
+            },
+            "digital": {
+                "name": "数字生活与效能",
+                "sub": {
+                    "security": {"name": "账号与隐私安全", "cron": "0 10 1 * *"},
+                    "time_energy": {"name": "精力与时间管理", "cron": "0 9 * * 1"},
+                    "screen_time": {"name": "屏幕时长与防沉迷", "cron": "0 22 * * *"}
+                }
+            }
+        }
+    },
+    "relationships": {
+        "name": "人际与家庭",
+        "description": "职场人际、伴侣关系、亲子育儿、孝亲照护与社会防线",
+        "sub": {
+            "workplace": {
+                "name": "职场人际",
+                "sub": {
+                    "manager": {"name": "上级与雇主", "cron": "0 9 * * 1"},
+                    "peer": {"name": "同事协同", "cron": "0 10 * * 1-5"},
+                    "subordinate": {"name": "下属团队", "cron": "0 17 * * 5"}
+                }
+            },
+            "family": {
+                "name": "亲子与长辈",
+                "sub": {
+                    "partner": {"name": "婚姻与伴侣", "cron": "0 21 * * 5"},
+                    "pregnancy": {"name": "怀孕与生产", "cron": "0 10 * * *"},
+                    "children": {"name": "子女抚育与学业", "cron": "0 19 * * *"},
+                    "parents": {"name": "父母长辈照护", "cron": "0 20 * * 0"},
+                    "afterlife": {"name": "身后事与公证", "cron": "0 10 1 1 *"}
+                }
+            },
+            "society": {
+                "name": "社会交互与保障",
+                "sub": {
+                    "interaction": {"name": "契约与人际防线", "cron": "0 10 * * 0"},
+                    "disability_support": {"name": "残障保障与权益", "cron": "0 10 1 * *"}
+                }
+            }
+        }
+    },
+    "career": {
+        "name": "职场与学业",
+        "description": "劳动维权、五险一金、技能投资、合规创业与商业防坑",
+        "sub": {
+            "labor_rights": {
+                "name": "劳动权益",
+                "sub": {
+                    "contract": {"name": "合同与五险一金", "cron": "0 10 10 * *"},
+                    "compensation": {"name": "离职工伤与维权", "cron": "0 10 * * *"}
+                }
+            },
+            "growth": {
+                "name": "学业进阶",
+                "sub": {
+                    "skill": {"name": "技能与学业投资", "cron": "0 20 * * 0"},
+                    "study_abroad": {"name": "留学与跨境发展", "cron": "0 10 1 * *"}
+                }
+            },
+            "business": {
+                "name": "创业经营",
+                "sub": {
+                    "founder": {"name": "合规与风控", "cron": "0 10 1 * *"}
+                }
+            }
+        }
+    },
+    "finance": {
+        "name": "财富与财产",
+        "description": "日常收支、房贷租售、稳健理财、保险条款与反诈防套路",
+        "sub": {
+            "budget": {
+                "name": "收支预算",
+                "sub": {
+                    "spending": {"name": "消费决策与备用金", "cron": "0 20 28 * *"},
+                    "social_security": {"name": "低谷保障与救济", "cron": "0 10 1 * *"}
+                }
+            },
+            "real_estate": {
+                "name": "房产与住房财务",
+                "sub": {
+                    "mortgage": {"name": "房贷公积金与产权", "cron": "0 10 15 * *"}
+                }
+            },
+            "investment": {
+                "name": "稳健理财",
+                "sub": {
+                    "wealth": {"name": "低费率工具与风控", "cron": "0 10 15 * *"}
+                }
+            },
+            "insurance": {
+                "name": "保险保障",
+                "sub": {
+                    "policy": {"name": "条款核对与免责", "cron": "0 10 1 1 *"}
+                }
+            },
+            "anti_fraud": {
+                "name": "防骗与反诈",
+                "sub": {
+                    "scam": {"name": "反诈骗与维权", "cron": "0 19 * * *"}
+                }
+            }
+        }
+    },
+    "safety": {
+        "name": "安全与合规",
+        "description": "作业安全、户外防险、刑事红线、技术人合规与危机应对",
+        "sub": {
+            "physical": {
+                "name": "物理人身安全",
+                "sub": {
+                    "work_safety": {"name": "施工作业劳保", "cron": "0 8 * * 1-5"},
+                    "outdoor": {"name": "户外与水上安全", "cron": "0 9 * * 6"},
+                    "travel": {"name": "旅行与境外安全", "cron": "0 9 1 5,10 *"}
+                }
+            },
+            "legal": {
+                "name": "法律合规红线",
+                "sub": {
+                    "red_line": {"name": "普法与治安红线", "cron": "0 10 1 * *"},
+                    "tech_boundary": {"name": "技术人红线", "cron": "0 10 1 * *"}
+                }
+            }
+        }
+    }
+}
+
+
+def classify_advice_deep(adv):
+    t = adv['t']
+    c = adv['c']
+    tags = adv['tags']
+    badge = adv.get('timing_badge', '')
+
+    prereqs = {}
+
+    # ========== 1. 深度提取画像守卫 (Prerequisites) ==========
+
+    # 机动车 / 开车 / 乘车安全带
+    if any(k in t for k in ['安全带', '行车记录仪', '驾驶', '刹车', '轮胎', '防冻液', '车载', '机动车', '疲劳驾驶', '超速', '酒驾']):
+        if '电动' not in t and '自行车' not in t and '电梯' not in t:
+            prereqs['has_car'] = True
+    if '安全座椅' in t or '儿童乘车' in t:
+        prereqs['has_car'] = True
+        prereqs['has_children'] = True
+
+    # 两轮电动车 / 摩托车
+    if any(k in t for k in ['头盔', '电动自行车', '摩托车', '电瓶车', '电动车充电', '楼道充电']):
+        prereqs['has_twowheeler'] = True
+
+    # 吸烟者
+    if any(k in t for k in ['戒烟', '伐尼克兰', '抽烟', '吸烟', '香烟', '电子烟', '重度吸烟者']):
+        if '别在家里和车里抽烟' not in t and '二手烟' not in t and '本来不吸烟' not in t:
+            prereqs['is_smoker'] = True
+
+    # 子女 / 育儿 / 孕产
+    if c in ['刚出生的孩子怎么带', '养孩子划不划算', '上学以后的孩子'] or any(k in t for k in ['防坠楼', '限位器', '儿童', '儿科', '母乳', '奶粉', '带娃', '幼儿园']):
+        prereqs['has_children'] = True
+    if c in ['怀孕和生产：从发现怀孕到出院办证'] or any(k in t for k in ['怀孕', '孕妇', '产检', '产后抑郁', '月子']):
+        prereqs['is_pregnant_or_parent'] = True
+        prereqs['gender_female'] = True
+
+    # 父母 / 老人
+    if c == '家里有老人' or any(k in t for k in ['家里有老人', '长辈', '父母的身体', '跌倒扶手', '养老金认证']):
+        prereqs['has_aging_parents'] = True
+
+    # 租房
+    if c == '租房与买房' and any(k in t for k in ['租房', '房东', '押金', '转租', '中介费', '公租房', '合租']):
+        prereqs['is_tenant'] = True
+
+    # 买房 / 房贷
+    if any(k in t for k in ['买房', '房贷', '提前还贷', '公积金贷款', '产权证', '首付', '物业费']):
+        prereqs['has_mortgage'] = True
+
+    # 宠物
+    if any(k in t for k in ['犬', '狗', '猫', '狂犬疫苗', '宠物', '驱虫', '牵引绳']):
+        prereqs['has_pets'] = True
+
+    # 管道燃气
+    if any(k in t for k in ['燃气软管', '一氧化碳报警器', '自制酵米面', '煤气', '燃气公司']):
+        prereqs['has_piped_gas'] = True
+
+    # 创业 / 合伙
+    if c in ['创业与做生意：别把家底赔进去', '做一个网站或平台：资质、备案和服务器'] or '合伙人' in t:
+        prereqs['is_entrepreneur'] = True
+
+    # 性别硬条件
+    if any(k in t for k in ['女性', '妇科', 'HPV', '宫颈癌', '乳腺', '绝经', '避孕药', '无痛分娩', '卫生巾']):
+        if '男性' not in t:
+            prereqs['gender_female'] = True
+    if any(k in t for k in ['勃起功能', '前列腺', '男男性行为']):
+        prereqs['gender_male'] = True
+
+    # 年龄门槛
+    m_age = re.search(r'(\d+)\s*岁', t)
+    if m_age:
+        age_val = int(m_age.group(1))
+        if age_val >= 30:
+            prereqs['min_age'] = age_val
+
+    # ========== 2. 树路径映射 (Tree Path Mapping) ==========
+    path = None
+    display = None
+    cron = None
+
+    # (1) 突发急救优先
+    if c == '紧急情况：先做什么' or any(k in t for k in ['打 120', '心肺复苏', '海姆立克', '中毒', '大出血', '剧烈胸痛', '急救']):
+        if any(k in t for k in ['心肺复苏', '海姆立克', '120']):
+            path = "health/emergency/golden_window"
+            display = "健康与身心 > 应急急救 > 黄金抢救"
+        else:
+            path = "health/emergency/first_aid"
+            display = "健康与身心 > 应急急救 > 突发救治"
+        cron = "* * * * *"
+
+    # (2) 交通通勤
+    elif prereqs.get('has_car'):
+        path = "daily/commute/vehicle"
+        display = "日常与起居 > 交通出行 > 机动车出行"
+        cron = "30 7,18 * * 1-5"
+    elif prereqs.get('has_twowheeler'):
+        path = "daily/commute/twowheeler"
+        display = "日常与起居 > 交通出行 > 两轮骑行"
+        cron = "30 7,18 * * 1-5"
+
+    # (3) 居家设施与安全
+    elif '报警器' in t or '灭火器' in t or '逃生面罩' in t or '消火栓' in t:
+        path = "daily/home_safety/fire"
+        display = "日常与起居 > 居家安全 > 消防与燃气安全"
+        cron = "0 9 1 10 *"
+    elif prereqs.get('has_piped_gas'):
+        path = "daily/housing/facility"
+        display = "日常与起居 > 居住设施 > 燃气与家居设施"
+        cron = "30 19 15 * *"
+    elif prereqs.get('is_tenant'):
+        path = "daily/housing/rental"
+        display = "日常与起居 > 居住设施 > 租房生活"
+        cron = "0 10 1 * *"
+    elif prereqs.get('has_pets'):
+        path = "daily/lifestyle/pet"
+        display = "日常与起居 > 衣食养生 > 宠物陪伴与防护"
+        cron = "0 9 1 * *"
+
+    # (4) 家庭与亲子
+    elif c == '怀孕和生产：从发现怀孕到出院办证':
+        path = "relationships/family/pregnancy"
+        display = "人际与家庭 > 亲子与长辈 > 怀孕与生产"
+        cron = "0 10 * * *"
+    elif prereqs.get('has_children'):
+        path = "relationships/family/children"
+        display = "人际与家庭 > 亲子与长辈 > 子女抚育与学业"
+        cron = "0 19 * * *"
+    elif prereqs.get('has_aging_parents'):
+        path = "relationships/family/parents"
+        display = "人际与家庭 > 亲子与长辈 > 父母长辈照护"
+        cron = "0 20 * * 0"
+    elif c == '恋爱和结婚划不划算':
+        path = "relationships/family/partner"
+        display = "人际与家庭 > 亲子与长辈 > 婚姻与伴侣"
+        cron = "0 21 * * 5"
+    elif c == '人走了以后要办什么':
+        path = "relationships/family/afterlife"
+        display = "人际与家庭 > 亲子与长辈 > 身后事与公证"
+        cron = "0 10 1 1 *"
+    elif c == '残疾之后怎么活':
+        path = "relationships/society/disability_support"
+        display = "人际与家庭 > 社会交互与保障 > 残障保障与权益"
+        cron = "0 10 1 * *"
+
+    # (5) 职场与学业
+    elif c in ['在职、离职和工伤']:
+        if any(k in t for k in ['工伤', '仲裁', '赔偿', '裁员', '离职']):
+            path = "career/labor_rights/compensation"
+            display = "职场与学业 > 劳动权益 > 离职工伤与维权"
+            cron = "0 10 * * *"
+        else:
+            path = "career/labor_rights/contract"
+            display = "职场与学业 > 劳动权益 > 合同与五险一金"
+            cron = "0 10 10 * *"
+    elif c in ['学什么技能划算', '十八岁之后有哪几条路']:
+        path = "career/growth/skill"
+        display = "职场与学业 > 学业进阶 > 技能与学业投资"
+        cron = "0 20 * * 0"
+    elif c == '出国留学：身份、打工、保险和回国认证':
+        path = "career/growth/study_abroad"
+        display = "职场与学业 > 学业进阶 > 留学与跨境发展"
+        cron = "0 10 1 * *"
+    elif prereqs.get('is_entrepreneur'):
+        path = "career/business/founder"
+        display = "职场与学业 > 创业经营 > 合规与风控"
+        cron = "0 10 1 * *"
+
+    # (6) 财富与资产
+    elif prereqs.get('has_mortgage'):
+        path = "finance/real_estate/mortgage"
+        display = "财富与财产 > 房产与住房财务 > 房贷公积金与产权"
+        cron = "0 10 15 * *"
+    elif any(k in t for k in ['理财', '基金', '股票', '投资', '年化', '利息', '非法集资']):
+        path = "finance/investment/wealth"
+        display = "财富与财产 > 稳健理财 > 低费率工具与风控"
+        cron = "0 10 15 * *"
+    elif any(k in t for k in ['保险', '重疾险', '百万医疗', '免责条款', '寿险', '车险', '保单']):
+        path = "finance/insurance/policy"
+        display = "财富与财产 > 保险保障 > 条款核对与免责"
+        cron = "0 10 1 1 *"
+    elif any(k in t for k in ['诈骗', '骗局', '刷单', '套路贷', '电信网络诈骗', '传销']):
+        path = "finance/anti_fraud/scam"
+        display = "财富与财产 > 防骗与反诈 > 反诈骗与维权"
+        cron = "0 19 * * *"
+    elif c in ['没钱的时候怎么活']:
+        path = "finance/budget/social_security"
+        display = "财富与财产 > 收支预算 > 低谷保障与救济"
+        cron = "0 10 1 * *"
+    elif c in ['不要浪费钱', '反面清单']:
+        path = "finance/budget/spending"
+        display = "财富与财产 > 收支预算 > 消费决策与备用金"
+        cron = "0 20 28 * *"
+
+    # (7) 法律红线与安全
+    elif c == '程序员和技术人容易踩的红线':
+        path = "safety/legal/tech_boundary"
+        display = "安全与合规 > 法律合规红线 > 技术人红线"
+        cron = "0 10 1 * *"
+    elif c in ['普通人容易踩的法律红线', '别把自己搭进去：法律与财产安全']:
+        path = "safety/legal/red_line"
+        display = "安全与合规 > 法律合规红线 > 普法与治安红线"
+        cron = "0 10 1 * *"
+    elif c == '出国、旅行与境外安全':
+        path = "safety/physical/travel"
+        display = "安全与合规 > 物理人身安全 > 旅行与境外安全"
+        cron = "0 9 1 5,10 *"
+    elif any(k in t for k in ['有限空间', '角磨机', '化粪池', '电锯', '安全帽', '护目镜', '泥工', '木工']):
+        path = "safety/physical/work_safety"
+        display = "安全与合规 > 物理人身安全 > 施工作业劳保"
+        cron = "0 8 * * 1-5"
+    elif any(k in t for k in ['冰面', '野泳', '救生衣', '暴雨', '雷电', '户外', '防溺水']):
+        path = "safety/physical/outdoor"
+        display = "安全与合规 > 物理人身安全 > 户外与水上安全"
+        cron = "0 9 * * 6"
+
+    # (8) 健康与医疗
+    elif prereqs.get('is_smoker'):
+        path = "health/mental/addiction"
+        display = "健康与身心 > 心理精神 > 成瘾戒断"
+        cron = "0 8 * * *"
+    elif c in ['看病：怎么少花钱少走弯路']:
+        path = "health/treatment/clinic"
+        display = "健康与身心 > 诊疗干预 > 就医与问诊"
+        cron = "0 9 1 * *"
+    elif c in ['家里的常备药别吃出事'] or any(k in t for k in ['对乙酰氨基酚', '抗生素', '布洛芬', '感冒药', '处方药', '眼药水', '吃药']):
+        path = "health/treatment/medication"
+        display = "健康与身心 > 诊疗干预 > 用药安全"
+        cron = "0 7,19 * * *"
+    elif c in ['得了慢性病之后怎么活'] or any(k in t for k in ['血压', '血糖', '慢性病', '痛风', '血脂', '肾衰', '透析', '房颤', '哮喘']):
+        path = "health/treatment/chronic"
+        display = "健康与身心 > 诊疗干预 > 慢病管理"
+        cron = "0 7,19 * * *"
+    elif any(k in t for k in ['疫苗', 'HPV', '带状疱疹', '乙肝补种', '流感疫苗', '肺炎球菌']):
+        path = "health/prevention/vaccine"
+        display = "健康与身心 > 预防保健 > 疫苗防护"
+        cron = "0 9 1 9 *"
+    elif any(k in t for k in ['筛查', '胃镜', '肠镜', 'CT', '钼靶', '骨密度', '查幽门', '体检', '大便隐血']):
+        path = "health/prevention/screening"
+        display = "健康与身心 > 预防保健 > 筛查与体检"
+        cron = "0 9 15 10 *"
+    elif any(k in t for k in ['睡眠', '入睡', '打鼾', '褪黑素', '熬夜', '失眠', '呼吸机']):
+        path = "health/prevention/sleep"
+        display = "健康与身心 > 预防保健 > 节律与睡眠"
+        cron = "0 23 * * *"
+    elif c in ['别为了外形把身体搞坏']:
+        path = "health/prevention/body_care"
+        display = "健康与身心 > 预防保健 > 身体护理与防坑"
+        cron = "0 20 * * 0"
+    elif any(k in t for k in ['力量训练', '久坐', '远眺', '深蹲', '拉伸', '步数', '散步', '运动', '体态']):
+        path = "health/prevention/exercise"
+        display = "健康与身心 > 预防保健 > 运动与体态"
+        cron = "0 10,15 * * 1-5"
+    elif c in ['怎么放松：娱乐场所和减压']:
+        path = "health/mental/relaxation"
+        display = "健康与身心 > 心理精神 > 娱乐与身心放松"
+        cron = "0 21 * * 5"
+    elif c in ['遭遇重大打击之后']:
+        path = "health/mental/trauma_recovery"
+        display = "健康与身心 > 心理精神 > 创伤复原与危机"
+        cron = "0 19 * * *"
+    elif any(k in t for k in ['心理', '抑郁', '自杀', '12356', '焦虑', '精神', '自杀念头']):
+        path = "health/mental/stress"
+        display = "健康与身心 > 心理精神 > 压力与情绪调节"
+        cron = "30 20 * * 5"
+
+    # (9) 数字生活与日常效能
+    elif c == '账号与信息安全' or any(k in t for k in ['密码', '双重认证', '账号', '设备丢失', '泄露']):
+        path = "daily/digital/security"
+        display = "日常与起居 > 数字生活与效能 > 账号与隐私安全"
+        cron = "0 10 1 * *"
+    elif c in ['不要浪费精力', '不要浪费时间']:
+        path = "daily/digital/time_energy"
+        display = "日常与起居 > 数字生活与效能 > 精力与时间管理"
+        cron = "0 9 * * 1"
+
+    # 兜底：饮食生活
+    if not path:
+        path = "daily/lifestyle/diet"
+        display = "日常与起居 > 衣食养生 > 饮食营养与贮存"
+        cron = "0 12,18 * * *"
+
+    return {
+        "tree_path": path,
+        "tree_display": display,
+        "prerequisites": prereqs,
+        "cron": cron
+    }
+
+
+def main():
+    advice_path = 'app/assets/data/advice.json'
+    with open(advice_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    advices = data['list']
+    print(f'深度重构 {len(advices)} 条建议体系...')
+
+    prereq_counts = {}
+    path_counts = {}
+    l1_counts = {}
+
+    for adv in advices:
+        info = classify_advice_deep(adv)
+        adv['tree_path'] = info['tree_path']
+        adv['tree_display'] = info['tree_display']
+        adv['prerequisites'] = info['prerequisites']
+        adv['cron'] = info['cron']
+
+        p = info['tree_path']
+        l1 = p.split('/')[0]
+        path_counts[p] = path_counts.get(p, 0) + 1
+        l1_counts[l1] = l1_counts.get(l1, 0) + 1
+
+        for k in info['prerequisites']:
+            prereq_counts[k] = prereq_counts.get(k, 0) + 1
+
+    print('\n=== 六大一级支柱 (L1) 分布 ===')
+    for l1, c in sorted(l1_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f'  {l1:15s}: {c} 条 ({c/len(advices)*100:.1f}%)')
+
+    print('\n=== Top 20 树路径 (L3) 分布 ===')
+    for p, c in sorted(path_counts.items(), key=lambda x: x[1], reverse=True)[:20]:
+        print(f'  {p:35s}: {c} 条')
+
+    print('\n=== 画像前置守卫 (Prerequisites) 统计 ===')
+    for k, c in sorted(prereq_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f'  {k:25s}: {c} 条建议触发强准入')
+
+    with open(advice_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f'\n已成功保存 {advice_path}')
+
+    tree_asset_path = 'app/assets/data/taxonomy_tree.json'
+    with open(tree_asset_path, 'w', encoding='utf-8') as f:
+        json.dump(TAXONOMY_TREE, f, ensure_ascii=False, indent=2)
+    print(f'已成功保存 {tree_asset_path}')
+
+
+if __name__ == '__main__':
+    main()

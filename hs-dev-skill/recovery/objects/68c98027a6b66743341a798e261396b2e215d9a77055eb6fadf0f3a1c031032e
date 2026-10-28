@@ -1,0 +1,32 @@
+# 本次分析与图标交付核验
+
+日期：2026-10-28。范围：方案、审计脚本、审计结果、图标主图与现有平台图标资源。本次没有实施方案中的业务切片，也没有生成新安装包。
+
+## 已执行
+
+| 核验 | 结果 | 边界 |
+|---|---|---|
+| `flutter analyze --no-pub`（app 目录） | 通过，No issues found | 对现有工作区代码的静态分析，耗时 221.2 秒；未证明业务正确 |
+| `python3 tools/audit_advice_content.py --check` | 通过，767 行与输入文件指纹匹配 | 结构审计，不是 767 条事实审核 |
+| 原文与资源匹配 | 767/767 标题一致，所有正文均有 6 类字段 | 原文中 5 条没有 HTTP 链接：340、505、506、507、637；这些仍有来源字段 |
+| 数字完整性审计 | 定位 8 条数字丢失 | 本次交付规划和问题清单，未改写生产建议 |
+| `python3 tools/export_app_icons.py --check` | 通过，32 个 PNG 槽位与 Windows ICO 的 7 帧一致 | 校验主图尺寸、不透明度、导出尺寸与实际像素；另人工查看生成主图和 Android 192px 图标 |
+| 新增 Python 脚本解析与新增文本空白检查 | 通过 | 验证语法和交付文本格式 |
+| 全工作区 `git diff --check` | 存在原有问题 | `tools/build_apk_remote.sh:91` 末尾多余空行；该文件在本轮开始前已修改，本轮未编辑 |
+
+## 尚需后续切片核验
+
+- 医疗、法律、财务内容的逐条有效性与适用边界；本次只有少量高风险场景的官方来源抽查。
+- 电话调用真机链路、Android OEM 图标掩模、iOS/macOS/Windows 实际安装后的显示。
+- 规则引擎、四类流程、事件历史与数据迁移的实现测试。
+- 767 条目标/条件/场景的人工语义复核。`advice-audit.json` 中的全部 `v2_semantic_review` 均明确为 pending，不伪装成已经迁移。
+
+## 复跑
+
+```bash
+python3 tools/audit_advice_content.py
+python3 tools/audit_advice_content.py --check
+python3 tools/export_app_icons.py --check
+```
+
+原始内容或相关路由代码变化会使审计指纹校验失败，应重新生成审计，不得沿用旧清单声称当前内容已验证。图标主图变化后应重新导出平台资源。

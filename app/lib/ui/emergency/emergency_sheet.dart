@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app.dart';
 import '../../core/icons.dart';
 import '../../models/advice.dart';
 import '../../state/app_store.dart';
+import '../detail/advice_detail_sheet.dart';
 
 /// 全局一键紧急模式全屏看板
 ///
@@ -33,8 +35,19 @@ class EmergencySheet extends StatefulWidget {
 
 class _EmergencySheetState extends State<EmergencySheet> {
   int _selectedTab = 0;
+  String _searchQuery = '';
 
   static const _guides = [
+    (
+      title: '高温中暑 / 热射病',
+      sub: '先降温后转运 · 清醒补淡盐水 · 昏迷绝不喂水',
+      steps: [
+        '脱离高温环境：迅速移至阴凉通风处，解开衣扣、平卧并将双脚稍垫高，保持呼吸道通畅。',
+        '强力物理降温：青壮年优先冷水浸泡，老人或有基础病者全身喷水或湿毛巾敷贴并强力扇风；在颈部、腋下、腹股沟放置冰袋。',
+        '科学小口补水：只要患者神志清醒，少量多次喝凉淡盐水或电解质运动饮料（每小时 500~1000ml），切勿猛灌，严禁饮酒或高糖饮料。',
+        '识别热射病危象：体温超 40℃、皮肤灼热无汗、谵妄抽搐或叫不醒时立即打 120！遵循“先降温后转运”，昏迷者严禁给水！',
+      ],
+    ),
     (
       title: '突发胸痛 / 疑似卒中',
       sub: '黄金抢救窗口 · 切勿盲目服药',
@@ -46,13 +59,33 @@ class _EmergencySheetState extends State<EmergencySheet> {
       ],
     ),
     (
+      title: '异物卡喉 / 海姆立克',
+      sub: '黄金 4 分钟 · 拍背加腹部冲击 · 意识丧失立刻 CPR',
+      steps: [
+        '区分意识与梗阻程度：若患者能咳嗽或说话，鼓励其用力自主咳嗽，切勿拍背干扰；若无法发声、不能咳嗽、口唇发绀，立刻开展急救。',
+        '掌根拍背 5 次：协助患者身体前倾，站在其侧后方，用一只手的掌根在两肩胛骨之间用力向前上方叩击 5 次。',
+        '腹部冲击 5 次（成人与 1 岁以上）：站在身后，一手握拳拇指侧抵住肚脐上方两横指处，另一手抱拳向内向上快速冲击 5 次。',
+        '拍背 5 次与冲击 5 次循环；患者一旦昏迷倒地，立即呼救打 120 并立刻开始心肺复苏（CPR），每次人工呼吸前检查口腔并取出可见异物。',
+      ],
+    ),
+    (
+      title: '严重烫伤 / 烧伤急救',
+      sub: '冲-脱-泡-盖-送 · 忌涂牙膏酱油',
+      steps: [
+        '【冲】立即用 15~20℃ 流动冷水轻柔冲洗创面 15~30 分钟，迅速带走热量止痛。',
+        '【脱】在冷水中小心剪开或除去衣物，若衣物粘连表皮切勿强行撕拉，保留粘连部分。',
+        '【泡】若疼痛剧烈，可继续将受伤部位浸泡在洁净冷水中 10~30 分钟。',
+        '【盖与送】用清洁无菌纱布或干净棉布轻盖创面；切勿涂抹牙膏、酱油、香油或草药；大面积烫伤尽快送医。',
+      ],
+    ),
+    (
       title: '大额转账被骗 / 紧急止付',
       sub: '黄金 10 分钟 · 阻断资金转移',
       steps: [
-        '立刻拨打 110 或全国反诈专线 96110 报案，提供对方涉案银行账号与转账单号。',
-        '利用网银/ATM“输错 3 次密码”技巧：登录对方开户行网银或无卡存取，输入对方卡号并连续输错 3 次密码，锁定其账户 24 小时。',
-        '立即截图保存所有聊天记录、转账凭证、通话录音与网站链接。',
-        '停止向对方发送任何信息，切勿相信“交解冻费可以退款”的二次诈骗。',
+        '立刻拨打 110 或全国反诈专线 96110 报案，提供转出账号、对方涉案账号、转账金额与准确交易流水号，请求公安紧急止付。',
+        '联系发卡行客服与平台：若本人卡号、密码或验证码已泄露，立即拨打发卡银行官方客服电话或登录手机银行挂失冻结本人账户。',
+        '完整留存证据链：截图保存所有聊天记录、转账凭证、通话记录、诈骗网址链接与 APP 安装包，切勿私自删除。',
+        '停止向对方发送任何信息，坚决切断联系，切勿轻信“充值解冻”、“交保证金退款”等任何二次诈骗话术。',
       ],
     ),
     (
@@ -323,6 +356,177 @@ class _EmergencySheetState extends State<EmergencySheet> {
             else
               for (var i = 0; i < contacts.length; i++)
                 _contactCard(context, contacts[i], () => store.removeEmergencyContact(i)),
+            const SizedBox(height: 24),
+
+            // ---- 第四行：突发与急救事件备查库（仅在突发状况时按需检索） ----
+            Row(
+              children: [
+                Text(
+                  '突发与急救条目备查库',
+                  style: TextStyle(
+                    fontFamily: 'Georgia',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white.withValues(alpha: 0.95),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE33A22).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(9999),
+                    border: Border.all(
+                      color: const Color(0xFFE33A22).withValues(alpha: 0.4),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: const Text(
+                    '仅突发时使用',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFFE33A22),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1F1E1D),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF383533)),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              alignment: Alignment.center,
+              child: TextField(
+                style: const TextStyle(fontSize: 12.5, color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: '搜索突发急救（如：中暑、海姆立克、烫伤、骨折、蛇咬伤）',
+                  hintStyle: TextStyle(
+                    fontSize: 11.5,
+                    color: Colors.white.withValues(alpha: 0.4),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 16,
+                    color: Colors.white.withValues(alpha: 0.5),
+                  ),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 26, minHeight: 16),
+                  isDense: true,
+                  border: InputBorder.none,
+                ),
+                onChanged: (v) => setState(() => _searchQuery = v.trim().toLowerCase()),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Builder(
+              builder: (context) {
+                final list = store.emergencyAdvices.where((a) {
+                  if (_searchQuery.isEmpty) return true;
+                  final text = '${a.title} ${a.chapter} ${a.tags.join(" ")}'.toLowerCase();
+                  return text.contains(_searchQuery);
+                }).toList();
+
+                if (list.isEmpty) {
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1F1E1D),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '未找到相关急救条目',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: Colors.white.withValues(alpha: 0.45),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                // 展示前 10 条（或搜索结果）
+                final displayList = _searchQuery.isEmpty ? list.take(8).toList() : list;
+                return Column(
+                  children: [
+                    for (final a in displayList)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1F1E1D),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFF383533)),
+                        ),
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 2,
+                          ),
+                          title: Text(
+                            a.title,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 1.5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE33A22).withValues(alpha: 0.18),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    a.timingBadge.isNotEmpty ? a.timingBadge : '突发应急',
+                                    style: const TextStyle(
+                                      fontSize: 9.5,
+                                      color: Color(0xFFE33A22),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    a.chapter,
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      color: Colors.white.withValues(alpha: 0.4),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.chevron_right,
+                            size: 16,
+                            color: Color(0xFF838280),
+                          ),
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            showAdviceDetail(context, a.id);
+                          },
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -396,13 +600,26 @@ class _EmergencySheetState extends State<EmergencySheet> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(c.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 2),
-                Text(c.phone, style: const TextStyle(fontSize: 11.5, color: Color(0xFFA8A5A0))),
-              ],
+            child: InkWell(
+              onTap: () => _dialAlert(context, c.phone, '${c.relation} ${c.name}'),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(c.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Text(c.phone, style: const TextStyle(fontSize: 11.5, color: Color(0xFFA8A5A0))),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.phone, size: 12, color: Color(0xFF2A72DE)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           IconButton(
@@ -433,9 +650,30 @@ class _EmergencySheetState extends State<EmergencySheet> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE33A22)),
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(ctx).pop();
-              // 实际应用中调用 url_launcher: tel:120，此处已完成呼叫交互动作
+              final uri = Uri.parse('tel:$numStr');
+              bool launched = false;
+              try {
+                if (await canLaunchUrl(uri)) {
+                  launched = await launchUrl(uri);
+                }
+              } catch (_) {
+                launched = false;
+              }
+              if (!launched && context.mounted) {
+                await Clipboard.setData(ClipboardData(text: numStr));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: const Color(0xFFE33A22),
+                    content: Text(
+                      '当前设备无法直接调用拨号，已将紧急号码 $numStr 复制到剪贴板',
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
             },
             child: const Text('立即呼叫', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
           ),

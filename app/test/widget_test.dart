@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairo_step/app.dart';
 import 'package:kairo_step/data/catalog.dart';
@@ -37,10 +38,17 @@ void main() {
     final domainChapters = LifeDomain.values.expand((d) => d.chapters).toList();
     expect(domainChapters.length, 34);
     expect(domainChapters.toSet().length, 34, reason: '章节在领域间互斥无重复');
-    expect(domainChapters.toSet(), catalog.chapters.toSet(), reason: '34 章节 100% 映射');
+    expect(
+      domainChapters.toSet(),
+      catalog.chapters.toSet(),
+      reason: '34 章节 100% 映射',
+    );
 
     // 验证各支柱加总恰好 767 条
-    final totalDomainCount = LifeDomain.values.fold<int>(0, (sum, d) => sum + d.totalCount);
+    final totalDomainCount = LifeDomain.values.fold<int>(
+      0,
+      (sum, d) => sum + d.totalCount,
+    );
     expect(totalDomainCount, 767);
 
     // 验证真实计算各领域条数
@@ -48,8 +56,11 @@ void main() {
       final actualCount = catalog.adviceList
           .where((a) => domain.chapters.contains(a.chapter))
           .length;
-      expect(actualCount, domain.totalCount,
-          reason: '领域 ${domain.title} 实际条数与元数据强一致');
+      expect(
+        actualCount,
+        domain.totalCount,
+        reason: '领域 ${domain.title} 实际条数与元数据强一致',
+      );
     }
   });
 
@@ -57,13 +68,11 @@ void main() {
     final store = AppStore(catalog, await _emptyPrefs());
     final pregnancy = catalog.adviceList.where((a) => a.tags.contains('孕产'));
     for (final a in pregnancy) {
-      expect(store.matchPersona(a), isFalse,
-          reason: '建议 ${a.id} 应被男性画像排除');
+      expect(store.matchPersona(a), isFalse, reason: '建议 ${a.id} 应被男性画像排除');
     }
   });
 
-  testWidgets('首次打开APP（无画像数据）：必须展示人性化优雅引导向导 Onboarding',
-      (tester) async {
+  testWidgets('首次打开APP（无画像数据）：必须展示人性化优雅引导向导 Onboarding', (tester) async {
     final store = AppStore(catalog, await _emptyPrefs());
     await store.restore();
 
@@ -215,29 +224,28 @@ void main() {
     await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
-    // 默认在当下页
-    expect(find.text('1.5h 视窗'), findsOneWidget);
-    expect(find.text('-45分 ‹ 此刻 › +45分'), findsOneWidget);
-    expect(find.text('实时同步中'), findsOneWidget);
+    // 默认在当下页：精简时间尺，不显示 1.5h 视窗与 -45分等冗余标注
+    expect(find.text('1.5h 视窗'), findsNothing);
+    expect(find.text('-45分 ‹ 此刻 › +45分'), findsNothing);
 
-    // 验证时间尺处于最顶部：时间尺顶端 Y 坐标小于核心行动卡与问候的 Y 坐标
+    // 验证时间尺处于拟人化提示语下方，核心行动卡上方
     final rulerTop = tester.getTopLeft(find.byType(GearRuler)).dy;
     final cardTop = tester.getTopLeft(find.byType(AdviceCard).first).dy;
-    expect(rulerTop, lessThan(cardTop), reason: '时间尺必须放置在最上面');
+    expect(rulerTop, lessThan(cardTop));
 
     // 模拟在时间尺上轻触进行时间推演
-    await tester.tapAt(tester.getCenter(find.byType(GearRuler)).translate(-100, 10));
+    await tester.tapAt(
+      tester.getCenter(find.byType(GearRuler)).translate(-100, 10),
+    );
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
-    // 验证切换为预演模式并展示「回到此刻」按钮
-    expect(find.text('预演模式'), findsOneWidget);
+    // 验证展示「回到此刻」按钮
     expect(find.text('回到此刻'), findsOneWidget);
 
     // 点击回到此刻恢复实时同步
     await tester.tap(find.text('回到此刻'));
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
-    expect(find.text('实时同步中'), findsOneWidget);
     expect(find.text('回到此刻'), findsNothing);
   });
 
@@ -249,10 +257,33 @@ void main() {
     final septicAdvice = catalog.byId[46]!;
     expect(septicAdvice.title, contains('化粪池'));
 
+    // 建议 475: 药按医嘱吃满，别感觉好了就停（遵医依从性红线建议，默认绝非每日提醒，平时静默储备）
+    final medAdvice = catalog.byId[475]!;
+    expect(medAdvice.actType, 'redline-stamp');
+    expect(medAdvice.timingBadge, '红线知识 · 背熟即防');
+    expect(
+      store.todayAdvices.any((a) => a.id == 475),
+      isFalse,
+      reason: '药按医嘱吃满属于遵医红线与情境建议，默认静默储备，绝不进入日常今日流',
+    );
+    expect(store.periodAdvicesOf('morning').any((a) => a.id == 475), isFalse);
+
     // 验证严格准入：在未经自定义配置前，绝不进入今日流、时段流、周期流
-    expect(store.todayAdvices.any((a) => a.id == 46), isFalse, reason: '偶发无日期建议绝不进入今日流');
-    expect(store.periodAdvicesOf('morning').any((a) => a.id == 46), isFalse, reason: '偶发建议绝不进入早晨时段');
-    expect(store.cycleAdvicesOf(PeriodScope.weekly).any((a) => a.id == 46), isFalse, reason: '偶发建议绝不进入每周周期');
+    expect(
+      store.todayAdvices.any((a) => a.id == 46),
+      isFalse,
+      reason: '偶发无日期建议绝不进入今日流',
+    );
+    expect(
+      store.periodAdvicesOf('morning').any((a) => a.id == 46),
+      isFalse,
+      reason: '偶发建议绝不进入早晨时段',
+    );
+    expect(
+      store.cycleAdvicesOf(PeriodScope.weekly).any((a) => a.id == 46),
+      isFalse,
+      reason: '偶发建议绝不进入每周周期',
+    );
 
     // 模拟用户点击 3D 翻转卡片配置触发周期：将其显式配置为【日常节律 · 早晨】
     store.setTriggerConfig(
@@ -264,13 +295,29 @@ void main() {
     );
 
     // 验证即时编入：配置后动态重算，立刻进入今日流与早晨时段
-    expect(store.todayAdvices.any((a) => a.id == 46), isTrue, reason: '用户显式配置为日常后进入今日待办');
-    expect(store.periodAdvicesOf('morning').any((a) => a.id == 46), isTrue, reason: '进入早晨时段流');
-    expect(store.periodAdvicesOf('night').any((a) => a.id == 46), isFalse, reason: '未配置夜间时段不进入夜间');
+    expect(
+      store.todayAdvices.any((a) => a.id == 46),
+      isTrue,
+      reason: '用户显式配置为日常后进入今日待办',
+    );
+    expect(
+      store.periodAdvicesOf('morning').any((a) => a.id == 46),
+      isTrue,
+      reason: '进入早晨时段流',
+    );
+    expect(
+      store.periodAdvicesOf('night').any((a) => a.id == 46),
+      isFalse,
+      reason: '未配置夜间时段不进入夜间',
+    );
 
     // 模拟重置配置：恢复系统默认
     store.resetTriggerConfig(46);
-    expect(store.todayAdvices.any((a) => a.id == 46), isFalse, reason: '恢复默认后退出日常流');
+    expect(
+      store.todayAdvices.any((a) => a.id == 46),
+      isFalse,
+      reason: '恢复默认后退出日常流',
+    );
   });
 
   test('卡片个性化移除与排除库管理闭环（补全画像不足）', () async {
@@ -287,13 +334,25 @@ void main() {
     expect(store.excludedAdviceIds.contains(targetId), isTrue);
 
     // 验证日常所有流已动态过滤该项
-    expect(store.todayAdvices.any((a) => a.id == targetId), isFalse, reason: '已排除条目从今日流中移除');
-    expect(store.periodAdvicesOf('morning').any((a) => a.id == targetId), isFalse, reason: '从时段流中移除');
+    expect(
+      store.todayAdvices.any((a) => a.id == targetId),
+      isFalse,
+      reason: '已排除条目从今日流中移除',
+    );
+    expect(
+      store.periodAdvicesOf('morning').any((a) => a.id == targetId),
+      isFalse,
+      reason: '从时段流中移除',
+    );
 
     // 用户在「我的」已排除管理中点击「重新启用」
     store.restoreAdvice(targetId);
     expect(store.isExcluded(targetId), isFalse);
-    expect(store.todayAdvices.any((a) => a.id == targetId), isTrue, reason: '恢复后重新编入今日流');
+    expect(
+      store.todayAdvices.any((a) => a.id == targetId),
+      isTrue,
+      reason: '恢复后重新编入今日流',
+    );
   });
 
   test('90 天培养周期体系与卡内基周复盘数据模型闭环', () async {
@@ -324,6 +383,137 @@ void main() {
     );
     expect(store.carnegieReviews.length, 1);
     expect(store.carnegieReviews.first.nextOneSentence, '先复述对方观点，再讨论折中方案。');
+  });
+
+  testWidgets('顶栏常驻搜索栏与紧急按钮，且默认外观为跟随系统', (tester) async {
+    final prefs = await _emptyPrefs();
+    await prefs.setBool('kHasCompletedOnboarding', true);
+    await prefs.setString(
+      'kProfile',
+      '{"gender":"男","age":28,"roles":["全民"],"livingConditions":[],"healthConcerns":[],"prunedOnly":true,"parentsOnly":false}',
+    );
+
+    final store = AppStore(catalog, prefs);
+    await store.restore();
+
+    // 默认外观为跟随系统
+    expect(store.themeMode, ThemeMode.system, reason: '外观默认配置必须为跟随系统');
+
+    await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    // 验证搜索栏与紧急按钮在各页面常驻顶栏
+    for (final tab in ['当下', '今天', '周期', '库', '我的']) {
+      await tester.tap(find.text(tab));
+      await tester.pumpAndSettle(const Duration(milliseconds: 100));
+      expect(
+        find.textContaining('询问任何突发或生活决策'),
+        findsOneWidget,
+        reason: '$tab 页必须展示搜索栏',
+      );
+      expect(find.text('紧急'), findsOneWidget, reason: '$tab 页必须展示紧急按钮');
+    }
+  });
+
+  test('突发与急救事件（如中暑处理、海姆立克、心肺复苏）严格静默储备，绝不进入当下时间尺聚焦视窗与今日流', () async {
+    final prefs = await _emptyPrefs();
+    final store = AppStore(catalog, prefs);
+    await store.restore();
+
+    // 查找中暑建议 (ID 419)
+    final heatstroke = catalog.adviceList.firstWhere(
+      (a) => a.title.contains('中暑'),
+    );
+    expect(
+      heatstroke.isEmergencyOrIncident,
+      isTrue,
+      reason: '中暑处理必须识别为突发/应急条目',
+    );
+    expect(
+      store.effectiveTriggerOf(heatstroke).mode,
+      TriggerMode.dormant,
+      reason: '突发应急事件默认推断必须为静默储备态',
+    );
+
+    // 验证中暑等应急事件严禁进入今日流
+    expect(
+      store.todayAdvices.any((a) => a.id == heatstroke.id),
+      isFalse,
+      reason: '中暑处理绝不能进入今日流',
+    );
+
+    // 验证中暑等应急事件严禁进入当下全天各个时刻的时间尺视窗
+    final testHours = [6, 9, 11, 14, 16, 19, 21, 23];
+    for (final h in testHours) {
+      final windowAdvices = store.advicesForWindow(
+        DateTime(2026, 10, 27, h, 0),
+      );
+      expect(
+        windowAdvices.any((a) => a.id == heatstroke.id),
+        isFalse,
+        reason: '$h:00 视窗内绝不能展示中暑建议',
+      );
+      expect(
+        windowAdvices.any((a) => a.isEmergencyOrIncident),
+        isFalse,
+        reason: '$h:00 视窗内绝不能包含任何应急急救建议',
+      );
+    }
+
+    // 验证中暑处理被收录在紧急备查库中
+    expect(
+      store.emergencyAdvices.any((a) => a.id == heatstroke.id),
+      isTrue,
+      reason: '中暑处理必须在紧急备查库中随用随查',
+    );
+  });
+
+  test('树状标签与画像前置守卫 (Prerequisites Gating) 严密生效', () async {
+    final prefs = await _emptyPrefs();
+    final store = AppStore(catalog, prefs);
+
+    // 1. 全量 767 条建议均已完成树状路径与调度 Cron 注入
+    expect(catalog.adviceList.every((a) => a.treePath.isNotEmpty), isTrue);
+    expect(catalog.adviceList.every((a) => a.treeDisplay.isNotEmpty), isTrue);
+    expect(catalog.adviceList.every((a) => a.cron.isNotEmpty), isTrue);
+
+    // 2. 安全带也适用于乘客，不能因没有汽车而剪掉。
+    final seatbelt = catalog.byId[1]!; // 系安全带
+    expect(seatbelt.prerequisites.containsKey('has_car'), isFalse);
+
+    // 默认无车画像
+    store.profile = const UserProfile(hasCar: false);
+    expect(store.matchPersona(seatbelt), isTrue, reason: '无车用户乘车时仍需安全带建议');
+
+    // 开启有车画像
+    store.profile = const UserProfile(hasCar: true);
+    expect(store.matchPersona(seatbelt), isTrue, reason: '有车画像顺利通过安全带准入');
+
+    // 3. 测试两轮车守卫 (hasTwowheeler)
+    final helmet = catalog.byId[2]!; // 骑行头盔
+    expect(helmet.prerequisites['has_twowheeler'], isTrue);
+
+    store.profile = const UserProfile(hasTwowheeler: false);
+    expect(store.matchPersona(helmet), isFalse, reason: '无两轮车画像必须过滤头盔');
+
+    store.profile = const UserProfile(hasTwowheeler: true);
+    expect(store.matchPersona(helmet), isTrue, reason: '有两轮车画像顺利通过头盔准入');
+
+    // 4. 测试吸烟者守卫 (isSmoker)
+    final smokingAdvices = catalog.adviceList
+        .where((a) => a.prerequisites['is_smoker'] == true)
+        .toList();
+    expect(smokingAdvices.isNotEmpty, isTrue);
+
+    store.profile = const UserProfile(isSmoker: false);
+    for (final sa in smokingAdvices) {
+      expect(store.matchPersona(sa), isFalse, reason: '非吸烟者必须过滤戒烟干预条目');
+    }
+
+    store.profile = const UserProfile(isSmoker: true);
+    for (final sa in smokingAdvices) {
+      expect(store.matchPersona(sa), isTrue, reason: '吸烟者画像顺利通过戒烟条目准入');
+    }
   });
 }
 

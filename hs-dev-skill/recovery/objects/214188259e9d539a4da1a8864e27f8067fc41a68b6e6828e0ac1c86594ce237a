@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "task_id": "20261028_091935_989532",
+  "title": "四类核心目标分析、优化方案与应用品牌图标",
+  "created_at": "2026-10-28T09:19:35.994389Z",
+  "status": "ACTIVE",
+  "activities": [
+    "A1",
+    "A2"
+  ],
+  "current_activity": "A1",
+  "verification": null,
+  "mode": "mute",
+  "updated_at": "2026-10-28T09:19:36.169488Z"
+}

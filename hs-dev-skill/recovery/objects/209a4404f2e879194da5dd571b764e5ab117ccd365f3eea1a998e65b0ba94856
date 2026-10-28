@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "checks": [
+    {
+      "check_id": "A1.1",
+      "rule_digest": "bbe83612cc03e88f99197d33c2f5f86cf930a1e62d7ff0d375002d7bba54e0b4",
+      "result": "PASS",
+      "evidence": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "evidence_digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "reason": "依据用户四类目标、全库结构审计与代码定位；区分事实与拟议设计"
+    },
+    {
+      "check_id": "A1.2",
+      "rule_digest": "e395a1649da4514bd9cc793e62a5d2252beb663c3dfc995066e151ded06d4174",
+      "result": "PASS",
+      "evidence": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "evidence_digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "reason": "四类行为结果、代表场景、切片验收与边界均见方案"
+    },
+    {
+      "check_id": "A1.3",
+      "rule_digest": "7eec5e5434a906ecf3879ff91979d7d66f1f36d7ef45c963abbda18c1dff194b",
+      "result": "PASS",
+      "evidence": "docs/optimization/2026-10-28-四类核心目标优化方案.md",
+      "evidence_digest": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "reason": "用户明确四类核心目标；本轮交付分析规划与图标，语义迁移和内容专业复核标为待做"
+    }
+  ]
+}

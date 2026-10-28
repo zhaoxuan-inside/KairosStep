@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-28T09:29:51.652949Z",
+  "ok": true,
+  "source_digest": "2697872eea20df242f4dd44a2fb9b48124f6be415d50017320e44313afbf603c",
+  "sources_unchanged": true,
+  "results": [
+    {
+      "argv": [
+        "python3",
+        "tools/audit_advice_content.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970/check_0.log",
+      "sha256": "a9acbccecc719e2cf6f0b1d9c3187fcdc0486f96e6ed8f214036d6313ddbc7df"
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/export_app_icons.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970/check_1.log",
+      "sha256": "17d8463f37084087c32549d8cbcbd9843336589b706ddfd5d008dfeb584701fd"
+    }
+  ]
+}

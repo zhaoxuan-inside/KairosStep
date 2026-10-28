@@ -18,10 +18,10 @@ class RawAdvice {
   final String title;
 
   factory RawAdvice.fromJson(Map<String, dynamic> json) => RawAdvice(
-        id: (json['id'] as num).toInt(),
-        chapter: json['c'] as String,
-        title: json['t'] as String,
-      );
+    id: (json['id'] as num).toInt(),
+    chapter: json['c'] as String,
+    title: json['t'] as String,
+  );
 
   Map<String, dynamic> toJson() => {'id': id, 'c': chapter, 't': title};
 }
@@ -50,19 +50,19 @@ class AdviceDetail {
   final List<int> rel; // 关联建议 id
 
   factory AdviceDetail.fromJson(Map<String, dynamic> json) => AdviceDetail(
-        humanized: json['h'] as String,
-        cost: json['cost'] as String?,
-        plain: json['plain'] as String?,
-        benefit: json['benefit'] as String?,
-        grade: (json['grade'] as String?) ?? 'C',
-        sources: ((json['sources'] as List?) ?? const [])
-            .map((s) => (s as List).cast<String>())
-            .toList(),
-        notes: json['notes'] as String?,
-        rel: ((json['rel'] as List?) ?? const [])
-            .map((n) => (n as num).toInt())
-            .toList(),
-      );
+    humanized: json['h'] as String,
+    cost: json['cost'] as String?,
+    plain: json['plain'] as String?,
+    benefit: json['benefit'] as String?,
+    grade: (json['grade'] as String?) ?? 'C',
+    sources: ((json['sources'] as List?) ?? const [])
+        .map((s) => (s as List).cast<String>())
+        .toList(),
+    notes: json['notes'] as String?,
+    rel: ((json['rel'] as List?) ?? const [])
+        .map((n) => (n as num).toInt())
+        .toList(),
+  );
 }
 
 // ============================================================================
@@ -72,9 +72,7 @@ class AdviceDetail {
 /// 建议多维属性标签元：从标题与正文中提炼的多维标签，专门用于多维搜索和画像剪枝。
 @immutable
 class AdviceFacets {
-  const AdviceFacets({
-    required this.tags,
-  });
+  const AdviceFacets({required this.tags});
 
   final List<String> tags;
 
@@ -85,16 +83,18 @@ class AdviceFacets {
 
   /// 频率节奏标签（每天/每周/每月/每年/单次/偶发/每次/每日多次）
   List<String> get frequencies => tags
-      .where((t) => const [
-            '每天',
-            '每周',
-            '每月',
-            '每年',
-            '单次',
-            '偶发',
-            '每次',
-            '每日多次'
-          ].contains(t))
+      .where(
+        (t) => const [
+          '每天',
+          '每周',
+          '每月',
+          '每年',
+          '单次',
+          '偶发',
+          '每次',
+          '每日多次',
+        ].contains(t),
+      )
       .toList();
 
   /// 是否包含某特定标签
@@ -103,9 +103,8 @@ class AdviceFacets {
   /// 是否命中候选集合中的任意标签
   bool any(Iterable<String> candidates) => tags.any(candidates.contains);
 
-  factory AdviceFacets.fromJson(Map<String, dynamic> json) => AdviceFacets(
-        tags: ((json['tags'] as List?) ?? const []).cast<String>(),
-      );
+  factory AdviceFacets.fromJson(Map<String, dynamic> json) =>
+      AdviceFacets(tags: ((json['tags'] as List?) ?? const []).cast<String>());
 
   Map<String, dynamic> toJson() => {'tags': tags};
 }
@@ -146,10 +145,10 @@ class AdvicePresentation {
       );
 
   Map<String, dynamic> toJson() => {
-        'parts': parts,
-        'timing_badge': timingBadge,
-        'act_type': actType,
-      };
+    'parts': parts,
+    'timing_badge': timingBadge,
+    'act_type': actType,
+  };
 }
 
 /// 聚合根：整合原始数据、属性标签数据与样式表现数据，向下兼容并提供高内聚访问。
@@ -159,11 +158,24 @@ class Advice {
     required this.raw,
     required this.facets,
     required this.presentation,
+    this.treePath = 'daily/lifestyle/diet',
+    this.treeDisplay = '日常与起居 > 衣食养生 > 饮食营养与贮存',
+    this.treePaths = const [],
+    this.prerequisites = const {},
+    this.cron = '* * * * *',
   });
 
   final RawAdvice raw;
   final AdviceFacets facets;
   final AdvicePresentation presentation;
+  final String treePath;
+  final String treeDisplay;
+  final List<String> treePaths;
+
+  /// Legacy records with one path continue to work; new records support cross-listing.
+  List<String> get topicPaths => treePaths.isEmpty ? [treePath] : treePaths;
+  final Map<String, dynamic> prerequisites;
+  final String cron;
 
   // 向下兼容代理
   int get id => raw.id;
@@ -177,11 +189,41 @@ class Advice {
       presentation.coreAction.isNotEmpty ? presentation.coreAction : raw.title;
   List<String> get caveats => presentation.caveats;
 
+  /// 是否属于突发事件、急救处置、黄金救治等偶发应急建议（非日常固定时段流，如中暑、骨折、海姆立克等）
+  bool get isEmergencyOrIncident {
+    if (chapter == '紧急情况：先做什么') return true;
+    if (actType == 'emergency-action') return true;
+    if (tags.contains('急救') || tags.contains('速查')) return true;
+    if (tags.contains('事中') && tags.contains('突发事件')) return true;
+    if (timingBadge.contains('黄金救治') || timingBadge.contains('紧急')) return true;
+    final t = title;
+    if (t.contains('中暑') ||
+        t.contains('海姆立克') ||
+        t.contains('心肺复苏') ||
+        t.contains('触电') ||
+        t.contains('溺水') ||
+        t.contains('毒蛇咬伤') ||
+        t.contains('骨折制动') ||
+        t.contains('破水') ||
+        t.contains('洗胃') ||
+        t.contains('催吐')) {
+      return true;
+    }
+    return false;
+  }
+
   factory Advice.fromJson(Map<String, dynamic> json) => Advice(
-        raw: RawAdvice.fromJson(json),
-        facets: AdviceFacets.fromJson(json),
-        presentation: AdvicePresentation.fromJson(json),
-      );
+    raw: RawAdvice.fromJson(json),
+    facets: AdviceFacets.fromJson(json),
+    presentation: AdvicePresentation.fromJson(json),
+    treePath: json['tree_path'] as String? ?? 'daily/lifestyle/diet',
+    treeDisplay: json['tree_display'] as String? ?? '日常与起居 > 衣食养生 > 饮食营养与贮存',
+    treePaths: List.unmodifiable(
+      (json['tree_paths'] as List? ?? []).cast<String>(),
+    ),
+    prerequisites: (json['prerequisites'] as Map<String, dynamic>?) ?? const {},
+    cron: json['cron'] as String? ?? '* * * * *',
+  );
 }
 
 // ============================================================================
@@ -214,37 +256,36 @@ class UserTodoItem {
     String? title,
     String? targetDate,
     String? note,
-  }) =>
-      UserTodoItem(
-        id: id,
-        title: title ?? this.title,
-        adviceId: adviceId,
-        isDone: isDone ?? this.isDone,
-        createdAt: createdAt,
-        targetDate: targetDate ?? this.targetDate,
-        note: note ?? this.note,
-      );
+  }) => UserTodoItem(
+    id: id,
+    title: title ?? this.title,
+    adviceId: adviceId,
+    isDone: isDone ?? this.isDone,
+    createdAt: createdAt,
+    targetDate: targetDate ?? this.targetDate,
+    note: note ?? this.note,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'adviceId': adviceId,
-        'isDone': isDone,
-        'createdAt': createdAt.toIso8601String(),
-        'targetDate': targetDate,
-        'note': note,
-      };
+    'id': id,
+    'title': title,
+    'adviceId': adviceId,
+    'isDone': isDone,
+    'createdAt': createdAt.toIso8601String(),
+    'targetDate': targetDate,
+    'note': note,
+  };
 
   factory UserTodoItem.fromJson(Map<String, dynamic> json) => UserTodoItem(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        adviceId: json['adviceId'] as int?,
-        isDone: json['isDone'] as bool? ?? false,
-        createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-            DateTime.now(),
-        targetDate: json['targetDate'] as String?,
-        note: json['note'] as String?,
-      );
+    id: json['id'] as String,
+    title: json['title'] as String,
+    adviceId: json['adviceId'] as int?,
+    isDone: json['isDone'] as bool? ?? false,
+    createdAt:
+        DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+    targetDate: json['targetDate'] as String?,
+    note: json['note'] as String?,
+  );
 }
 
 // ============================================================================
@@ -269,7 +310,8 @@ class NodePackageItem {
   final bool bone;
   final String? soft;
 
-  factory NodePackageItem.fromJson(Map<String, dynamic> json) => NodePackageItem(
+  factory NodePackageItem.fromJson(Map<String, dynamic> json) =>
+      NodePackageItem(
         src: (json['src'] as num?)?.toInt(),
         label: json['label'] as String,
         freq: json['freq'] as String,
@@ -296,14 +338,14 @@ class NodePackage {
   final List<NodePackageItem> items;
 
   factory NodePackage.fromJson(Map<String, dynamic> json) => NodePackage(
-        no: json['no'] as String,
-        title: json['title'] as String,
-        trigger: (json['trigger'] as num).toInt(),
-        headline: json['headline'] as String,
-        items: ((json['items'] as List?) ?? const [])
-            .map((e) => NodePackageItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+    no: json['no'] as String,
+    title: json['title'] as String,
+    trigger: (json['trigger'] as num).toInt(),
+    headline: json['headline'] as String,
+    items: ((json['items'] as List?) ?? const [])
+        .map((e) => NodePackageItem.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
 }
 
 @immutable
@@ -416,10 +458,7 @@ enum LifeDomain {
     accentColor: Color(0xFF06B6D4),
     totalCount: 45,
     description: '涵盖每日微习惯打卡、时间精力管理、昼夜节律与专注复盘',
-    chapters: [
-      '不要浪费时间',
-      '不要浪费精力',
-    ],
+    chapters: ['不要浪费时间', '不要浪费精力'],
   );
 
   const LifeDomain({
@@ -474,7 +513,8 @@ enum TriggerMode {
 class CustomTriggerConfig {
   const CustomTriggerConfig({
     required this.mode,
-    this.dailyPeriods = const [], // 'morning', 'focus', 'afternoon', 'evening', 'night'
+    this.dailyPeriods =
+        const [], // 'morning', 'focus', 'afternoon', 'evening', 'night'
     this.cadenceScopeKey = 'weekly', // 'weekly', 'monthly', 'yearly'
     this.targetDate, // yyyy-mm-dd
     this.leadDays = 15,
@@ -498,26 +538,25 @@ class CustomTriggerConfig {
     int? leadDays,
     int? weekday,
     int? monthDay,
-  }) =>
-      CustomTriggerConfig(
-        mode: mode ?? this.mode,
-        dailyPeriods: dailyPeriods ?? this.dailyPeriods,
-        cadenceScopeKey: cadenceScopeKey ?? this.cadenceScopeKey,
-        targetDate: targetDate ?? this.targetDate,
-        leadDays: leadDays ?? this.leadDays,
-        weekday: weekday ?? this.weekday,
-        monthDay: monthDay ?? this.monthDay,
-      );
+  }) => CustomTriggerConfig(
+    mode: mode ?? this.mode,
+    dailyPeriods: dailyPeriods ?? this.dailyPeriods,
+    cadenceScopeKey: cadenceScopeKey ?? this.cadenceScopeKey,
+    targetDate: targetDate ?? this.targetDate,
+    leadDays: leadDays ?? this.leadDays,
+    weekday: weekday ?? this.weekday,
+    monthDay: monthDay ?? this.monthDay,
+  );
 
   Map<String, dynamic> toJson() => {
-        'mode': mode.name,
-        'dailyPeriods': dailyPeriods,
-        'cadenceScopeKey': cadenceScopeKey,
-        'targetDate': targetDate,
-        'leadDays': leadDays,
-        'weekday': weekday,
-        'monthDay': monthDay,
-      };
+    'mode': mode.name,
+    'dailyPeriods': dailyPeriods,
+    'cadenceScopeKey': cadenceScopeKey,
+    'targetDate': targetDate,
+    'leadDays': leadDays,
+    'weekday': weekday,
+    'monthDay': monthDay,
+  };
 
   factory CustomTriggerConfig.fromJson(Map<String, dynamic> json) =>
       CustomTriggerConfig(
@@ -525,13 +564,135 @@ class CustomTriggerConfig {
           (m) => m.name == json['mode'],
           orElse: () => TriggerMode.dormant,
         ),
-        dailyPeriods: (json['dailyPeriods'] as List?)?.cast<String>() ?? const [],
+        dailyPeriods:
+            (json['dailyPeriods'] as List?)?.cast<String>() ?? const [],
         cadenceScopeKey: json['cadenceScopeKey'] as String? ?? 'weekly',
         targetDate: json['targetDate'] as String?,
         leadDays: json['leadDays'] as int? ?? 15,
         weekday: json['weekday'] as int? ?? 1,
         monthDay: json['monthDay'] as int? ?? 1,
       );
+}
+
+/// 浮出时段规范定义：包含具体时间段范围与交叠判定算法
+class PeriodDefinition {
+  const PeriodDefinition({
+    required this.key,
+    required this.name,
+    required this.startMinute,
+    required this.endMinute,
+    required this.timeRangeLabel,
+  });
+
+  final String key;
+  final String name;
+  final int startMinute; // 0 ~ 1440
+  final int endMinute; // 0 ~ 1440
+  final String timeRangeLabel; // 如 "05:00-09:30"
+
+  String get fullLabel => '$name $timeRangeLabel';
+
+  static const morning = PeriodDefinition(
+    key: 'morning',
+    name: '早晨',
+    startMinute: 300, // 05:00
+    endMinute: 570, // 09:30
+    timeRangeLabel: '05:00-09:30',
+  );
+
+  static const focus = PeriodDefinition(
+    key: 'focus',
+    name: '上午',
+    startMinute: 570, // 09:30
+    endMinute: 720, // 12:00
+    timeRangeLabel: '09:30-12:00',
+  );
+
+  static const afternoon = PeriodDefinition(
+    key: 'afternoon',
+    name: '午后',
+    startMinute: 720, // 12:00
+    endMinute: 1080, // 18:00
+    timeRangeLabel: '12:00-18:00',
+  );
+
+  static const evening = PeriodDefinition(
+    key: 'evening',
+    name: '傍晚',
+    startMinute: 1080, // 18:00
+    endMinute: 1320, // 22:00
+    timeRangeLabel: '18:00-22:00',
+  );
+
+  static const night = PeriodDefinition(
+    key: 'night',
+    name: '夜深',
+    startMinute: 1320, // 22:00
+    endMinute: 300, // 05:00（跨午夜）
+    timeRangeLabel: '22:00-05:00',
+  );
+
+  static const standardPeriods = [morning, focus, afternoon, evening, night];
+
+  static PeriodDefinition? byKey(String key) {
+    for (final p in standardPeriods) {
+      if (p.key == key) return p;
+    }
+    return null;
+  }
+
+  /// 检查给定区间 [windowStart, windowEnd] 是否与本时段发生交叠
+  bool overlaps(int windowStart, int windowEnd) {
+    return timeRangesOverlap(startMinute, endMinute, windowStart, windowEnd);
+  }
+
+  /// 通用时间段交叠判定（支持跨午夜，如 22:00-05:00）
+  static bool timeRangesOverlap(int aStart, int aEnd, int bStart, int bEnd) {
+    final aIntervals = _splitInterval(aStart, aEnd);
+    final bIntervals = _splitInterval(bStart, bEnd);
+    for (final a in aIntervals) {
+      for (final b in bIntervals) {
+        if (a.$1 < b.$2 && b.$1 < a.$2) return true;
+      }
+    }
+    return false;
+  }
+
+  static List<(int, int)> _splitInterval(int start, int end) {
+    if (start <= end) {
+      return [(start, end)];
+    } else {
+      // 跨越午夜
+      return [(start, 1440), (0, end)];
+    }
+  }
+
+  /// 解析自定义时段字符串，例如 'custom:08:00-10:00'
+  static (int, int, String)? parseCustomPeriod(String str) {
+    if (!str.startsWith('custom:')) return null;
+    final parts = str.substring(7).split('-');
+    if (parts.length != 2) return null;
+    final sParts = parts[0].split(':');
+    final eParts = parts[1].split(':');
+    if (sParts.length != 2 || eParts.length != 2) return null;
+    final sh = int.tryParse(sParts[0]);
+    final sm = int.tryParse(sParts[1]);
+    final eh = int.tryParse(eParts[0]);
+    final em = int.tryParse(eParts[1]);
+    if (sh == null || sm == null || eh == null || em == null) return null;
+    final startMin = sh * 60 + sm;
+    final endMin = eh * 60 + em;
+    final label = '${parts[0]}-${parts[1]}';
+    return (startMin, endMin, label);
+  }
+
+  static String formatPeriodTag(String periodKey) {
+    final def = byKey(periodKey);
+    if (def != null) return '${def.name} (${def.timeRangeLabel})';
+    final custom = parseCustomPeriod(periodKey);
+    if (custom != null) return '自定义 (${custom.$3})';
+    return periodKey;
+  }
 }
 
 // ============================================================================
@@ -599,35 +760,34 @@ class NinetyDayPlan {
     bool? kickoffReviewDay14,
     bool? kickoffReviewDay21,
     bool? isCompleted,
-  }) =>
-      NinetyDayPlan(
-        startDate: startDate ?? this.startDate,
-        goalAdviceIds: goalAdviceIds ?? this.goalAdviceIds,
-        kickoffReviewDay7: kickoffReviewDay7 ?? this.kickoffReviewDay7,
-        kickoffReviewDay14: kickoffReviewDay14 ?? this.kickoffReviewDay14,
-        kickoffReviewDay21: kickoffReviewDay21 ?? this.kickoffReviewDay21,
-        isCompleted: isCompleted ?? this.isCompleted,
-      );
+  }) => NinetyDayPlan(
+    startDate: startDate ?? this.startDate,
+    goalAdviceIds: goalAdviceIds ?? this.goalAdviceIds,
+    kickoffReviewDay7: kickoffReviewDay7 ?? this.kickoffReviewDay7,
+    kickoffReviewDay14: kickoffReviewDay14 ?? this.kickoffReviewDay14,
+    kickoffReviewDay21: kickoffReviewDay21 ?? this.kickoffReviewDay21,
+    isCompleted: isCompleted ?? this.isCompleted,
+  );
 
   Map<String, dynamic> toJson() => {
-        'startDate': startDate.toIso8601String(),
-        'goalAdviceIds': goalAdviceIds,
-        'kickoffReviewDay7': kickoffReviewDay7,
-        'kickoffReviewDay14': kickoffReviewDay14,
-        'kickoffReviewDay21': kickoffReviewDay21,
-        'isCompleted': isCompleted,
-      };
+    'startDate': startDate.toIso8601String(),
+    'goalAdviceIds': goalAdviceIds,
+    'kickoffReviewDay7': kickoffReviewDay7,
+    'kickoffReviewDay14': kickoffReviewDay14,
+    'kickoffReviewDay21': kickoffReviewDay21,
+    'isCompleted': isCompleted,
+  };
 
   factory NinetyDayPlan.fromJson(Map<String, dynamic> json) => NinetyDayPlan(
-        startDate: DateTime.tryParse(json['startDate'] as String? ?? '') ??
-            DateTime.now(),
-        goalAdviceIds:
-            (json['goalAdviceIds'] as List?)?.cast<int>() ?? const [1, 387, 13],
-        kickoffReviewDay7: json['kickoffReviewDay7'] as bool? ?? false,
-        kickoffReviewDay14: json['kickoffReviewDay14'] as bool? ?? false,
-        kickoffReviewDay21: json['kickoffReviewDay21'] as bool? ?? false,
-        isCompleted: json['isCompleted'] as bool? ?? false,
-      );
+    startDate:
+        DateTime.tryParse(json['startDate'] as String? ?? '') ?? DateTime.now(),
+    goalAdviceIds:
+        (json['goalAdviceIds'] as List?)?.cast<int>() ?? const [1, 387, 13],
+    kickoffReviewDay7: json['kickoffReviewDay7'] as bool? ?? false,
+    kickoffReviewDay14: json['kickoffReviewDay14'] as bool? ?? false,
+    kickoffReviewDay21: json['kickoffReviewDay21'] as bool? ?? false,
+    isCompleted: json['isCompleted'] as bool? ?? false,
+  );
 }
 
 /// 卡内基式 4 步周复盘条目
@@ -652,19 +812,20 @@ class CarnegieReviewItem {
   final String tag;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'createdAt': createdAt.toIso8601String(),
-        'eventFact': eventFact,
-        'myAction': myAction,
-        'theirReaction': theirReaction,
-        'nextOneSentence': nextOneSentence,
-        'tag': tag,
-      };
+    'id': id,
+    'createdAt': createdAt.toIso8601String(),
+    'eventFact': eventFact,
+    'myAction': myAction,
+    'theirReaction': theirReaction,
+    'nextOneSentence': nextOneSentence,
+    'tag': tag,
+  };
 
   factory CarnegieReviewItem.fromJson(Map<String, dynamic> json) =>
       CarnegieReviewItem(
         id: json['id'] as String,
-        createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+        createdAt:
+            DateTime.tryParse(json['createdAt'] as String? ?? '') ??
             DateTime.now(),
         eventFact: json['eventFact'] as String? ?? '',
         myAction: json['myAction'] as String? ?? '',
@@ -688,15 +849,15 @@ class EmergencyContact {
   final String relation;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'phone': phone,
-        'relation': relation,
-      };
+    'name': name,
+    'phone': phone,
+    'relation': relation,
+  };
 
-  factory EmergencyContact.fromJson(Map<String, dynamic> json) => EmergencyContact(
+  factory EmergencyContact.fromJson(Map<String, dynamic> json) =>
+      EmergencyContact(
         name: json['name'] as String? ?? '',
         phone: json['phone'] as String? ?? '',
         relation: json['relation'] as String? ?? '',
       );
 }
-

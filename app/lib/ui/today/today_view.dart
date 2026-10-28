@@ -23,7 +23,7 @@ class TodayView extends StatelessWidget {
     final userTodos = store.userTodos;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
         Row(
           children: [
@@ -293,7 +293,7 @@ class TodayView extends StatelessWidget {
             ),
           ] else ...[
             const SizedBox(height: 8),
-            for (final todo in todos)
+            for (final todo in List.of(todos)..sort((a, b) => (a.isDone ? 1 : 0).compareTo(b.isDone ? 1 : 0)))
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(

@@ -1,0 +1,182 @@
+{
+  "1": {
+    "paths": [
+      "daily/commute/vehicle"
+    ],
+    "remove_prerequisites": [
+      "has_car"
+    ],
+    "reason": "安全带适用于乘客，不能要求拥有汽车"
+  },
+  "3": {
+    "paths": [
+      "daily/home_safety/fire",
+      "daily/housing/facility"
+    ],
+    "remove_prerequisites": [
+      "has_piped_gas"
+    ],
+    "reason": "烟雾报警器的通用部分不受燃气设施限制"
+  },
+  "12": {
+    "paths": [
+      "safety/physical/outdoor",
+      "relationships/family/children"
+    ],
+    "reason": "涉水准备也属于儿童防护"
+  },
+  "13": {
+    "paths": [
+      "health/prevention/exercise",
+      "daily/home_safety/fall_prevention"
+    ],
+    "reason": "平衡训练与居家适老改造，移出饮食兜底"
+  },
+  "61": {
+    "paths": [
+      "health/prevention/sleep"
+    ],
+    "reason": "睡眠节律"
+  },
+  "65": {
+    "paths": [
+      "health/prevention/exercise",
+      "daily/digital/time_energy"
+    ],
+    "reason": "久坐活动与工作节奏"
+  },
+  "85": {
+    "paths": [
+      "health/prevention/sleep"
+    ],
+    "reason": "午睡属于睡眠节律"
+  },
+  "96": {
+    "paths": [
+      "daily/digital/screen_time",
+      "daily/digital/time_energy"
+    ],
+    "reason": "减少手机打断"
+  },
+  "97": {
+    "paths": [
+      "health/prevention/sleep"
+    ],
+    "reason": "固定起床时间"
+  },
+  "98": {
+    "paths": [
+      "health/prevention/sleep",
+      "daily/digital/time_energy"
+    ],
+    "reason": "睡眠与精力管理交叉"
+  },
+  "99": {
+    "paths": [
+      "health/prevention/sleep",
+      "daily/lifestyle/diet"
+    ],
+    "reason": "咖啡因时间与睡眠"
+  },
+  "103": {
+    "paths": [
+      "health/prevention/sleep",
+      "daily/digital/screen_time"
+    ],
+    "reason": "睡前屏幕与睡眠"
+  },
+  "104": {
+    "paths": [
+      "health/prevention/sleep",
+      "daily/digital/screen_time"
+    ],
+    "reason": "娱乐挤占睡眠"
+  },
+  "106": {
+    "paths": [
+      "health/prevention/sleep"
+    ],
+    "reason": "小憩属于睡眠节律"
+  },
+  "115": {
+    "paths": [
+      "daily/digital/screen_time",
+      "health/mental/stress"
+    ],
+    "reason": "社交媒体消耗与情绪"
+  },
+  "137": {
+    "paths": [
+      "daily/digital/screen_time",
+      "daily/digital/time_energy"
+    ],
+    "reason": "刷屏管理需要独立主题"
+  },
+  "138": {
+    "paths": [
+      "daily/digital/screen_time",
+      "daily/digital/time_energy"
+    ],
+    "reason": "信息摄入与时间管理"
+  },
+  "143": {
+    "paths": [
+      "finance/budget/social_security",
+      "finance/real_estate/mortgage",
+      "daily/housing/rental"
+    ],
+    "remove_prerequisites": [
+      "has_mortgage"
+    ],
+    "reason": "公积金可用于租房等场景，不能要求已经有房贷"
+  },
+  "228": {
+    "paths": [
+      "career/labor_rights/compensation",
+      "finance/budget/social_security"
+    ],
+    "reason": "欠薪的劳动维权与生活保障"
+  },
+  "251": {
+    "paths": [
+      "finance/anti_fraud/scam",
+      "safety/legal/red_line"
+    ],
+    "reason": "被骗止损可从反诈和法律两条路径查找"
+  },
+  "431": {
+    "paths": [
+      "safety/physical/outdoor",
+      "daily/lifestyle/diet"
+    ],
+    "reason": "野外饮水是事前准备，移出急救主题"
+  },
+  "475": {
+    "paths": [
+      "health/treatment/medication",
+      "health/treatment/chronic"
+    ],
+    "reason": "服药原则与慢病管理"
+  },
+  "482": {
+    "paths": [
+      "health/treatment/chronic",
+      "daily/lifestyle/diet"
+    ],
+    "reason": "结石防复发与饮食饮水，适用条件保持原文"
+  },
+  "647": {
+    "paths": [
+      "health/emergency/golden_window",
+      "relationships/family/pregnancy"
+    ],
+    "reason": "孕产突发事件允许从两个领域查找"
+  },
+  "660": {
+    "paths": [
+      "health/prevention/body_care",
+      "health/mental/stress"
+    ],
+    "reason": "体重管理与心理相关防护"
+  }
+}

@@ -3,15 +3,14 @@ import 'package:flutter/services.dart';
 
 import '../../app.dart';
 import '../../core/theme.dart';
-import '../../models/advice.dart';
 import '../../state/app_store.dart';
 
-/// 初次开启应用时的全息画像与 767 建议全景引导向导。
+/// 全新全息画像引导向导：实现动态级联展开与实时标签剪枝。
 ///
 /// 核心突破：
-/// 1. 建议引导 100% 覆盖全库 767 条建议（六大人生支柱：健康 180、职场 128、家庭 113、财产 202、应急 99、节律 45）；
-/// 2. 极致人性化体验：温暖共情的生命引语、实证建议小锦囊即时预览、一键全景探索与画像专属双轨制；
-/// 3. 优雅灵动动效：错峰入场动画（Staggered Entrance）、触感微弹交互、多层同心罗盘呼吸环、数字平滑滚动增长。
+/// 1. 100% 覆盖 767 条建议与六大支柱，消灭死角；
+/// 2. 动态级联剪枝：根据已选标签（如性别、有无车、有无小孩、是否租房、是否吸烟）智能剪掉无关分支；
+/// 3. 即时反馈量化：每一步实时计算“已激活专属建议数”与“已剪枝过滤建议数”。
 class OnboardingView extends StatefulWidget {
   const OnboardingView({
     super.key,
@@ -19,7 +18,6 @@ class OnboardingView extends StatefulWidget {
     this.onComplete,
   });
 
-  /// 是否是设置页内重新调整画像
   final bool isReconfiguring;
   final VoidCallback? onComplete;
 
@@ -32,21 +30,31 @@ class _OnboardingViewState extends State<OnboardingView>
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // 用户正在配置的画像状态
+  // 用户正在配置的全息画像状态
   late String _gender;
   late int _age;
-  late Set<String> _roles;
-  late Set<String> _livingConditions;
-  late Set<String> _healthConcerns;
-  late Set<String> _focusDomains;
+  late bool _hasCar;
+  late bool _hasTwowheeler;
+  late String _livingStatus; // 'tenant', 'owner_loan', 'owner_free'
+  late bool _hasPipedGas;
+  late bool _hasPets;
+  late String _relationshipStatus; // 'single', 'partner'
+  late bool _hasChildren;
+  late String _childAgeStage; // 'none', 'infant', 'school'
+  late bool _hasAgingParents;
+  late String _careerType; // 'employed', 'programmer', 'entrepreneur', 'student', 'freelance'
+  late bool _isSmoker;
+  late bool _hasHypertension;
+  late bool _hasDiabetes;
+  late bool _hasDeskJob;
   late bool _prunedOnly;
 
-  // 终末页面的多层同心罗盘动画控制器
+  // 罗盘与呼吸动效
   late AnimationController _compassSpinController;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
 
-  // 分页错峰动效控制器
+  // 分页入场动效
   late AnimationController _pageAnimController;
   late Animation<double> _pageFadeAnim;
   late Animation<Offset> _pageSlideAnim;
@@ -54,47 +62,49 @@ class _OnboardingViewState extends State<OnboardingView>
   @override
   void initState() {
     super.initState();
-    // 默认初始值
+    // 默认初始画像
     _gender = '男';
     _age = 28;
-    _roles = {'全民', '上班族', '伴侣', '家人'};
-    _livingConditions = {'租房人', '司机'};
-    _healthConcerns = {'久坐伏案', '视力保护'};
-    _focusDomains = {
-      'health',
-      'career',
-      'family',
-      'finance',
-      'emergency',
-      'cadence',
-    };
+    _hasCar = false;
+    _hasTwowheeler = true;
+    _livingStatus = 'tenant';
+    _hasPipedGas = true;
+    _hasPets = false;
+    _relationshipStatus = 'single';
+    _hasChildren = false;
+    _childAgeStage = 'none';
+    _hasAgingParents = false;
+    _careerType = 'employed';
+    _isSmoker = false;
+    _hasHypertension = false;
+    _hasDiabetes = false;
+    _hasDeskJob = true;
     _prunedOnly = true;
 
-    // 罗盘旋转与呼吸光晕
+    // 动画控制器
     _compassSpinController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 18),
+      duration: const Duration(seconds: 20),
     );
 
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     );
-    _pulseAnim = Tween<double>(begin: 0.95, end: 1.05).animate(
+    _pulseAnim = Tween<double>(begin: 0.96, end: 1.04).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutSine),
     );
 
-    // 页面错峰入场动效
     _pageAnimController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 350),
     );
     _pageFadeAnim = CurvedAnimation(
       parent: _pageAnimController,
       curve: Curves.easeOutCubic,
     );
     _pageSlideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.04),
+      begin: const Offset(0, 0.03),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _pageAnimController,
@@ -111,10 +121,30 @@ class _OnboardingViewState extends State<OnboardingView>
       final cur = storeOf(context).profile;
       _gender = cur.gender;
       _age = cur.age;
-      _roles = Set.from(cur.roles);
-      _livingConditions = Set.from(cur.livingConditions);
-      _healthConcerns = Set.from(cur.healthConcerns);
-      _focusDomains = Set.from(cur.focusDomains);
+      _hasCar = cur.hasCar;
+      _hasTwowheeler = cur.hasTwowheeler;
+      _livingStatus = cur.hasMortgage ? 'owner_loan' : (cur.isTenant ? 'tenant' : 'owner_free');
+      _hasPipedGas = cur.hasPipedGas;
+      _hasPets = cur.hasPets;
+      _relationshipStatus = cur.roles.contains('伴侣') ? 'partner' : 'single';
+      _hasChildren = cur.hasChildren || cur.roles.contains('家长');
+      _childAgeStage = cur.childAgeStage;
+      _hasAgingParents = cur.hasAgingParents || cur.livingConditions.contains('家有老人');
+      if (cur.roles.contains('程序员')) {
+        _careerType = 'programmer';
+      } else if (cur.isEntrepreneur || cur.roles.contains('创业者')) {
+        _careerType = 'entrepreneur';
+      } else if (cur.roles.contains('学生')) {
+        _careerType = 'student';
+      } else if (cur.roles.contains('灵活就业者')) {
+        _careerType = 'freelance';
+      } else {
+        _careerType = 'employed';
+      }
+      _isSmoker = cur.isSmoker;
+      _hasHypertension = cur.hasHypertension || cur.healthConcerns.contains('血压关注');
+      _hasDiabetes = cur.hasDiabetes || cur.healthConcerns.contains('血糖关注');
+      _hasDeskJob = cur.healthConcerns.contains('久坐伏案');
       _prunedOnly = cur.prunedOnly;
     }
   }
@@ -128,71 +158,101 @@ class _OnboardingViewState extends State<OnboardingView>
     super.dispose();
   }
 
-  UserProfile _buildProfile() {
+  /// 基于当前界面临时配置构建出的 UserProfile
+  UserProfile _buildCurrentProfile() {
+    final roles = <String>['全民'];
+    if (_careerType == 'employed') roles.add('上班族');
+    if (_careerType == 'programmer') roles.addAll(['上班族', '程序员']);
+    if (_careerType == 'entrepreneur') roles.addAll(['创业者', '合伙人']);
+    if (_careerType == 'student') roles.add('学生');
+    if (_careerType == 'freelance') roles.add('灵活就业者');
+
+    if (_hasCar) roles.add('司机');
+    if (_hasChildren || _childAgeStage != 'none') roles.add('家长');
+    if (_relationshipStatus == 'partner') roles.add('伴侣');
+
+    final living = <String>[];
+    if (_livingStatus == 'tenant') living.add('租房人');
+    if (_livingStatus == 'owner_loan') living.add('购房人');
+    if (_hasAgingParents) living.add('家有老人');
+    if (_hasPets) living.add('养犬人');
+
+    final health = <String>[];
+    if (_hasDeskJob) health.add('久坐伏案');
+    if (_isSmoker) health.add('吸烟者');
+    if (_hasHypertension) health.add('血压关注');
+    if (_hasDiabetes) health.add('血糖关注');
+
     return UserProfile(
       gender: _gender,
       age: _age,
-      roles: _roles.toList(),
-      livingConditions: _livingConditions.toList(),
-      healthConcerns: _healthConcerns.toList(),
-      focusDomains: _focusDomains.toList(),
+      roles: roles,
+      livingConditions: living,
+      healthConcerns: health,
       prunedOnly: _prunedOnly,
-      parentsOnly: false,
-    );
-  }
-
-  void _goToPage(int page) {
-    if (page == _currentPage) return;
-    _pageAnimController.reset();
-    _pageController.animateToPage(
-      page,
-      duration: const Duration(milliseconds: 380),
-      curve: Curves.easeOutCubic,
-    );
-    _pageAnimController.forward();
+      hasCar: _hasCar,
+      hasTwowheeler: _hasTwowheeler,
+      hasChildren: _hasChildren,
+      hasAgingParents: _hasAgingParents,
+      isSmoker: _isSmoker,
+      hasPets: _hasPets,
+      hasPipedGas: _hasPipedGas,
+      hasMortgage: _livingStatus == 'owner_loan',
+      isTenant: _livingStatus == 'tenant',
+      isEntrepreneur: _careerType == 'entrepreneur',
+      hasHypertension: _hasHypertension,
+      hasDiabetes: _hasDiabetes,
+      childAgeStage: _hasChildren ? _childAgeStage : 'none',
+      relationshipStatus: _relationshipStatus,
+    ).normalized();
   }
 
   void _nextPage() {
-    HapticFeedback.lightImpact();
-    if (_currentPage < 6) {
-      _goToPage(_currentPage + 1);
+    HapticFeedback.selectionClick();
+    if (_currentPage < 7) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      _complete();
     }
   }
 
   void _prevPage() {
-    HapticFeedback.lightImpact();
+    HapticFeedback.selectionClick();
     if (_currentPage > 0) {
-      _goToPage(_currentPage - 1);
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
     }
   }
 
-  void _finish() {
-    HapticFeedback.mediumImpact();
-    _compassSpinController.stop();
-    _pulseController.stop();
-    final profile = _buildProfile();
+  void _complete() {
+    HapticFeedback.heavyImpact();
+    final finalProfile = _buildCurrentProfile();
     final store = storeOf(context);
-    store.completeOnboarding(profile);
-    if (widget.isReconfiguring) {
+    store.completeOnboarding(finalProfile);
+
+    if (widget.onComplete != null) {
+      widget.onComplete!();
+    } else if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
-    } else {
-      widget.onComplete?.call();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
-    final isDark = p.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: p.canvas,
+      backgroundColor: p.surface,
       body: SafeArea(
         child: Column(
           children: [
-            // 顶栏进度与人性化操作
             _buildTopBar(p),
-            // 内容分页
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -200,7 +260,7 @@ class _OnboardingViewState extends State<OnboardingView>
                 onPageChanged: (idx) {
                   setState(() => _currentPage = idx);
                   _pageAnimController.forward(from: 0.0);
-                  if (idx == 6) {
+                  if (idx == 7) {
                     _compassSpinController.repeat();
                     _pulseController.repeat(reverse: true);
                   } else {
@@ -211,15 +271,15 @@ class _OnboardingViewState extends State<OnboardingView>
                 children: [
                   _buildStep0Prologue(p, isDark),
                   _buildStep1AgeGender(p),
-                  _buildStep2Career(p),
-                  _buildStep3Family(p),
-                  _buildStep4Lifestyle(p),
-                  _buildStep5Domains(p),
-                  _buildStep6Synthesis(p),
+                  _buildStep2Mobility(p),
+                  _buildStep3Housing(p),
+                  _buildStep4Family(p),
+                  _buildStep5Career(p),
+                  _buildStep6Health(p),
+                  _buildStep7Synthesis(p),
                 ],
               ),
             ),
-            // 底栏操作按钮
             _buildBottomBar(p),
           ],
         ),
@@ -228,275 +288,288 @@ class _OnboardingViewState extends State<OnboardingView>
   }
 
   Widget _buildTopBar(AppPalettes p) {
+    final catalog = catalogOf(context);
+    final tempProfile = _buildCurrentProfile();
+    final activeCount = catalog.adviceList.where((a) {
+      // 模拟 matchPersona 逻辑
+      if (a.prerequisites.isNotEmpty) {
+        final pr = a.prerequisites;
+        if (pr['has_car'] == true && !tempProfile.hasCar) return false;
+        if (pr['has_twowheeler'] == true && !tempProfile.hasTwowheeler) return false;
+        if (pr['is_smoker'] == true && !tempProfile.isSmoker) return false;
+        if (pr['has_children'] == true && !tempProfile.hasChildren && !tempProfile.roles.contains('家长')) return false;
+        if (pr['has_aging_parents'] == true && !tempProfile.hasAgingParents && !tempProfile.livingConditions.contains('家有老人')) return false;
+        if (pr['is_tenant'] == true && !tempProfile.isTenant && !tempProfile.livingConditions.contains('租房人')) return false;
+        if (pr['has_mortgage'] == true && !tempProfile.hasMortgage && !tempProfile.livingConditions.contains('购房人')) return false;
+        if (pr['has_pets'] == true && !tempProfile.hasPets && !tempProfile.livingConditions.contains('养犬人')) return false;
+        if (pr['has_piped_gas'] == true && !tempProfile.hasPipedGas) return false;
+        if (pr['is_entrepreneur'] == true && !tempProfile.isEntrepreneur) return false;
+        if (pr['gender_female'] == true && tempProfile.gender != '女') return false;
+        if (pr['gender_male'] == true && tempProfile.gender != '男') return false;
+        if (pr['min_age'] is int && tempProfile.age < (pr['min_age'] as int)) return false;
+      }
+      return true;
+    }).length;
+
+    final prunedCount = 767 - activeCount;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+      child: Column(
         children: [
-          if (_currentPage > 0)
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: 16, color: p.inkSub),
-              onPressed: _prevPage,
-              tooltip: '上一步',
-            )
-          else
-            const SizedBox(width: 48),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(7, (i) {
-                final active = i == _currentPage;
-                final done = i < _currentPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutCubic,
-                  margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                  width: active ? 22 : 6,
-                  height: 6,
+          Row(
+            children: [
+              if (_currentPage > 0)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                  onPressed: _prevPage,
+                  tooltip: '上一步',
+                )
+              else
+                const SizedBox(width: 40),
+              const Spacer(),
+              // 实时剪枝指标指示器
+              if (_currentPage > 0 && _currentPage < 7)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: active
-                        ? p.action
-                        : (done ? p.emerald : p.hairline),
+                    color: p.action.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(9999),
-                    boxShadow: active
-                        ? [
-                            BoxShadow(
-                              color: p.action.withValues(alpha: 0.4),
-                              blurRadius: 6,
-                              offset: const Offset(0, 1),
-                            )
-                          ]
-                        : null,
+                    border: Border.all(color: p.action.withValues(alpha: 0.2)),
                   ),
-                );
-              }),
+                  child: Row(
+                    children: [
+                      Icon(Icons.filter_alt_outlined, size: 12, color: p.action),
+                      const SizedBox(width: 4),
+                      Text(
+                        '专属激活 $activeCount · 剪枝降噪 $prunedCount',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: p.action,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const Spacer(),
+              if (_currentPage < 7 && !widget.isReconfiguring)
+                TextButton(
+                  onPressed: _complete,
+                  child: Text('跳过', style: TextStyle(color: p.inkSub, fontSize: 13)),
+                )
+              else
+                const SizedBox(width: 40),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // 步进指示条 (0 ~ 7)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(9999),
+            child: LinearProgressIndicator(
+              value: (_currentPage + 1) / 8,
+              minHeight: 3.5,
+              backgroundColor: p.inkMute.withValues(alpha: 0.15),
+              valueColor: AlwaysStoppedAnimation(p.action),
             ),
           ),
-          if (_currentPage < 6 && !widget.isReconfiguring)
-            TextButton(
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                _goToPage(6);
-              },
-              child: Text(
-                '跳过',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: p.inkMute,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            )
-          else
-            const SizedBox(width: 48),
         ],
       ),
     );
   }
 
-  // --- Step 0: 启程序言与 767 建议全景蓝图 ---
+  // ==========================================================================
+  // Step 0: 序幕与极简守护哲学
+  // ==========================================================================
   Widget _buildStep0Prologue(AppPalettes p, bool isDark) {
     return FadeTransition(
       opacity: _pageFadeAnim,
       child: SlideTransition(
         position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-          children: [
-            // 呼吸徽章
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    p.action.withValues(alpha: 0.16),
-                    p.emerald.withValues(alpha: 0.16),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(28, 20, 28, 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 76,
+                height: 76,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [p.action, p.action.withValues(alpha: 0.75)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: p.action.withValues(alpha: 0.28),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(9999),
-                border: Border.all(
-                  color: p.action.withValues(alpha: 0.25),
+                child: const Icon(Icons.shield_outlined, size: 40, color: Colors.white),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                '拒绝无关噪音\n只留你的专属守护',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                  color: p.ink,
+                  letterSpacing: -0.4,
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.auto_awesome, size: 12, color: p.action),
-                  const SizedBox(width: 6),
-                  Text(
-                    '纯本地优先 · 767 条实证建议全域指引',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: p.action,
-                      letterSpacing: 0.4,
+              const SizedBox(height: 16),
+              Text(
+                '全书 767 条硬核建议，不是每个人都需要。\n没有私家车，就不推车载安全带；不吸烟，就不推戒烟干预；未为人父母，就不推婴幼儿防窒息。\n\n花 1 分钟点选你的真实生活实体，我们将根据你的选择进行动态剪枝，为你定制专属的生命防御网络。',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  height: 1.6,
+                  color: p.inkSub,
+                ),
+              ),
+              const SizedBox(height: 28),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: p.emerald.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.lock_outline, size: 14, color: p.emerald),
+                    const SizedBox(width: 6),
+                    Text(
+                      '完全离线运行 · 数据仅存本机',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: p.emerald),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '数字阶跃\nKairosStep',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w900,
-                color: p.ink,
-                height: 1.18,
-                letterSpacing: -0.6,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '生活不需要一次性记住 767 条建议，\n而是在关键生命节点与日常节律里，\n做对那几件成本极低、划算极高、防守极坚固的事。',
-              style: TextStyle(
-                fontSize: 14.5,
-                color: p.inkSub,
-                height: 1.6,
-                fontWeight: FontWeight.w500,
-              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 1: 生命时钟（年龄与生理性别）
+  // ==========================================================================
+  Widget _buildStep1AgeGender(AppPalettes p) {
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          children: [
+            _stepHeader(
+              p,
+              badge: '01 / 07 · 生命时钟',
+              title: '生理性别与年龄阶段',
+              prompt: '医学筛查与疫苗接种具有强烈的生理窗口期。你的年龄与生理周期，决定了空腹血糖早筛、带状疱疹疫苗与癌症筛查的出现节点。',
             ),
             const SizedBox(height: 20),
-            // 全景六大支柱一览卡
-            _buildPillarsSummaryCard(p),
-            const SizedBox(height: 14),
-            // 隐私与纯净承诺卡
-            _buildPurityGuaranteeCard(p),
+            Text('生理性别', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _selectableChip(
+                    p,
+                    label: '男',
+                    icon: Icons.male,
+                    selected: _gender == '男',
+                    onTap: () => setState(() => _gender = '男'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _selectableChip(
+                    p,
+                    label: '女',
+                    icon: Icons.female,
+                    selected: _gender == '女',
+                    onTap: () => setState(() => _gender = '女'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('当前年龄', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+                Text('$_age 岁', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: p.action)),
+              ],
+            ),
+            Slider(
+              value: _age.toDouble(),
+              min: 16,
+              max: 85,
+              divisions: 69,
+              activeColor: p.action,
+              label: '$_age 岁',
+              onChanged: (v) => setState(() => _age = v.round()),
+            ),
+            const SizedBox(height: 12),
+            // 动态级联医学里程碑预览
+            _buildAgeMilestoneCard(p),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPillarsSummaryCard(AppPalettes p) {
+  Widget _buildAgeMilestoneCard(AppPalettes p) {
+    final tips = <String>[];
+    if (_gender == '女' && _age >= 30) tips.add('已为你激活：30 岁+ 宫颈癌 HPV 专项筛查防御');
+    if (_gender == '女' && _age >= 40) tips.add('已为你激活：40 岁+ 乳腺钼靶早期防癌检查');
+    if (_gender == '男') tips.add('已为你激活：男性心血管与代谢连带健康自检');
+    if (_age >= 35) tips.add('已为你激活：35 岁超重空腹血糖筛查节点');
+    if (_age >= 45) tips.add('已为你激活：45 岁结直肠癌肠镜早筛');
+    if (_age >= 50) tips.add('已为你激活：50 岁带状疱疹疫苗接种窗口');
+    if (_age >= 65) tips.add('已为你激活：65 岁骨密度检查与肺炎球菌疫苗');
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: p.hairline),
+        color: p.action.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: p.action.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.grid_view_rounded, size: 15, color: p.action),
-              const SizedBox(width: 8),
-              Text(
-                '767 条建议全景六大支柱',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: p.ink,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '100% 完整收录',
-                style: TextStyle(fontSize: 10.5, color: p.emerald, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _pillarBadge(p, '健康防线', '180条', const Color(0xFF10B981)),
+              Icon(Icons.auto_awesome, size: 14, color: p.action),
               const SizedBox(width: 6),
-              _pillarBadge(p, '职场事业', '128条', const Color(0xFF3B82F6)),
-              const SizedBox(width: 6),
-              _pillarBadge(p, '家庭守护', '113条', const Color(0xFF8B5CF6)),
+              Text('当前年龄与性别自动解锁的医学防御：', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: p.action)),
             ],
           ),
           const SizedBox(height: 6),
-          Row(
-            children: [
-              _pillarBadge(p, '财产法律', '202条', const Color(0xFFF59E0B)),
-              const SizedBox(width: 6),
-              _pillarBadge(p, '应急自救', '99条', const Color(0xFFF43F5E)),
-              const SizedBox(width: 6),
-              _pillarBadge(p, '日常节律', '45条', const Color(0xFF06B6D4)),
-            ],
-          ),
+          for (final t in tips)
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Text('• $t', style: TextStyle(fontSize: 11.5, color: p.inkSub, height: 1.35)),
+            ),
         ],
       ),
     );
   }
 
-  Widget _pillarBadge(AppPalettes p, String name, String count, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
-        ),
-        child: Column(
-          children: [
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              count,
-              style: TextStyle(
-                fontSize: 9.5,
-                color: p.inkSub,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPurityGuaranteeCard(AppPalettes p) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: p.hairline),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.shield_outlined, size: 18, color: p.emerald),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '真正交付用户的纯净承诺',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
-                    color: p.ink,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '纯本地沙盒存储 · 零隐私索取 · 无算法窥探与云端上传',
-                  style: TextStyle(fontSize: 10.5, color: p.inkSub),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- Step 1: 生命时钟与生理防线 ---
-  Widget _buildStep1AgeGender(AppPalettes p) {
-    final milestone = _getAgeMilestone(_age);
-
+  // ==========================================================================
+  // Step 2: 交通出行与装备（级联剪枝）
+  // ==========================================================================
+  Widget _buildStep2Mobility(AppPalettes p) {
     return FadeTransition(
       opacity: _pageFadeAnim,
       child: SlideTransition(
@@ -506,794 +579,581 @@ class _OnboardingViewState extends State<OnboardingView>
           children: [
             _stepHeader(
               p,
-              badge: '01 / 06 · 生命时钟',
-              title: '年龄与生理节点',
-              prompt: '「有些检查一辈子做一次就够，有些慢病与防癌坎 35 岁就要筑起。」\n你的年龄与生理周期，决定了幽门螺杆菌、血压血糖、疫苗补种与专项筛查的黄金窗口。',
+              badge: '02 / 07 · 交通出行',
+              title: '主要通行方式与载具',
+              prompt: '「出行安全必须和载具物理绑定。」有车才推车载蓝牙安全带与轮胎保养；有电动车才推头盔与电池不进楼。',
             ),
-            const SizedBox(height: 18),
-            Text('生理特征（精确匹配乳腺/骨密度/孕产等专项谓词）', style: _labelStyle(p)),
+            const SizedBox(height: 16),
+            _toggleCard(
+              p,
+              title: '🚗 拥有私家车 / 开车出行',
+              subtitle: '常驾车或家庭拥有机动车',
+              selected: _hasCar,
+              onTap: () => setState(() => _hasCar = !_hasCar),
+              // 级联展开内容
+              cascadeContent: _hasCar
+                  ? _cascadeBox(p, [
+                      '已激活：车载蓝牙连接 3~5 秒即时提醒扣紧安全带',
+                      '已激活：刹车油、轮胎胎压定期自检与雨雪防滑',
+                      if (_hasChildren) '已激活：4 岁以下儿童专用安全座椅合规提醒',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🛵 拥有电动自行车 / 摩托车',
+              subtitle: '常骑行两轮电瓶车通勤或代步',
+              selected: _hasTwowheeler,
+              onTap: () => setState(() => _hasTwowheeler = !_hasTwowheeler),
+              cascadeContent: _hasTwowheeler
+                  ? _cascadeBox(p, [
+                      '已激活：骑行戴好 3C 认证头盔并扣牢搭扣',
+                      '已激活：电瓶车电池绝不推进楼道、电梯与家中充电',
+                      '已激活：雨雪湿滑路面防侧滑与防风被安全警示',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🚇 公共交通 / 步行通勤',
+              subtitle: '主要依赖地铁、公交或徒步出行',
+              selected: !_hasCar && !_hasTwowheeler,
+              onTap: () => setState(() {
+                _hasCar = false;
+                _hasTwowheeler = false;
+              }),
+              cascadeContent: (!_hasCar && !_hasTwowheeler)
+                  ? _cascadeBox(p, [
+                      '已智能剪枝：完全屏蔽所有机动车硬件保养与电瓶车电池打卡',
+                      '已激活：上下车防挤压踏空、雨雪天鞋底防滑',
+                    ])
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 3: 居住环境与房产（级联剪枝）
+  // ==========================================================================
+  Widget _buildStep3Housing(AppPalettes p) {
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          children: [
+            _stepHeader(
+              p,
+              badge: '03 / 07 · 居住资产',
+              title: '住房状态与家居设施',
+              prompt: '租房重点在押金转租维权；有房贷重点在提前还款与物业；厨房燃气关乎生命红线。',
+            ),
+            const SizedBox(height: 16),
+            Text('房产与居住状态 (单选)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+            const SizedBox(height: 8),
+            _radioCard(
+              p,
+              title: '🏠 租房生活',
+              subtitle: '租住商品房、公寓或合租',
+              selected: _livingStatus == 'tenant',
+              onTap: () => setState(() => _livingStatus = 'tenant'),
+              cascadeContent: _livingStatus == 'tenant'
+                  ? _cascadeBox(p, [
+                      '已激活：租房查验房产证与二房东转租原件',
+                      '已激活：押金退还与设施交接留痕维权',
+                      '已激活：公租房排号与免税租房公积金提取',
+                      '已剪枝：自动屏蔽房贷还款测算与业主维修基金纠纷',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            _radioCard(
+              p,
+              title: '📑 自有住房 (有房贷)',
+              subtitle: '已购房且按月偿还商业/公积金房贷',
+              selected: _livingStatus == 'owner_loan',
+              onTap: () => setState(() => _livingStatus = 'owner_loan'),
+              cascadeContent: _livingStatus == 'owner_loan'
+                  ? _cascadeBox(p, [
+                      '已激活：房贷利率调整与提前还贷理性测算',
+                      '已激活：物业费纠纷与业委会维修基金监督',
+                      '已剪枝：自动屏蔽租房合同与二房东套路',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            _radioCard(
+              p,
+              title: '🏡 自有住房 (无贷款)',
+              subtitle: '全款购房或房贷已结清',
+              selected: _livingStatus == 'owner_free',
+              onTap: () => setState(() => _livingStatus = 'owner_free'),
+            ),
+            const SizedBox(height: 16),
+            Text('家庭关键设施与伴侣宠物', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+            const SizedBox(height: 8),
+            _toggleCard(
+              p,
+              title: '🔥 厨房使用管道燃气 / 烧煤',
+              subtitle: '家中使用燃气灶、燃气热水器或煤炉',
+              selected: _hasPipedGas,
+              onTap: () => setState(() => _hasPipedGas = !_hasPipedGas),
+              cascadeContent: _hasPipedGas
+                  ? _cascadeBox(p, [
+                      '已激活：燃气橡胶管到期更换金属波纹管',
+                      '已激活：室内取暖一氧化碳报警器年度检查',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            _toggleCard(
+              p,
+              title: '🐾 养犬 / 养猫等伴侣宠物',
+              subtitle: '家中饲养犬猫等小动物',
+              selected: _hasPets,
+              onTap: () => setState(() => _hasPets = !_hasPets),
+              cascadeContent: _hasPets
+                  ? _cascadeBox(p, [
+                      '已激活：狂犬疫苗定期接种与外出牵引安全',
+                      '已激活：宠物定期体内外驱虫健康提醒',
+                    ])
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 4: 家庭责任与亲密关系（级联剪枝）
+  // ==========================================================================
+  Widget _buildStep4Family(AppPalettes p) {
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          children: [
+            _stepHeader(
+              p,
+              badge: '04 / 07 · 家庭羁绊',
+              title: '情感状态与扶养照护',
+              prompt: '未育家庭自动剪掉全部育儿细节；无长辈同住自动剪掉适老化扶手；只留真实家庭防线。',
+            ),
+            const SizedBox(height: 16),
+            Text('情感与婚姻', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
             const SizedBox(height: 8),
             Row(
               children: [
-                _genderCard(p, '男', Icons.male, '心血管、痛风筛查，自动排除女性专项'),
+                Expanded(
+                  child: _selectableChip(
+                    p,
+                    label: '单身独居',
+                    icon: Icons.person_outline,
+                    selected: _relationshipStatus == 'single',
+                    onTap: () => setState(() => _relationshipStatus = 'single'),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                _genderCard(p, '女', Icons.female, '乳腺钼靶、HPV、骨密度与孕产照护'),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('当前年龄', style: _labelStyle(p)),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
-                  child: Text(
-                    '$_age 岁',
-                    key: ValueKey(_age),
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: p.action,
-                    ),
+                Expanded(
+                  child: _selectableChip(
+                    p,
+                    label: '恋爱 / 已婚伴侣',
+                    icon: Icons.favorite_border,
+                    selected: _relationshipStatus == 'partner',
+                    onTap: () => setState(() => _relationshipStatus = 'partner'),
                   ),
                 ),
               ],
             ),
-            Slider(
-              value: _age.toDouble(),
-              min: 14,
-              max: 88,
-              divisions: 74,
-              activeColor: p.action,
-              label: '$_age 岁',
-              onChanged: (v) {
-                HapticFeedback.selectionClick();
-                setState(() => _age = v.round());
-              },
+            const SizedBox(height: 18),
+            Text('抚育子女 (深度级联剪枝)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+            const SizedBox(height: 8),
+            _toggleCard(
+              p,
+              title: '👶 家有小孩 / 抚育子女',
+              subtitle: '承担未成年子女抚养与监护职责',
+              selected: _hasChildren,
+              onTap: () => setState(() {
+                _hasChildren = !_hasChildren;
+                if (!_hasChildren) _childAgeStage = 'none';
+                if (_hasChildren && _childAgeStage == 'none') _childAgeStage = 'infant';
+              }),
+              cascadeContent: _hasChildren
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 6),
+                        Text('请选择孩子当前阶段 (精准激活阶段建议)：', style: TextStyle(fontSize: 11, color: p.inkSub)),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _selectableChip(
+                                p,
+                                label: '🍼 婴幼儿 (0~3岁)',
+                                selected: _childAgeStage == 'infant',
+                                onTap: () => setState(() => _childAgeStage = 'infant'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _selectableChip(
+                                p,
+                                label: '🎒 少儿与学龄 (3~18岁)',
+                                selected: _childAgeStage == 'school',
+                                onTap: () => setState(() => _childAgeStage = 'school'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        if (_childAgeStage == 'infant')
+                          _cascadeBox(p, [
+                            '已激活：新生儿软床窒息防范与母乳科学喂养',
+                            '已激活：儿童发热禁用含安乃近/尼美舒利复方感冒药',
+                            if (_hasCar) '已激活：机动车 4 岁以下后排反向安全座椅',
+                          ])
+                        else
+                          _cascadeBox(p, [
+                            '已激活：阳台与开合窗户安装防坠限位器 (纱窗不顶用)',
+                            '已激活：儿童近水不离视线与野泳救生衣防溺水',
+                            '已激活：近视防控与上学心理适应',
+                          ]),
+                      ],
+                    )
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            Text('长辈孝亲', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
+            const SizedBox(height: 8),
+            _toggleCard(
+              p,
+              title: '🧓 家有老人 / 需照护父母',
+              subtitle: '家中父母年过六旬，或需日常照护',
+              selected: _hasAgingParents,
+              onTap: () => setState(() => _hasAgingParents = !_hasAgingParents),
+              cascadeContent: _hasAgingParents
+                  ? _cascadeBox(p, [
+                      '已激活：浴室与楼梯适老化改造 (防滑扶手/防跌摔)',
+                      '已激活：长辈骨质疏松筛查、流感与带状疱疹疫苗补种',
+                      '已激活：老年人保健品与电信诈骗专属心理关怀',
+                    ])
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 5: 职业生态与工作场景（级联剪枝）
+  // ==========================================================================
+  Widget _buildStep5Career(AppPalettes p) {
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          children: [
+            _stepHeader(
+              p,
+              badge: '05 / 07 · 职场生态',
+              title: '核心职业形态',
+              prompt: '「上班维权留痕，做生意隔离家底。」根据身份精准过滤对应的劳动法红线与合伙契约。',
+            ),
+            const SizedBox(height: 16),
+            _radioCard(
+              p,
+              title: '💼 企业在职员工 / 打工人',
+              subtitle: '与用人单位签署全职或兼职劳动合同',
+              selected: _careerType == 'employed',
+              onTap: () => setState(() => _careerType = 'employed'),
+              cascadeContent: _careerType == 'employed'
+                  ? _cascadeBox(p, [
+                      '已激活：每月发薪日核查工资条与五险一金基数',
+                      '已激活：离职、裁员、调岗补偿法定标准留痕',
+                      '已激活：工伤认定时限与劳动仲裁证据保全',
+                    ])
+                  : null,
             ),
             const SizedBox(height: 8),
-            // 动态联动实证建议节点卡片
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 260),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.all(14),
+            _radioCard(
+              p,
+              title: '💻 程序员 / 技术从业者',
+              subtitle: '从事软件开发、运维、数据与技术岗',
+              selected: _careerType == 'programmer',
+              onTap: () => setState(() => _careerType = 'programmer'),
+              cascadeContent: _careerType == 'programmer'
+                  ? _cascadeBox(p, [
+                      '已激活：网络爬虫合规边界与开源协议反向侵权',
+                      '已激活：数据跨境传输红线与私活外包免责条款',
+                      '已激活：在职打工人五险一金全套防御体系',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            _radioCard(
+              p,
+              title: '🚀 创业者 / 公司法定代表人 / 合伙人',
+              subtitle: '开办企业、店铺或组建合伙团队',
+              selected: _careerType == 'entrepreneur',
+              onTap: () => setState(() => _careerType = 'entrepreneur'),
+              cascadeContent: _careerType == 'entrepreneur'
+                  ? _cascadeBox(p, [
+                      '已激活：公司有限责任债务隔离 (绝不轻易连带个人担保)',
+                      '已激活：合伙人退出机制、股权架构与资质审批备案',
+                      '已剪枝：自动屏蔽普通打工人劳动仲裁条目',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            _radioCard(
+              p,
+              title: '🎓 学生 / 备考求职者',
+              subtitle: '高校在读、研究生或应届求职中',
+              selected: _careerType == 'student',
+              onTap: () => setState(() => _careerType = 'student'),
+              cascadeContent: _careerType == 'student'
+                  ? _cascadeBox(p, [
+                      '已激活：高性价比技能树投资与实习合规',
+                      '已激活：防兼职套路贷与培训贷诈骗',
+                    ])
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 6: 生活习惯与健康关注（级联剪枝）
+  // ==========================================================================
+  Widget _buildStep6Health(AppPalettes p) {
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+          children: [
+            _stepHeader(
+              p,
+              badge: '06 / 07 · 身体自检',
+              title: '健康关注与生活习性',
+              prompt: '非吸烟者绝不推戒烟干预；健康无慢病者不打扰早晚测压；精准匹配真实身体防线。',
+            ),
+            const SizedBox(height: 16),
+            _toggleCard(
+              p,
+              title: '🚭 我有吸烟习惯 (需戒烟守护)',
+              subtitle: '目前吸烟或正处于戒烟过渡期',
+              selected: _isSmoker,
+              onTap: () => setState(() => _isSmoker = !_isSmoker),
+              cascadeContent: _isSmoker
+                  ? _cascadeBox(p, [
+                      '已激活：戒烟日一次性停掉、伐尼克兰戒烟门诊辅助',
+                      '已激活：重度吸烟者低剂量胸部 CT 年度筛查',
+                    ])
+                  : _cascadeBox(p, [
+                      '已智能剪枝：完全屏蔽所有戒烟药与吸烟干预噪音',
+                    ], isMuted: true),
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🩺 关注 / 确诊高血压',
+              subtitle: '血压偏高、已有高血压或长期服药中',
+              selected: _hasHypertension,
+              onTap: () => setState(() => _hasHypertension = !_hasHypertension),
+              cascadeContent: _hasHypertension
+                  ? _cascadeBox(p, [
+                      '已激活：每日早晚定时量血压并吃药降到达标',
+                      '已激活：食盐更换为低钠钾盐方案',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🩸 关注高血糖 / 高尿酸痛风',
+              subtitle: '体检血糖/尿酸偏高或已有代谢指标异常',
+              selected: _hasDiabetes,
+              onTap: () => setState(() => _hasDiabetes = !_hasDiabetes),
+              cascadeContent: _hasDiabetes
+                  ? _cascadeBox(p, [
+                      '已激活：35 岁以上空腹血糖常规复查',
+                      '已激活：低嘌呤饮食与痛风降尿酸科学方案',
+                    ])
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            _toggleCard(
+              p,
+              title: '🪑 工位伏案久坐 > 4 小时',
+              subtitle: '工作日长时间静坐屏幕前',
+              selected: _hasDeskJob,
+              onTap: () => setState(() => _hasDeskJob = !_hasDeskJob),
+              cascadeContent: _hasDeskJob
+                  ? _cascadeBox(p, [
+                      '已激活：工作日 10:00 与 15:00 远眺深蹲拉伸时段',
+                      '已激活：工位视力保护与颈椎人体工学调节',
+                    ])
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // Step 7: 全息画像合成看板（Synthesis）
+  // ==========================================================================
+  Widget _buildStep7Synthesis(AppPalettes p) {
+    final catalog = catalogOf(context);
+    final tempProfile = _buildCurrentProfile();
+
+    final activeAdvices = catalog.adviceList.where((a) {
+      if (a.prerequisites.isNotEmpty) {
+        final pr = a.prerequisites;
+        if (pr['has_car'] == true && !tempProfile.hasCar) return false;
+        if (pr['has_twowheeler'] == true && !tempProfile.hasTwowheeler) return false;
+        if (pr['is_smoker'] == true && !tempProfile.isSmoker) return false;
+        if (pr['has_children'] == true && !tempProfile.hasChildren && !tempProfile.roles.contains('家长')) return false;
+        if (pr['has_aging_parents'] == true && !tempProfile.hasAgingParents && !tempProfile.livingConditions.contains('家有老人')) return false;
+        if (pr['is_tenant'] == true && !tempProfile.isTenant && !tempProfile.livingConditions.contains('租房人')) return false;
+        if (pr['has_mortgage'] == true && !tempProfile.hasMortgage && !tempProfile.livingConditions.contains('购房人')) return false;
+        if (pr['has_pets'] == true && !tempProfile.hasPets && !tempProfile.livingConditions.contains('养犬人')) return false;
+        if (pr['has_piped_gas'] == true && !tempProfile.hasPipedGas) return false;
+        if (pr['is_entrepreneur'] == true && !tempProfile.isEntrepreneur) return false;
+        if (pr['gender_female'] == true && tempProfile.gender != '女') return false;
+        if (pr['gender_male'] == true && tempProfile.gender != '男') return false;
+        if (pr['min_age'] is int && tempProfile.age < (pr['min_age'] as int)) return false;
+      }
+      return true;
+    }).toList();
+
+    final total = catalog.adviceList.length;
+    final activeCount = activeAdvices.length;
+    final prunedCount = total - activeCount;
+
+    return FadeTransition(
+      opacity: _pageFadeAnim,
+      child: SlideTransition(
+        position: _pageSlideAnim,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+          children: [
+            _stepHeader(
+              p,
+              badge: '07 / 07 · 全息防御网络',
+              title: '量身定制画像已生成',
+              prompt: '已完成全量建议的多维级联剪枝。只留与你物理世界相符的关键防线，为你屏蔽全部无关打扰。',
+            ),
+            const SizedBox(height: 20),
+            // 罗盘与数据成果卡
+            Container(
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: p.surface,
+                gradient: LinearGradient(
+                  colors: [p.surfaceGlass, p.surface],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: p.action.withValues(alpha: 0.35)),
+                border: Border.all(color: p.action.withValues(alpha: 0.25)),
                 boxShadow: [
                   BoxShadow(
-                    color: p.action.withValues(alpha: 0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
+                    color: p.action.withValues(alpha: 0.08),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.timeline_outlined, size: 15, color: p.action),
-                      const SizedBox(width: 6),
-                      Text(
-                        milestone.title,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: p.action,
-                        ),
+                  ScaleTransition(
+                    scale: _pulseAnim,
+                    child: Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: p.emerald.withValues(alpha: 0.12),
+                        border: Border.all(color: p.emerald.withValues(alpha: 0.3)),
                       ),
-                      const Spacer(),
-                      Text(
-                        '实证金标准',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: p.emerald,
-                        ),
-                      ),
-                    ],
+                      child: Icon(Icons.check_circle_outline, size: 38, color: p.emerald),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    '已激活 $activeCount 条关键建议',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: p.ink,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    milestone.desc,
-                    style: TextStyle(fontSize: 11.5, color: p.inkSub, height: 1.5),
-                  ),
-                  const Divider(height: 16),
-                  Text(
-                    '为你自动激活本年龄段建议：${milestone.sampleAdvice}',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: p.ink,
-                    ),
+                    '成功剪枝消除 $prunedCount 条非当前场景噪音',
+                    style: TextStyle(fontSize: 12.5, color: p.emerald, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _genderCard(AppPalettes p, String gender, IconData icon, String note) {
-    final selected = _gender == gender;
-    return Expanded(
-      child: _AnimatedCard(
-        selected: selected,
-        onTap: () => setState(() => _gender = gender),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: selected ? p.action : p.inkMute),
-                const SizedBox(width: 6),
-                Text(
-                  gender,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: selected ? p.action : p.ink,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              note,
-              style: TextStyle(fontSize: 10, color: p.inkMute, height: 1.3),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  ({String title, String desc, String sampleAdvice}) _getAgeMilestone(int age) {
-    if (age <= 22) {
-      return (
-        title: '少年与成年早期节点',
-        desc: '重点构建早期法律底线、防兼职刷单陷阱，补齐成年基础疫苗（乙肝、HPV 等）。',
-        sampleAdvice: '乙肝表面抗原/抗体筛查 · 租房防黑中介合同核验',
-      );
-    }
-    if (age <= 34) {
-      return (
-        title: '青年奋斗期节点',
-        desc: '重点守护雇佣劳动合同、工资条备份、婚恋财务透明与久坐工位健康防守。',
-        sampleAdvice: '工资条离线留痕 · 劳动合同7天核对 · 颈椎远眺习惯',
-      );
-    }
-    if (age <= 44) {
-      return (
-        title: '35 岁慢病关键节点',
-        desc: '国家每年免费量血压、空腹血糖与血脂检测启动，幽门螺杆菌根除，防范心脑血管隐患。',
-        sampleAdvice: '14C碳呼气试验(HP) · 每年免费血压血糖 · 牙周洁治',
-      );
-    }
-    if (age <= 49) {
-      return (
-        title: '45 岁专项防癌坎',
-        desc: '结直肠癌筛查（粪便隐血/肠镜）、胃镜与乳腺钼靶检查进入高频防线，守住家庭财务底盘。',
-        sampleAdvice: '无痛胃肠镜首次大修 · 乳腺超声/钼靶联合筛查',
-      );
-    }
-    if (age <= 64) {
-      return (
-        title: '50 岁疫苗与慢性病节点',
-        desc: '带状疱疹疫苗（防效率 97%）两针接种，骨骼关节保养，长期慢病规范用药。',
-        sampleAdvice: '带状疱疹两针接种 · 双能X线骨密度检查 · 白内障筛查',
-      );
-    }
-    return (
-      title: '65 岁银发关怀节点',
-      desc: '双能 X 线骨密度检查、肺炎球菌疫苗、防跌倒家庭适老化改造与国家免费老年体检。',
-      sampleAdvice: '23价肺炎球菌疫苗 · 卫健委免费体检 · 浴室防滑扶手',
-    );
-  }
-
-  // --- Step 2: 职业与职场防御 ---
-  Widget _buildStep2Career(AppPalettes p) {
-    return FadeTransition(
-      opacity: _pageFadeAnim,
-      child: SlideTransition(
-        position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          children: [
-            _stepHeader(
-              p,
-              badge: '02 / 06 · 职场生态',
-              title: '核心职业形态',
-              prompt: '「别把自己搭进去。上班、创业或写代码，劳动维权、防范灰产与固化工资证据，是第一位的划算。」\n为你点亮涵盖 128 条职场建议的合规与防御网络：',
-            ),
-            const SizedBox(height: 16),
-            _toggleCard(
-              p,
-              tag: '上班族',
-              icon: Icons.business_center_outlined,
-              title: '企业雇员 / 上班族',
-              subtitle: '劳动合同 7 天核对 · 工资条离线留痕 · 试用期辞退避坑 · 工伤留痕',
-              selected: _roles.contains('上班族'),
-              onTap: () => _toggleRole('上班族'),
-            ),
-            _toggleCard(
-              p,
-              tag: '程序员',
-              icon: Icons.terminal_outlined,
-              title: '程序员 / 技术开发者',
-              subtitle: '开源许可证风险 · 爬虫数据红线 · 灰产兼职阻断 · 外挂脚本边界',
-              selected: _roles.contains('程序员'),
-              onTap: () => _toggleRole('程序员'),
-            ),
-            _toggleCard(
-              p,
-              tag: '创业者',
-              icon: Icons.rocket_launch_outlined,
-              title: '创业者 / 合伙做生意',
-              subtitle: '有限责任资产隔离 · 股权与夫妻债务防范 · 税务合规 · 不把家底赔进去',
-              selected: _roles.contains('创业者'),
-              onTap: () => _toggleRole('创业者'),
-            ),
-            _toggleCard(
-              p,
-              tag: '学生',
-              icon: Icons.school_outlined,
-              title: '在校学生 / 求职新人',
-              subtitle: '三方协议核查 · 学历与证书真伪 · 远离跑分洗钱陷阱 · 校园人身安全',
-              selected: _roles.contains('学生'),
-              onTap: () => _toggleRole('学生'),
-            ),
-            _toggleCard(
-              p,
-              tag: '灵活就业者',
-              icon: Icons.coffee_outlined,
-              title: '自由职业 / 灵活就业',
-              subtitle: '自费社保最优配置 · 商业合同预付款约定 · 知识产权防御',
-              selected: _roles.contains('灵活就业者'),
-              onTap: () => _toggleRole('灵活就业者'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- Step 3: 家庭与守护责任 ---
-  Widget _buildStep3Family(AppPalettes p) {
-    return FadeTransition(
-      opacity: _pageFadeAnim,
-      child: SlideTransition(
-        position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          children: [
-            _stepHeader(
-              p,
-              badge: '03 / 06 · 守护责任',
-              title: '家庭与重要关系',
-              prompt: '「守护家人的底气，不是事后的慌乱，而是平静时备好的急救常识、防骗机制与照护路径。」\n为你点亮涵盖 113 条家庭维度的建议网络：',
-            ),
-            const SizedBox(height: 16),
-            _toggleCard(
-              p,
-              tag: '家有老人',
-              icon: Icons.elderly_outlined,
-              title: '家有父母 / 老人照护',
-              subtitle: '激活 139 条老人专属健康 · 肺炎与带状疱疹疫苗 · 防骗三问一打 · 跌倒看护',
-              selected: _roles.contains('家有老人'),
-              onTap: () => _toggleRole('家有老人'),
-            ),
-            _toggleCard(
-              p,
-              tag: '家长',
-              icon: Icons.child_care_outlined,
-              title: '抚养孩子 / 准父母',
-              subtitle: '儿童高热惊厥与窒息急救 · 疫苗接种日历 · 母乳与奶粉冲调 · 教育回报核算',
-              selected: _roles.contains('家长') || _roles.contains('准父母'),
-              onTap: () {
-                if (_roles.contains('家长')) {
-                  _roles.remove('家长');
-                  _roles.remove('准父母');
-                } else {
-                  _roles.add('家长');
-                  _roles.add('准父母');
-                }
-                setState(() {});
-              },
-            ),
-            _toggleCard(
-              p,
-              tag: '伴侣',
-              icon: Icons.favorite_border,
-              title: '恋爱同居 / 伴侣已婚',
-              subtitle: '夫妻共同财产与债务隔离 · 婚前钱账透明 · 共同储蓄与大病互助',
-              selected: _roles.contains('伴侣'),
-              onTap: () => _toggleRole('伴侣'),
-            ),
-            _toggleCard(
-              p,
-              tag: '独立生活',
-              icon: Icons.person_outline,
-              title: '单身独居 / 专注自我',
-              subtitle: '独居门锁二次核验 · 紧急联系人一键直达 · 医院急诊绿色通道认知',
-              selected: _roles.contains('独居'),
-              onTap: () => _toggleRole('独居'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- Step 4: 居住与生活日常 ---
-  Widget _buildStep4Lifestyle(AppPalettes p) {
-    return FadeTransition(
-      opacity: _pageFadeAnim,
-      child: SlideTransition(
-        position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          children: [
-            _stepHeader(
-              p,
-              badge: '04 / 06 · 生活常态',
-              title: '居住与日常情境',
-              prompt: '「日常最大的风险往往藏在最熟悉的习惯里：合租房查验产权、上车扣紧安全带、大额转账冷静期。」\n为你点亮涵盖 202 条财产法律建议的情境规则：',
-            ),
-            const SizedBox(height: 16),
-            _toggleCard(
-              p,
-              tag: '租房人',
-              icon: Icons.apartment_outlined,
-              title: '租房合租生活',
-              subtitle: '中介房东资质确权 · 押金退还避坑 · 甲醛自测 · 租住安全防范',
-              selected: _livingConditions.contains('租房人'),
-              onTap: () => _toggleLiving('租房人'),
-            ),
-            _toggleCard(
-              p,
-              tag: '购房人',
-              icon: Icons.home_work_outlined,
-              title: '购房置业 / 房贷还款',
-              subtitle: '房贷利率与违约金核算 · 大额转账留痕凭证 · 房屋产权确权',
-              selected: _livingConditions.contains('购房人'),
-              onTap: () => _toggleLiving('购房人'),
-            ),
-            _toggleCard(
-              p,
-              tag: '司机',
-              icon: Icons.directions_car_outlined,
-              title: '日常开车 / 乘车出行',
-              subtitle: '全车舱安全带锁止 · 行车记录仪防诬 · 疲劳驾驶与高速安全底线',
-              selected: _livingConditions.contains('司机'),
-              onTap: () => _toggleLiving('司机'),
-            ),
-            _toggleCard(
-              p,
-              tag: '出境者',
-              icon: Icons.flight_takeoff_outlined,
-              title: '跨国旅行 / 出境打工留学',
-              subtitle: '全球领保热线 12308 · 境外务工资格核验 · 突发水土不服与保险',
-              selected: _livingConditions.contains('出境者'),
-              onTap: () => _toggleLiving('出境者'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- Step 5: 全景六大领域深度定制（100% 建议全覆盖引导） ---
-  Widget _buildStep5Domains(AppPalettes p) {
-    final catalog = catalogOf(context);
-    final totalAdviceCount = catalog.adviceList.length;
-
-    // 计算当前选中的领域所覆盖的建议总数
-    final coveredInSelectedDomains = catalog.adviceList.where((a) {
-      final domain = LifeDomain.ofChapter(a.chapter);
-      return _focusDomains.contains(domain.id);
-    }).length;
-
-    final isAllSelected = _focusDomains.length == LifeDomain.values.length;
-
-    return FadeTransition(
-      opacity: _pageFadeAnim,
-      child: SlideTransition(
-        position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          children: [
-            _stepHeader(
-              p,
-              badge: '05 / 06 · 全景覆盖',
-              title: '人生六大支柱完整定制',
-              prompt: '「全书 767 条建议由六大支柱严密咬合，绝不留任何信息孤岛。」\n你可以自由点亮关切的领域，随时在应用库中一键切回全景无死角浏览：',
-            ),
-            const SizedBox(height: 14),
-            // 顶部覆盖度横幅
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: p.action.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: p.action.withValues(alpha: 0.25)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.pie_chart_outline, size: 18, color: p.action),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '已点亮领域覆盖：$coveredInSelectedDomains / $totalAdviceCount 条建议',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: p.action,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      setState(() {
-                        if (isAllSelected) {
-                          _focusDomains = {'health', 'career', 'finance'};
-                        } else {
-                          _focusDomains = LifeDomain.values.map((d) => d.id).toSet();
-                        }
-                      });
-                    },
-                    child: Text(
-                      isAllSelected ? '恢复精选' : '全选点亮',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: p.action,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            // 六大领域卡片列表
-            ...LifeDomain.values.map((d) {
-              final isChecked = _focusDomains.contains(d.id);
-              return _domainCard(p, d, isChecked);
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _domainCard(AppPalettes p, LifeDomain domain, bool isChecked) {
-    return _AnimatedCard(
-      selected: isChecked,
-      onTap: () {
-        setState(() {
-          if (isChecked) {
-            if (_focusDomains.length > 1) {
-              _focusDomains.remove(domain.id);
-            }
-          } else {
-            _focusDomains.add(domain.id);
-          }
-        });
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: isChecked
-                  ? domain.accentColor.withValues(alpha: 0.18)
-                  : p.pillBg,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              domain.icon,
-              size: 20,
-              color: isChecked ? domain.accentColor : p.inkSub,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      domain.title,
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: isChecked ? domain.accentColor : p.ink,
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isChecked
-                            ? domain.accentColor.withValues(alpha: 0.16)
-                            : p.hairline,
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
-                      child: Text(
-                        '${domain.totalCount} 条',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: isChecked ? domain.accentColor : p.inkMute,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  domain.description,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: p.inkSub,
-                    height: 1.35,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 18,
-            height: 18,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isChecked ? domain.accentColor : Colors.transparent,
-              border: Border.all(
-                color: isChecked ? domain.accentColor : p.inkMute,
-                width: 1.5,
-              ),
-            ),
-            child: isChecked
-                ? const Icon(Icons.check, size: 12, color: Colors.white)
-                : null,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- Step 6: 罗盘校准与全景阶跃启动 ---
-  Widget _buildStep6Synthesis(AppPalettes p) {
-    final catalog = catalogOf(context);
-    final tempProfile = _buildProfile();
-
-    // 动态基于真实 767 数据计算，拒绝任何 Mock！
-    final matchedTotal = catalog.adviceList.where((a) {
-      if (!_prunedOnly) return true;
-      return a.tags.any(tempProfile.stages.contains) &&
-          !a.tags.any(tempProfile.exclude.contains);
-    }).length;
-
-    final dailyCount = catalog.adviceList.where((a) {
-      final isDaily = a.tags.contains('每天') || a.tags.contains('打卡');
-      return isDaily && !a.tags.any(tempProfile.exclude.contains);
-    }).length;
-
-    final redlinesCount = catalog.adviceList.where((a) {
-      return (a.actType == 'redline-stamp' || a.tags.contains('安全')) &&
-          !a.tags.any(tempProfile.exclude.contains);
-    }).length;
-
-    return FadeTransition(
-      opacity: _pageFadeAnim,
-      child: SlideTransition(
-        position: _pageSlideAnim,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
-          children: [
+            const SizedBox(height: 18),
+            Text('六大支柱激活全景', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: p.inkSub)),
             const SizedBox(height: 8),
-            // 多层同心动态旋转罗盘
-            Center(
-              child: _buildHolographicCompass(p),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              '全息画像罗盘校准完成',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: p.ink,
-                letterSpacing: -0.4,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '已为你激活专属罗盘，全库 767 条实证建议 100% 完备待命，\n无缝过滤非适用噪音，筑牢安全防线。',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: p.inkSub, height: 1.5),
-            ),
-            const SizedBox(height: 18),
-            // 真实数据统计卡（非 Mock）
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: p.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: p.hairline),
-              ),
-              child: Column(
-                children: [
-                  _statRow(
-                    p,
-                    '全库建议总览与覆盖',
-                    '767 条 (100%)',
-                    Icons.grid_view_outlined,
-                    p.action,
-                  ),
-                  const Divider(height: 18),
-                  _statRow(
-                    p,
-                    _prunedOnly ? '当前画像适用建议' : '全景探索模式全量开放',
-                    _prunedOnly ? '$matchedTotal 条' : '767 条',
-                    Icons.auto_awesome_outlined,
-                    p.emerald,
-                  ),
-                  const Divider(height: 18),
-                  _statRow(
-                    p,
-                    '高后果安全红线防范',
-                    '$redlinesCount 项',
-                    Icons.gpp_maybe_outlined,
-                    p.rose,
-                  ),
-                  const Divider(height: 18),
-                  _statRow(
-                    p,
-                    '每日关键节律微习惯',
-                    '$dailyCount 项',
-                    Icons.today_outlined,
-                    p.indigo,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-            // 人性化模式切换开关
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: p.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: p.hairline),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _prunedOnly ? Icons.filter_alt_outlined : Icons.public_outlined,
-                    size: 18,
-                    color: p.action,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _prunedOnly ? '画像精选模式（默认）' : '全景开放模式（767条直读）',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: p.ink,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _prunedOnly
-                              ? '优先推送契合防线，库中可随时一键切全量'
-                              : '不设任何画像折叠，全量 767 条无死角展示',
-                          style: TextStyle(fontSize: 10.5, color: p.inkSub),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Switch.adaptive(
-                    value: !_prunedOnly,
-                    activeTrackColor: p.emerald,
-                    onChanged: (v) {
-                      HapticFeedback.selectionClick();
-                      setState(() => _prunedOnly = !v);
-                    },
-                  ),
-                ],
-              ),
-            ),
+            _pillarCard(p, '身体健康与防病', Icons.health_and_safety_outlined, activeAdvices.where((a) => a.treePath.startsWith('health')).length, p.emerald),
+            _pillarCard(p, '日常起居与交通', Icons.access_time_outlined, activeAdvices.where((a) => a.treePath.startsWith('daily')).length, p.action),
+            _pillarCard(p, '家庭守护与人际', Icons.family_restroom_outlined, activeAdvices.where((a) => a.treePath.startsWith('relationships')).length, Colors.purple),
+            _pillarCard(p, '财产安全与资产', Icons.shield_outlined, activeAdvices.where((a) => a.treePath.startsWith('finance')).length, Colors.amber.shade800),
+            _pillarCard(p, '职场事业与学业', Icons.business_center_outlined, activeAdvices.where((a) => a.treePath.startsWith('career')).length, Colors.blue),
+            _pillarCard(p, '安全红线与合规', Icons.gpp_maybe_outlined, activeAdvices.where((a) => a.treePath.startsWith('safety')).length, Colors.redAccent),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHolographicCompass(AppPalettes p) {
-    return ScaleTransition(
-      scale: _pulseAnim,
-      child: Stack(
-        alignment: Alignment.center,
+  Widget _pillarCard(AppPalettes p, String title, IconData icon, int count, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: p.surfaceGlass,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: p.inkMute.withValues(alpha: 0.1)),
+      ),
+      child: Row(
         children: [
-          // 外层慢速旋转光环
-          RotationTransition(
-            turns: _compassSpinController,
-            child: Container(
-              width: 104,
-              height: 104,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: p.action.withValues(alpha: 0.25),
-                  width: 1.5,
-                  style: BorderStyle.solid,
-                ),
-              ),
-            ),
-          ),
-          // 内层脉冲光晕
-          Container(
-            width: 84,
-            height: 84,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: p.emerald.withValues(alpha: 0.14),
-              border: Border.all(color: p.emerald, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: p.emerald.withValues(alpha: 0.3),
-                  blurRadius: 16,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: Icon(Icons.explore_outlined, size: 42, color: p.emerald),
-          ),
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: p.ink)),
+          const Spacer(),
+          Text('$count 条已激活', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
         ],
       ),
     );
   }
 
-  Widget _statRow(
-    AppPalettes p,
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 8),
-        Text(label, style: TextStyle(fontSize: 12.5, color: p.inkSub)),
-        const Spacer(),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w800,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-
+  // ==========================================================================
+  // 通用 UI 部件
+  // ==========================================================================
   Widget _stepHeader(
     AppPalettes p, {
     required String badge,
@@ -1306,15 +1166,16 @@ class _OnboardingViewState extends State<OnboardingView>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
           decoration: BoxDecoration(
-            color: p.action.withValues(alpha: 0.12),
+            color: p.action.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(9999),
           ),
           child: Text(
             badge,
             style: TextStyle(
               fontSize: 10.5,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.bold,
               color: p.action,
+              letterSpacing: 0.3,
             ),
           ),
         ),
@@ -1323,128 +1184,229 @@ class _OnboardingViewState extends State<OnboardingView>
           title,
           style: TextStyle(
             fontSize: 22,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.bold,
             color: p.ink,
-            letterSpacing: -0.4,
+            letterSpacing: -0.3,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           prompt,
           style: TextStyle(
-            fontSize: 12,
-            color: p.inkSub,
+            fontSize: 12.5,
             height: 1.5,
+            color: p.inkSub,
           ),
         ),
       ],
     );
   }
 
+  Widget _selectableChip(
+    AppPalettes p, {
+    required String label,
+    IconData? icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: selected ? p.action.withValues(alpha: 0.1) : p.surfaceGlass,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? p.action : p.inkMute.withValues(alpha: 0.18),
+            width: selected ? 1.8 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16, color: selected ? p.action : p.inkSub),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                color: selected ? p.action : p.ink,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _toggleCard(
     AppPalettes p, {
-    required String tag,
-    required IconData icon,
     required String title,
     required String subtitle,
     required bool selected,
     required VoidCallback onTap,
+    Widget? cascadeContent,
   }) {
-    return _AnimatedCard(
-      selected: selected,
-      onTap: onTap,
-      child: Row(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: selected ? p.action.withValues(alpha: 0.05) : p.surfaceGlass,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: selected ? p.action : p.inkMute.withValues(alpha: 0.18),
+          width: selected ? 1.6 : 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.bold,
+                            color: selected ? p.action : p.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(subtitle, style: TextStyle(fontSize: 11.5, color: p.inkSub)),
+                      ],
+                    ),
+                  ),
+                  Checkbox(
+                    value: selected,
+                    activeColor: p.action,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    onChanged: (_) => onTap(),
+                  ),
+                ],
+              ),
+              if (cascadeContent != null) ...[
+                const SizedBox(height: 8),
+                cascadeContent,
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _radioCard(
+    AppPalettes p, {
+    required String title,
+    required String subtitle,
+    required bool selected,
+    required VoidCallback onTap,
+    Widget? cascadeContent,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: selected ? p.action.withValues(alpha: 0.05) : p.surfaceGlass,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: selected ? p.action : p.inkMute.withValues(alpha: 0.18),
+          width: selected ? 1.6 : 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.bold,
+                            color: selected ? p.action : p.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(subtitle, style: TextStyle(fontSize: 11.5, color: p.inkSub)),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    selected ? Icons.radio_button_checked : Icons.radio_button_off,
+                    size: 20,
+                    color: selected ? p.action : p.inkMute,
+                  ),
+                ],
+              ),
+              if (cascadeContent != null) ...[
+                const SizedBox(height: 8),
+                cascadeContent,
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _cascadeBox(AppPalettes p, List<String> lines, {bool isMuted = false}) {
+    final color = isMuted ? p.inkSub : p.action;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: selected
-                  ? p.action.withValues(alpha: 0.16)
-                  : p.pillBg,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: selected ? p.action : p.inkSub,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: selected ? p.action : p.ink,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: p.inkSub,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 18,
-            height: 18,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: selected ? p.action : Colors.transparent,
-              border: Border.all(
-                color: selected ? p.action : p.inkMute,
-                width: 1.5,
+          for (final l in lines)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text(
+                '• $l',
+                style: TextStyle(fontSize: 11.5, color: color, height: 1.35),
               ),
             ),
-            child: selected
-                ? const Icon(Icons.check, size: 12, color: Colors.white)
-                : null,
-          ),
         ],
       ),
     );
   }
 
-  void _toggleRole(String role) {
-    setState(() {
-      if (_roles.contains(role)) {
-        _roles.remove(role);
-      } else {
-        _roles.add(role);
-      }
-    });
-  }
-
-  void _toggleLiving(String living) {
-    setState(() {
-      if (_livingConditions.contains(living)) {
-        _livingConditions.remove(living);
-      } else {
-        _livingConditions.add(living);
-      }
-    });
-  }
-
-  TextStyle _labelStyle(AppPalettes p) => TextStyle(
-        fontSize: 11.5,
-        fontWeight: FontWeight.w600,
-        color: p.inkSub,
-      );
-
   Widget _buildBottomBar(AppPalettes p) {
-    final isLast = _currentPage == 6;
+    final isLast = _currentPage == 7;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: SizedBox(
@@ -1455,89 +1417,13 @@ class _OnboardingViewState extends State<OnboardingView>
             backgroundColor: isLast ? p.emerald : p.action,
             foregroundColor: Colors.white,
             elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(9999),
-            ),
-            shadowColor: (isLast ? p.emerald : p.action).withValues(alpha: 0.4),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          onPressed: isLast ? _finish : _nextPage,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            child: Text(
-              _currentPage == 0
-                  ? '定制专属罗盘 ›'
-                  : (isLast
-                      ? (widget.isReconfiguring ? '保存画像并生效' : '步入数字阶跃 ›')
-                      : '继续下一步 ›'),
-              key: ValueKey('btn_$_currentPage'),
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-            ),
+          onPressed: isLast ? _complete : _nextPage,
+          child: Text(
+            isLast ? '进入 KairosStep 守护网络' : '下一步',
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 具有弹性缩放微交互与高光边缘的优雅卡片组件。
-class _AnimatedCard extends StatefulWidget {
-  const _AnimatedCard({
-    required this.selected,
-    required this.onTap,
-    required this.child,
-  });
-
-  final bool selected;
-  final VoidCallback onTap;
-  final Widget child;
-
-  @override
-  State<_AnimatedCard> createState() => _AnimatedCardState();
-}
-
-class _AnimatedCardState extends State<_AnimatedCard> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = AppPalettes.of(context);
-
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: () {
-        HapticFeedback.selectionClick();
-        widget.onTap();
-      },
-      child: AnimatedScale(
-        scale: _isPressed ? 0.98 : 1.0,
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOutCubic,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: widget.selected
-                ? p.action.withValues(alpha: 0.08)
-                : p.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: widget.selected ? p.action : p.hairline,
-              width: widget.selected ? 1.5 : 1,
-            ),
-            boxShadow: widget.selected
-                ? [
-                    BoxShadow(
-                      color: p.action.withValues(alpha: 0.08),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    )
-                  ]
-                : null,
-          ),
-          child: widget.child,
         ),
       ),
     );

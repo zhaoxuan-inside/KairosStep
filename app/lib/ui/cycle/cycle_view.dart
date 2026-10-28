@@ -29,7 +29,7 @@ class CycleView extends StatelessWidget {
         headerSliverBuilder: (ctx, innerBoxIsScrolled) => [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 60, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

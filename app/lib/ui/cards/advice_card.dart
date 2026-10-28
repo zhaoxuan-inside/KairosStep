@@ -430,15 +430,14 @@ class _AdviceCardState extends State<AdviceCard>
       case TriggerMode.dormant:
         return (badge: '静默储备 · 库中随查', color: const Color(0xFF838280));
       case TriggerMode.daily:
-        final periods = trig.dailyPeriods.map((pk) => switch (pk) {
-          'morning' => '早晨',
-          'focus' => '上午',
-          'afternoon' => '午后',
-          'evening' => '傍晚',
-          'night' => '夜深',
-          _ => '日常',
+        final periods = trig.dailyPeriods.map((pk) {
+          final def = PeriodDefinition.byKey(pk);
+          if (def != null) return def.name;
+          final custom = PeriodDefinition.parseCustomPeriod(pk);
+          if (custom != null) return custom.$3;
+          return pk;
         }).join('/');
-        return (badge: '每天 $periods', color: const Color(0xFF2A72DE));
+        return (badge: periods.isEmpty ? '每天' : '每天 $periods', color: const Color(0xFF2A72DE));
       case TriggerMode.cadence:
         final s = switch (trig.cadenceScopeKey) {
           'weekly' => '每周循环',
@@ -550,27 +549,51 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             ),
           ),
         if (_mode == TriggerMode.daily) ...[
-          Text('浮出时段（多选）', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
-          const SizedBox(height: 4),
+          Row(
+            children: [
+              Text('浮出时段（多选）', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => _showCustomPeriodDialog(context),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_circle_outline, size: 12, color: p.action),
+                      const SizedBox(width: 3),
+                      Text(
+                        '自定义时段',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: p.action,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
           Wrap(
             spacing: 6,
+            runSpacing: 6,
             children: [
-              for (final (k, label) in const [
-                ('morning', '早晨'),
-                ('focus', '上午'),
-                ('afternoon', '午后'),
-                ('evening', '傍晚'),
-                ('night', '夜深'),
-              ])
-                _chip(label, _periods.contains(k), () {
+              for (final def in PeriodDefinition.standardPeriods)
+                _chip('${def.name} (${def.timeRangeLabel})', _periods.contains(def.key), () {
                   setState(() {
-                    if (_periods.contains(k)) {
-                      _periods.remove(k);
+                    if (_periods.contains(def.key)) {
+                      _periods.remove(def.key);
                     } else {
-                      _periods.add(k);
+                      _periods.add(def.key);
                     }
                   });
                 }, p),
+              for (final pk in _periods.where((s) => s.startsWith('custom:')))
+                _customChip(pk, p),
             ],
           ),
         ],
@@ -702,5 +725,205 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
         ),
       ),
     );
+  }
+
+  Widget _customChip(String key, AppPalettes p) {
+    final parsed = PeriodDefinition.parseCustomPeriod(key);
+    final label = parsed != null ? parsed.$3 : key;
+    final on = _periods.contains(key);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: on ? p.action.withValues(alpha: 0.15) : p.surfaceGrey,
+        borderRadius: BorderRadius.circular(9999),
+        border: Border.all(
+          color: on ? p.action : p.hairline,
+          width: on ? 1.3 : 1.0,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_periods.contains(key)) {
+                  _periods.remove(key);
+                } else {
+                  _periods.add(key);
+                }
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(9, 4, 3, 4),
+              child: Text(
+                '自定义 $label',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: on ? FontWeight.w700 : FontWeight.w400,
+                  color: on ? p.action : p.ink,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => setState(() => _periods.remove(key)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(2, 4, 7, 4),
+              child: Icon(Icons.close, size: 12, color: on ? p.action : p.inkMute),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showCustomPeriodDialog(BuildContext context) async {
+    TimeOfDay startTime = const TimeOfDay(hour: 8, minute: 0);
+    TimeOfDay endTime = const TimeOfDay(hour: 9, minute: 30);
+
+    final res = await showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDlgState) {
+            final p = AppPalettes.of(ctx);
+            String format(TimeOfDay t) =>
+                '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+            return AlertDialog(
+              backgroundColor: p.surface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(
+                '添加自定义时段',
+                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: p.ink),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '为此建议设定具体浮出的时间区间：',
+                    style: TextStyle(fontSize: 12, color: p.inkSub),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: p.hairline),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
+                          onPressed: () async {
+                            final picked = await showTimePicker(
+                              context: ctx,
+                              initialTime: startTime,
+                            );
+                            if (picked != null) {
+                              setDlgState(() => startTime = picked);
+                            }
+                          },
+                          child: Text(
+                            '起始 ${format(startTime)}',
+                            style: TextStyle(fontSize: 11.5, color: p.ink),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text('至', style: TextStyle(fontSize: 12, color: p.inkSub)),
+                      ),
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: p.hairline),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
+                          onPressed: () async {
+                            final picked = await showTimePicker(
+                              context: ctx,
+                              initialTime: endTime,
+                            );
+                            if (picked != null) {
+                              setDlgState(() => endTime = picked);
+                            }
+                          },
+                          child: Text(
+                            '结束 ${format(endTime)}',
+                            style: TextStyle(fontSize: 11.5, color: p.ink),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text('快捷时段推荐：', style: TextStyle(fontSize: 11, color: p.inkMute)),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final (s, e) in const [
+                        ('07:00', '08:30'),
+                        ('08:00', '10:00'),
+                        ('12:30', '14:00'),
+                        ('17:30', '19:00'),
+                        ('20:00', '21:30'),
+                        ('22:30', '23:30'),
+                      ])
+                        GestureDetector(
+                          onTap: () {
+                            final sp = s.split(':');
+                            final ep = e.split(':');
+                            setDlgState(() {
+                              startTime = TimeOfDay(hour: int.parse(sp[0]), minute: int.parse(sp[1]));
+                              endTime = TimeOfDay(hour: int.parse(ep[0]), minute: int.parse(ep[1]));
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: p.surfaceGrey,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: p.hairline),
+                            ),
+                            child: Text(
+                              '$s-$e',
+                              style: TextStyle(fontSize: 10.5, color: p.inkSub),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text('取消', style: TextStyle(color: p.inkMute)),
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: p.action),
+                  onPressed: () {
+                    final key = 'custom:${format(startTime)}-${format(endTime)}';
+                    Navigator.pop(ctx, key);
+                  },
+                  child: const Text('确认添加'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (res != null && mounted) {
+      setState(() {
+        _periods.add(res);
+      });
+    }
   }
 }

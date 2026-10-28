@@ -1,0 +1,2751 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "20261028_094626_126765",
+  "task_id": "20261028_094625_788024",
+  "kind": "task",
+  "created_at": "2026-10-28T09:46:33.693508Z",
+  "files": {
+    ".gitignore": {
+      "sha256": "552d7252e386762f37c24db07ddb379ab28c3e0409cc0913b4252e6a04b148d9",
+      "mode": 511,
+      "mtime_ns": 1793000485000000000,
+      "atime_ns": 1793000485000000000
+    },
+    "DESIGN.md": {
+      "sha256": "d9b68704687b18a9383eddec87600d5ba72d2727900829206f4d383ff7753000",
+      "mode": 511,
+      "mtime_ns": 1793014975000000000,
+      "atime_ns": 1793014975000000000
+    },
+    "KairosStep-1.0.0.apk": {
+      "sha256": "4f177fda10fb8ffd4ce38101776bec057479bd6c614b548277ab7dd0b71f0ba4",
+      "mode": 511,
+      "mtime_ns": 1793061133000000000,
+      "atime_ns": 1793061133000000000
+    },
+    "KairosStep-1.0.0.apk.sha256": {
+      "sha256": "0ded615b43ca3ec423f018d11ee5064b360100463444ec37c4174910fb9dbfc9",
+      "mode": 511,
+      "mtime_ns": 1793061135000000000,
+      "atime_ns": 1793061135000000000
+    },
+    "KairosStep-1.0.1.apk": {
+      "sha256": "5ee38fcc9c556be4188a79dade78529195a939f281207b8f44322e304334e354",
+      "mode": 511,
+      "mtime_ns": 1793095152000000000,
+      "atime_ns": 1793095152000000000
+    },
+    "KairosStep-1.0.1.apk.sha256": {
+      "sha256": "d9ac990880c3571fbf5dcad89df224fd7ecfd451ba8fb22746f425842a9e0821",
+      "mode": 511,
+      "mtime_ns": 1793095157000000000,
+      "atime_ns": 1793095157000000000
+    },
+    "KairosStep-1.0.2.apk": {
+      "sha256": "9061210c05f5b804459424e4837bbc49edcf29b372d627649936acc963acf8f4",
+      "mode": 511,
+      "mtime_ns": 1793100643000000000,
+      "atime_ns": 1793100643000000000
+    },
+    "KairosStep-1.0.2.apk.sha256": {
+      "sha256": "fbd1670983aae376a2253833d5263e6ec283ade2afe508c0fd07ef6f181aafce",
+      "mode": 511,
+      "mtime_ns": 1793100675000000000,
+      "atime_ns": 1793100675000000000
+    },
+    "KairosStep-1.0.3.apk": {
+      "sha256": "6ee8109b61be3357a6c7fab0c3b7b985d7099ce386323109499d95401f54c5dc",
+      "mode": 511,
+      "mtime_ns": 1793106156000000000,
+      "atime_ns": 1793106156000000000
+    },
+    "KairosStep-1.0.3.apk.sha256": {
+      "sha256": "97612b1451eeac399882f652f6616170a73e36d596b368c1d230e35e118f0415",
+      "mode": 511,
+      "mtime_ns": 1793106160000000000,
+      "atime_ns": 1793106160000000000
+    },
+    "KairosStep-1.0.4.apk": {
+      "sha256": "ae999d51d3c4db6c9f569fd7298034b87c06887e3cdf28bb0de1a06491625e9d",
+      "mode": 511,
+      "mtime_ns": 1793110086000000000,
+      "atime_ns": 1793110086000000000
+    },
+    "KairosStep-1.0.4.apk.sha256": {
+      "sha256": "be696f104c29ef4803b5aa4bb887f4463f758259b75fd33854eabca40944c2a0",
+      "mode": 511,
+      "mtime_ns": 1793110087000000000,
+      "atime_ns": 1793110087000000000
+    },
+    "LICENSE": {
+      "sha256": "fd25945d3c27547adba99a34195ce4f60a3bcb5febf0666cb6dc73237359de42",
+      "mode": 511,
+      "mtime_ns": 1792719557000000000,
+      "atime_ns": 1792719557000000000
+    },
+    "README.md": {
+      "sha256": "146436a23817289786db6e71aa7a969dab698c632c0cbe69b46655d14513b677",
+      "mode": 511,
+      "mtime_ns": 1792719557000000000,
+      "atime_ns": 1792719557000000000
+    },
+    "inactive_detail_design.md": {
+      "sha256": "4f9fd92fff56b7cf5dc696e6cd2adc53c2ea33d377793c08c71c33e947d3767b",
+      "mode": 511,
+      "mtime_ns": 1793101796000000000,
+      "atime_ns": 1793101796000000000
+    },
+    "app/.flutter-plugins-dependencies": {
+      "sha256": "2b5d505f8d765aa83ad4e49549793b288f710cf6a58bc2b6aebbfd3723af618e",
+      "mode": 511,
+      "mtime_ns": 1793013978000000000,
+      "atime_ns": 1793013978000000000
+    },
+    "app/.gitignore": {
+      "sha256": "441eaa1de5b3db9fae056e7503567e9f8dd94173e1389c60f76956abf729015a",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/.metadata": {
+      "sha256": "1e6f619f44431123a19db1f9d998f479f190c702b606665dfcef83fc14a1c9bb",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/README.md": {
+      "sha256": "64ac26b6098c1c10b258069d2fa2ded9e74efdd232bae732d0644e250eac2c56",
+      "mode": 511,
+      "mtime_ns": 1792932536000000000,
+      "atime_ns": 1792932536000000000
+    },
+    "app/analysis_options.yaml": {
+      "sha256": "d6702eea40def1dc7143adfcf5a3fdf59b8f83ac2ca298857c502775830813a7",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/flutter_01.log": {
+      "sha256": "8d40916b2b34c05a32fe301504d529d1a2440caf7070468b699cd392df93f04f",
+      "mode": 511,
+      "mtime_ns": 1792920304000000000,
+      "atime_ns": 1792920304000000000
+    },
+    "app/flutter_02.log": {
+      "sha256": "b6cb68bb7e9edd6affae97f259e537e9a15c3d44bd8e24d75666e9941353382c",
+      "mode": 511,
+      "mtime_ns": 1793002472000000000,
+      "atime_ns": 1793002472000000000
+    },
+    "app/kairo_step.iml": {
+      "sha256": "078556ebd66f23eeb43b60557b1ed3d3e0b1a2a6297ccb71ad3b779316c7880d",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/pubspec.lock": {
+      "sha256": "037804b2fb09923cd635faea19fcc39381e5c03451a675882b2d3ad47203c5ba",
+      "mode": 511,
+      "mtime_ns": 1792995064000000000,
+      "atime_ns": 1792995064000000000
+    },
+    "app/pubspec.yaml": {
+      "sha256": "4d00a2b6cb8c44037e56a342ae0125be47856c0867066f0bf261b9f5d61a1faa",
+      "mode": 511,
+      "mtime_ns": 1793109855000000000,
+      "atime_ns": 1793109855000000000
+    },
+    "app/.dart_tool/package_config.json": {
+      "sha256": "4146092942857ab17dbd55315b681aaba39a198d669ad6e839783946b3df9cd2",
+      "mode": 511,
+      "mtime_ns": 1793013977000000000,
+      "atime_ns": 1793013977000000000
+    },
+    "app/.dart_tool/package_graph.json": {
+      "sha256": "4d5231e919d751e8b81a9412e822685676deff32924d9858a25dc930874da8a9",
+      "mode": 511,
+      "mtime_ns": 1793107430000000000,
+      "atime_ns": 1793107430000000000
+    },
+    "app/.dart_tool/version": {
+      "sha256": "9a8c236fb03c40b466c320d3994f9332b67d0518a2aa87e0ccf801a8f483a747",
+      "mode": 511,
+      "mtime_ns": 1793107525000000000,
+      "atime_ns": 1793107525000000000
+    },
+    "app/.dart_tool/dartpad/web_plugin_registrant.dart": {
+      "sha256": "69d8277a0e6d02656a8025f053edc447015dc83d4b8c939d59834607194d0db2",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/.dart_tool/flutter_build/dart_plugin_registrant.dart": {
+      "sha256": "710589d7b43c2b0974160bdf29ec168b08b7c9355be21392205618c19aa84111",
+      "mode": 511,
+      "mtime_ns": 1792921050000000000,
+      "atime_ns": 1792921050000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/.filecache": {
+      "sha256": "b66a1d4a8ee27390aa0397a97602d31f1e19f89a72454cdc99a7cbafc651dfc9",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/_composite.stamp": {
+      "sha256": "cc720a324af5727c74f00b41fb209465e50885fadb5f14831028fa4b418d3ccc",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_bundle_release_android-arm.stamp": {
+      "sha256": "b118c0dfabd7dd25a9863a5b5ce23f7634559ab4b4e97dcebdfff9d4fa43c6b9",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_bundle_release_android-arm64.stamp": {
+      "sha256": "424e9c31c4de762a223a3cf259e829f344245620d28c303d0df81fcd96c7f3e8",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_bundle_release_android-x64.stamp": {
+      "sha256": "c70490c1ace225980954fb38093e5fc8a82973230ba03725e834d8f78c6347d1",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_release_android-arm.stamp": {
+      "sha256": "16d996b53e25f7865975f747c41a1f1674d37e8d340fa8d9f7cb4cbb841f2d27",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_release_android-arm64.stamp": {
+      "sha256": "280af04a15846034997c2a75014725b47cb2cb89647909e7bab3889214021c51",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/android_aot_release_android-x64.stamp": {
+      "sha256": "a3c930a0971742e83a0879a79d0619a356b661a41ce044ef1b38009bc0f2c39b",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/aot_android_asset_bundle.stamp": {
+      "sha256": "dacb8c980a6c9869b301d18e598a545c841ea66fe7dd2d449e4fee15de062627",
+      "mode": 511,
+      "mtime_ns": 1792930243000000000,
+      "atime_ns": 1792930243000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/app.dill": {
+      "sha256": "3ea4d18b1c98274d9140cac815b39944c96a622a02a477bd0621acc7229089a5",
+      "mode": 511,
+      "mtime_ns": 1792930239000000000,
+      "atime_ns": 1792930239000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/build_hooks.d": {
+      "sha256": "0aa3a9af4ce298fdd1fc126460b9233a8b71614d6ebf191fd1514ebbd865ccae",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/build_hooks.stamp": {
+      "sha256": "d879afdfd303855e7748a5a56c9ed38c4c253347c7bd9f715b921e57353b2fc0",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/build_hooks_result.json": {
+      "sha256": "d534529a4f9b80b79ca3bfc74a49192e28b8fa727cce35b0128795de4c1842b0",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_bundle_release_android-arm.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_bundle_release_android-arm64.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_bundle_release_android-x64.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_release_android-arm.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_release_android-arm64.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_android_aot_release_android-x64.d": {
+      "sha256": "45822f54a0d0e030f75698c9252f1345982e743c9466806048f542467b3ca4f9",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/flutter_assets.d": {
+      "sha256": "ea023c4f38e341f51125a48b88a3bd5c542eadf4e6180353c8cea231a78b0ec8",
+      "mode": 511,
+      "mtime_ns": 1792930243000000000,
+      "atime_ns": 1792930243000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/gen_dart_plugin_registrant.stamp": {
+      "sha256": "66cead0b0a8bfdefe65eb1dcb7585ff5acf9971527182773872b46dd0f14200b",
+      "mode": 511,
+      "mtime_ns": 1792930220000000000,
+      "atime_ns": 1792930220000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/gen_localizations.stamp": {
+      "sha256": "cc720a324af5727c74f00b41fb209465e50885fadb5f14831028fa4b418d3ccc",
+      "mode": 511,
+      "mtime_ns": 1792930219000000000,
+      "atime_ns": 1792930219000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/install_code_assets.d": {
+      "sha256": "0e1533c9ecefaadf31b7d0e5b5d2abafb81b6531190e9ffcdc4dc91cb463901e",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/install_code_assets.stamp": {
+      "sha256": "07b6d4cfd1a68d2fe5f44c46aa8ac6277be543b24776605d80c740b8ea3698bc",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/kernel_snapshot_program.d": {
+      "sha256": "a8205a9bd3ff886ff8cfd0a03066f1a7bfc930f1c910a426ccf72883a6de8aed",
+      "mode": 511,
+      "mtime_ns": 1792930240000000000,
+      "atime_ns": 1792930240000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/kernel_snapshot_program.stamp": {
+      "sha256": "670eb82bf44e2a446e9f2462874d98f9dfbf54006464963689e5a6283e302e55",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/link_hooks.d": {
+      "sha256": "9c4908cd37526abe88fdb359ad0e94f46107d804ee1587450fd967b3f4f6613f",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/link_hooks.stamp": {
+      "sha256": "97b1e7de3329f50c99264d43b5bfb83d709063aa9bf0e4097eb1db06765be48f",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/link_hooks_result.json": {
+      "sha256": "0580c019a99f614632ad5934a3c6b8a75c195a83c9b1054e96b32b1b0905692a",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/native_assets.json": {
+      "sha256": "9548a31e4a048135c1d94f919328bfb62ae2c7bb3cab96557c7941daa97776cb",
+      "mode": 511,
+      "mtime_ns": 1792930241000000000,
+      "atime_ns": 1792930241000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/outputs.json": {
+      "sha256": "c953672943548d57cec54fc317d78cb2e949f633fa8645a1c7343c22bfcd031e",
+      "mode": 511,
+      "mtime_ns": 1792930252000000000,
+      "atime_ns": 1792930252000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/recorded_uses.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": 511,
+      "mtime_ns": 1792930238000000000,
+      "atime_ns": 1792930238000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/arm64-v8a/app.so": {
+      "sha256": "2927e63293fc4f3c519efaaff05a2a1ce65f4a8cdb7196050697c7a5b89003db",
+      "mode": 511,
+      "mtime_ns": 1792930250000000000,
+      "atime_ns": 1792930250000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/armeabi-v7a/app.so": {
+      "sha256": "34c5c5e16ec025eafe41df0c03fd40ea3e4e420e2e5b0172b5824e13f618b5ee",
+      "mode": 511,
+      "mtime_ns": 1792930251000000000,
+      "atime_ns": 1792930251000000000
+    },
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/x86_64/app.so": {
+      "sha256": "5c445a0d651f8d8bf004c574428d93cb76b387ad2157fb64f34f15c6f36c9d77",
+      "mode": 511,
+      "mtime_ns": 1792930250000000000,
+      "atime_ns": 1792930250000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/.filecache": {
+      "sha256": "f1fb771d217462a1fe3924319f9180fcdb8a9e4f5565f86b2d32a6aefef1e966",
+      "mode": 511,
+      "mtime_ns": 1792999246000000000,
+      "atime_ns": 1792999246000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/app.dill": {
+      "sha256": "7ccaf609d540c53e4be216deb152340d807b45b8cda44d8a6dfb4444a089765a",
+      "mode": 511,
+      "mtime_ns": 1792999211000000000,
+      "atime_ns": 1792999211000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/app.dill.deps": {
+      "sha256": "14292212b6d3aad8d77de478358f6b8282c3492712482bfc83fef46d98f8a0a3",
+      "mode": 511,
+      "mtime_ns": 1792999211000000000,
+      "atime_ns": 1792999211000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/build_hooks.d": {
+      "sha256": "72c222c786470831a40c7b823f4a804f2896744650820064a1519e00032b7103",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/build_hooks.stamp": {
+      "sha256": "115c4a474a32dbe826305ffaf9087fca49a70c34c34620d991665c0fba6b7d47",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/build_hooks_result.json": {
+      "sha256": "58c27af385c31c880f70980caff2a660e9ded15797c14ba2d559a661f1c5f0cf",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/dart2js.d": {
+      "sha256": "904b8cc06e851f1ff750d04e165bb1789263afabe9ecb40457685dd29b58edde",
+      "mode": 511,
+      "mtime_ns": 1792999233000000000,
+      "atime_ns": 1792999233000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/dart2js.stamp": {
+      "sha256": "2c2fdf71c377a6f3f83db68a494550544c3ac215219c3adc9800bb476eebf2c8",
+      "mode": 511,
+      "mtime_ns": 1792999234000000000,
+      "atime_ns": 1792999234000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/dart2wasm.stamp": {
+      "sha256": "4184c6b0cd37b985cf405ad16ce4a0965540c9b7c6e5d3d02c6e104d387aa167",
+      "mode": 511,
+      "mtime_ns": 1792999241000000000,
+      "atime_ns": 1792999241000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/flutter_assets.d": {
+      "sha256": "5b46955ea0995235cd3569329271b36fed6d2885fd10c995b773644ae1f6a193",
+      "mode": 511,
+      "mtime_ns": 1792999245000000000,
+      "atime_ns": 1792999245000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/gen_localizations.stamp": {
+      "sha256": "cc720a324af5727c74f00b41fb209465e50885fadb5f14831028fa4b418d3ccc",
+      "mode": 511,
+      "mtime_ns": 1792999194000000000,
+      "atime_ns": 1792999194000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/link_hooks.d": {
+      "sha256": "66cfedd2ce61d333655b3aa0b4d91d0d6b9cd6fa52f3998e6578fb8dadf87a55",
+      "mode": 511,
+      "mtime_ns": 1792999241000000000,
+      "atime_ns": 1792999241000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/link_hooks.stamp": {
+      "sha256": "194af5208050de4280fbc1e7e69216a83d7833469fc60cb0f2af8a71844e992b",
+      "mode": 511,
+      "mtime_ns": 1792999241000000000,
+      "atime_ns": 1792999241000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/link_hooks_result.json": {
+      "sha256": "275a3f7a94abe032ab500cdc502b679171a41dae059d8b8448fa20fcc0ab358f",
+      "mode": 511,
+      "mtime_ns": 1792999241000000000,
+      "atime_ns": 1792999241000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/main.dart": {
+      "sha256": "03525990b95c07ab211713ca40cc11309e7e27850e0d67b8389710c57fa3a54c",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/main.dart.js": {
+      "sha256": "c2edd0c296182f7581747aa66d3d64a5747bbd24128db457dd418171a8905b0d",
+      "mode": 511,
+      "mtime_ns": 1792999233000000000,
+      "atime_ns": 1792999233000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/main.dart.js.deps": {
+      "sha256": "631ca702403d68b74714e33b374217476c2002543561587e39083ae84f8ba9c4",
+      "mode": 511,
+      "mtime_ns": 1792999233000000000,
+      "atime_ns": 1792999233000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/outputs.json": {
+      "sha256": "718c46fc7333edbe3e607d7f894f200b27a1c349e87d7e9c7867f0bd551450af",
+      "mode": 511,
+      "mtime_ns": 1792999246000000000,
+      "atime_ns": 1792999246000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/recorded_uses_js.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": 511,
+      "mtime_ns": 1792999233000000000,
+      "atime_ns": 1792999233000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/recorded_uses_wasm.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": 511,
+      "mtime_ns": 1792999241000000000,
+      "atime_ns": 1792999241000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/service_worker.d": {
+      "sha256": "93cfc49b25fa1499e2f43721490637b7da0853a750432d0f49abb5f3036ac8e9",
+      "mode": 511,
+      "mtime_ns": 1792999246000000000,
+      "atime_ns": 1792999246000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_entrypoint.stamp": {
+      "sha256": "75fbf2089cd5daa7f8ac7e729813d614f5e805e3e4df4e8423c332b1cd2fa111",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_plugin_registrant.dart": {
+      "sha256": "69d8277a0e6d02656a8025f053edc447015dc83d4b8c939d59834607194d0db2",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_release_bundle.stamp": {
+      "sha256": "3b0fc9d087aa16edba229fd7b0b04720fe167c815280530cdf8214d9ed918214",
+      "mode": 511,
+      "mtime_ns": 1792999246000000000,
+      "atime_ns": 1792999246000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_resources.d": {
+      "sha256": "a05f16babc120ba78fc7bb1abc6a819070ecdf6daab68581a7d6de7abcf192aa",
+      "mode": 511,
+      "mtime_ns": 1792999245000000000,
+      "atime_ns": 1792999245000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_service_worker.stamp": {
+      "sha256": "4456748d006b804832f671a416e5c400190dc7c81c091a41bff1a1fe98f59681",
+      "mode": 511,
+      "mtime_ns": 1792999246000000000,
+      "atime_ns": 1792999246000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_static_assets.stamp": {
+      "sha256": "cb25f34bbb961ac8cddacd8f01585081e538c87fc3b8b1bcead1b5099e2efc8b",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d/web_templated_files.stamp": {
+      "sha256": "b447da935f2caf41a2167c8ae2e25b24ec350e1ecb545ee192506bc3f3c42c4c",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/.filecache": {
+      "sha256": "ef0193a6f0dfbb8da732558721efd003bf5f056cc9a443ef1bf7c431ea1a2b47",
+      "mode": 511,
+      "mtime_ns": 1792925509000000000,
+      "atime_ns": 1792925509000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/app.dill": {
+      "sha256": "06ca7befde6957fa71a716a2f2dc0f2cc04796082c761f5d41a858d64d865ab2",
+      "mode": 511,
+      "mtime_ns": 1792925462000000000,
+      "atime_ns": 1792925462000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/app.dill.deps": {
+      "sha256": "e5fa92e615ce4d3325695bd4f05a1a73d879b48d7c1ab3ccc9485ed804c18b82",
+      "mode": 511,
+      "mtime_ns": 1792925463000000000,
+      "atime_ns": 1792925463000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/build_hooks.d": {
+      "sha256": "cd3c5606e803f757351509eb69016dc33eef5a3daf184c9b1008e859fc5c16bd",
+      "mode": 511,
+      "mtime_ns": 1792925450000000000,
+      "atime_ns": 1792925450000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/build_hooks.stamp": {
+      "sha256": "8e5d29912ab7706c136466bc848404db350259470662dfc99037cecaf6e10ad6",
+      "mode": 511,
+      "mtime_ns": 1792925450000000000,
+      "atime_ns": 1792925450000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/build_hooks_result.json": {
+      "sha256": "58c27af385c31c880f70980caff2a660e9ded15797c14ba2d559a661f1c5f0cf",
+      "mode": 511,
+      "mtime_ns": 1792925450000000000,
+      "atime_ns": 1792925450000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/dart2js.d": {
+      "sha256": "8a0164a224f16786429f22fb413ca94c10ca02366e1376cc66cca2631c7c3f4a",
+      "mode": 511,
+      "mtime_ns": 1792925496000000000,
+      "atime_ns": 1792925496000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/dart2js.stamp": {
+      "sha256": "bdaf6456d75d89324fabc53197c246a30f94548326e3184caa0ea342cd08ae7f",
+      "mode": 511,
+      "mtime_ns": 1792925497000000000,
+      "atime_ns": 1792925497000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/dart2wasm.stamp": {
+      "sha256": "1950753e665e2053168e475e3ab28ae029cecbcc210d6da546bb01434c5d3565",
+      "mode": 511,
+      "mtime_ns": 1792925505000000000,
+      "atime_ns": 1792925505000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/flutter_assets.d": {
+      "sha256": "5b46955ea0995235cd3569329271b36fed6d2885fd10c995b773644ae1f6a193",
+      "mode": 511,
+      "mtime_ns": 1792925508000000000,
+      "atime_ns": 1792925508000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/gen_localizations.stamp": {
+      "sha256": "cc720a324af5727c74f00b41fb209465e50885fadb5f14831028fa4b418d3ccc",
+      "mode": 511,
+      "mtime_ns": 1792925447000000000,
+      "atime_ns": 1792925447000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/link_hooks.d": {
+      "sha256": "a546104d6c4079cbc6b1fd15ccf8fa89fc0e45a094dea735f73a6d88d09a8ea2",
+      "mode": 511,
+      "mtime_ns": 1792925505000000000,
+      "atime_ns": 1792925505000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/link_hooks.stamp": {
+      "sha256": "6d50f7548e0025f8d271012cef81f4668e1608d36b7f8c259803e327db2848db",
+      "mode": 511,
+      "mtime_ns": 1792925505000000000,
+      "atime_ns": 1792925505000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/link_hooks_result.json": {
+      "sha256": "6e052e752b215aa6cf2eb17007b847aa854bcf25c5b78184a46161cb0cf26dc6",
+      "mode": 511,
+      "mtime_ns": 1792925505000000000,
+      "atime_ns": 1792925505000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/main.dart": {
+      "sha256": "03525990b95c07ab211713ca40cc11309e7e27850e0d67b8389710c57fa3a54c",
+      "mode": 511,
+      "mtime_ns": 1792925448000000000,
+      "atime_ns": 1792925448000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/main.dart.js": {
+      "sha256": "1b5dc20c249bbf545df7a14027cfdb1f194aab1736e6e05ca58896470ad6410a",
+      "mode": 511,
+      "mtime_ns": 1792925495000000000,
+      "atime_ns": 1792925495000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/main.dart.js.deps": {
+      "sha256": "8a00fc3da4d7dcf47bf17b4cb750c309f32506123a4708d5d1495d7b81f6e9aa",
+      "mode": 511,
+      "mtime_ns": 1792925495000000000,
+      "atime_ns": 1792925495000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/outputs.json": {
+      "sha256": "718c46fc7333edbe3e607d7f894f200b27a1c349e87d7e9c7867f0bd551450af",
+      "mode": 511,
+      "mtime_ns": 1792925509000000000,
+      "atime_ns": 1792925509000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/recorded_uses_js.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": 511,
+      "mtime_ns": 1792925495000000000,
+      "atime_ns": 1792925495000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/recorded_uses_wasm.json": {
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": 511,
+      "mtime_ns": 1792925505000000000,
+      "atime_ns": 1792925505000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/service_worker.d": {
+      "sha256": "93cfc49b25fa1499e2f43721490637b7da0853a750432d0f49abb5f3036ac8e9",
+      "mode": 511,
+      "mtime_ns": 1792925509000000000,
+      "atime_ns": 1792925509000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_entrypoint.stamp": {
+      "sha256": "a3d6b2145a7f9656fc9fe837241def54da9ce2a059383ead531dcf4f2af90400",
+      "mode": 511,
+      "mtime_ns": 1792925448000000000,
+      "atime_ns": 1792925448000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_plugin_registrant.dart": {
+      "sha256": "69d8277a0e6d02656a8025f053edc447015dc83d4b8c939d59834607194d0db2",
+      "mode": 511,
+      "mtime_ns": 1792925448000000000,
+      "atime_ns": 1792925448000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_release_bundle.stamp": {
+      "sha256": "cd75a5ea5606dea05f142e897a8d5aa481b1511bce9c425bcacd0e433fec9e12",
+      "mode": 511,
+      "mtime_ns": 1792925509000000000,
+      "atime_ns": 1792925509000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_resources.d": {
+      "sha256": "a05f16babc120ba78fc7bb1abc6a819070ecdf6daab68581a7d6de7abcf192aa",
+      "mode": 511,
+      "mtime_ns": 1792925508000000000,
+      "atime_ns": 1792925508000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_service_worker.stamp": {
+      "sha256": "4456748d006b804832f671a416e5c400190dc7c81c091a41bff1a1fe98f59681",
+      "mode": 511,
+      "mtime_ns": 1792925509000000000,
+      "atime_ns": 1792925509000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_static_assets.stamp": {
+      "sha256": "012ce40ec3cee8480ff0f1610971998fb95244a2a35fdc241946f2a4dc7353b5",
+      "mode": 511,
+      "mtime_ns": 1792925448000000000,
+      "atime_ns": 1792925448000000000
+    },
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a/web_templated_files.stamp": {
+      "sha256": "b447da935f2caf41a2167c8ae2e25b24ec350e1ecb545ee192506bc3f3c42c4c",
+      "mode": 511,
+      "mtime_ns": 1792925448000000000,
+      "atime_ns": 1792925448000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/.lock": {
+      "sha256": "a1aa900ce43ae99a1eed00e55a2c15c1e7aa2f3dc481060e27e3ee6b9650d5aa",
+      "mode": 511,
+      "mtime_ns": 1792930222000000000,
+      "atime_ns": 1792930222000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/dependencies.dependencies_hash_file.json": {
+      "sha256": "ebdd9ad6db453f002979d2dee629fb9e0ebec0e291508d861ad675ac0ec53243",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/hook.dependencies_hash_file.json": {
+      "sha256": "4f23dcfa36a615d71a5517c1728d27defcd0561a965eeca9dd9b3c20c0a48e4b",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/hook.dill": {
+      "sha256": "e7774b7f910186bad573e44765d41b3452a1292237168d62a46fc48d06e39866",
+      "mode": 511,
+      "mtime_ns": 1792930223000000000,
+      "atime_ns": 1792930223000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/hook.dill.d": {
+      "sha256": "0b38937bd26e4112486b97810485ae7b56e277f12dd54e0dc8b5e1a4130f6be8",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/input.json": {
+      "sha256": "02e1f9559bb7474895723b3e44f0b471ff39e0e20bf9d0e59040c92f12727a4b",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/output.json": {
+      "sha256": "77d55f2ffd1213ac4a8d5dafaeefa89fb32656f94f7f26ed8251d27e23e97b36",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/stdout.txt": {
+      "sha256": "d1983591072947a3f7f32feb306ce8bf8ae3c17bc7564f9dffdaa5313781c586",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/.lock": {
+      "sha256": "ef6ee1133164367bf11444ee00bacf3b6bb03764e00ffbec059c9849ee14d502",
+      "mode": 511,
+      "mtime_ns": 1792999196000000000,
+      "atime_ns": 1792999196000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/dependencies.dependencies_hash_file.json": {
+      "sha256": "61ccb0af764548c710a2353f6668938dcb97b9a84f1b393883d028dad1009214",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/hook.dependencies_hash_file.json": {
+      "sha256": "a9ed85f7be25753dee1c73b00dda30d5ed750d32890153732daf4c6bb25866a7",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/hook.dill": {
+      "sha256": "578e6c9e680ea45e39fd2c90c94fa6e94d49befab2bc9bf20491af16785e3703",
+      "mode": 511,
+      "mtime_ns": 1792999198000000000,
+      "atime_ns": 1792999198000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/hook.dill.d": {
+      "sha256": "44507f3c0918ab7b96952d00918e352cf186309c4bd9d1d91d15513d49e54d1b",
+      "mode": 511,
+      "mtime_ns": 1792999198000000000,
+      "atime_ns": 1792999198000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/input.json": {
+      "sha256": "f413b5064e743bdb156379a591be0e9dcb9bac531fee40992de2e327daabc8ed",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/output.json": {
+      "sha256": "0d35de006f7a7cb15465696580eda2eadf912786ee8a5fbe3cab69cbb57321d8",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792925450000000000,
+      "atime_ns": 1792925450000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/stdout.txt": {
+      "sha256": "0f44302f19f7963960f1e88a6dedf822b1fb351e379277e318f1e2321e9dd30d",
+      "mode": 511,
+      "mtime_ns": 1792999199000000000,
+      "atime_ns": 1792999199000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/.lock": {
+      "sha256": "e89693d138e4b55d70dbc2ce5b0c8c6da57acd082e2b7bfac3bb14c01450a0dc",
+      "mode": 511,
+      "mtime_ns": 1793107431000000000,
+      "atime_ns": 1793107431000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/dependencies.dependencies_hash_file.json": {
+      "sha256": "d04509dabdde274dfa05d4bc6858a46d29f4ec51de7d7c0719a82103ceb11b28",
+      "mode": 511,
+      "mtime_ns": 1793102846000000000,
+      "atime_ns": 1793102846000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/hook.dependencies_hash_file.json": {
+      "sha256": "a9ed85f7be25753dee1c73b00dda30d5ed750d32890153732daf4c6bb25866a7",
+      "mode": 511,
+      "mtime_ns": 1792995103000000000,
+      "atime_ns": 1792995103000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/hook.dill": {
+      "sha256": "578e6c9e680ea45e39fd2c90c94fa6e94d49befab2bc9bf20491af16785e3703",
+      "mode": 511,
+      "mtime_ns": 1792995102000000000,
+      "atime_ns": 1792995102000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/hook.dill.d": {
+      "sha256": "8255ac0bf92ca29c492c185e386e7af1c194b38587cc540ad123af6d2a6b776d",
+      "mode": 511,
+      "mtime_ns": 1792995102000000000,
+      "atime_ns": 1792995102000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/input.json": {
+      "sha256": "25cddd55e47d811570c34ffb9deb24325f0a3d4a7f1a0ef1bb9e967ac73fb72d",
+      "mode": 511,
+      "mtime_ns": 1793102836000000000,
+      "atime_ns": 1793102836000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/output.json": {
+      "sha256": "b21ce2b77d14aebeb38afb19753add8a4a3409d2b4fb859d5bb20ee703df5af0",
+      "mode": 511,
+      "mtime_ns": 1793102846000000000,
+      "atime_ns": 1793102846000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792921049000000000,
+      "atime_ns": 1792921049000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/stdout.txt": {
+      "sha256": "c304ce53c9cf617270ae6fd35a66ad7172969fd4c26ece3e9e7740177cd9049c",
+      "mode": 511,
+      "mtime_ns": 1793102836000000000,
+      "atime_ns": 1793102836000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/.lock": {
+      "sha256": "11dc51452b580080c5643d003454e02f6f29a0ab29b5ae9a722a2f6c9a52182d",
+      "mode": 511,
+      "mtime_ns": 1792930220000000000,
+      "atime_ns": 1792930220000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/dependencies.dependencies_hash_file.json": {
+      "sha256": "ebdd9ad6db453f002979d2dee629fb9e0ebec0e291508d861ad675ac0ec53243",
+      "mode": 511,
+      "mtime_ns": 1792930222000000000,
+      "atime_ns": 1792930222000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/hook.dependencies_hash_file.json": {
+      "sha256": "4f23dcfa36a615d71a5517c1728d27defcd0561a965eeca9dd9b3c20c0a48e4b",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/hook.dill": {
+      "sha256": "e7774b7f910186bad573e44765d41b3452a1292237168d62a46fc48d06e39866",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/hook.dill.d": {
+      "sha256": "660092cd01af600084df976533dcafc664f2445c23c5a01573d95f54ee70b722",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/input.json": {
+      "sha256": "97e003d28ea14f6015d59ff1d7f734a83552a41a7c12e57a7b632aa3bf657709",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/output.json": {
+      "sha256": "4711b22bef1cc93429e46f9ddd26eda15412e5b985d697d520f0395c6746b250",
+      "mode": 511,
+      "mtime_ns": 1792930222000000000,
+      "atime_ns": 1792930222000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/stdout.txt": {
+      "sha256": "e66f182648aa7883d0241b2e2c158d598dd892515b378a6bd17a2c0910bc61a3",
+      "mode": 511,
+      "mtime_ns": 1792930221000000000,
+      "atime_ns": 1792930221000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/.lock": {
+      "sha256": "b3938639af771ace027c5f49fb8353a646ba762b368860d1a6c1b73b2850d0aa",
+      "mode": 511,
+      "mtime_ns": 1792930224000000000,
+      "atime_ns": 1792930224000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/dependencies.dependencies_hash_file.json": {
+      "sha256": "ebdd9ad6db453f002979d2dee629fb9e0ebec0e291508d861ad675ac0ec53243",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/hook.dependencies_hash_file.json": {
+      "sha256": "4f23dcfa36a615d71a5517c1728d27defcd0561a965eeca9dd9b3c20c0a48e4b",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/hook.dill": {
+      "sha256": "e7774b7f910186bad573e44765d41b3452a1292237168d62a46fc48d06e39866",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/hook.dill.d": {
+      "sha256": "587587f3be37a190c6abdbe13eac68457030155aa1066c871373803b6afcbfdb",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/input.json": {
+      "sha256": "8c6b70010487b87afe22e0a117d0a5002d3a3919fd0a13f1f442df809ef8cba7",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/output.json": {
+      "sha256": "414d91ab7d16e3795f5270c5da3444007b4b630410c00d1b638fa6575477a70c",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/stdout.txt": {
+      "sha256": "1fe396c5f0fc3e963726f6cf515dc76ab26422510d08c21c1a32f79613a70edb",
+      "mode": 511,
+      "mtime_ns": 1792930226000000000,
+      "atime_ns": 1792930226000000000
+    },
+    "app/.dart_tool/hooks_runner/shared/objective_c/.lock": {
+      "sha256": "18f572a01e28270a6228e28c0e3df49f47f9c70f9b956301dddf0632564e6db9",
+      "mode": 511,
+      "mtime_ns": 1793107431000000000,
+      "atime_ns": 1793107431000000000
+    },
+    "app/.idea/modules.xml": {
+      "sha256": "75af615fcd8439662303e590b14f5e9f9905571343dc0f32fd5957c88ecf3e2e",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/.idea/workspace.xml": {
+      "sha256": "1f4bdf93fa0c89b32a2f788bcbd55363a23cd0db9b4c05a905247ac270c7061b",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/.idea/libraries/Dart_SDK.xml": {
+      "sha256": "77ab01b4e72851e384ec5a1d116711dd70fab6ea13e4f6555a0e31b2fdeb23a3",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/.idea/libraries/KotlinJavaRuntime.xml": {
+      "sha256": "82dff6dd065164518cd13ff2b677527601ef22bd9fd7cc4e607c38a2412e6cf9",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/.idea/runConfigurations/main_dart.xml": {
+      "sha256": "0b2227c29b468c49f41b8b3138433e0de33d83dbe13b4002c069800e1d9b9322",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/android/.gitignore": {
+      "sha256": "b027c9de1011765c015e5819bf857c0d75bfcd0886fb01721c091159012e50f1",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/build.gradle.kts": {
+      "sha256": "31774e5af9cde1f81f2e3ef07a4cfbdeac88a84270cf61c586d0c604594f4649",
+      "mode": 511,
+      "mtime_ns": 1793003301000000000,
+      "atime_ns": 1793003301000000000
+    },
+    "app/android/gradle.properties": {
+      "sha256": "0f82b18017fba6bb5ce3aa4b2d1a00c9382fc8aae7b1d9326e44b18abd66d80b",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/gradlew": {
+      "sha256": "ec56c02543666d92d9ac5ae7fcc48f88ce4de0deb8b7f9b39928ca46f68c1b2b",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1793020612000000000
+    },
+    "app/android/gradlew.bat": {
+      "sha256": "c13c6e91b9a517783976de213d46398c661ea9e17651376d7301e839eaedcc62",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/android/kairo_step_android.iml": {
+      "sha256": "90d961bc4ccb4b0ae3f75ce495c273f08745a55c50bd213e259723fc341d0193",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/local.properties": {
+      "sha256": "ec37811b2a59f05c628277d969bdcb0116e74416fcc03ce4ab18f74d62edf7aa",
+      "mode": 511,
+      "mtime_ns": 1792995065000000000,
+      "atime_ns": 1792995065000000000
+    },
+    "app/android/settings.gradle.kts": {
+      "sha256": "48b71e77c1477dcb122cef41c5c3df2fe146ecf1635df01ec61c8449c2b76d68",
+      "mode": 511,
+      "mtime_ns": 1793003292000000000,
+      "atime_ns": 1793003292000000000
+    },
+    "app/android/.gradle/9.3.1/gc.properties": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792932506000000000,
+      "atime_ns": 1792932506000000000
+    },
+    "app/android/.gradle/9.3.1/checksums/checksums.lock": {
+      "sha256": "50ede9ab7e391f2e281912528006bbd95f5c2ff48325fef06fbf4fa5d4779c3c",
+      "mode": 511,
+      "mtime_ns": 1793022581000000000,
+      "atime_ns": 1793022581000000000
+    },
+    "app/android/.gradle/9.3.1/checksums/md5-checksums.bin": {
+      "sha256": "66b4adec8f0ef4f6c295d2f8172b7851e34d9f29429506a725209d0e27d8e6fc",
+      "mode": 511,
+      "mtime_ns": 1793022581000000000,
+      "atime_ns": 1793022581000000000
+    },
+    "app/android/.gradle/9.3.1/checksums/sha1-checksums.bin": {
+      "sha256": "68053ac847142360007739331fb958222c0f50dbb09c3882abf45d6c03207ba5",
+      "mode": 511,
+      "mtime_ns": 1793022581000000000,
+      "atime_ns": 1793022581000000000
+    },
+    "app/android/.gradle/9.3.1/executionHistory/executionHistory.bin": {
+      "sha256": "5769eef3a46a1578356893523fc614a0540378179a86c5908f19a1d061e32217",
+      "mode": 511,
+      "mtime_ns": 1792932505000000000,
+      "atime_ns": 1792932505000000000
+    },
+    "app/android/.gradle/9.3.1/executionHistory/executionHistory.lock": {
+      "sha256": "bfb5055fbbafa02416a940718e6f73f25b661f88ba13048c6c718e7e15653d37",
+      "mode": 511,
+      "mtime_ns": 1792932506000000000,
+      "atime_ns": 1792932506000000000
+    },
+    "app/android/.gradle/9.3.1/fileChanges/last-build.bin": {
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "mode": 511,
+      "mtime_ns": 1792932506000000000,
+      "atime_ns": 1792932506000000000
+    },
+    "app/android/.gradle/9.3.1/fileHashes/fileHashes.bin": {
+      "sha256": "61d5741bd96d38cb75f6c29f999f52b74376e384205a1d7b08f974f450cc290b",
+      "mode": 511,
+      "mtime_ns": 1793021346000000000,
+      "atime_ns": 1793021346000000000
+    },
+    "app/android/.gradle/9.3.1/fileHashes/fileHashes.lock": {
+      "sha256": "c38b93b5c716bf4c9d00e85a05b835d0444eb4efd1a51d93559c53047db5d0d3",
+      "mode": 511,
+      "mtime_ns": 1793022389000000000,
+      "atime_ns": 1793022389000000000
+    },
+    "app/android/.gradle/9.3.1/fileHashes/resourceHashesCache.bin": {
+      "sha256": "330df0a593cf3601801fd2bec3316d867694b8d12fbaac6867a565679d51f2a5",
+      "mode": 511,
+      "mtime_ns": 1792932499000000000,
+      "atime_ns": 1792932499000000000
+    },
+    "app/android/.gradle/buildOutputCleanup/buildOutputCleanup.lock": {
+      "sha256": "3046f7d2e302e085812a443e8daec9eef03130ed2db2c8e4bab9fd63d2c54859",
+      "mode": 511,
+      "mtime_ns": 1793022375000000000,
+      "atime_ns": 1793022375000000000
+    },
+    "app/android/.gradle/buildOutputCleanup/cache.properties": {
+      "sha256": "9c820949081082df456ea3d8d39b334a621a0d640eb6cc8b08d9f4c6e2c76628",
+      "mode": 511,
+      "mtime_ns": 1792928828000000000,
+      "atime_ns": 1792928828000000000
+    },
+    "app/android/.gradle/buildOutputCleanup/outputFiles.bin": {
+      "sha256": "9365c99eeed1c71e2cc7a1f3eea34b14dba8376a508f6e586c5de8d7941b500a",
+      "mode": 511,
+      "mtime_ns": 1792932505000000000,
+      "atime_ns": 1792932505000000000
+    },
+    "app/android/.gradle/noVersion/buildLogic.lock": {
+      "sha256": "90f1ba47fe3d86ae71fecbf19ecceefbf8a09860a644bcc82dab23ed90dc1e74",
+      "mode": 511,
+      "mtime_ns": 1793022389000000000,
+      "atime_ns": 1793022389000000000
+    },
+    "app/android/.gradle/vcs-1/gc.properties": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792932506000000000,
+      "atime_ns": 1792932506000000000
+    },
+    "app/android/app/build.gradle.kts": {
+      "sha256": "096e1e1d45c06199e54e09b70cffaeeac1730d0ad3c707fdbb8e1f4da9091f03",
+      "mode": 511,
+      "mtime_ns": 1793022574000000000,
+      "atime_ns": 1793022574000000000
+    },
+    "app/android/app/src/debug/AndroidManifest.xml": {
+      "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/main/AndroidManifest.xml": {
+      "sha256": "38bf65dd2cbf859e68466e7f6df7c16cf5d226d1d1ba054faeecd7e3e6a6a4dd",
+      "mode": 511,
+      "mtime_ns": 1792920886000000000,
+      "atime_ns": 1792920886000000000
+    },
+    "app/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": {
+      "sha256": "9d313e50c9b744262a2f3bb99b69b003967270ba64d66ae74180a3cbeb847f28",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/android/app/src/main/kotlin/dev/kairostep/kairo_step/MainActivity.kt": {
+      "sha256": "6992782296b4aee44550a961d8eaec3f1aff85c2f19a2fe92009eb466e488bbe",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/main/res/drawable/launch_background.xml": {
+      "sha256": "94433756fe10005ddd6fc55cc5c0b1e9f3c10b66a08ceac795ece6713d34e28a",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/main/res/drawable-v21/launch_background.xml": {
+      "sha256": "7ca6d5cec2169c5a98661a119db23a6f3399c8fef2256ff04f3a642831282478",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
+      "sha256": "c2927b01c7d81c00140d826c72603af9fae4dfab88144c5648f60a0bdf8c488f",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
+      "sha256": "3e72811ef3d955071dad2e45d0839497c369645d855423995977a621ca8fbee3",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
+      "sha256": "497851aacb462abb6ac45dbea3b8327d43186d61938e5f7933e5a059699da615",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
+      "sha256": "24935364faf874de18e13e311bd6175d97d10d1cba646a46a337fe199a64e4e5",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
+      "sha256": "876d3df484bf1c5af7a7993a039b0c856a1ea56f1e47ce450119bc37c45e8859",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/android/app/src/main/res/values/styles.xml": {
+      "sha256": "937d7c82f539c72eb94fd3a3773f29b3d3fef1997213c92cb632298cedf4bda9",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/main/res/values-night/styles.xml": {
+      "sha256": "8c5bad5152f217e837519f9c15211d19f39bd45f5f67faf6dd81cb4b299e518f",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/app/src/profile/AndroidManifest.xml": {
+      "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/android/gradle/wrapper/gradle-wrapper.jar": {
+      "sha256": "16caeaf66d57a0d1d2087fef6a97efa62de8da69afa5b908f40db35afc4342da",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/android/gradle/wrapper/gradle-wrapper.properties": {
+      "sha256": "acd9a8c858fc53a847735d6bf976aa83b629b538165a5cc0e1188f91122c1e63",
+      "mode": 511,
+      "mtime_ns": 1792928794000000000,
+      "atime_ns": 1792928794000000000
+    },
+    "app/assets/branding/README.md": {
+      "sha256": "8deaab01d9f82d8310de13c7d356d1ee1454784f393d2356e9cffbfd74c86423",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "app/assets/branding/kairosstep-icon.png": {
+      "sha256": "cf6ddc4707bba49fb6f7f37861889ff0bfa122c74f8f8c45705234a0acd29a32",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "app/assets/data/advice.json": {
+      "sha256": "83374d949638322fffdb01c141c30a8854161700efcf4391a8d0e63c74610200",
+      "mode": 511,
+      "mtime_ns": 1793104486000000000,
+      "atime_ns": 1793104486000000000
+    },
+    "app/assets/data/detail.json": {
+      "sha256": "e12a0b5b2e7e9e771c4487f2d72fe4e244e94308b8c4b3ca79d650114fe2b670",
+      "mode": 511,
+      "mtime_ns": 1792919716000000000,
+      "atime_ns": 1792919716000000000
+    },
+    "app/assets/data/node_packages.json": {
+      "sha256": "7a02d60c9638c4994ca7b1ee744acf57be09db1175ef814005260de738c097e8",
+      "mode": 511,
+      "mtime_ns": 1792919955000000000,
+      "atime_ns": 1792919955000000000
+    },
+    "app/assets/data/pinyin.json": {
+      "sha256": "649640c8a3a0994c17396484cc6b49fcb4a417e8c4b8ae6be04fb1f66698ae84",
+      "mode": 511,
+      "mtime_ns": 1792919716000000000,
+      "atime_ns": 1792919716000000000
+    },
+    "app/assets/data/taxonomy_tree.json": {
+      "sha256": "380363d4921c58b5a6bff99fd637c59bdcab3e3071c954944318a121264a6445",
+      "mode": 511,
+      "mtime_ns": 1793104486000000000,
+      "atime_ns": 1793104486000000000
+    },
+    "app/ios/.gitignore": {
+      "sha256": "37380775aeb2499662b7aca80f4ac4c95ae827c3ba2bfa179aa3e9af4812c623",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Flutter/AppFrameworkInfo.plist": {
+      "sha256": "da12038f9b2688a8a26160fea2609fa8fcb11421448c109f09c0f573efe7698d",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Flutter/Debug.xcconfig": {
+      "sha256": "a82d7765b37116ee4821d2cd1d65942febf8032353757ffb0826eabde785b4a6",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Flutter/Generated.xcconfig": {
+      "sha256": "356affdf085ee2993751849d55ecc1bf960ac6c8e433edbcddf3011fbb100a71",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/Release.xcconfig": {
+      "sha256": "a82d7765b37116ee4821d2cd1d65942febf8032353757ffb0826eabde785b4a6",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Flutter/flutter_export_environment.sh": {
+      "sha256": "c997edab7027ba94ee598603092fe0a61ceab3afb517321fa345c6fe81efe758",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/.swift_pm.lock": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/flutter_lldb_helper.py": {
+      "sha256": "05cfe3977fdee593efad2049a4f62d374e55c69cedc8aabeee5566b37acb8384",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/flutter_lldbinit": {
+      "sha256": "eaec5f5268e3a5024d9703046f4097701107d574d0de7a2d8d81f0bf4644a333",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/flutter_native_integration.env": {
+      "sha256": "73069cc962c06ce51f393a5a0a5e0df7ceb3f16ee0f1117dd601608dad664f26",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
+      "sha256": "c59649b8eb9e7f78fbf8dc7f9254012fad2cbb594b19cc83640a5afc59e40e20",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage/FlutterGeneratedPluginSwiftPackage.swift": {
+      "sha256": "8518fb048c29925943b03de7f45c9d5232c0b46d2cc97d36f83ff501e1ffb9ba",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Runner/AppDelegate.swift": {
+      "sha256": "451c6d9ba0a2b3ff43092ea349c60fa79a91f1158b915eb29dbdd357cb95d7b8",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner/GeneratedPluginRegistrant.h": {
+      "sha256": "a5f88cc6415d2e639d2cb549348b84e02a7fdd0261603b0063abef6fa11f075a",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/ios/Runner/GeneratedPluginRegistrant.m": {
+      "sha256": "c730197da50355490c21f703f07073fe6c02ea3bdc7dc0e7188b17bb57142318",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/ios/Runner/Info.plist": {
+      "sha256": "042c543d17cb439bf6ea3c9d368277c0bd319e23ad3d379308974ad182406cbc",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner/Runner-Bridging-Header.h": {
+      "sha256": "1a8d11d01d1cc92c650c9c9ed35299240052d4683a15a719a2315ef44185e074",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner/SceneDelegate.swift": {
+      "sha256": "add68b905971dedfcc0d0b5b7118030de5925ba8c081ad9815463699e3a444ad",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "sha256": "3b1e214f466ffedff74baa5598ad5c4421130eea6bc8d57b8fe23435e8280ae4",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png": {
+      "sha256": "76ea0359c01622b173384c3bbc5efdc27ab97e7470d64fef0ec7d5f7b953c3ca",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png": {
+      "sha256": "07ed91cce6eeabf4f37136305da8e15437c87de76f22ac7b6c5eab06027d301c",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png": {
+      "sha256": "813aefd5b10ac74508631fa707991b967c7791cdf07743c59756cecb2664048a",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png": {
+      "sha256": "21016c32a5420cf25594a014a5a386575d5cf5bfc5a0de5a6fd82a4e4d942263",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png": {
+      "sha256": "f7785e360f621dc37c19347f3c2cce0489dd146e04cec2d87fb2981aefee8d87",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png": {
+      "sha256": "4fe251991881dacf323f08fd69ae5a9b57d5aea6c69e92ac225685fc57a469da",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png": {
+      "sha256": "f1ad70e2633d26659ce9c54461a664ffc3c4c9a77d647e6c6f3c88c84bc19b8f",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png": {
+      "sha256": "813aefd5b10ac74508631fa707991b967c7791cdf07743c59756cecb2664048a",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png": {
+      "sha256": "390a2687f29ccebe9ac7bfdfb915b6a0c3a91b8f635dfc29bce229a5932f82a1",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png": {
+      "sha256": "98bb2ae16f24a2592732fc2776f25d5ab3f980ea98179a2ee9dcd6cd3dcd7ec3",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png": {
+      "sha256": "98bb2ae16f24a2592732fc2776f25d5ab3f980ea98179a2ee9dcd6cd3dcd7ec3",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png": {
+      "sha256": "fee77c6bfbece92157e014593123159c80c5d1b11386277dab6b0d28e019320f",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png": {
+      "sha256": "c6e6798346dc63393751eb1b2e3c8e047343f1bcd6b8727ec81f92d52c95593b",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png": {
+      "sha256": "fbe0b098e64c8dd2b9a554fc3f494a5efc0570968e2433488dc14e852288946f",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png": {
+      "sha256": "cb27ef37495d40571f8842731a4e89d56f13a34af71d1472b48aa56ec00b0b95",
+      "mode": 511,
+      "mtime_ns": 1793179629000000000,
+      "atime_ns": 1793179629000000000
+    },
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
+      "sha256": "ccc7950fd5f5b82067c85f667940a9d59189151460761ece8098ca78daa19469",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png": {
+      "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png": {
+      "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png": {
+      "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
+      "sha256": "a985b626c4f7546a8ba392d135e9226c3547c8e2b46895f5f2bdf40d7b14ef9f",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Base.lproj/LaunchScreen.storyboard": {
+      "sha256": "857e61203b3deafb05766d8fcda898b86a7cb6f3d5e385ecc9926c4d698215e9",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner/Base.lproj/Main.storyboard": {
+      "sha256": "fd367b6c43006d61b730f674970dd48b9f662c8f2264e52ffc1558102a2c9f2d",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner.xcodeproj/project.pbxproj": {
+      "sha256": "bcbec77a42f35943d0b5f1e90ce4c48e3ce30fdc1c8ad28ae5040d63faee1980",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata": {
+      "sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
+      "sha256": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
+      "sha256": "9fbce429f56243561dd437a527136c9f9ed77165e3b271b923faf236cfcd0484",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/ios/Runner.xcworkspace/contents.xcworkspacedata": {
+      "sha256": "46c3c9702ff7c5584e11c954d943cfb6e07fb26e3fbd072ddbc0f388aa352de1",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
+      "sha256": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f",
+      "mode": 511,
+      "mtime_ns": 1792919824000000000,
+      "atime_ns": 1792919824000000000
+    },
+    "app/ios/RunnerTests/RunnerTests.swift": {
+      "sha256": "5e8f4908dacea6f29b2a790e4d38bf5fded69096063f9a27a2f21584d62b30c0",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/lib/app.dart": {
+      "sha256": "3e4643035d7bac441130b7de90c3fcc0b1039eefc8eb260a2e5a426681e129d5",
+      "mode": 511,
+      "mtime_ns": 1792995547000000000,
+      "atime_ns": 1792995547000000000
+    },
+    "app/lib/main.dart": {
+      "sha256": "06d5ad4c87a978474a4ff0a30a5d24cc81237c109169d895deaa0dec39693400",
+      "mode": 511,
+      "mtime_ns": 1792920943000000000,
+      "atime_ns": 1792920943000000000
+    },
+    "app/lib/core/icons.dart": {
+      "sha256": "e203cb1c33dfc83b4401e4a2ac55c039da7719db267a3da8fe22ae06ea1af07d",
+      "mode": 511,
+      "mtime_ns": 1793018300000000000,
+      "atime_ns": 1793018300000000000
+    },
+    "app/lib/core/theme.dart": {
+      "sha256": "b84ad676b3365691add054108d94e5b73a72356ea061138f92a78726b5bf413a",
+      "mode": 511,
+      "mtime_ns": 1793018637000000000,
+      "atime_ns": 1793018637000000000
+    },
+    "app/lib/data/catalog.dart": {
+      "sha256": "73c9e4f3c8870b117dc057f864db5c829bacfc9f1af49b53f6dc6f48873157b0",
+      "mode": 511,
+      "mtime_ns": 1793018959000000000,
+      "atime_ns": 1793018959000000000
+    },
+    "app/lib/models/advice.dart": {
+      "sha256": "8239da073e13650cee2a1d986baf3a6d432a168dee5e5c64063054e55388d27b",
+      "mode": 511,
+      "mtime_ns": 1793104524000000000,
+      "atime_ns": 1793104524000000000
+    },
+    "app/lib/state/app_store.dart": {
+      "sha256": "16c9edfbb63b231a9f433b95e0d0c3e3b8fa113bf1848894ff8e15a6c0fd3cbd",
+      "mode": 511,
+      "mtime_ns": 1793108335000000000,
+      "atime_ns": 1793108335000000000
+    },
+    "app/lib/ui/boot.dart": {
+      "sha256": "4656d846ad3ce1b1d7a0babb466a5f14a63ba1a4c436084a71b2bd247b4ef6b6",
+      "mode": 511,
+      "mtime_ns": 1792920953000000000,
+      "atime_ns": 1792920953000000000
+    },
+    "app/lib/ui/shell.dart": {
+      "sha256": "25748346653a3bf46ec7fb3f8007722abaa1f9b1db1780f271a11b32b0e12fd9",
+      "mode": 511,
+      "mtime_ns": 1793098492000000000,
+      "atime_ns": 1793098492000000000
+    },
+    "app/lib/ui/cards/advice_card.dart": {
+      "sha256": "b7777a9af661353627c7f6b23a6edebfc8345a753e1c16841268e9fa68988390",
+      "mode": 511,
+      "mtime_ns": 1793099245000000000,
+      "atime_ns": 1793099245000000000
+    },
+    "app/lib/ui/cards/interactors.dart": {
+      "sha256": "21b030d6e3199374114cb23a6d4c9914a8ffd458a49143716ca330daebb6adea",
+      "mode": 511,
+      "mtime_ns": 1792920965000000000,
+      "atime_ns": 1792920965000000000
+    },
+    "app/lib/ui/cards/spotlight_interactors.dart": {
+      "sha256": "f09757ca8b9f88b059ce0398c07688e11d438a9288699e25f851525b678573a2",
+      "mode": 511,
+      "mtime_ns": 1792925412000000000,
+      "atime_ns": 1792925412000000000
+    },
+    "app/lib/ui/cycle/cycle_view.dart": {
+      "sha256": "262fb0251038d155123254577bbf4bf0ef46559427e6a464d4dfd10d39103c41",
+      "mode": 511,
+      "mtime_ns": 1793098512000000000,
+      "atime_ns": 1793098512000000000
+    },
+    "app/lib/ui/detail/advice_detail_sheet.dart": {
+      "sha256": "21d158bb766b56ed478621edca62d0a721fc9e0ffcd98dd3cc2b802886a5718d",
+      "mode": 511,
+      "mtime_ns": 1792997910000000000,
+      "atime_ns": 1792997910000000000
+    },
+    "app/lib/ui/emergency/emergency_sheet.dart": {
+      "sha256": "8ddbb4fa0ef50f846ed682141f26b4f6befb9414a7da614b61be671e60edc358",
+      "mode": 511,
+      "mtime_ns": 1793100080000000000,
+      "atime_ns": 1793100080000000000
+    },
+    "app/lib/ui/library/guidance_sheet.dart": {
+      "sha256": "0c30ec6c1dc82517551adea101708955d457fb6b3fb1e4cf1b86cd66593de70d",
+      "mode": 511,
+      "mtime_ns": 1793014907000000000,
+      "atime_ns": 1793014907000000000
+    },
+    "app/lib/ui/library/jump_deck.dart": {
+      "sha256": "11940080731916fd3d5322b7304c29f62d7be80754f887d071a6a44dfd150771",
+      "mode": 511,
+      "mtime_ns": 1792920738000000000,
+      "atime_ns": 1792920738000000000
+    },
+    "app/lib/ui/library/library_view.dart": {
+      "sha256": "9113b205f4879e1c7cc44c0fdb77b5c253dc31f361d85dffca32f4892c0791b0",
+      "mode": 511,
+      "mtime_ns": 1793098519000000000,
+      "atime_ns": 1793098519000000000
+    },
+    "app/lib/ui/me/excluded_advices_view.dart": {
+      "sha256": "d87ee735f9c83e77763b7783af85632324580517b3a7874fb7f1011fc89a75be",
+      "mode": 511,
+      "mtime_ns": 1793018993000000000,
+      "atime_ns": 1793018993000000000
+    },
+    "app/lib/ui/me/me_view.dart": {
+      "sha256": "34dc0590f51ba94ee01f2b26c9b92a63c06094b012866442ebaf2b57d1174f2f",
+      "mode": 511,
+      "mtime_ns": 1793109859000000000,
+      "atime_ns": 1793109859000000000
+    },
+    "app/lib/ui/now/gear_ruler.dart": {
+      "sha256": "ae1a4e0e3ba51b3fe545e2eb2281103bc01b88b68886b4d51d977796cb0b090c",
+      "mode": 511,
+      "mtime_ns": 1793098453000000000,
+      "atime_ns": 1793098453000000000
+    },
+    "app/lib/ui/now/now_view.dart": {
+      "sha256": "4f86967af8ff2fd58828a0e112eaa45cc823bb28a6e5890bbef59cf46371a1ae",
+      "mode": 511,
+      "mtime_ns": 1793102805000000000,
+      "atime_ns": 1793102805000000000
+    },
+    "app/lib/ui/onboarding/onboarding_view.dart": {
+      "sha256": "f379e896f5c8aeed6d1ad96fdc430ab73eeb1ae6941c953082e6ef28efcac270",
+      "mode": 511,
+      "mtime_ns": 1793105578000000000,
+      "atime_ns": 1793105578000000000
+    },
+    "app/lib/ui/review/carnegie_review_sheet.dart": {
+      "sha256": "c1178eb5589f1ca1aabbae5c12e0d9de1eeb93254e1374ff4548d4b550ebe99a",
+      "mode": 511,
+      "mtime_ns": 1793018980000000000,
+      "atime_ns": 1793018980000000000
+    },
+    "app/lib/ui/search/search_delegate.dart": {
+      "sha256": "4781212423d40ebc1999781972fa434de9b2e5998d811c8760a59ca3e5224117",
+      "mode": 511,
+      "mtime_ns": 1792921028000000000,
+      "atime_ns": 1792921028000000000
+    },
+    "app/lib/ui/share/share_sheet.dart": {
+      "sha256": "11ccee7dc73d208d3867343487ba0c762fe9e5e7e888db41fefcc349605c384f",
+      "mode": 511,
+      "mtime_ns": 1792920528000000000,
+      "atime_ns": 1792920528000000000
+    },
+    "app/lib/ui/today/today_view.dart": {
+      "sha256": "6a4f725655121e08c3fc5c044a508d536a3d50331a7a0017660346c2b588733d",
+      "mode": 511,
+      "mtime_ns": 1793107520000000000,
+      "atime_ns": 1793107520000000000
+    },
+    "app/lib/ui/tools/tools_sheet.dart": {
+      "sha256": "976fef8456092a1336e32d4e1d9b081e06a84ae171dc27a68ae5265a9165b839",
+      "mode": 511,
+      "mtime_ns": 1793019010000000000,
+      "atime_ns": 1793019010000000000
+    },
+    "app/linux/.gitignore": {
+      "sha256": "5ded4f1a9d10d34bf6ee5beb0711d88ee2ef07b0f07ace9ed77935a246e8eb82",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/CMakeLists.txt": {
+      "sha256": "8b60af5decb09db82bb0fdf970540c93cb585a53c3d4d298729bedf80e6aaef0",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/flutter/CMakeLists.txt": {
+      "sha256": "787189e2623313cfee590a0b553338eb9fc68b3af922ddd77c5d39c75f989aeb",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/flutter/generated_plugin_registrant.cc": {
+      "sha256": "c824516e905193619e6fdf309231e0da38a8ec9b94ad72f0bb96c68d8d285e22",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/linux/flutter/generated_plugin_registrant.h": {
+      "sha256": "00f93bb5b1faefdede8f6065df327522900fb0b8efee86bacf424fd947ed14bb",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/linux/flutter/generated_plugins.cmake": {
+      "sha256": "7c8761a6f3e8967f53a4b67eaf821c7a147f2d52670892205c30780ed50fe23a",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/linux/runner/CMakeLists.txt": {
+      "sha256": "8cdcfd911e770fd7d511c97c7bce6559486a815352a47c953f7ef632e236d2cc",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/runner/main.cc": {
+      "sha256": "ea23f7cdf74091d63bba29ef60486370b766157b848f0cfe62bd8b1c1695a0c1",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/runner/my_application.cc": {
+      "sha256": "fe9b8a1e9f6446bb0b57ec07d35ee0bb6beea027511377d09a980f2721894c3b",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/linux/runner/my_application.h": {
+      "sha256": "a4218d7ac0db8a9a6716daf216b2d4fc6bdc7ac647e3183078b2c962ebdfcf70",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/.gitignore": {
+      "sha256": "ffec1a0bbd70547186b82ad4e49089bafab2de309b89de97c776d70debb179fa",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Flutter/Flutter-Debug.xcconfig": {
+      "sha256": "62290ad8e938bf410206d8c7e131262696b58a6df110d39faf3399396ffe61b1",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Flutter/Flutter-Release.xcconfig": {
+      "sha256": "62290ad8e938bf410206d8c7e131262696b58a6df110d39faf3399396ffe61b1",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Flutter/GeneratedPluginRegistrant.swift": {
+      "sha256": "2d8c075ce0f856ea3a98ff9cc2148a53835636bc56cad7bcbff5efb9319bb1e3",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/macos/Flutter/ephemeral/.swift_pm.lock": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Flutter/ephemeral/Flutter-Generated.xcconfig": {
+      "sha256": "b2081efdd8f787ef8fea6bb69afd5a7289bb4fb13793963bf6cc2df5ee210491",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Flutter/ephemeral/flutter_export_environment.sh": {
+      "sha256": "21d2277dccc9043279e326b12782edf97d704dfa7e6c0ff5f7fbc17a80eb1d3f",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Flutter/ephemeral/flutter_native_integration.env": {
+      "sha256": "75fe740efb8ca336d37cff18f68ddac5deb64873b00c1a00477a434cc7ce1b22",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
+      "sha256": "51d5d94b4415f40265616421beb55537492f11794acdb2e2e082002dc2823ec2",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage/FlutterGeneratedPluginSwiftPackage.swift": {
+      "sha256": "8518fb048c29925943b03de7f45c9d5232c0b46d2cc97d36f83ff501e1ffb9ba",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/macos/Runner/AppDelegate.swift": {
+      "sha256": "ce9dbe45a57c59e85519da50a26c471615b9c8cdd85a8f4a39d2e480e62a4af4",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/DebugProfile.entitlements": {
+      "sha256": "ebaab2b9992173de422c33e1fbab7f6e31acaa2213956097ac8cefd894a91ac8",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Info.plist": {
+      "sha256": "f253e89c512b3a9a81bc5cdd7a14bf932470f835f261654a808ea4549cd94aad",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/MainFlutterWindow.swift": {
+      "sha256": "65c9613c11bcedfa51416b16c975d8ba6ff12b405fc19d60db8755d92e86d9fe",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Release.entitlements": {
+      "sha256": "b746c74b201e6af4e0864fbd1f4f629f96156a7ec4b7208bc995d0a5089bb592",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "sha256": "bc6ba8105ca69651aeeb77358851590de295dca04681a1d58c0f449641c242f3",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png": {
+      "sha256": "76ea0359c01622b173384c3bbc5efdc27ab97e7470d64fef0ec7d5f7b953c3ca",
+      "mode": 511,
+      "mtime_ns": 1793179636000000000,
+      "atime_ns": 1793179636000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png": {
+      "sha256": "b3771cfa90033890b6a5501ee21a65b84cd3a9c8be022cea20e06b274135dc29",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png": {
+      "sha256": "76501aaf69565128b3085172d795a2e38f90bbe85472e12b0e6d622a3464d531",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png": {
+      "sha256": "e9a88308f945847229380f1dc37dab1889446c631276c0b807a8b7c12eff7788",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png": {
+      "sha256": "4c073bba0a7e26229c1688238702ba921625b7c040b3c507dd1a6613821070f9",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png": {
+      "sha256": "b6578462d42c7964c0ebab8116ddcfe72d17496f0f074a4c611afd8603e0ae6d",
+      "mode": 511,
+      "mtime_ns": 1793179633000000000,
+      "atime_ns": 1793179633000000000
+    },
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png": {
+      "sha256": "180eac0c74f564900ca130e480f1218f01667237c025a713499c5caebf155b2b",
+      "mode": 511,
+      "mtime_ns": 1793179632000000000,
+      "atime_ns": 1793179632000000000
+    },
+    "app/macos/Runner/Base.lproj/MainMenu.xib": {
+      "sha256": "be9e9ef8469d3262370e0f0b855ed163cbf9c8362c59e330b2ffe63b86fa42f4",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Configs/AppInfo.xcconfig": {
+      "sha256": "cd67e98b3fd901e589b6c2a713d753c39cc564a525782e6c6b7d3729adf5a6fb",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Configs/Debug.xcconfig": {
+      "sha256": "8067d533ef6593760baad9a9855a786a7a77470fcc3f0925ec04fe43bc1ac4b0",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Configs/Release.xcconfig": {
+      "sha256": "7a6a4b4d973a23052fa0a0388dd261e32d311d7b66ba1bfc3b914b361808ac61",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner/Configs/Warnings.xcconfig": {
+      "sha256": "0e341a392b16ad302d12890aa3dac9257a6c10ece685437604259a85341645a3",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner.xcodeproj/project.pbxproj": {
+      "sha256": "9fabc21cc2c82c2456630d68cdd03ab305c7df083ff45fecd965eda2435a7ef6",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
+      "sha256": "f71bf53205a5379d383d8c79e77dbcd91373cc568db98790db864ed2a27f8b86",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner.xcworkspace/contents.xcworkspacedata": {
+      "sha256": "46c3c9702ff7c5584e11c954d943cfb6e07fb26e3fbd072ddbc0f388aa352de1",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/macos/RunnerTests/RunnerTests.swift": {
+      "sha256": "6bc180bc77c7def7a21d197233e25dff42cc493ab9d294632edafc18fdf0ac44",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/test/widget_test.dart": {
+      "sha256": "b43d7359fe050df5080e0f4726de6985f4182c5385d4fb09e458ba46389f291d",
+      "mode": 511,
+      "mtime_ns": 1793104697000000000,
+      "atime_ns": 1793104697000000000
+    },
+    "app/web/favicon.png": {
+      "sha256": "4c073bba0a7e26229c1688238702ba921625b7c040b3c507dd1a6613821070f9",
+      "mode": 511,
+      "mtime_ns": 1793179636000000000,
+      "atime_ns": 1793179636000000000
+    },
+    "app/web/index.html": {
+      "sha256": "1a483ce54a9c19c30fb111e0e9a03136b4138d51d6dad54aad1923d8a17b4e35",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/web/manifest.json": {
+      "sha256": "00565428be45dc88670792ee8018bb6f63cf6c37969c61af97550a0865f4532f",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/web/icons/Icon-192.png": {
+      "sha256": "876d3df484bf1c5af7a7993a039b0c856a1ea56f1e47ce450119bc37c45e8859",
+      "mode": 511,
+      "mtime_ns": 1793179636000000000,
+      "atime_ns": 1793179636000000000
+    },
+    "app/web/icons/Icon-512.png": {
+      "sha256": "b6578462d42c7964c0ebab8116ddcfe72d17496f0f074a4c611afd8603e0ae6d",
+      "mode": 511,
+      "mtime_ns": 1793179636000000000,
+      "atime_ns": 1793179636000000000
+    },
+    "app/web/icons/Icon-maskable-192.png": {
+      "sha256": "876d3df484bf1c5af7a7993a039b0c856a1ea56f1e47ce450119bc37c45e8859",
+      "mode": 511,
+      "mtime_ns": 1793179637000000000,
+      "atime_ns": 1793179637000000000
+    },
+    "app/web/icons/Icon-maskable-512.png": {
+      "sha256": "b6578462d42c7964c0ebab8116ddcfe72d17496f0f074a4c611afd8603e0ae6d",
+      "mode": 511,
+      "mtime_ns": 1793179637000000000,
+      "atime_ns": 1793179637000000000
+    },
+    "app/windows/.gitignore": {
+      "sha256": "96345475f1a3c66bd32d28178fba151ab1506b35b1f7857b8f7651863093ea11",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/CMakeLists.txt": {
+      "sha256": "d9672dec688e9fec88cb7b747b292af6b651688657791a884d99050c322380fb",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/flutter/CMakeLists.txt": {
+      "sha256": "1fe418971b6f41bb35ceb3d64113a835f3f6f171ecaa707bf232492b57a588d6",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/flutter/generated_plugin_registrant.cc": {
+      "sha256": "290e7377545ecda211f834d69935bde4cb80653fdca012af324735ad2e4634a2",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/windows/flutter/generated_plugin_registrant.h": {
+      "sha256": "dbc11635d7b1ba1887adf40df5b83d634e9c3ab0bee34510c71528bb4d73602a",
+      "mode": 511,
+      "mtime_ns": 1792919829000000000,
+      "atime_ns": 1792919829000000000
+    },
+    "app/windows/flutter/generated_plugins.cmake": {
+      "sha256": "d4df9277e321322c44691a8777c966e8252b2400b94815fa413ce19312a1c9b9",
+      "mode": 511,
+      "mtime_ns": 1792920893000000000,
+      "atime_ns": 1792920893000000000
+    },
+    "app/windows/runner/CMakeLists.txt": {
+      "sha256": "34119ec122e36940235ef4bc245fcfb43b6960ed443e28af1a8d833a81209b9e",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/Runner.rc": {
+      "sha256": "2e8c423f50ff8c5febf9f285b6905d1de660ba848fc6eab0e157ca0706b00534",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/flutter_window.cpp": {
+      "sha256": "dd185884c0b5301d400b58f12ebb36b1c8b326531597e531b40e44a6eeb0e943",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/flutter_window.h": {
+      "sha256": "38e0fcd3a0b83895852ec295cb70d90179c0dcd40d58f065eb5232a4ecd84898",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/main.cpp": {
+      "sha256": "397aa1cf317eb74e2e5fd02f527631f4a7bf9ea2e4c3540503b45b901b606a36",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/resource.h": {
+      "sha256": "1fa98588b04561590ba1cf0521ab86a9db4a878312f21c9d5861d965ddd8d1ae",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/runner.exe.manifest": {
+      "sha256": "825d243e9fa1542619909c1b72d09b3ed7c1f3b225bb8367c125835e5dc3f8aa",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/utils.cpp": {
+      "sha256": "6c2c87106b4b29d534c7edcafb3b7f7b9079caa3cdafa7e56671ad2adf5a2543",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/utils.h": {
+      "sha256": "95a7f7dddb832997cefa937a96f89472332277e75734a5de553610760b744b03",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/win32_window.cpp": {
+      "sha256": "9065f31ccf746cf8b390121f958f9e959033af864aed779597066625ed56bc36",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/win32_window.h": {
+      "sha256": "7dd03746b19dcf3542829b2f6e8ed40a2714ce5f2cb3b0e23f0118a2fcf62d62",
+      "mode": 511,
+      "mtime_ns": 1792919823000000000,
+      "atime_ns": 1792919823000000000
+    },
+    "app/windows/runner/resources/app_icon.ico": {
+      "sha256": "0d8668c0ed915c2ec51c3a53d5ab4c6275cfa771fadb564036a3134c34c84096",
+      "mode": 511,
+      "mtime_ns": 1793179637000000000,
+      "atime_ns": 1793179637000000000
+    },
+    "docs/AdviceInteractiveDemo.html": {
+      "sha256": "7bb385e85cd75ca198534524c883c51ae3cf1411dc876f99cdc862395251d774",
+      "mode": 511,
+      "mtime_ns": 1792918355000000000,
+      "atime_ns": 1793026073000000000
+    },
+    "docs/AdviceSortingDesign.md": {
+      "sha256": "b5c5421b978aa4addeb1cf2482a6c3c0ebc33007de7ff73f60bf7786cb097034",
+      "mode": 511,
+      "mtime_ns": 1792911590000000000,
+      "atime_ns": 1792911590000000000
+    },
+    "docs/HowToLiveBetter.html": {
+      "sha256": "a36b5d60b8eb2490f74b89ae0ede45b6e24b9d3949525381c53ad76afd9a21d0",
+      "mode": 511,
+      "mtime_ns": 1792720168000000000,
+      "atime_ns": 1792720168000000000
+    },
+    "docs/HowToLiveBetter.md": {
+      "sha256": "2b8d47da12fa56a432bd50b001614ddb1c8d82f48fa55329dbed0ae8c2966b9e",
+      "mode": 511,
+      "mtime_ns": 1792741594000000000,
+      "atime_ns": 1792741594000000000
+    },
+    "docs/HowToLiveBetterBrief.md": {
+      "sha256": "c329818e5acec6138156e111bab65edae7ab43f4f5cb820403cece330b04a24f",
+      "mode": 511,
+      "mtime_ns": 1792814591000000000,
+      "atime_ns": 1792814591000000000
+    },
+    "docs/HowToLiveBetterComponents.html": {
+      "sha256": "98a6cfa0ceb2a892a7247aa4e2284152d6bd8d1b45be92d6eed1cd60ba90b13c",
+      "mode": 511,
+      "mtime_ns": 1792759959000000000,
+      "atime_ns": 1792759959000000000
+    },
+    "docs/HowToLiveBetterDesign.md": {
+      "sha256": "c31417b7f5587cae18afeaa37acf6185ba535ae0b35ea77b77dd2fab5dbafa71",
+      "mode": 511,
+      "mtime_ns": 1792867359000000000,
+      "atime_ns": 1792867359000000000
+    },
+    "docs/HowToLiveBetterFor35Dev.md": {
+      "sha256": "718ced94805c7a0e72d5cbf7c3e9f859fab4d4cc600dc110385334ee72e5c945",
+      "mode": 511,
+      "mtime_ns": 1792751672000000000,
+      "atime_ns": 1792751672000000000
+    },
+    "docs/SignalRoutingDesign.md": {
+      "sha256": "d9279ad566f21f3aeea0d6b4969bc70c2f12c8e71461cf8c90d6b216466fbfaa",
+      "mode": 511,
+      "mtime_ns": 1792820612000000000,
+      "atime_ns": 1792820612000000000
+    },
+    "docs/TagEffectivenessAnalysis.md": {
+      "sha256": "cc64d5bccf6653f8fa2d5da2a225544ff0015a302720e59a29aa3c02312143c0",
+      "mode": 511,
+      "mtime_ns": 1792819265000000000,
+      "atime_ns": 1792819265000000000
+    },
+    "docs/TagMigrationReport.md": {
+      "sha256": "fdefdf56691823a14ca7d73789d8a989a07ce9e551bae6133485f46cbb7f48c3",
+      "mode": 511,
+      "mtime_ns": 1792810485000000000,
+      "atime_ns": 1792810485000000000
+    },
+    "docs/TagSystemAnalysis.md": {
+      "sha256": "88b3487dbe6706ddaa7f236bc99e20758aef461c72a409317f241f08d30a0577",
+      "mode": 511,
+      "mtime_ns": 1792816326000000000,
+      "atime_ns": 1792816326000000000
+    },
+    "docs/TitleTree.md": {
+      "sha256": "319c7be5d6b744bef19937c47c73c71cb34c4e9e8421507b26f883d0e24e2ec7",
+      "mode": 511,
+      "mtime_ns": 1792812388000000000,
+      "atime_ns": 1792812388000000000
+    },
+    "docs/inactive_detail_design.md": {
+      "sha256": "07f7a04da7fd659908a6500baa8c50040a3d7269407ee1accd63bd24a6d30f68",
+      "mode": 511,
+      "mtime_ns": 1793101795000000000,
+      "atime_ns": 1793101795000000000
+    },
+    "docs/interactive_detail_design.md": {
+      "sha256": "ca1f1ee0ca51a01ccccf64868fe82acacf189cd005fb123c99bbd6ca32053493",
+      "mode": 511,
+      "mtime_ns": 1792906500000000000,
+      "atime_ns": 1792906500000000000
+    },
+    "docs/产品设计文档.md": {
+      "sha256": "a261979cd6afe3df190abab3bc7675ff9d8d2bed597525fa70e5d54baaa3afb0",
+      "mode": 511,
+      "mtime_ns": 1793016800000000000,
+      "atime_ns": 1793016800000000000
+    },
+    "docs/optimization/2026-10-28-四类核心目标优化方案.md": {
+      "sha256": "0844f0cb98b9d159d44c1bae680c4fe496577428b122efe0e0d169601d76d4c9",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "docs/optimization/advice-audit.json": {
+      "sha256": "78faf5a29e895867a9e533aa7f9d097571b6cf76e39bd2e3879b514c76e2a561",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "docs/optimization/verification.md": {
+      "sha256": "68c98027a6b66743341a798e261396b2e215d9a77055eb6fadf0f3a1c031032e",
+      "mode": 511,
+      "mtime_ns": 1793179696000000000,
+      "atime_ns": 1793179696000000000
+    },
+    "hs-dev-skill/task_index.jsonl": {
+      "sha256": "b0dfd763b4301b67a60eb62ab1dd3846b91b7a9315a76618da043d2e8eafdc05",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/config/config.json": {
+      "sha256": "dd2b1fba59b754b3592dd57164ce66eb38fbbc44c4b32fa9a679dc9fcb66b720",
+      "mode": 511,
+      "mtime_ns": 1793178995000000000,
+      "atime_ns": 1793178995000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/README.md": {
+      "sha256": "2e4241522be3bc49f1ebcd08597ec62cfcd50108723e6857cc57cfee239c47c8",
+      "mode": 511,
+      "mtime_ns": 1793179176000000000,
+      "atime_ns": 1793179176000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/current.md": {
+      "sha256": "faf795a07df96c2e3039f5c41596d2c0be03ba12e270f5556ebb7fe30ee36424",
+      "mode": 511,
+      "mtime_ns": 1793179797000000000,
+      "atime_ns": 1793179797000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/plan.md": {
+      "sha256": "a5b6947f9a0aa46c3333b86bc296d3fa26748bbb7efd38b689561bf9065efac8",
+      "mode": 511,
+      "mtime_ns": 1793179176000000000,
+      "atime_ns": 1793179176000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/resolved_config.json": {
+      "sha256": "27ea08b13881f6795d4419b0abf30ce8daa16265538683b08ab8f7802d55b9f8",
+      "mode": 511,
+      "mtime_ns": 1793179176000000000,
+      "atime_ns": 1793179176000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/task.json": {
+      "sha256": "2361595f4eb2b2e6468419e76fb52a0d906dee71466e71b624e66d6466ff9933",
+      "mode": 511,
+      "mtime_ns": 1793179797000000000,
+      "atime_ns": 1793179797000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/acceptance/decisions.json": {
+      "sha256": "444a356d96c2644af941df1558a6d0d455dcb24b72dfed497932f9ffd0aea84a",
+      "mode": 511,
+      "mtime_ns": 1793179797000000000,
+      "atime_ns": 1793179797000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/acceptance/overview.md": {
+      "sha256": "c8174b25f1bbef432200b200e967b3c2902ff13bdcf7c1a3fe7ccdfaf869e594",
+      "mode": 511,
+      "mtime_ns": 1793179783000000000,
+      "atime_ns": 1793179783000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/activities/A1/results.json": {
+      "sha256": "209a4404f2e879194da5dd571b764e5ab117ccd365f3eea1a998e65b0ba94856",
+      "mode": 511,
+      "mtime_ns": 1793179763000000000,
+      "atime_ns": 1793179763000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/activities/A2/results.json": {
+      "sha256": "e57698b5f8af892f435ba9d732e32c7d304440c999527eaa83d7807630dec100",
+      "mode": 511,
+      "mtime_ns": 1793179776000000000,
+      "atime_ns": 1793179776000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/config/config.json": {
+      "sha256": "4f0e58535fc43c53da2112049b31a736c58e30d74994ffeac5880d9aed54e1ec",
+      "mode": 511,
+      "mtime_ns": 1793179176000000000,
+      "atime_ns": 1793179176000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092829_024670/check_0.log": {
+      "sha256": "a9acbccecc719e2cf6f0b1d9c3187fcdc0486f96e6ed8f214036d6313ddbc7df",
+      "mode": 511,
+      "mtime_ns": 1793179709000000000,
+      "atime_ns": 1793179709000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092829_024670/check_1.log": {
+      "sha256": "17d8463f37084087c32549d8cbcbd9843336589b706ddfd5d008dfeb584701fd",
+      "mode": 511,
+      "mtime_ns": 1793179710000000000,
+      "atime_ns": 1793179710000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092829_024670/check_2.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 511,
+      "mtime_ns": 1793179710000000000,
+      "atime_ns": 1793179710000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092829_024670/result.json": {
+      "sha256": "efcb38569ec8143470303b081deed188b3766c2710d0bc1e5b29f5d6249d5684",
+      "mode": 511,
+      "mtime_ns": 1793179713000000000,
+      "atime_ns": 1793179713000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970/check_0.log": {
+      "sha256": "a9acbccecc719e2cf6f0b1d9c3187fcdc0486f96e6ed8f214036d6313ddbc7df",
+      "mode": 511,
+      "mtime_ns": 1793179788000000000,
+      "atime_ns": 1793179788000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970/check_1.log": {
+      "sha256": "17d8463f37084087c32549d8cbcbd9843336589b706ddfd5d008dfeb584701fd",
+      "mode": 511,
+      "mtime_ns": 1793179789000000000,
+      "atime_ns": 1793179789000000000
+    },
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970/result.json": {
+      "sha256": "319aac1225db218fd0b035ef728ae33c7ab208246dcc48fbcba1e93cb192bb5d",
+      "mode": 511,
+      "mtime_ns": 1793179792000000000,
+      "atime_ns": 1793179792000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/README.md": {
+      "sha256": "fedfa966fafa03aec2843346e7e517a75e990bfa016b480532189c8799b6aab4",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/current.md": {
+      "sha256": "6a297bab819fa9f4ca8cbd2f39f7004bf1e2cbd238032254d9c2eb0ff27b06e5",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/plan.md": {
+      "sha256": "2054f87b5bb2b17219cdc428c91a940ef5b3b297488ab19ded82f29c34b2533a",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/resolved_config.json": {
+      "sha256": "53cea7e51435b7b733055785f6ed814943cf5a7b2ed5d0c51139c8edd3f0b23d",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/task.json": {
+      "sha256": "4d40c14a70f3136974f2f701923031bcb48c20f9ff5869a4265d145cda951270",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/acceptance/decisions.json": {
+      "sha256": "6f494ff7ec0de2d3f2e6311c0f72619dd28f4093ed89ec870ae7f612deb5cf48",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/activities/G1/results.json": {
+      "sha256": "b33cd6a1c95ab453e930b88e331585f94303d093ebf517f21008c0f12096f585",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/activities/G2/results.json": {
+      "sha256": "d6362510c0791430bfd2622a0ba172537c178d289d8bc9007578a8855e57a810",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs-dev-skill/tasks/20261028_094625_788024/config/config.json": {
+      "sha256": "4f0e58535fc43c53da2112049b31a736c58e30d74994ffeac5880d9aed54e1ec",
+      "mode": 511,
+      "mtime_ns": 1793180786000000000,
+      "atime_ns": 1793180786000000000
+    },
+    "hs_dev_docs/README.md": {
+      "sha256": "c3fff1fcf25301ab835182cb6b18f84791a861042d25d1b9eae982d5aed4e825",
+      "mode": 511,
+      "mtime_ns": 1793178671000000000,
+      "atime_ns": 1793178671000000000
+    },
+    "hs_dev_docs/foundation/README.md": {
+      "sha256": "7f640dca61c42263db2c06f1d9f3f53a6a47f10ac6cad718d81d24f891613af3",
+      "mode": 511,
+      "mtime_ns": 1793178671000000000,
+      "atime_ns": 1793178671000000000
+    },
+    "tools/apply_daily_streak_enhancement.py": {
+      "sha256": "154441893515fc4178793cd7f71e47f78560ce78374dda5d81f1f2d9da1b4824",
+      "mode": 511,
+      "mtime_ns": 1792850760000000000,
+      "atime_ns": 1792850760000000000
+    },
+    "tools/audit_advice_content.py": {
+      "sha256": "8cfbd0a1600367ae548baa12c4426cd027312c0d0eeaa51ffdb39ba0c2e3ff0c",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "tools/audit_and_fix_habits.py": {
+      "sha256": "f36efee4d37bd2a964c3499ce7ab3e9e556a5221c018d5ebdb6cede49df39f88",
+      "mode": 511,
+      "mtime_ns": 1792851075000000000,
+      "atime_ns": 1792851075000000000
+    },
+    "tools/build_apk_remote.sh": {
+      "sha256": "f0eca6ad6ba9c7c2a7ade2c084190149920f105d9353b2ccb6c104451367fc08",
+      "mode": 511,
+      "mtime_ns": 1793061009000000000,
+      "atime_ns": 1793061009000000000
+    },
+    "tools/build_taxonomy_tree.py": {
+      "sha256": "f346b2f42cb1006c4131266330bdf8760d1c2e84e8629dbe41b4c65e7c1ea336",
+      "mode": 511,
+      "mtime_ns": 1793104474000000000,
+      "atime_ns": 1793104474000000000
+    },
+    "tools/export_app_icons.py": {
+      "sha256": "55d506ac069a8d31fe99ba675808253d7116942c48f472bccfbdd7d4ee9dcfae",
+      "mode": 511,
+      "mtime_ns": 1793179628000000000,
+      "atime_ns": 1793179628000000000
+    },
+    "tools/refine_js_share.py": {
+      "sha256": "081fe1e7f579b62d4a0a3305a642a361177992e23dd7f97bcf2ef7dc75eecd71",
+      "mode": 511,
+      "mtime_ns": 1792851151000000000,
+      "atime_ns": 1792851151000000000
+    },
+    "tools/sync_interaction_types.py": {
+      "sha256": "7edb559b30c3588df2e2198bb08d80df9b7de5b8efd50ade86aa00ed46c4b5ab",
+      "mode": 511,
+      "mtime_ns": 1792853455000000000,
+      "atime_ns": 1792853455000000000
+    },
+    "tools/tag_audit.py": {
+      "sha256": "95f8a80b546a51d1c116fa82a14ee5c4b63fee64dd7a381951db59441e449f25",
+      "mode": 511,
+      "mtime_ns": 1792816271000000000,
+      "atime_ns": 1792816271000000000
+    },
+    "tools/tag_effectiveness.py": {
+      "sha256": "925ad8c9490c55a04589b4ed9efa75be17c878c134a3935736f98a4aea16a297",
+      "mode": 511,
+      "mtime_ns": 1792819091000000000,
+      "atime_ns": 1792819091000000000
+    },
+    "tools/upgrade_daily_streak_ux.py": {
+      "sha256": "9903ed8f4df9ac6993ecba689fa843f03215a7b13555819235c9874f8fbefe66",
+      "mode": 511,
+      "mtime_ns": 1792909088000000000,
+      "atime_ns": 1792909088000000000
+    },
+    "tools/verify_tree_system.dart": {
+      "sha256": "bfe0be3449ef31eacb880703606e8772ca8ea13e03e8ca5c10d983b65c63ecfd",
+      "mode": 511,
+      "mtime_ns": 1793105125000000000,
+      "atime_ns": 1793105125000000000
+    },
+    "tools/flutter_app_extract/extract_data.py": {
+      "sha256": "798694f42b86a2ca78bde5ab8eee64d5b8bce434bcd958f851c4e05f622f40cd",
+      "mode": 511,
+      "mtime_ns": 1792919713000000000,
+      "atime_ns": 1792919713000000000
+    }
+  },
+  "directories": [
+    "app",
+    "app/.dart_tool",
+    "app/.dart_tool/dartpad",
+    "app/.dart_tool/flutter_build",
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710",
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/arm64-v8a",
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/armeabi-v7a",
+    "app/.dart_tool/flutter_build/8c486d572a46337c730a613337cf2710/x86_64",
+    "app/.dart_tool/flutter_build/d3f5f5737a0100c7fa72b6703a21769d",
+    "app/.dart_tool/flutter_build/d9018a1cbbfec901b1e9c6f3b5ed9e2a",
+    "app/.dart_tool/hooks_runner",
+    "app/.dart_tool/hooks_runner/objective_c",
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc",
+    "app/.dart_tool/hooks_runner/objective_c/0a7aa06ebc/out",
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0",
+    "app/.dart_tool/hooks_runner/objective_c/6782ff62a0/out",
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7",
+    "app/.dart_tool/hooks_runner/objective_c/6b4ebf10e7/out",
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514",
+    "app/.dart_tool/hooks_runner/objective_c/af235c2514/out",
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4",
+    "app/.dart_tool/hooks_runner/objective_c/eb669ec2b4/out",
+    "app/.dart_tool/hooks_runner/shared",
+    "app/.dart_tool/hooks_runner/shared/objective_c",
+    "app/.idea",
+    "app/.idea/libraries",
+    "app/.idea/runConfigurations",
+    "app/android",
+    "app/android/.gradle",
+    "app/android/.gradle/9.3.1",
+    "app/android/.gradle/9.3.1/checksums",
+    "app/android/.gradle/9.3.1/executionHistory",
+    "app/android/.gradle/9.3.1/expanded",
+    "app/android/.gradle/9.3.1/fileChanges",
+    "app/android/.gradle/9.3.1/fileHashes",
+    "app/android/.gradle/9.3.1/vcsMetadata",
+    "app/android/.gradle/buildOutputCleanup",
+    "app/android/.gradle/noVersion",
+    "app/android/.gradle/vcs-1",
+    "app/android/.kotlin",
+    "app/android/.kotlin/sessions",
+    "app/android/app",
+    "app/android/app/src",
+    "app/android/app/src/debug",
+    "app/android/app/src/main",
+    "app/android/app/src/main/java",
+    "app/android/app/src/main/java/io",
+    "app/android/app/src/main/java/io/flutter",
+    "app/android/app/src/main/java/io/flutter/plugins",
+    "app/android/app/src/main/kotlin",
+    "app/android/app/src/main/kotlin/dev",
+    "app/android/app/src/main/kotlin/dev/kairostep",
+    "app/android/app/src/main/kotlin/dev/kairostep/kairo_step",
+    "app/android/app/src/main/res",
+    "app/android/app/src/main/res/drawable",
+    "app/android/app/src/main/res/drawable-v21",
+    "app/android/app/src/main/res/mipmap-hdpi",
+    "app/android/app/src/main/res/mipmap-mdpi",
+    "app/android/app/src/main/res/mipmap-xhdpi",
+    "app/android/app/src/main/res/mipmap-xxhdpi",
+    "app/android/app/src/main/res/mipmap-xxxhdpi",
+    "app/android/app/src/main/res/values",
+    "app/android/app/src/main/res/values-night",
+    "app/android/app/src/profile",
+    "app/android/gradle",
+    "app/android/gradle/wrapper",
+    "app/assets",
+    "app/assets/branding",
+    "app/assets/data",
+    "app/ios",
+    "app/ios/Flutter",
+    "app/ios/Flutter/ephemeral",
+    "app/ios/Flutter/ephemeral/Packages",
+    "app/ios/Flutter/ephemeral/Packages/.packages",
+    "app/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage",
+    "app/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources",
+    "app/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage",
+    "app/ios/Runner",
+    "app/ios/Runner.xcodeproj",
+    "app/ios/Runner.xcodeproj/project.xcworkspace",
+    "app/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata",
+    "app/ios/Runner.xcodeproj/xcshareddata",
+    "app/ios/Runner.xcodeproj/xcshareddata/xcschemes",
+    "app/ios/Runner.xcworkspace",
+    "app/ios/Runner.xcworkspace/xcshareddata",
+    "app/ios/Runner/Assets.xcassets",
+    "app/ios/Runner/Assets.xcassets/AppIcon.appiconset",
+    "app/ios/Runner/Assets.xcassets/LaunchImage.imageset",
+    "app/ios/Runner/Base.lproj",
+    "app/ios/RunnerTests",
+    "app/lib",
+    "app/lib/core",
+    "app/lib/data",
+    "app/lib/models",
+    "app/lib/state",
+    "app/lib/ui",
+    "app/lib/ui/cards",
+    "app/lib/ui/cycle",
+    "app/lib/ui/detail",
+    "app/lib/ui/emergency",
+    "app/lib/ui/library",
+    "app/lib/ui/me",
+    "app/lib/ui/now",
+    "app/lib/ui/onboarding",
+    "app/lib/ui/review",
+    "app/lib/ui/search",
+    "app/lib/ui/share",
+    "app/lib/ui/today",
+    "app/lib/ui/tools",
+    "app/linux",
+    "app/linux/flutter",
+    "app/linux/runner",
+    "app/macos",
+    "app/macos/Flutter",
+    "app/macos/Flutter/ephemeral",
+    "app/macos/Flutter/ephemeral/Packages",
+    "app/macos/Flutter/ephemeral/Packages/.packages",
+    "app/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage",
+    "app/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources",
+    "app/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Sources/FlutterGeneratedPluginSwiftPackage",
+    "app/macos/Runner",
+    "app/macos/Runner.xcodeproj",
+    "app/macos/Runner.xcodeproj/project.xcworkspace",
+    "app/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata",
+    "app/macos/Runner.xcodeproj/xcshareddata",
+    "app/macos/Runner.xcodeproj/xcshareddata/xcschemes",
+    "app/macos/Runner.xcworkspace",
+    "app/macos/Runner.xcworkspace/xcshareddata",
+    "app/macos/Runner/Assets.xcassets",
+    "app/macos/Runner/Assets.xcassets/AppIcon.appiconset",
+    "app/macos/Runner/Base.lproj",
+    "app/macos/Runner/Configs",
+    "app/macos/RunnerTests",
+    "app/test",
+    "app/web",
+    "app/web/icons",
+    "app/windows",
+    "app/windows/flutter",
+    "app/windows/flutter/ephemeral",
+    "app/windows/flutter/ephemeral/.plugin_symlinks",
+    "app/windows/runner",
+    "app/windows/runner/resources",
+    "docs",
+    "docs/optimization",
+    "hs-dev-skill",
+    "hs-dev-skill/config",
+    "hs-dev-skill/tasks",
+    "hs-dev-skill/tasks/20261028_091935_989532",
+    "hs-dev-skill/tasks/20261028_091935_989532/acceptance",
+    "hs-dev-skill/tasks/20261028_091935_989532/activities",
+    "hs-dev-skill/tasks/20261028_091935_989532/activities/A1",
+    "hs-dev-skill/tasks/20261028_091935_989532/activities/A2",
+    "hs-dev-skill/tasks/20261028_091935_989532/config",
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence",
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092829_024670",
+    "hs-dev-skill/tasks/20261028_091935_989532/evidence/20261028_092947_979970",
+    "hs-dev-skill/tasks/20261028_094625_788024",
+    "hs-dev-skill/tasks/20261028_094625_788024/acceptance",
+    "hs-dev-skill/tasks/20261028_094625_788024/activities",
+    "hs-dev-skill/tasks/20261028_094625_788024/activities/G1",
+    "hs-dev-skill/tasks/20261028_094625_788024/activities/G2",
+    "hs-dev-skill/tasks/20261028_094625_788024/config",
+    "hs_dev_docs",
+    "hs_dev_docs/foundation",
+    "tools",
+    "tools/flutter_app_extract"
+  ]
+}

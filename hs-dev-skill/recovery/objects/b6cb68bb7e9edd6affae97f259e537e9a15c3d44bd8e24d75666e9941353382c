@@ -1,0 +1,100 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter pub get
+
+## exception
+
+FileSystemException: FileSystemException: Cannot create link, path = '/home/hardstone/Share/Common/CodeSpace/KairosStep/app/windows/flutter/ephemeral/.plugin_symlinks/jni' (OS Error: Operation not supported, errno = 95)
+
+```
+#0      _Link.throwIfError (dart:io/link.dart:358:7)
+#1      _Link.createSync (dart:io/link.dart:276:5)
+#2      ForwardingLink.createSync (package:file/src/forwarding/forwarding_link.dart:20:16)
+#3      ErrorHandlingLink.createSync.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:893:22)
+#4      _runSync (package:flutter_tools/src/base/error_handling_io.dart:1118:16)
+#5      ErrorHandlingLink.createSync (package:flutter_tools/src/base/error_handling_io.dart:892:5)
+#6      _createPlatformPluginSymlinks (package:flutter_tools/src/flutter_plugins.dart:1294:12)
+#7      createPluginSymlinks (package:flutter_tools/src/flutter_plugins.dart:1193:5)
+#8      refreshPluginsList (package:flutter_tools/src/flutter_plugins.dart:1351:5)
+<asynchronous suspension>
+#9      FlutterProject.ensureReadyForPlatformSpecificTooling (package:flutter_tools/src/project.dart:445:5)
+<asynchronous suspension>
+#10     PackagesGetCommand.runCommand.<anonymous closure> (package:flutter_tools/src/commands/packages.dart:409:11)
+<asynchronous suspension>
+#11     Pool.forEach.run (package:pool/pool.dart:183:19)
+<asynchronous suspension>
+#12     Pool.withResource (package:pool/pool.dart:127:14)
+<asynchronous suspension>
+#13     Future.wait.<anonymous closure> (dart:async/future.dart:567:21)
+<asynchronous suspension>
+#14     Pool.forEach.onListen.<anonymous closure> (package:pool/pool.dart:203:23)
+<asynchronous suspension>
+#15     _StreamController.close (dart:async/stream_controller.dart:640:3)
+<asynchronous suspension>
+#16     _nullDataHandler (dart:async/stream_impl.dart:549:1)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.47.8, on Ubuntu 26.04.1 LTS 7.0.0-38-generic, locale en_US.UTF-8) [46ms]
+    • Flutter version 3.47.8 on channel stable at /home/hardstone/Applications/flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 737ba8f885 (3 days ago), 2026-10-22 21:37:31 -0700
+    • Engine revision cf636b1dfb
+    • Dart version 3.13.7
+    • DevTools version 2.60.0
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, enable-record-use, enable-swift-package-manager, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 36.0.0) [1,450ms]
+    • Android SDK at /home/hardstone/Android/Sdk
+    • Emulator version unknown
+    • Platform android-36, build-tools 36.0.0
+    • ANDROID_HOME = /home/hardstone/Applications/android-sdk
+    • ANDROID_SDK_ROOT = /home/hardstone/Applications/android-sdk
+    ! Multiple adb binaries found. This can cause conflicts and device detection issues:
+        - /home/hardstone/Android/Sdk/platform-tools/adb
+        - /home/hardstone/Applications/android-sdk/platform-tools/adb
+    • Java binary at: /home/hardstone/Applications/jdk/current/bin/java
+      This JDK is specified by the JAVA_HOME environment variable.
+      To manually set the JDK path, use: `flutter config --jdk-dir="path/to/jdk"`.
+    • Java version OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1)
+    • All Android licenses accepted.
+
+[✓] Chrome - develop for the web [54ms]
+    • Chrome at google-chrome
+
+[✓] Linux toolchain - develop for Linux desktop [276ms]
+    • Ubuntu clang version 21.1.8 (6ubuntu1)
+    • cmake version 4.2.3
+    • ninja version 1.13.2
+    • pkg-config version 2.5.1
+    • OpenGL core renderer: SVGA3D; build: RELEASE;  LLVM; (Wayland)
+    • OpenGL core version: 4.3 (Core Profile) Mesa 26.0.8-1ubuntu0.3 (Wayland)
+    • OpenGL core shading language version: 4.30 (Wayland)
+    • OpenGL ES renderer: SVGA3D; build: RELEASE;  LLVM; (Wayland)
+    • OpenGL ES version: OpenGL ES 3.1 Mesa 26.0.8-1ubuntu0.3 (Wayland)
+    • OpenGL ES shading language version: OpenGL ES GLSL ES 3.10 (Wayland)
+    • GL_EXT_framebuffer_blit: yes (Wayland)
+    • GL_EXT_texture_format_BGRA8888: yes (Wayland)
+
+[!] Proxy Configuration [68ms]
+    • HTTP_PROXY is set
+    • NO_PROXY is 127.0.0.1,localhost
+    • NO_PROXY contains localhost
+    • NO_PROXY contains 127.0.0.1
+    ! NO_PROXY does not contain ::1
+
+[✓] Connected device (2 available) [148ms]
+    • Linux (desktop) • linux  • linux-x64      • Ubuntu 26.04.1 LTS 7.0.0-38-generic
+    • Chrome (web)    • chrome • web-javascript • Google Chrome 156.0.8078.47
+
+[✓] Network resources [1,656ms]
+    • All expected network resources are available.
+
+! Doctor found issues in 1 category.
+```

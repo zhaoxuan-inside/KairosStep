@@ -9,6 +9,7 @@ import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
 import 'guidance_sheet.dart';
 import 'jump_deck.dart';
+import 'topic_tree_sheet.dart';
 
 /// 全景库：767 条建议全景流。
 ///
@@ -26,29 +27,71 @@ class _LibraryViewState extends State<LibraryView> {
   String _letter = 'all';
   String _chapter = '全部';
   String _mode = 'all';
+  String _topicPath = '';
   int _limit = 40;
 
-  bool get _hasFilter => _letter != 'all' || _chapter != '全部' || _mode != 'all';
+  bool get _hasFilter =>
+      _topicPath.isNotEmpty ||
+      _letter != 'all' ||
+      _chapter != '全部' ||
+      _mode != 'all';
 
   void _reset() => setState(() {
-        _letter = 'all';
-        _chapter = '全部';
-        _mode = 'all';
-        _limit = 40;
-      });
+    _letter = 'all';
+    _chapter = '全部';
+    _mode = 'all';
+    _topicPath = '';
+    _limit = 40;
+  });
 
-  List<(String, List<Advice>)> _groups(BuildContext context) {
+  List<Advice> _candidates(
+    BuildContext context, {
+    bool applyTopicPreferences = true,
+  }) {
     final catalog = catalogOf(context);
     final store = storeOf(context);
     var list = catalog.adviceList.toList();
     if (store.profile.prunedOnly) {
       list = store.profile.parentsOnly
           ? list.where((a) => parentsAdviceIds.contains(a.id)).toList()
-          : list.where(store.matchPersona).toList();
+          : list
+                .where(
+                  (a) => store.matchPersona(
+                    a,
+                    includeTopicPreferences: applyTopicPreferences,
+                  ),
+                )
+                .toList();
+      if (applyTopicPreferences) {
+        list = list.where(store.matchesTopicPreferences).toList();
+      }
     }
-    if (_letter != 'all') list = list.where((a) => catalog.letterOf(a) == _letter).toList();
-    if (_chapter != '全部') list = list.where((a) => a.chapter == _chapter).toList();
+    if (_letter != 'all') {
+      list = list.where((a) => catalog.letterOf(a) == _letter).toList();
+    }
+    if (_chapter != '全部') {
+      list = list.where((a) => a.chapter == _chapter).toList();
+    }
     if (_mode != 'all') list = list.where((a) => a.actType == _mode).toList();
+    return list;
+  }
+
+  List<(String, List<Advice>)> _groups(BuildContext context) {
+    final catalog = catalogOf(context);
+    final store = storeOf(context);
+    var list = _candidates(context);
+    if (_topicPath.isNotEmpty) {
+      final ids = catalog
+          .underTopic(
+            _topicPath,
+            hiddenTopics: store.profile.prunedOnly
+                ? store.excludedTopicPaths
+                : const [],
+          )
+          .map((a) => a.id)
+          .toSet();
+      list = list.where((a) => ids.contains(a.id)).toList();
+    }
 
     final byLetter = <String, List<Advice>>{};
     for (final a in list) {
@@ -65,23 +108,29 @@ class _LibraryViewState extends State<LibraryView> {
     final store = storeOf(context);
     final groups = _groups(context);
     final total = groups.fold<int>(0, (n, g) => n + g.$2.length);
-    var shown = 0;
+    final shown = total.clamp(0, _limit);
 
     return Column(
       children: [
         // 头部
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 60, 16, 10),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Expanded(
-                    child: Text('库', style: Theme.of(context).textTheme.displaySmall),
+                    child: Text(
+                      '库',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: p.pillBg,
                       borderRadius: BorderRadius.circular(9999),
@@ -95,25 +144,44 @@ class _LibraryViewState extends State<LibraryView> {
               ),
               const SizedBox(height: 8),
               // 范围三态
-              Row(
+              Wrap(
+                spacing: 6,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  _scopeChip(context, '画像专属',
-                      on: store.profile.prunedOnly && !store.profile.parentsOnly, onTap: () {
-                    store.profile = store.profile.copyWith(
-                        prunedOnly: true, parentsOnly: false);
-                  }),
-                  const SizedBox(width: 6),
-                  _scopeChip(context, '父母适用', on: store.profile.parentsOnly, onTap: () {
-                    store.profile = store.profile.copyWith(
-                        prunedOnly: true, parentsOnly: true);
-                  }),
-                  const SizedBox(width: 6),
-                  _scopeChip(context, '全量 767',
-                      on: !store.profile.prunedOnly, onTap: () {
-                    store.profile = store.profile.copyWith(
-                        prunedOnly: false, parentsOnly: false);
-                  }),
-                  const Spacer(),
+                  _scopeChip(
+                    context,
+                    '画像专属',
+                    on: store.profile.prunedOnly && !store.profile.parentsOnly,
+                    onTap: () {
+                      store.profile = store.profile.copyWith(
+                        prunedOnly: true,
+                        parentsOnly: false,
+                      );
+                    },
+                  ),
+                  _scopeChip(
+                    context,
+                    '父母适用',
+                    on: store.profile.parentsOnly,
+                    onTap: () {
+                      store.profile = store.profile.copyWith(
+                        prunedOnly: true,
+                        parentsOnly: true,
+                      );
+                    },
+                  ),
+                  _scopeChip(
+                    context,
+                    '全量 767',
+                    on: !store.profile.prunedOnly,
+                    onTap: () {
+                      store.profile = store.profile.copyWith(
+                        prunedOnly: false,
+                        parentsOnly: false,
+                      );
+                    },
+                  ),
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
@@ -128,16 +196,25 @@ class _LibraryViewState extends State<LibraryView> {
                       );
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: p.action.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(9999),
-                        border: Border.all(color: p.action.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: p.action.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.explore_outlined, size: 13, color: p.action),
+                          Icon(
+                            Icons.explore_outlined,
+                            size: 13,
+                            color: p.action,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '767 全景引导',
@@ -154,38 +231,101 @@ class _LibraryViewState extends State<LibraryView> {
                 ],
               ),
               const SizedBox(height: 8),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.account_tree_outlined, size: 17),
+                label: Text(
+                  _topicPath.isEmpty
+                      ? '按主题分类查找与剪枝'
+                      : catalogOf(context).topics.breadcrumbOf(_topicPath),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onPressed: () async {
+                  final path = await showTopicTree(
+                    context,
+                    selectedPath: _topicPath,
+                    personalized: store.profile.prunedOnly,
+                    candidateIds: _candidates(
+                      context,
+                      applyTopicPreferences: false,
+                    ).map((a) => a.id).toSet(),
+                  );
+                  if (!mounted) return;
+                  setState(() {
+                    if (path != null) _topicPath = path;
+                    _limit = 40;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
               // 筛选条
               Row(
                 children: [
-                  _filterBtn(context,
-                      label: _letter == 'all' ? '拼音 A-Z' : '字母: $_letter',
-                      active: _letter != 'all',
-                      icon: Icons.text_fields,
-                      onTap: () async {
-                        final v = await openJumpDeck(context, initialTab: 0,
-                            letter: _letter, chapter: _chapter, mode: _mode);
-                        if (v != null) setState(() { _applyDeck(v); _limit = 40; });
-                      }),
+                  _filterBtn(
+                    context,
+                    label: _letter == 'all' ? '拼音 A-Z' : '字母: $_letter',
+                    active: _letter != 'all',
+                    icon: Icons.text_fields,
+                    onTap: () async {
+                      final v = await openJumpDeck(
+                        context,
+                        initialTab: 0,
+                        letter: _letter,
+                        chapter: _chapter,
+                        mode: _mode,
+                      );
+                      if (v != null) {
+                        setState(() {
+                          _applyDeck(v);
+                          _limit = 40;
+                        });
+                      }
+                    },
+                  ),
                   const SizedBox(width: 6),
-                  _filterBtn(context,
-                      label: _chapter == '全部' ? '34 章节' : _chapter,
-                      active: _chapter != '全部',
-                      icon: Icons.book_outlined,
-                      onTap: () async {
-                        final v = await openJumpDeck(context, initialTab: 1,
-                            letter: _letter, chapter: _chapter, mode: _mode);
-                        if (v != null) setState(() { _applyDeck(v); _limit = 40; });
-                      }),
+                  _filterBtn(
+                    context,
+                    label: _chapter == '全部' ? '34 章节' : _chapter,
+                    active: _chapter != '全部',
+                    icon: Icons.book_outlined,
+                    onTap: () async {
+                      final v = await openJumpDeck(
+                        context,
+                        initialTab: 1,
+                        letter: _letter,
+                        chapter: _chapter,
+                        mode: _mode,
+                      );
+                      if (v != null) {
+                        setState(() {
+                          _applyDeck(v);
+                          _limit = 40;
+                        });
+                      }
+                    },
+                  ),
                   const SizedBox(width: 6),
-                  _filterBtn(context,
-                      label: _mode == 'all' ? '形态' : actionTypeName(_mode),
-                      active: _mode != 'all',
-                      icon: Icons.category_outlined,
-                      onTap: () async {
-                        final v = await openJumpDeck(context, initialTab: 2,
-                            letter: _letter, chapter: _chapter, mode: _mode);
-                        if (v != null) setState(() { _applyDeck(v); _limit = 40; });
-                      }),
+                  _filterBtn(
+                    context,
+                    label: _mode == 'all' ? '形态' : actionTypeName(_mode),
+                    active: _mode != 'all',
+                    icon: Icons.category_outlined,
+                    onTap: () async {
+                      final v = await openJumpDeck(
+                        context,
+                        initialTab: 2,
+                        letter: _letter,
+                        chapter: _chapter,
+                        mode: _mode,
+                      );
+                      if (v != null) {
+                        setState(() {
+                          _applyDeck(v);
+                          _limit = 40;
+                        });
+                      }
+                    },
+                  ),
                   if (_hasFilter) ...[
                     const SizedBox(width: 6),
                     InkWell(
@@ -193,13 +333,18 @@ class _LibraryViewState extends State<LibraryView> {
                       onTap: _reset,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: p.rose.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(9999),
                         ),
-                        child: Icon(Icons.filter_alt_off_outlined,
-                            size: 14, color: p.rose),
+                        child: Icon(
+                          Icons.filter_alt_off_outlined,
+                          size: 14,
+                          color: p.rose,
+                        ),
                       ),
                     ),
                   ],
@@ -230,35 +375,56 @@ class _LibraryViewState extends State<LibraryView> {
                       );
                     }
                     final (letter, items) = groups[i];
-                    if (shown >= _limit) return const SizedBox.shrink();
-                    final take = (items.length).clamp(0, _limit - shown);
-                    shown += take;
+                    final preceding = groups
+                        .take(i)
+                        .fold<int>(0, (n, g) => n + g.$2.length);
+                    if (preceding >= _limit) return const SizedBox.shrink();
+                    final take = items.length.clamp(0, _limit - preceding);
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InkWell(
                           onTap: () async {
-                            final v = await openJumpDeck(context, initialTab: 0,
-                                letter: _letter, chapter: _chapter, mode: _mode);
+                            final v = await openJumpDeck(
+                              context,
+                              initialTab: 0,
+                              letter: _letter,
+                              chapter: _chapter,
+                              mode: _mode,
+                            );
                             if (v != null) {
-                              setState(() { _applyDeck(v); _limit = 40; });
+                              setState(() {
+                                _applyDeck(v);
+                                _limit = 40;
+                              });
                             }
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Row(
                               children: [
-                                Text(letter,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800,
-                                        color: p.ink)),
+                                Text(
+                                  letter,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                    color: p.ink,
+                                  ),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('${items.length} 条建议 · 字母矩阵聚焦',
-                                    style:
-                                        TextStyle(fontSize: 10.5, color: p.inkMute)),
+                                Text(
+                                  '${items.length} 条建议 · 字母矩阵聚焦',
+                                  style: TextStyle(
+                                    fontSize: 10.5,
+                                    color: p.inkMute,
+                                  ),
+                                ),
                                 const Spacer(),
-                                Icon(Icons.filter_list, size: 13, color: p.inkMute),
+                                Icon(
+                                  Icons.filter_list,
+                                  size: 13,
+                                  color: p.inkMute,
+                                ),
                               ],
                             ),
                           ),
@@ -272,7 +438,7 @@ class _LibraryViewState extends State<LibraryView> {
                               compact: true,
                             ),
                           ),
-                        if (shown >= _limit && shown < total)
+                        if (preceding + take >= _limit && shown < total)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: Row(
@@ -281,7 +447,10 @@ class _LibraryViewState extends State<LibraryView> {
                                   child: OutlinedButton(
                                     onPressed: () =>
                                         setState(() => _limit += 60),
-                                    child: const Text('+ 60 条', style: TextStyle(fontSize: 12)),
+                                    child: const Text(
+                                      '+ 60 条',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -289,8 +458,10 @@ class _LibraryViewState extends State<LibraryView> {
                                   child: OutlinedButton(
                                     onPressed: () =>
                                         setState(() => _limit = total),
-                                    child: Text('全展开 ($total)',
-                                        style: const TextStyle(fontSize: 12)),
+                                    child: Text(
+                                      '全展开 ($total)',
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -311,8 +482,12 @@ class _LibraryViewState extends State<LibraryView> {
     _mode = v.mode;
   }
 
-  Widget _scopeChip(BuildContext context, String label,
-      {required bool on, required VoidCallback onTap}) {
+  Widget _scopeChip(
+    BuildContext context,
+    String label, {
+    required bool on,
+    required VoidCallback onTap,
+  }) {
     final p = AppPalettes.of(context);
     return InkWell(
       borderRadius: BorderRadius.circular(9999),
@@ -327,7 +502,8 @@ class _LibraryViewState extends State<LibraryView> {
           color: on ? p.action.withValues(alpha: 0.14) : p.pillBg,
           borderRadius: BorderRadius.circular(9999),
           border: Border.all(
-              color: on ? p.action.withValues(alpha: 0.5) : Colors.transparent),
+            color: on ? p.action.withValues(alpha: 0.5) : Colors.transparent,
+          ),
         ),
         child: Text(
           label,
@@ -358,8 +534,7 @@ class _LibraryViewState extends State<LibraryView> {
           decoration: BoxDecoration(
             color: active ? p.action.withValues(alpha: 0.12) : p.pillBg,
             borderRadius: BorderRadius.circular(9999),
-            border:
-                Border.all(color: active ? p.action : Colors.transparent),
+            border: Border.all(color: active ? p.action : Colors.transparent),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -392,11 +567,19 @@ class _LibraryViewState extends State<LibraryView> {
         children: [
           Icon(Icons.search_off, size: 30, color: p.inkMute),
           const SizedBox(height: 10),
-          Text('当前组合筛选下暂无匹配建议',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: p.ink)),
+          Text(
+            '当前组合筛选下暂无匹配建议',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: p.ink,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('可尝试清空某个维度或恢复全部全景视图',
-              style: TextStyle(fontSize: 11, color: p.inkMute)),
+          Text(
+            '可尝试清空某个维度或恢复全部全景视图',
+            style: TextStyle(fontSize: 11, color: p.inkMute),
+          ),
           const SizedBox(height: 14),
           OutlinedButton(onPressed: _reset, child: const Text('重置')),
         ],
