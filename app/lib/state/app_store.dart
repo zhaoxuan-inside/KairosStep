@@ -50,6 +50,13 @@ class UserProfile {
     this.hasDiabetes = false,
     this.hasKidneyStones = false,
     this.hasGout = false,
+    this.isProgrammer = false,
+    this.isPregnantOrPlanning = false,
+    this.hasAbroadTravelOrStudy = false,
+    this.hasDebtPressure = false,
+    this.hasDigitalAssetsConcern = false,
+    this.hasDisabilityCare = false,
+    this.hasCrisisOrMentalStress = false,
     this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
     this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
     this.formedHabits = const [],
@@ -77,6 +84,13 @@ class UserProfile {
   final bool hasDiabetes; // 是否关注/确诊高血糖
   final bool hasKidneyStones; // 是否有肾结石病史
   final bool hasGout; // 是否有痛风/高尿酸
+  final bool isProgrammer; // 是否程序员/技术研发人员
+  final bool isPregnantOrPlanning; // 是否备孕/孕产中
+  final bool hasAbroadTravelOrStudy; // 是否有出国/出境旅行/留学生涯
+  final bool hasDebtPressure; // 是否面临债务压力或需极度拮据省钱
+  final bool hasDigitalAssetsConcern; // 是否运营网站平台或关注核心数字资产
+  final bool hasDisabilityCare; // 是否本人残障或需照护残障家人
+  final bool hasCrisisOrMentalStress; // 是否经历重大变故或需高压心理减压
   final String childAgeStage; // 孩子年龄阶段
   final String relationshipStatus; // 亲密关系状态
   final List<int> formedHabits; // 已养成并沉淀为生活防线的习惯条目 ID 列表
@@ -97,6 +111,13 @@ class UserProfile {
     if (hasMortgage) nextLiving.add('购房人');
     if (hasPets) nextLiving.add('养犬人');
     if (isEntrepreneur) nextRoles.add('创业者');
+    if (isProgrammer) nextRoles.add('程序员');
+    if (isPregnantOrPlanning) nextRoles.addAll(['准父母', '孕产']);
+    if (hasAbroadTravelOrStudy) nextRoles.addAll(['出境者', '留学生']);
+    if (hasDebtPressure) nextLiving.add('负债人群');
+    if (hasDigitalAssetsConcern) nextRoles.add('平台运营');
+    if (hasDisabilityCare) nextRoles.add('残障人士');
+    if (hasCrisisOrMentalStress) nextHealth.add('心理减压');
     if (isSmoker) nextHealth.add('吸烟者');
     if (hasHypertension) nextHealth.add('血压关注');
     if (hasDiabetes) nextHealth.add('血糖关注');
@@ -153,6 +174,13 @@ class UserProfile {
     bool? hasDiabetes,
     bool? hasKidneyStones,
     bool? hasGout,
+    bool? isProgrammer,
+    bool? isPregnantOrPlanning,
+    bool? hasAbroadTravelOrStudy,
+    bool? hasDebtPressure,
+    bool? hasDigitalAssetsConcern,
+    bool? hasDisabilityCare,
+    bool? hasCrisisOrMentalStress,
     String? childAgeStage,
     String? relationshipStatus,
     List<int>? formedHabits,
@@ -179,6 +207,13 @@ class UserProfile {
     hasDiabetes: hasDiabetes ?? this.hasDiabetes,
     hasKidneyStones: hasKidneyStones ?? this.hasKidneyStones,
     hasGout: hasGout ?? this.hasGout,
+    isProgrammer: isProgrammer ?? this.isProgrammer,
+    isPregnantOrPlanning: isPregnantOrPlanning ?? this.isPregnantOrPlanning,
+    hasAbroadTravelOrStudy: hasAbroadTravelOrStudy ?? this.hasAbroadTravelOrStudy,
+    hasDebtPressure: hasDebtPressure ?? this.hasDebtPressure,
+    hasDigitalAssetsConcern: hasDigitalAssetsConcern ?? this.hasDigitalAssetsConcern,
+    hasDisabilityCare: hasDisabilityCare ?? this.hasDisabilityCare,
+    hasCrisisOrMentalStress: hasCrisisOrMentalStress ?? this.hasCrisisOrMentalStress,
     childAgeStage: childAgeStage ?? this.childAgeStage,
     relationshipStatus: relationshipStatus ?? this.relationshipStatus,
     formedHabits: formedHabits ?? this.formedHabits,
@@ -207,6 +242,13 @@ class UserProfile {
     'hasDiabetes': hasDiabetes,
     'hasKidneyStones': hasKidneyStones,
     'hasGout': hasGout,
+    'isProgrammer': isProgrammer,
+    'isPregnantOrPlanning': isPregnantOrPlanning,
+    'hasAbroadTravelOrStudy': hasAbroadTravelOrStudy,
+    'hasDebtPressure': hasDebtPressure,
+    'hasDigitalAssetsConcern': hasDigitalAssetsConcern,
+    'hasDisabilityCare': hasDisabilityCare,
+    'hasCrisisOrMentalStress': hasCrisisOrMentalStress,
     'childAgeStage': childAgeStage,
     'relationshipStatus': relationshipStatus,
     'formedHabits': formedHabits,
@@ -241,6 +283,13 @@ class UserProfile {
     hasDiabetes: json['hasDiabetes'] as bool? ?? false,
     hasKidneyStones: json['hasKidneyStones'] as bool? ?? false,
     hasGout: json['hasGout'] as bool? ?? false,
+    isProgrammer: json['isProgrammer'] as bool? ?? false,
+    isPregnantOrPlanning: json['isPregnantOrPlanning'] as bool? ?? false,
+    hasAbroadTravelOrStudy: json['hasAbroadTravelOrStudy'] as bool? ?? false,
+    hasDebtPressure: json['hasDebtPressure'] as bool? ?? false,
+    hasDigitalAssetsConcern: json['hasDigitalAssetsConcern'] as bool? ?? false,
+    hasDisabilityCare: json['hasDisabilityCare'] as bool? ?? false,
+    hasCrisisOrMentalStress: json['hasCrisisOrMentalStress'] as bool? ?? false,
     childAgeStage: json['childAgeStage'] as String? ?? 'none',
     relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
     formedHabits: (json['formedHabits'] as List?)?.map((e) => (e as num).toInt()).toList() ?? const [],
@@ -1689,6 +1738,60 @@ class AppStore extends ChangeNotifier {
           !p.hasKidneyStones &&
           !p.hasGout &&
           !p.healthConcerns.contains('确诊慢病')) {
+        return false;
+      }
+    }
+
+    // 0.7 职业/技术/出境/育儿特殊章节强门禁 (Special Chapter Gating)
+    final chap = a.chapter;
+    if (chap == '程序员和技术人容易踩的红线') {
+      if (!p.isProgrammer && !p.roles.contains('程序员')) return false;
+    }
+    if (chap == '做一个网站或平台：资质、备案和服务器') {
+      if (!p.isProgrammer &&
+          !p.isEntrepreneur &&
+          !p.hasDigitalAssetsConcern &&
+          !p.roles.contains('程序员') &&
+          !p.roles.contains('创业者') &&
+          !p.roles.contains('平台运营')) {
+        return false;
+      }
+    }
+    if (chap == '创业与做生意：别把家底赔进去') {
+      if (!p.isEntrepreneur &&
+          !p.roles.contains('创业者') &&
+          !p.roles.contains('合伙人')) {
+        return false;
+      }
+    }
+    if (chap == '出国、旅行与境外安全' ||
+        chap == '出国留学：身份、打工、保险和回国认证') {
+      if (!p.hasAbroadTravelOrStudy &&
+          !p.roles.contains('出境者') &&
+          !p.roles.contains('留学生')) {
+        return false;
+      }
+    }
+    if (chap == '怀孕和生产：从发现怀孕到出院办证') {
+      if (p.gender == '男' &&
+          !p.isPregnantOrPlanning &&
+          !p.roles.contains('准父母') &&
+          !p.roles.contains('孕产') &&
+          !p.roles.contains('家长')) {
+        return false;
+      }
+    }
+    if (chap == '刚出生的孩子怎么带') {
+      if (p.childAgeStage != 'infant' &&
+          !p.hasChildren &&
+          !p.roles.contains('家长')) {
+        return false;
+      }
+    }
+    if (chap == '上学以后的孩子') {
+      if (p.childAgeStage != 'school' &&
+          !p.hasChildren &&
+          !p.roles.contains('家长')) {
         return false;
       }
     }

@@ -289,6 +289,98 @@ class MeView extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              Text('专项处境与特殊防护', style: _fieldLabel(p)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _pill(
+                    context,
+                    '💻 程序员/技术研发',
+                    on: profile.isProgrammer || profile.roles.contains('程序员'),
+                    onTap: () {
+                      final cur = profile.isProgrammer;
+                      store.profile = profile.copyWith(isProgrammer: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🤰 备孕/孕产中',
+                    on:
+                        profile.isPregnantOrPlanning ||
+                        profile.roles.contains('准父母'),
+                    onTap: () {
+                      final cur = profile.isPregnantOrPlanning;
+                      store.profile = profile.copyWith(
+                        isPregnantOrPlanning: !cur,
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '✈️ 出国/境外/留学',
+                    on:
+                        profile.hasAbroadTravelOrStudy ||
+                        profile.roles.contains('出境者'),
+                    onTap: () {
+                      final cur = profile.hasAbroadTravelOrStudy;
+                      store.profile = profile.copyWith(
+                        hasAbroadTravelOrStudy: !cur,
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '💳 债务压力/节流',
+                    on:
+                        profile.hasDebtPressure ||
+                        profile.livingConditions.contains('负债人群'),
+                    onTap: () {
+                      final cur = profile.hasDebtPressure;
+                      store.profile = profile.copyWith(hasDebtPressure: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🌐 平台运营/独立站',
+                    on:
+                        profile.hasDigitalAssetsConcern ||
+                        profile.roles.contains('平台运营'),
+                    onTap: () {
+                      final cur = profile.hasDigitalAssetsConcern;
+                      store.profile = profile.copyWith(
+                        hasDigitalAssetsConcern: !cur,
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '♿ 残障无障碍照护',
+                    on:
+                        profile.hasDisabilityCare ||
+                        profile.roles.contains('残障人士'),
+                    onTap: () {
+                      final cur = profile.hasDisabilityCare;
+                      store.profile = profile.copyWith(hasDisabilityCare: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🧘 心理危机/重大变故',
+                    on:
+                        profile.hasCrisisOrMentalStress ||
+                        profile.healthConcerns.contains('心理减压'),
+                    onTap: () {
+                      final cur = profile.hasCrisisOrMentalStress;
+                      store.profile = profile.copyWith(
+                        hasCrisisOrMentalStress: !cur,
+                      );
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.symmetric(
