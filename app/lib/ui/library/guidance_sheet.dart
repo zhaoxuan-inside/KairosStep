@@ -338,7 +338,7 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                         const SizedBox(height: 10),
                         Center(
                           child: Text(
-                            '已展示前 15 条 · 领域内其余 ${domainAdvices.length - 15} 条可直接在库中按章节检索',
+                            '已展示前 15 条 · 领域内其余 ${domainAdvices.length - 15} 条可直接在生活指南中按章节检索',
                             style: TextStyle(fontSize: 11, color: p.inkMute),
                           ),
                         ),

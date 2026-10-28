@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,11 +13,11 @@ import 'guidance_sheet.dart';
 import 'jump_deck.dart';
 import 'topic_tree_sheet.dart';
 
-/// 全景库：767 条建议全景流。
+/// 生活指南：767 条建议的可筛选列表。
 ///
-/// - 三维筛选：拼音首字母 / 34 章节 / 13 交互形态（跳转矩阵）。
+/// - 右侧滑出式拼音索引，另可按章节和交互形态筛选。
 /// - 范围三态：画像专属（默认）→ 父母适用 → 全量 767。
-/// - 按字母分组锚点 + 分页平铺。
+/// - 列表正文不显示字母分组标题。
 class LibraryView extends StatefulWidget {
   const LibraryView({super.key});
 
@@ -24,11 +26,37 @@ class LibraryView extends StatefulWidget {
 }
 
 class _LibraryViewState extends State<LibraryView> {
+  static const _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   String _letter = 'all';
   String _chapter = '全部';
   String _mode = 'all';
   String _topicPath = '';
   int _limit = 40;
+  bool _indexVisible = false;
+  Timer? _indexHide;
+
+  @override
+  void dispose() {
+    _indexHide?.cancel();
+    super.dispose();
+  }
+
+  void _showIndex() {
+    _indexHide?.cancel();
+    setState(() => _indexVisible = true);
+    _indexHide = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _indexVisible = false);
+    });
+  }
+
+  void _selectLetter(String letter) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _letter = letter;
+      _limit = 40;
+    });
+    _showIndex();
+  }
 
   bool get _hasFilter =>
       _topicPath.isNotEmpty ||
@@ -122,7 +150,7 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   Expanded(
                     child: Text(
-                      '库',
+                      '生活指南',
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),
@@ -136,7 +164,7 @@ class _LibraryViewState extends State<LibraryView> {
                       borderRadius: BorderRadius.circular(9999),
                     ),
                     child: Text(
-                      '$total 条 · ${store.profile.parentsOnly ? '父母适用' : (store.profile.prunedOnly ? '画像专属' : '全量库')}',
+                      '$total 条 · ${store.profile.parentsOnly ? '父母适用' : (store.profile.prunedOnly ? '画像专属' : '全部建议')}',
                       style: TextStyle(fontSize: 10.5, color: p.inkSub),
                     ),
                   ),
@@ -263,28 +291,6 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   _filterBtn(
                     context,
-                    label: _letter == 'all' ? '拼音 A-Z' : '字母: $_letter',
-                    active: _letter != 'all',
-                    icon: Icons.text_fields,
-                    onTap: () async {
-                      final v = await openJumpDeck(
-                        context,
-                        initialTab: 0,
-                        letter: _letter,
-                        chapter: _chapter,
-                        mode: _mode,
-                      );
-                      if (v != null) {
-                        setState(() {
-                          _applyDeck(v);
-                          _limit = 40;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(width: 6),
-                  _filterBtn(
-                    context,
                     label: _chapter == '全部' ? '34 章节' : _chapter,
                     active: _chapter != '全部',
                     icon: Icons.book_outlined,
@@ -355,124 +361,168 @@ class _LibraryViewState extends State<LibraryView> {
         ),
         // 流
         Expanded(
-          child: total == 0
-              ? _empty(context)
-              : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                  itemCount: groups.length + 1,
-                  itemBuilder: (context, i) {
-                    if (i == groups.length) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Center(
-                          child: Text(
-                            shown >= total
-                                ? '已平铺展开当前全部 $total 条建议交互微工具'
-                                : '已展示 $shown / $total 条',
-                            style: TextStyle(fontSize: 11, color: p.inkMute),
-                          ),
-                        ),
-                      );
-                    }
-                    final (letter, items) = groups[i];
-                    final preceding = groups
-                        .take(i)
-                        .fold<int>(0, (n, g) => n + g.$2.length);
-                    if (preceding >= _limit) return const SizedBox.shrink();
-                    final take = items.length.clamp(0, _limit - preceding);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            final v = await openJumpDeck(
-                              context,
-                              initialTab: 0,
-                              letter: _letter,
-                              chapter: _chapter,
-                              mode: _mode,
-                            );
-                            if (v != null) {
-                              setState(() {
-                                _applyDeck(v);
-                                _limit = 40;
-                              });
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              children: [
-                                Text(
-                                  letter,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w800,
-                                    color: p.ink,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${items.length} 条建议 · 字母矩阵聚焦',
-                                  style: TextStyle(
-                                    fontSize: 10.5,
-                                    color: p.inkMute,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Icon(
-                                  Icons.filter_list,
-                                  size: 13,
+          child: Stack(
+            children: [
+              total == 0
+                  ? _empty(context)
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                      itemCount: groups.length + 1,
+                      itemBuilder: (context, i) {
+                        if (i == groups.length) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            child: Center(
+                              child: Text(
+                                shown >= total
+                                    ? '已平铺展开当前全部 $total 条建议交互微工具'
+                                    : '已展示 $shown / $total 条',
+                                style: TextStyle(
+                                  fontSize: 11,
                                   color: p.inkMute,
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        for (final a in items.take(take))
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: AdviceCard(
-                              advice: a,
-                              scope: PeriodScope.today,
-                              compact: true,
-                            ),
-                          ),
-                        if (preceding + take >= _limit && shown < total)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: () =>
-                                        setState(() => _limit += 60),
-                                    child: const Text(
-                                      '+ 60 条',
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ),
+                          );
+                        }
+                        final (_, items) = groups[i];
+                        final preceding = groups
+                            .take(i)
+                            .fold<int>(0, (n, g) => n + g.$2.length);
+                        if (preceding >= _limit) return const SizedBox.shrink();
+                        final take = items.length.clamp(0, _limit - preceding);
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            for (final a in items.take(take))
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: AdviceCard(
+                                  advice: a,
+                                  scope: PeriodScope.today,
+                                  compact: true,
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: () =>
-                                        setState(() => _limit = total),
-                                    child: Text(
-                                      '全展开 ($total)',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ),
+                              ),
+                            if (preceding + take >= _limit && shown < total)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
                                 ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () =>
+                                            setState(() => _limit += 60),
+                                        child: const Text(
+                                          '+ 60 条',
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () =>
+                                            setState(() => _limit = total),
+                                        child: Text(
+                                          '全展开 ($total)',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: Center(child: _buildIndex(context)),
+              ),
+            ],
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _buildIndex(BuildContext context) {
+    final p = AppPalettes.of(context);
+    if (!_indexVisible) {
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _showIndex,
+        onHorizontalDragUpdate: (details) {
+          if (details.delta.dx < 0) _showIndex();
+        },
+        child: SizedBox(
+          width: 25,
+          height: 82,
+          child: Center(
+            child: Container(
+              width: 4,
+              height: 56,
+              decoration: BoxDecoration(
+                color: p.action.withValues(alpha: 0.45),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    const rowHeight = 14.0;
+    return GestureDetector(
+      onVerticalDragUpdate: (details) {
+        final index = (details.localPosition.dy / rowHeight).floor().clamp(
+          0,
+          26,
+        );
+        final letter = index == 0 ? 'all' : _alphabet[index - 1];
+        if (_letter != letter) _selectLetter(letter);
+      },
+      child: Container(
+        width: 36,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: p.surface.withValues(alpha: 0.96),
+          borderRadius: const BorderRadius.horizontal(
+            left: Radius.circular(12),
+          ),
+          border: Border.all(color: p.hairline),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final letter in ['all', ..._alphabet.split('')])
+              GestureDetector(
+                onTap: () => _selectLetter(letter),
+                child: SizedBox(
+                  width: 36,
+                  height: rowHeight,
+                  child: Center(
+                    child: Text(
+                      letter == 'all' ? '全' : letter,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: _letter == letter
+                            ? FontWeight.w800
+                            : FontWeight.w500,
+                        color: _letter == letter ? p.action : p.inkSub,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 

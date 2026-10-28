@@ -245,7 +245,7 @@ class _AppShellState extends State<AppShell> {
           const NavigationDestination(
             icon: Icon(Icons.grid_view_outlined),
             selectedIcon: Icon(Icons.grid_view),
-            label: '库',
+            label: '指南',
           ),
           const NavigationDestination(
             icon: Icon(Icons.person_outline),

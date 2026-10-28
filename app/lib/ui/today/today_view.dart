@@ -203,7 +203,7 @@ class TodayView extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '可在「我的」页面开启更多角色或在「库」中浏览全景建议',
+                  '可在「我的」页面开启更多角色或在「生活指南」中浏览全景建议',
                   style: TextStyle(fontSize: 12, color: p.inkSub),
                   textAlign: TextAlign.center,
                 ),
@@ -269,7 +269,7 @@ class TodayView extends StatelessWidget {
             Icon(Icons.done_all_outlined, size: 12, color: p.inkMute),
             const SizedBox(width: 5),
             Text(
-              '今日已完成 $done 项 · 更多行动见「周期」与「库」',
+              '今日已完成 $done 项 · 更多行动见「周期」与「生活指南」',
               style: TextStyle(fontSize: 10.5, color: p.inkMute),
             ),
           ],

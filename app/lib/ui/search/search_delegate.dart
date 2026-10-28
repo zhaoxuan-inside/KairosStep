@@ -211,7 +211,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
             Text('无匹配建议', style: TextStyle(fontSize: 12.5, color: p.inkSub)),
             const SizedBox(height: 4),
             Text(
-              '换个关键词，或到「库」里按章节浏览',
+              '换个关键词，或到「生活指南」里按章节浏览',
               style: TextStyle(fontSize: 11, color: p.inkMute),
             ),
           ],

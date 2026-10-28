@@ -6,6 +6,7 @@ import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import 'spotlight_interactors.dart';
+import '../now/breathing_practice.dart';
 
 /// 卡片交互控制器：交互器与持久化状态的唯一通道。
 class CardCtl {
@@ -1172,112 +1173,12 @@ class SliderCalcInteractor extends StatelessWidget {
 // 12. 计时屏息
 // ============================================================
 
-class ZenTimerInteractor extends StatefulWidget {
+class ZenTimerInteractor extends StatelessWidget {
   const ZenTimerInteractor({super.key, required this.advice, required this.scope});
 
   final Advice advice;
   final PeriodScope scope;
 
   @override
-  State<ZenTimerInteractor> createState() => _ZenTimerInteractorState();
-}
-
-class _ZenTimerInteractorState extends State<ZenTimerInteractor>
-    with SingleTickerProviderStateMixin {
-  static const _totalSec = 60;
-  late final AnimationController _ctl = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: _totalSec),
-  );
-  int _remaining = _totalSec;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctl.addListener(() {
-      final r = _totalSec - (_ctl.value * _totalSec).round();
-      if (r != _remaining) setState(() => _remaining = r);
-    });
-    _ctl.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        HapticFeedback.heavyImpact();
-        CardCtl(storeOf(context), widget.scope, widget.advice)
-            .mark('session', true, ratio: 1);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _ctl.dispose();
-    super.dispose();
-  }
-
-  String get _fmt {
-    final m = (_remaining ~/ 60).toString().padLeft(2, '0');
-    final s = (_remaining % 60).toString().padLeft(2, '0');
-    return '$m:$s';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final p = AppPalettes.of(context);
-    return Row(
-      children: [
-        SizedBox(
-          width: 64,
-          height: 64,
-          child: AnimatedBuilder(
-            animation: _ctl,
-            builder: (_, _) => CircularProgressIndicator(
-              value: _ctl.value,
-              strokeWidth: 4,
-              backgroundColor: p.pillBg,
-              valueColor: AlwaysStoppedAnimation(p.indigo),
-            ),
-          ),
-        ),
-        const SizedBox(width: 6),
-        SizedBox(
-          width: 52,
-          height: 64,
-          child: Center(
-            child: Text(
-              _fmt,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                fontFeatures: const [FontFeature.tabularFigures()],
-                color: p.ink,
-              ),
-            ),
-          ),
-        ),
-        const Spacer(),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: p.indigo,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(96, 34),
-          ),
-          onPressed: () {
-            HapticFeedback.selectionClick();
-            if (_ctl.isAnimating) {
-              _ctl.stop();
-            } else if (_ctl.isCompleted) {
-              CardCtl(storeOf(context), widget.scope, widget.advice)
-                  .mark('session', false, ratio: 0);
-              _ctl.value = 0;
-            } else {
-              _ctl.forward();
-            }
-          },
-          child: Text(
-            _ctl.isAnimating ? '暂停' : _ctl.isCompleted ? '再来一次' : '开始 60s',
-            style: const TextStyle(fontSize: 12),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const BreathingPractice();
 }

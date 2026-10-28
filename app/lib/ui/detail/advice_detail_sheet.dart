@@ -27,6 +27,7 @@ class AdviceDetailSheet extends StatelessWidget {
     final advice = catalog.byId[adviceId];
     final d = catalog.detailOf(adviceId);
     if (advice == null || d == null) return const SizedBox(height: 120);
+    final summary = d.humanized.isNotEmpty ? d.humanized : _lead(d.plain ?? '');
 
     final gradeColor =
         d.grade == 'A' ? p.emerald : d.grade == 'B' ? p.action : p.amber;
@@ -77,15 +78,19 @@ class AdviceDetailSheet extends StatelessWidget {
             padding: pad.add(const EdgeInsets.only(top: 10)),
             child: Text(advice.title, style: Theme.of(context).textTheme.titleMedium),
           ),
-          if (d.humanized.isNotEmpty)
+          if (summary.isNotEmpty)
             Padding(
               padding: pad.add(const EdgeInsets.only(top: 8)),
-              child: Text(d.humanized, style: const TextStyle(fontSize: 12.5, height: 1.6)),
+              child: Text(summary, style: const TextStyle(fontSize: 12.5, height: 1.6)),
             ),
           const SizedBox(height: 14),
-          _section(context, '成本', d.cost),
-          _section(context, '说人话', d.plain),
-          _section(context, '收益 · 研究数据', d.benefit),
+          ExpansionTile(
+            title: const Text('查看成本、依据与补充说明', style: TextStyle(fontSize: 12.5)),
+            childrenPadding: pad,
+            children: [
+              _section(context, '成本', d.cost),
+              _section(context, '完整解释', d.plain),
+              _section(context, '收益 · 研究数据', d.benefit),
           if (d.sources.isNotEmpty)
             Padding(
               padding: pad.add(const EdgeInsets.only(bottom: 10)),
@@ -105,7 +110,9 @@ class AdviceDetailSheet extends StatelessWidget {
                 ],
               ),
             ),
-          _section(context, '备注与争议', d.notes, muted: true),
+              _section(context, '备注与争议', d.notes, muted: true),
+            ],
+          ),
           if (d.rel.isNotEmpty) ...[
             Padding(
               padding: pad,
@@ -161,7 +168,7 @@ class AdviceDetailSheet extends StatelessWidget {
           Padding(
             padding: pad.add(const EdgeInsets.only(top: 14)),
             child: Text(
-              '完整内容见《高性价比人生指南》第 $adviceId 条 · 详情层只读，不影响勾选与闭环',
+              '内容整理自《高性价比人生指南》第 $adviceId 条 · 请结合自身情况判断',
               style: TextStyle(fontSize: 10, color: p.inkMute),
             ),
           ),
@@ -176,6 +183,14 @@ class AdviceDetailSheet extends StatelessWidget {
         letterSpacing: 1,
         color: p.inkMute,
       );
+
+  String _lead(String plain) {
+    final sentence = RegExp(r'[。！？]').firstMatch(plain);
+    if (sentence != null && sentence.end <= 180) {
+      return plain.substring(0, sentence.end);
+    }
+    return plain.length <= 180 ? plain : '';
+  }
 
   Widget _section(BuildContext context, String label, String? text, {bool muted = false}) {
     if (text == null || text.isEmpty) return const SizedBox.shrink();

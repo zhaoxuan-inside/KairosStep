@@ -517,7 +517,7 @@ class _AdviceCardState extends State<AdviceCard>
   ({String badge, Color color}) _displayTiming(Advice a, CustomTriggerConfig trig) {
     switch (trig.mode) {
       case TriggerMode.dormant:
-        return (badge: '静默储备 · 库中随查', color: const Color(0xFF838280));
+        return (badge: '静默储备 · 指南中随查', color: const Color(0xFF838280));
       case TriggerMode.daily:
         final periods = trig.dailyPeriods.map((pk) {
           final def = PeriodDefinition.byKey(pk);
@@ -635,7 +635,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '静默储备：不在 Now/今天/每周/每月 占位，仅在全景库中随用随查。',
+              '静默储备：不在 Now/今天/每周/每月 占位，仅在生活指南中随用随查。',
               style: TextStyle(fontSize: 10.5, color: p.inkMute),
             ),
           ),

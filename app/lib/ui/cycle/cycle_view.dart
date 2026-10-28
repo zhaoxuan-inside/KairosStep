@@ -289,7 +289,7 @@ class _SegPanel extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text('当前周期无特定待办', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: p.ink)),
                 const SizedBox(height: 4),
-                Text('可在全景库中翻转卡片配置触发周期将其加入此处', style: TextStyle(fontSize: 11, color: p.inkMute)),
+                Text('可在生活指南中翻转卡片配置触发周期将其加入此处', style: TextStyle(fontSize: 11, color: p.inkMute)),
               ],
             ),
           )

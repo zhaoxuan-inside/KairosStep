@@ -1320,7 +1320,7 @@ class _OnboardingViewState extends State<OnboardingView>
         ),
         const SizedBox(height: 8),
         Text(
-          '已从 767 条全库规则中为您量身剪裁',
+          '已从 767 条建议中为您量身剪裁',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14, color: p.inkSub),
         ),

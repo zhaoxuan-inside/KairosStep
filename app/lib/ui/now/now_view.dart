@@ -7,6 +7,7 @@ import '../../app.dart';
 import '../../core/theme.dart';
 import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
+import 'breathing_practice.dart';
 import 'gear_ruler.dart';
 
 /// 当下页：1.5小时齿轮时间尺（置顶） + 时段问候 + 当下 Hero 卡。
@@ -24,23 +25,43 @@ class NowPeriod {
   static NowPeriod of(DateTime now) {
     final m = now.hour * 60 + now.minute;
     if (m >= 300 && m < 570) {
-      return const NowPeriod('morning', '早晨 · 05:00-09:30',
-          '早晨好，我已为你备好今日出发动作', '正在为你守护晨间出行安全与身体唤醒');
+      return const NowPeriod(
+        'morning',
+        '早晨 · 05:00-09:30',
+        '早晨好，我已为你备好今日出发动作',
+        '正在为你守护晨间出行安全与身体唤醒',
+      );
     }
     if (m >= 570 && m < 720) {
-      return const NowPeriod('focus', '上午 · 09:30-12:00',
-          '上午好，专注当下，保持高效节奏', '工位健康自检与深度工作守护中');
+      return const NowPeriod(
+        'focus',
+        '上午 · 09:30-12:00',
+        '上午好，专注当下，保持高效节奏',
+        '工位健康自检与深度工作守护中',
+      );
     }
     if (m >= 720 && m < 1080) {
-      return const NowPeriod('afternoon', '午后 · 12:00-18:00',
-          '午后好，久坐别忘舒展身心与远眺', '午后健康微防线持续守护中');
+      return const NowPeriod(
+        'afternoon',
+        '午后 · 12:00-18:00',
+        '午后好，久坐别忘舒展身心与远眺',
+        '午后健康微防线持续守护中',
+      );
     }
     if (m >= 1080 && m < 1320) {
-      return const NowPeriod('evening', '傍晚 · 18:00-22:00',
-          '傍晚好，卸下疲惫，留存一日平和生活', '晚间归途与家庭安全守护中');
+      return const NowPeriod(
+        'evening',
+        '傍晚 · 18:00-22:00',
+        '傍晚好，卸下疲惫，留存一日平和生活',
+        '晚间归途与家庭安全守护中',
+      );
     }
-    return const NowPeriod('night', '夜深 · 22:00-05:00',
-        '夜深了，放下发光屏幕，让身心安稳入眠', '褪黑素节律守护中 · 远离发光屏幕');
+    return const NowPeriod(
+      'night',
+      '夜深 · 22:00-05:00',
+      '夜深了，放下发光屏幕，让身心安稳入眠',
+      '褪黑素节律守护中 · 远离发光屏幕',
+    );
   }
 }
 
@@ -127,11 +148,16 @@ class _NowViewState extends State<NowView> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3.5,
+                    ),
                     decoration: BoxDecoration(
                       color: p.emerald.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(9999),
-                      border: Border.all(color: p.emerald.withValues(alpha: 0.35)),
+                      border: Border.all(
+                        color: p.emerald.withValues(alpha: 0.35),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -169,20 +195,30 @@ class _NowViewState extends State<NowView> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(period.sub, style: TextStyle(fontSize: 12, color: p.inkSub)),
+                    child: Text(
+                      period.sub,
+                      style: TextStyle(fontSize: 12, color: p.inkSub),
+                    ),
                   ),
                   InkWell(
                     onTap: () {
                       HapticFeedback.selectionClick();
-                      store.probeScheduler.triggerManualOnDemandProbe(effectiveNow);
+                      store.probeScheduler.triggerManualOnDemandProbe(
+                        effectiveNow,
+                      );
                     },
                     borderRadius: BorderRadius.circular(9999),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3.5,
+                      ),
                       decoration: BoxDecoration(
                         color: p.action.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(9999),
-                        border: Border.all(color: p.action.withValues(alpha: 0.25)),
+                        border: Border.all(
+                          color: p.action.withValues(alpha: 0.25),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -208,6 +244,12 @@ class _NowViewState extends State<NowView> {
         ),
         const SizedBox(height: 16),
 
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: BreathingPractice(),
+        ),
+        const SizedBox(height: 16),
+
         // 3. 齿轮时间尺（全宽贯通屏幕视口，两端高斯模糊与渐隐平滑溶入屏幕边缘）
         GearRuler(
           now: effectiveNow,
@@ -219,9 +261,9 @@ class _NowViewState extends State<NowView> {
           onReset: _scrub == null
               ? null
               : () => setState(() {
-                    _scrub = null;
-                    _heroOffset = 0;
-                  }),
+                  _scrub = null;
+                  _heroOffset = 0;
+                }),
         ),
         const SizedBox(height: 20),
 
@@ -270,7 +312,10 @@ class _NowViewState extends State<NowView> {
           child: hero != null
               ? AdviceCard(advice: hero, scope: PeriodScope.today)
               : Container(
-                  padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 36,
+                    horizontal: 20,
+                  ),
                   decoration: BoxDecoration(
                     color: p.surface,
                     borderRadius: BorderRadius.circular(16),
@@ -290,7 +335,7 @@ class _NowViewState extends State<NowView> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '可滑动时间尺推演其他时刻，或在卡片背面/全景库中为此时段配置行动',
+                        '可滑动时间尺推演其他时刻，或在卡片背面/生活指南中为此时段配置行动',
                         style: TextStyle(fontSize: 11.5, color: p.inkMute),
                         textAlign: TextAlign.center,
                       ),
@@ -310,7 +355,10 @@ class _NowViewState extends State<NowView> {
                 const SizedBox(width: 6),
                 Text(
                   '此 1.5 小时内其他待命行动（${periodAdvices.length - 1}）',
-                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
