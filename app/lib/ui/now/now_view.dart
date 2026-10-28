@@ -166,7 +166,43 @@ class _NowViewState extends State<NowView> {
                 style: Theme.of(context).textTheme.displaySmall,
               ),
               const SizedBox(height: 4),
-              Text(period.sub, style: TextStyle(fontSize: 12, color: p.inkSub)),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(period.sub, style: TextStyle(fontSize: 12, color: p.inkSub)),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      store.probeScheduler.triggerManualOnDemandProbe(effectiveNow);
+                    },
+                    borderRadius: BorderRadius.circular(9999),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                      decoration: BoxDecoration(
+                        color: p.action.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(9999),
+                        border: Border.all(color: p.action.withValues(alpha: 0.25)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.tune, size: 11, color: p.action),
+                          const SizedBox(width: 4),
+                          Text(
+                            '探查校准',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: p.action,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

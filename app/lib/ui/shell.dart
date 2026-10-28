@@ -12,6 +12,7 @@ import 'emergency/emergency_sheet.dart';
 import 'library/library_view.dart';
 import 'me/me_view.dart';
 import 'now/now_view.dart';
+import 'probe/active_probe_dialog.dart';
 import 'search/search_delegate.dart';
 import 'today/today_view.dart';
 import 'widgets/concentric_progress_ring.dart';
@@ -29,6 +30,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _index = 0;
   bool _alertShown = false;
+  bool _probeShown = false;
 
   @override
   void initState() {
@@ -37,7 +39,24 @@ class _AppShellState extends State<AppShell> {
       if (!mounted) return;
       final store = storeOf(context);
       store.reminderRegistry.addListener(_handleReminderAlert);
+      store.probeScheduler.addListener(_handleProbePayload);
     });
+  }
+
+  void _handleProbePayload() {
+    if (!mounted || _alertShown || _probeShown) return;
+    final store = storeOf(context);
+    final payload = store.probeScheduler.currentPayload;
+    if (payload != null) {
+      _probeShown = true;
+      ActiveProbeDialog.show(
+        context,
+        payload: payload,
+        scheduler: store.probeScheduler,
+      ).then((_) {
+        _probeShown = false;
+      });
+    }
   }
 
   void _handleReminderAlert() {

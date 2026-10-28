@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/catalog.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
+import 'probe_scheduler.dart';
 import 'reminder_registry.dart';
 
 /// 周期作用域：打卡记录天然按周期归零（今天跨天清空、周/月/年各自滚动）。
@@ -541,9 +542,14 @@ class AppStore extends ChangeNotifier {
   /// 弹窗提示与提醒注册器
   late final ReminderRegistry reminderRegistry = ReminderRegistry(this);
 
-  /// 同步当前活跃防线至提醒注册器（零全盘扫描开销，仅注册剪枝后的活跃条目）
+  /// 主动探测调度器
+  late final ProbeScheduler probeScheduler = ProbeScheduler();
+
+  /// 同步当前活跃防线至提醒注册器与主动探测调度器（零全盘扫描开销，仅注册剪枝后的活跃条目）
   void syncReminderRegistry() {
-    reminderRegistry.registerActiveReminders(todayAdvices);
+    final active = todayAdvices;
+    reminderRegistry.registerActiveReminders(active);
+    probeScheduler.registerAdvices(active, profile);
   }
 
   // ---------- 偏好 ----------
