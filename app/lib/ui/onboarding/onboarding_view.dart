@@ -60,6 +60,11 @@ class _OnboardingViewState extends State<OnboardingView>
   late bool _hasKidneyStones;
   late bool _hasGout;
   late bool _hasCrisisOrMentalStress;
+  late double _heightCm;
+  late double _weightKg;
+  late bool _hasWeightLossGoal;
+  late bool _hasGastroAcidOrStomach;
+  late bool _hasFrequentPainOrAnalgesic;
   late Set<String> _selectedDomains;
   late bool _prunedOnly;
 
@@ -101,6 +106,11 @@ class _OnboardingViewState extends State<OnboardingView>
     _hasKidneyStones = false;
     _hasGout = false;
     _hasCrisisOrMentalStress = false;
+    _heightCm = 170.0;
+    _weightKg = 65.0;
+    _hasWeightLossGoal = false;
+    _hasGastroAcidOrStomach = false;
+    _hasFrequentPainOrAnalgesic = false;
     _selectedDomains = {'health', 'career', 'family', 'finance', 'safety', 'resilience'};
     _prunedOnly = true;
 
@@ -179,6 +189,11 @@ class _OnboardingViewState extends State<OnboardingView>
       _hasKidneyStones = cur.hasKidneyStones || cur.healthConcerns.contains('肾结石');
       _hasGout = cur.hasGout || cur.healthConcerns.contains('痛风');
       _hasDeskJob = cur.healthConcerns.contains('久坐伏案');
+      _heightCm = cur.heightCm ?? 170.0;
+      _weightKg = cur.weightKg ?? 65.0;
+      _hasWeightLossGoal = cur.hasWeightLossGoal || cur.healthConcerns.contains('减重管理');
+      _hasGastroAcidOrStomach = cur.hasGastroAcidOrStomach || cur.healthConcerns.contains('反酸胃炎');
+      _hasFrequentPainOrAnalgesic = cur.hasFrequentPainOrAnalgesic || cur.healthConcerns.contains('止痛用药');
       _prunedOnly = cur.prunedOnly;
       if (cur.focusDomains.isNotEmpty) {
         _selectedDomains = Set<String>.from(cur.focusDomains);
@@ -227,6 +242,9 @@ class _OnboardingViewState extends State<OnboardingView>
     if (_hasKidneyStones) health.add('肾结石');
     if (_hasGout) health.add('痛风');
     if (_hasCrisisOrMentalStress) health.add('心理减压');
+    if (_hasGastroAcidOrStomach) health.add('反酸胃炎');
+    if (_hasFrequentPainOrAnalgesic) health.add('止痛用药');
+    if (_hasWeightLossGoal) health.add('减重管理');
 
     return UserProfile(
       gender: _gender,
@@ -257,6 +275,11 @@ class _OnboardingViewState extends State<OnboardingView>
       hasDigitalAssetsConcern: _hasDigitalAssetsConcern,
       hasDisabilityCare: _hasDisabilityCare,
       hasCrisisOrMentalStress: _hasCrisisOrMentalStress,
+      heightCm: _heightCm,
+      weightKg: _weightKg,
+      hasWeightLossGoal: _hasWeightLossGoal,
+      hasGastroAcidOrStomach: _hasGastroAcidOrStomach,
+      hasFrequentPainOrAnalgesic: _hasFrequentPainOrAnalgesic,
       childAgeStage: _hasChildren ? _childAgeStage : 'none',
       relationshipStatus: _relationshipStatus,
     ).normalized();
@@ -316,6 +339,30 @@ class _OnboardingViewState extends State<OnboardingView>
           !p.healthConcerns.contains('确诊慢病')) {
         return false;
       }
+    }
+
+    // 减重药物与手环运动量化 (ID 663, 665, 199)
+    if (a.id == 663 || a.id == 665 || a.id == 199 ||
+        text.contains('司美格鲁肽') ||
+        text.contains('减肥针') ||
+        text.contains('减肥药') ||
+        text.contains('手环/手表的运动量化')) {
+      if (!p.hasWeightLossGoal && !p.isOverweightOrObese) return false;
+    }
+
+    // 肠胃反酸与奥美拉唑 (ID 760)
+    if (a.id == 760 || text.contains('奥美拉唑') || (text.contains('反酸') && text.contains('胃'))) {
+      if (!p.hasGastroAcidOrStomach) return false;
+    }
+
+    // 止痛药限制 (ID 763)
+    if (a.id == 763 || (text.contains('止疼药') && text.contains('15天')) || (text.contains('止痛药') && text.contains('15天'))) {
+      if (!p.hasFrequentPainOrAnalgesic) return false;
+    }
+
+    // 独居与安全兜底 (ID 675)
+    if (a.id == 675 || text.contains('盯着你的那个人') || text.contains('散养东西') || text.contains('三道安全兜底网')) {
+      if (p.relationshipStatus != 'single' && !p.livingConditions.contains('独居')) return false;
     }
 
     final chap = a.chapter;
@@ -977,13 +1024,90 @@ class _OnboardingViewState extends State<OnboardingView>
   // Step 8: 慢性病病史与生活习惯
   // ==========================================================================
   Widget _buildStep8HealthAndChronic(AppPalettes p) {
+    final heightM = _heightCm / 100.0;
+    final bmi = (heightM > 0) ? (_weightKg / (heightM * heightM)) : 22.0;
+    final bmiStr = bmi.toStringAsFixed(1);
+    final bmiCategory = bmi < 18.5 ? '偏瘦' : (bmi < 24.0 ? '正常' : (bmi < 28.0 ? '超重' : '肥胖'));
+    final bmiColor = (bmi >= 18.5 && bmi < 24.0) ? p.emerald : p.amber;
+
     return _buildPageWrapper(
       children: [
         _buildHeader(
           title: '健康防线、慢病确诊与生活习性',
-          desc: '【强门禁机制】未确诊或未关注肾结石、痛风、高血压或糖尿病的用户，严禁推送对应病理干预建议，坚决捍卫清爽视野。',
+          desc: '【强门禁机制】未确诊或未关注肾结石、痛风、胃酸用药、止痛药依赖或减重的用户，严禁推送对应用药与干预建议，坚决捍卫清爽视野。',
         ),
         const SizedBox(height: 16),
+        Text('身体体征与体重管理', style: _groupLabelStyle(p)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: p.hairline),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('身高: ${_heightCm.round()} cm', style: TextStyle(color: p.ink, fontWeight: FontWeight.w600)),
+                  Text('体重: ${_weightKg.toStringAsFixed(1)} kg', style: TextStyle(color: p.ink, fontWeight: FontWeight.w600)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: bmiColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text('BMI $bmiStr · $bmiCategory', style: TextStyle(color: bmiColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text('身高', style: TextStyle(color: p.inkSub, fontSize: 12)),
+                  Expanded(
+                    child: Slider(
+                      value: _heightCm.clamp(120.0, 220.0),
+                      min: 120.0,
+                      max: 220.0,
+                      divisions: 100,
+                      activeColor: p.action,
+                      onChanged: (v) => setState(() => _heightCm = v),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text('体重', style: TextStyle(color: p.inkSub, fontSize: 12)),
+                  Expanded(
+                    child: Slider(
+                      value: _weightKg.clamp(35.0, 150.0),
+                      min: 35.0,
+                      max: 150.0,
+                      divisions: 115,
+                      activeColor: p.emerald,
+                      onChanged: (v) => setState(() => _weightKg = v),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildSwitchTile(
+          p,
+          icon: Icons.fitness_center_outlined,
+          title: '关注减重塑形 / 减重管理目标',
+          subtitle: '若未开启或 BMI 正常，绝不推送司美格鲁肽、减肥药以及手环运动量化等减重提醒',
+          value: _hasWeightLossGoal,
+          onChanged: (v) => setState(() => _hasWeightLossGoal = v),
+        ),
+        const SizedBox(height: 14),
         Text('慢病确诊与病史排查 (一票否决门禁)', style: _groupLabelStyle(p)),
         const SizedBox(height: 8),
         _buildCheckboxTile(
@@ -1014,6 +1138,20 @@ class _OnboardingViewState extends State<OnboardingView>
           value: _hasDiabetes,
           onChanged: (v) => setState(() => _hasDiabetes = v ?? false),
         ),
+        _buildCheckboxTile(
+          p,
+          title: '反酸烧心 / 慢性胃炎 / 胃食管反流',
+          desc: '未勾选绝不推荐奥美拉唑等强效抑酸药；提醒饭后勿躺及抑酸疗程严控 (ID 760)',
+          value: _hasGastroAcidOrStomach,
+          onChanged: (v) => setState(() => _hasGastroAcidOrStomach = v ?? false),
+        ),
+        _buildCheckboxTile(
+          p,
+          title: '常备止痛药 / 偏头痛或关节慢性疼痛',
+          desc: '未勾选绝不打扰；开启后提醒一个月吃止痛药严禁超过15天防药物过度性头痛 (ID 763)',
+          value: _hasFrequentPainOrAnalgesic,
+          onChanged: (v) => setState(() => _hasFrequentPainOrAnalgesic = v ?? false),
+        ),
         const SizedBox(height: 14),
         Text('日常身体习性', style: _groupLabelStyle(p)),
         const SizedBox(height: 8),
@@ -1033,9 +1171,9 @@ class _OnboardingViewState extends State<OnboardingView>
         ),
         _buildPruneHint(
           p,
-          !_hasKidneyStones && !_hasGout && !_hasHypertension && !_hasDiabetes
-              ? '已拦截全部 27 条慢病专属干预条目，确保日常清单绝对纯净！'
-              : '已按您勾选的慢病病史开放对应的精准康复及用药日程',
+          !_hasKidneyStones && !_hasGout && !_hasHypertension && !_hasDiabetes && !_hasGastroAcidOrStomach && !_hasFrequentPainOrAnalgesic && !_hasWeightLossGoal
+              ? '已拦截全部慢病、特殊抑酸药与减重干预条目，确保日常清单绝对纯净！'
+              : '已按您勾选的体征与病史开放对应的精准康复及安全用药日程',
         ),
       ],
     );

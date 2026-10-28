@@ -79,6 +79,48 @@ class MeView extends StatelessWidget {
                 onChanged: (v) =>
                     store.profile = store.profile.copyWith(age: v.round()),
               ),
+              const SizedBox(height: 8),
+              Text(
+                '身体形态 · 身高 ${(profile.heightCm ?? 170).round()} cm · 体重 ${(profile.weightKg ?? 65).toStringAsFixed(1)} kg · BMI ${(profile.bmi ?? 22.0).toStringAsFixed(1)} (${profile.isOverweightOrObese ? "超重/需管理" : "健康范围"})',
+                style: _fieldLabel(p),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('身高 ${(profile.heightCm ?? 170).round()} cm', style: TextStyle(fontSize: 10, color: p.inkMute)),
+                        Slider(
+                          value: (profile.heightCm ?? 170).clamp(120.0, 220.0),
+                          min: 120,
+                          max: 220,
+                          divisions: 100,
+                          activeColor: p.action,
+                          onChanged: (v) => store.profile = store.profile.copyWith(heightCm: v),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('体重 ${(profile.weightKg ?? 65).toStringAsFixed(1)} kg', style: TextStyle(fontSize: 10, color: p.inkMute)),
+                        Slider(
+                          value: (profile.weightKg ?? 65).clamp(35.0, 150.0),
+                          min: 35,
+                          max: 150,
+                          divisions: 115,
+                          activeColor: p.action,
+                          onChanged: (v) => store.profile = store.profile.copyWith(weightKg: v),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 10),
               Text('职业形态', style: _fieldLabel(p)),
               const SizedBox(height: 6),
@@ -285,6 +327,66 @@ class MeView extends StatelessWidget {
                     onTap: () {
                       final cur = profile.hasKidneyStones;
                       store.profile = profile.copyWith(hasKidneyStones: !cur);
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '⚖️ 减重塑形',
+                    on:
+                        profile.hasWeightLossGoal ||
+                        profile.healthConcerns.contains('减重管理'),
+                    onTap: () {
+                      final cur = profile.hasWeightLossGoal;
+                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      if (cur) {
+                        nextConcerns.remove('减重管理');
+                      } else {
+                        nextConcerns.add('减重管理');
+                      }
+                      store.profile = profile.copyWith(
+                        hasWeightLossGoal: !cur,
+                        healthConcerns: nextConcerns.toList(),
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '🍋 反酸胃炎',
+                    on:
+                        profile.hasGastroAcidOrStomach ||
+                        profile.healthConcerns.contains('反酸胃炎'),
+                    onTap: () {
+                      final cur = profile.hasGastroAcidOrStomach;
+                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      if (cur) {
+                        nextConcerns.remove('反酸胃炎');
+                      } else {
+                        nextConcerns.add('反酸胃炎');
+                      }
+                      store.profile = profile.copyWith(
+                        hasGastroAcidOrStomach: !cur,
+                        healthConcerns: nextConcerns.toList(),
+                      );
+                    },
+                  ),
+                  _pill(
+                    context,
+                    '💊 止痛用药',
+                    on:
+                        profile.hasFrequentPainOrAnalgesic ||
+                        profile.healthConcerns.contains('止痛用药'),
+                    onTap: () {
+                      final cur = profile.hasFrequentPainOrAnalgesic;
+                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      if (cur) {
+                        nextConcerns.remove('止痛用药');
+                      } else {
+                        nextConcerns.add('止痛用药');
+                      }
+                      store.profile = profile.copyWith(
+                        hasFrequentPainOrAnalgesic: !cur,
+                        healthConcerns: nextConcerns.toList(),
+                      );
                     },
                   ),
                 ],

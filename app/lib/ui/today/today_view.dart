@@ -5,6 +5,8 @@ import '../../core/icons.dart';
 import '../../core/theme.dart';
 import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
+import '../custom_todo/custom_todo_dialog.dart';
+import '../mood/mood_checkin_dialog.dart';
 import '../review/carnegie_review_sheet.dart';
 import '../tools/tools_sheet.dart';
 
@@ -60,14 +62,14 @@ class TodayView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        // 功能快捷入口：决策树工具箱 & 卡内基周复盘
+        // 功能快捷入口：决策树工具箱、心情关怀与卡内基周复盘
         Row(
           children: [
             Expanded(
               child: GestureDetector(
                 onTap: () => ToolsSheet.show(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     color: p.surface,
                     borderRadius: BorderRadius.circular(14),
@@ -76,22 +78,52 @@ class TodayView extends StatelessWidget {
                   child: Row(
                     children: [
                       AppHairlineIcons.tree(color: p.action, size: 14),
-                      const SizedBox(width: 8),
-                      Text(
-                        '决策树与工具',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.ink),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '决策树工具',
+                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => MoodCheckinDialog.show(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: p.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: p.hairline),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.spa_outlined, color: p.emerald, size: 15),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '心情晴雨表',
+                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
                 onTap: () => CarnegieReviewSheet.show(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     color: p.surface,
                     borderRadius: BorderRadius.circular(14),
@@ -100,10 +132,13 @@ class TodayView extends StatelessWidget {
                   child: Row(
                     children: [
                       AppHairlineIcons.carnegie(color: p.gold, size: 14),
-                      const SizedBox(width: 8),
-                      Text(
-                        '卡内基周复盘',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.ink),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '周复盘',
+                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.ink),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -263,7 +298,7 @@ class TodayView extends StatelessWidget {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () => _showAddTodoDialog(context, store),
+                onTap: () => CustomTodoDialog.show(context),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -343,37 +378,4 @@ class TodayView extends StatelessWidget {
     );
   }
 
-  void _showAddTodoDialog(BuildContext context, AppStore store) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('新增专属待办', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '如：预约空腹血糖检查、复核劳动合同...',
-            hintStyle: TextStyle(fontSize: 12),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final text = controller.text.trim();
-              if (text.isNotEmpty) {
-                store.addUserTodo(text);
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('添加'),
-          ),
-        ],
-      ),
-    );
-  }
 }

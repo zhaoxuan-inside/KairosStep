@@ -189,13 +189,18 @@ class Advice {
       presentation.coreAction.isNotEmpty ? presentation.coreAction : raw.title;
   List<String> get caveats => presentation.caveats;
 
-  /// 是否属于突发事件、急救处置、黄金救治等偶发应急建议（非日常固定时段流，如中暑、骨折、海姆立克等）
+  /// 是否属于突发事件、急救处置、黄金救治等偶发应急建议（非日常固定时段流，如中暑、骨折、海姆立克、工伤认定等）
   bool get isEmergencyOrIncident {
     if (chapter == '紧急情况：先做什么') return true;
+    if (chapter == '遭遇重大打击之后') return true;
     if (actType == 'emergency-action') return true;
     if (tags.contains('急救') || tags.contains('速查')) return true;
-    if (tags.contains('事中') && tags.contains('突发事件')) return true;
-    if (timingBadge.contains('黄金救治') || timingBadge.contains('紧急')) return true;
+    if (tags.contains('突发事件')) return true;
+    if (timingBadge.contains('黄金救治') ||
+        timingBadge.contains('紧急') ||
+        timingBadge.contains('突发应急')) {
+      return true;
+    }
     final t = title;
     if (t.contains('中暑') ||
         t.contains('海姆立克') ||
@@ -206,7 +211,14 @@ class Advice {
         t.contains('骨折制动') ||
         t.contains('破水') ||
         t.contains('洗胃') ||
-        t.contains('催吐')) {
+        t.contains('催吐') ||
+        t.contains('工伤认定') ||
+        t.contains('上班受伤') ||
+        t.contains('路上被撞') ||
+        t.contains('打 120') ||
+        t.contains('打120') ||
+        t.contains('打 12356') ||
+        t.contains('打12356')) {
       return true;
     }
     return false;
@@ -241,6 +253,13 @@ class UserTodoItem {
     required this.createdAt,
     this.targetDate,
     this.note,
+    this.content,
+    this.triggerTime, // 触发时间如 "08:30"
+    this.timePeriod = 'all_day', // 'morning', 'focus', 'afternoon', 'evening', 'night', 'all_day'
+    this.reminderTimes = const [], // 提醒时间列表如 ["08:30", "12:00"]
+    this.leadMinutes = 0, // 提前提醒：0 (准时), 5, 15, 30
+    this.frequency = 'daily', // 'daily', 'workday', 'weekend', 'weekly', 'monthly', 'once'
+    this.triggerCount = 1,
   });
 
   final String id;
@@ -250,12 +269,26 @@ class UserTodoItem {
   final DateTime createdAt;
   final String? targetDate; // yyyy-mm-dd
   final String? note;
+  final String? content; // 详细内容/执行操作要点
+  final String? triggerTime; // 触发时间点 (HH:mm)
+  final String timePeriod; // 时间范围/时段
+  final List<String> reminderTimes; // 提醒时间列表
+  final int leadMinutes; // 提前提醒分钟数
+  final String frequency; // 触发周期
+  final int triggerCount; // 触发次数
 
   UserTodoItem copyWith({
     bool? isDone,
     String? title,
     String? targetDate,
     String? note,
+    String? content,
+    String? triggerTime,
+    String? timePeriod,
+    List<String>? reminderTimes,
+    int? leadMinutes,
+    String? frequency,
+    int? triggerCount,
   }) => UserTodoItem(
     id: id,
     title: title ?? this.title,
@@ -264,7 +297,71 @@ class UserTodoItem {
     createdAt: createdAt,
     targetDate: targetDate ?? this.targetDate,
     note: note ?? this.note,
+    content: content ?? this.content,
+    triggerTime: triggerTime ?? this.triggerTime,
+    timePeriod: timePeriod ?? this.timePeriod,
+    reminderTimes: reminderTimes ?? this.reminderTimes,
+    leadMinutes: leadMinutes ?? this.leadMinutes,
+    frequency: frequency ?? this.frequency,
+    triggerCount: triggerCount ?? this.triggerCount,
   );
+
+  bool isTodayActive(DateTime now) {
+    if (frequency == 'daily') return true;
+    if (frequency == 'workday') return now.weekday >= 1 && now.weekday <= 5;
+    if (frequency == 'weekend') return now.weekday >= 6;
+    if (frequency == 'once') {
+      return now.year == createdAt.year &&
+          now.month == createdAt.month &&
+          now.day == createdAt.day;
+    }
+    return true;
+  }
+
+  /// 转换为 Advice 模型以供统一卡片流与时间尺调度
+  Advice toAdvice({int? syntheticId}) {
+    final synId = syntheticId ?? (id.hashCode.abs() % 80000 + 10000);
+    final detail = content ?? note ?? title;
+    return Advice(
+      raw: RawAdvice(
+        id: synId,
+        chapter: '我的自建待办',
+        title: title,
+      ),
+      facets: AdviceFacets(
+        tags: [
+          '全民',
+          '自建',
+          frequency == 'daily' ? '每天' : '情境触发',
+          if (timePeriod != 'all_day') timePeriod,
+        ],
+      ),
+      presentation: AdvicePresentation(
+        parts: [title, if (detail != title && detail.isNotEmpty) detail],
+        timingBadge: '自建 · ${_frequencyLabel(frequency)}',
+        actType: 'quick-checkin',
+      ),
+      treePath: 'custom/todo',
+      treeDisplay: '我的生活防线 > 自建待办',
+    );
+  }
+
+  static String _frequencyLabel(String f) {
+    switch (f) {
+      case 'workday':
+        return '工作日';
+      case 'weekend':
+        return '周末';
+      case 'weekly':
+        return '每周';
+      case 'monthly':
+        return '每月';
+      case 'once':
+        return '仅一次';
+      default:
+        return '每天';
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -274,6 +371,13 @@ class UserTodoItem {
     'createdAt': createdAt.toIso8601String(),
     'targetDate': targetDate,
     'note': note,
+    'content': content,
+    'triggerTime': triggerTime,
+    'timePeriod': timePeriod,
+    'reminderTimes': reminderTimes,
+    'leadMinutes': leadMinutes,
+    'frequency': frequency,
+    'triggerCount': triggerCount,
   };
 
   factory UserTodoItem.fromJson(Map<String, dynamic> json) => UserTodoItem(
@@ -285,6 +389,14 @@ class UserTodoItem {
         DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
     targetDate: json['targetDate'] as String?,
     note: json['note'] as String?,
+    content: json['content'] as String?,
+    triggerTime: json['triggerTime'] as String?,
+    timePeriod: json['timePeriod'] as String? ?? 'all_day',
+    reminderTimes:
+        (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
+    leadMinutes: json['leadMinutes'] as int? ?? 0,
+    frequency: json['frequency'] as String? ?? 'daily',
+    triggerCount: json['triggerCount'] as int? ?? 1,
   );
 }
 

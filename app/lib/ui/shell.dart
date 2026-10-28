@@ -6,6 +6,7 @@ import '../../core/icons.dart';
 import '../core/theme.dart';
 import '../state/app_store.dart';
 import '../state/reminder_registry.dart';
+import 'custom_todo/custom_todo_dialog.dart';
 import 'cycle/cycle_view.dart';
 import 'emergency/emergency_sheet.dart';
 import 'library/library_view.dart';
@@ -116,6 +117,30 @@ class _AppShellState extends State<AppShell> {
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // 自建待办快捷加号按钮
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      CustomTodoDialog.show(context);
+                    },
+                    child: Container(
+                      height: 38,
+                      width: 38,
+                      decoration: BoxDecoration(
+                        color: p.action.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: p.action.withValues(alpha: 0.35),
+                          width: 1.1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(Icons.add, size: 20, color: p.action),
                       ),
                     ),
                   ),

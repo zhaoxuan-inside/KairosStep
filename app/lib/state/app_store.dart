@@ -57,6 +57,11 @@ class UserProfile {
     this.hasDigitalAssetsConcern = false,
     this.hasDisabilityCare = false,
     this.hasCrisisOrMentalStress = false,
+    this.heightCm,
+    this.weightKg,
+    this.hasWeightLossGoal = false,
+    this.hasGastroAcidOrStomach = false,
+    this.hasFrequentPainOrAnalgesic = false,
     this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
     this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
     this.formedHabits = const [],
@@ -91,9 +96,22 @@ class UserProfile {
   final bool hasDigitalAssetsConcern; // 是否运营网站平台或关注核心数字资产
   final bool hasDisabilityCare; // 是否本人残障或需照护残障家人
   final bool hasCrisisOrMentalStress; // 是否经历重大变故或需高压心理减压
+  final double? heightCm; // 身高 (cm)
+  final double? weightKg; // 体重 (kg)
+  final bool hasWeightLossGoal; // 是否有减重/塑形需求
+  final bool hasGastroAcidOrStomach; // 是否有经常反酸烧心/慢性胃病史
+  final bool hasFrequentPainOrAnalgesic; // 是否经常偏头痛/慢性疼痛常备止痛药
   final String childAgeStage; // 孩子年龄阶段
   final String relationshipStatus; // 亲密关系状态
   final List<int> formedHabits; // 已养成并沉淀为生活防线的习惯条目 ID 列表
+
+  /// 计算 BMI 指数
+  double? get bmi => (heightCm != null && weightKg != null && heightCm! > 0)
+      ? (weightKg! / ((heightCm! / 100) * (heightCm! / 100)))
+      : null;
+
+  /// 是否属于超重或肥胖 (BMI >= 24)
+  bool get isOverweightOrObese => (bmi ?? 0) >= 24.0;
 
   /// 归一化同步生活实体与旧标签池
   UserProfile normalized() {
@@ -118,6 +136,9 @@ class UserProfile {
     if (hasDigitalAssetsConcern) nextRoles.add('平台运营');
     if (hasDisabilityCare) nextRoles.add('残障人士');
     if (hasCrisisOrMentalStress) nextHealth.add('心理减压');
+    if (hasGastroAcidOrStomach) nextHealth.add('反酸胃炎');
+    if (hasFrequentPainOrAnalgesic) nextHealth.add('止痛用药');
+    if (hasWeightLossGoal) nextHealth.add('减重管理');
     if (isSmoker) nextHealth.add('吸烟者');
     if (hasHypertension) nextHealth.add('血压关注');
     if (hasDiabetes) nextHealth.add('血糖关注');
@@ -181,6 +202,11 @@ class UserProfile {
     bool? hasDigitalAssetsConcern,
     bool? hasDisabilityCare,
     bool? hasCrisisOrMentalStress,
+    double? heightCm,
+    double? weightKg,
+    bool? hasWeightLossGoal,
+    bool? hasGastroAcidOrStomach,
+    bool? hasFrequentPainOrAnalgesic,
     String? childAgeStage,
     String? relationshipStatus,
     List<int>? formedHabits,
@@ -214,6 +240,11 @@ class UserProfile {
     hasDigitalAssetsConcern: hasDigitalAssetsConcern ?? this.hasDigitalAssetsConcern,
     hasDisabilityCare: hasDisabilityCare ?? this.hasDisabilityCare,
     hasCrisisOrMentalStress: hasCrisisOrMentalStress ?? this.hasCrisisOrMentalStress,
+    heightCm: heightCm ?? this.heightCm,
+    weightKg: weightKg ?? this.weightKg,
+    hasWeightLossGoal: hasWeightLossGoal ?? this.hasWeightLossGoal,
+    hasGastroAcidOrStomach: hasGastroAcidOrStomach ?? this.hasGastroAcidOrStomach,
+    hasFrequentPainOrAnalgesic: hasFrequentPainOrAnalgesic ?? this.hasFrequentPainOrAnalgesic,
     childAgeStage: childAgeStage ?? this.childAgeStage,
     relationshipStatus: relationshipStatus ?? this.relationshipStatus,
     formedHabits: formedHabits ?? this.formedHabits,
@@ -249,6 +280,11 @@ class UserProfile {
     'hasDigitalAssetsConcern': hasDigitalAssetsConcern,
     'hasDisabilityCare': hasDisabilityCare,
     'hasCrisisOrMentalStress': hasCrisisOrMentalStress,
+    'heightCm': heightCm,
+    'weightKg': weightKg,
+    'hasWeightLossGoal': hasWeightLossGoal,
+    'hasGastroAcidOrStomach': hasGastroAcidOrStomach,
+    'hasFrequentPainOrAnalgesic': hasFrequentPainOrAnalgesic,
     'childAgeStage': childAgeStage,
     'relationshipStatus': relationshipStatus,
     'formedHabits': formedHabits,
@@ -290,6 +326,11 @@ class UserProfile {
     hasDigitalAssetsConcern: json['hasDigitalAssetsConcern'] as bool? ?? false,
     hasDisabilityCare: json['hasDisabilityCare'] as bool? ?? false,
     hasCrisisOrMentalStress: json['hasCrisisOrMentalStress'] as bool? ?? false,
+    heightCm: (json['heightCm'] as num?)?.toDouble(),
+    weightKg: (json['weightKg'] as num?)?.toDouble(),
+    hasWeightLossGoal: json['hasWeightLossGoal'] as bool? ?? false,
+    hasGastroAcidOrStomach: json['hasGastroAcidOrStomach'] as bool? ?? false,
+    hasFrequentPainOrAnalgesic: json['hasFrequentPainOrAnalgesic'] as bool? ?? false,
     childAgeStage: json['childAgeStage'] as String? ?? 'none',
     relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
     formedHabits: (json['formedHabits'] as List?)?.map((e) => (e as num).toInt()).toList() ?? const [],
@@ -710,8 +751,21 @@ class AppStore extends ChangeNotifier {
     if (_customTriggers.containsKey(a.id)) {
       return _customTriggers[a.id]!;
     }
-    // 突发事件、急救处置、中暑处理等应急建议，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
-    if (a.isEmergencyOrIncident) {
+    // 突发事件、急救处置、中暑处理、工伤认定、用药警戒等应急建议，原生推断一律为静默储备态（TriggerMode.dormant），严禁进入日常时间流
+    if (a.isEmergencyOrIncident ||
+        a.id == 519 ||
+        a.id == 568 ||
+        a.id == 675 ||
+        a.id == 760 ||
+        a.id == 763 ||
+        a.id == 663 ||
+        a.id == 665 ||
+        a.id == 199 ||
+        a.id == 25 ||
+        a.id == 37 ||
+        a.id == 113 ||
+        a.id == 263 ||
+        a.id == 680) {
       return const CustomTriggerConfig(mode: TriggerMode.dormant);
     }
     // 原生推断
@@ -1002,6 +1056,12 @@ class AppStore extends ChangeNotifier {
     String title, {
     int? adviceId,
     String? note,
+    String? content,
+    String? triggerTime,
+    String timePeriod = 'all_day',
+    List<String> reminderTimes = const [],
+    int leadMinutes = 0,
+    String frequency = 'daily',
     String? targetDate,
   }) {
     if (title.trim().isEmpty) return;
@@ -1012,9 +1072,32 @@ class AppStore extends ChangeNotifier {
       createdAt: DateTime.now(),
       targetDate: targetDate,
       note: note,
+      content: content,
+      triggerTime: triggerTime,
+      timePeriod: timePeriod,
+      reminderTimes: reminderTimes,
+      leadMinutes: leadMinutes,
+      frequency: frequency,
     );
+    addUserTodoItem(item);
+  }
+
+  /// 添加完整的 UserTodoItem 并自动注册时点提醒
+  void addUserTodoItem(UserTodoItem item) {
     _userTodos.insert(0, item);
     _persistUserTodos();
+
+    // 自动向提醒注册表注册待办时点提醒
+    if (item.reminderTimes.isNotEmpty) {
+      final advice = item.toAdvice();
+      final trig = CustomTriggerConfig(
+        mode: TriggerMode.daily,
+        reminderTimes: item.reminderTimes,
+      );
+      _customTriggers[advice.id] = trig;
+      syncReminderRegistry();
+    }
+
     notifyListeners();
   }
 
@@ -1099,15 +1182,18 @@ class AppStore extends ChangeNotifier {
   StreakState streakOf(int id) => _streaks[id] ?? const StreakState();
   DateTime? windowAnchorOf(int id) => _windowAnchors[id];
 
-  /// 真实动态今天待办流（严格准入：绝不塞入无明确日期的偶发建议）
+  /// 真实动态今天待办流（严格准入，包含今日有效自建待办，当下 ⊆ 今天）
   List<Advice> get todayAdvices {
     checkPeriodRollover();
+    final now = DateTime.now();
+
+    // 1. 系统实证库中匹配当前画像的日常待办
     final list = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
       if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退，不再每日反复提醒
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
-      // 应急/急救/突发处置建议（如中暑），除非显式自定义，否则严禁进入今日流
+      // 应急/急救/突发处置建议（如中暑、工伤），除非显式自定义，否则严禁进入今日流
       if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
         return false;
       }
@@ -1122,7 +1208,6 @@ class AppStore extends ChangeNotifier {
           if (trig.targetDate == null) return false;
           final target = DateTime.tryParse(trig.targetDate!);
           if (target == null) return false;
-          final now = DateTime.now();
           final diff = target
               .difference(DateTime(now.year, now.month, now.day))
               .inDays;
@@ -1131,6 +1216,13 @@ class AppStore extends ChangeNotifier {
           return false; // 周期循环态在周期页查看，不直接占位今日流
       }
     }).toList();
+
+    // 2. 融入今日生效的用户自建待办
+    for (final todo in _userTodos) {
+      if (todo.isTodayActive(now)) {
+        list.add(todo.toAdvice());
+      }
+    }
 
     // 已经打卡完成的排在下面（未完成优先置顶，已完成沉底）
     list.sort((a, b) {
@@ -1142,11 +1234,61 @@ class AppStore extends ChangeNotifier {
     return list;
   }
 
-  /// 真实动态周期流（严格准入：绝不塞入无明确周期的偶发建议）
+  /// 真实动态周期流（层级严格包含：今天 ⊆ 本周 ⊆ 本月）
   List<Advice> cycleAdvicesOf(PeriodScope scope) {
-    final list = catalog.adviceList.where((a) {
+    if (scope == PeriodScope.today) {
+      return todayAdvices;
+    }
+
+    final seenIds = <int>{};
+    final list = <Advice>[];
+
+    void addAdvice(Advice a) {
+      if (!seenIds.contains(a.id)) {
+        seenIds.add(a.id);
+        list.add(a);
+      }
+    }
+
+    // 包含关系保证：本周/本月/每年必须包含今日待办流
+    for (final a in todayAdvices) {
+      addAdvice(a);
+    }
+
+    // 若为本月或每年，必须额外包含每周周期的条目
+    if (scope == PeriodScope.monthly || scope == PeriodScope.yearly) {
+      final weeklyItems = catalog.adviceList.where((a) {
+        if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+        if (isHabitFormed(a.id)) return false;
+        if (_profile.prunedOnly && !matchPersona(a)) return false;
+        final trig = effectiveTriggerOf(a);
+        return trig.mode == TriggerMode.cadence &&
+            trig.cadenceScopeKey == 'weekly';
+      });
+      for (final a in weeklyItems) {
+        addAdvice(a);
+      }
+    }
+
+    // 若为每年，必须额外包含每月周期的条目
+    if (scope == PeriodScope.yearly) {
+      final monthlyItems = catalog.adviceList.where((a) {
+        if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
+        if (isHabitFormed(a.id)) return false;
+        if (_profile.prunedOnly && !matchPersona(a)) return false;
+        final trig = effectiveTriggerOf(a);
+        return trig.mode == TriggerMode.cadence &&
+            trig.cadenceScopeKey == 'monthly';
+      });
+      for (final a in monthlyItems) {
+        addAdvice(a);
+      }
+    }
+
+    // 加入当前 scope 本身的周期建议
+    final currentScopeItems = catalog.adviceList.where((a) {
       if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
-      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退
+      if (isHabitFormed(a.id)) return false;
       if (_profile.prunedOnly && !matchPersona(a)) return false;
 
       final trig = effectiveTriggerOf(a);
@@ -1154,14 +1296,17 @@ class AppStore extends ChangeNotifier {
         case TriggerMode.cadence:
           return trig.cadenceScopeKey == scope.name;
         case TriggerMode.daily:
-          return scope == PeriodScope.today;
+          return false;
         case TriggerMode.windowed:
-          // 窗口期若设置在当年，可在 yearly 中列出
           return scope == PeriodScope.yearly;
         case TriggerMode.dormant:
-          return false; // 静默储备态严禁进入周期流
+          return false;
       }
-    }).toList();
+    });
+
+    for (final a in currentScopeItems) {
+      addAdvice(a);
+    }
 
     // 已经打卡完成的排在下面（未完成优先，已完成沉底）
     list.sort((a, b) {
@@ -1173,7 +1318,7 @@ class AppStore extends ChangeNotifier {
     return list;
   }
 
-  /// 根据 1.5 小时聚焦视窗（中心时刻前后各 45 分钟）动态筛选严格属于该视窗的建议流
+  /// 根据 1.5 小时聚焦视窗（中心时刻前后各 45 分钟）动态筛选属于该视窗的建议流（当下 ⊆ 今天）
   List<Advice> advicesForWindow(DateTime centerTime) {
     final windowStart = centerTime.subtract(const Duration(minutes: 45));
     final windowEnd = centerTime.add(const Duration(minutes: 45));
@@ -1183,57 +1328,74 @@ class AppStore extends ChangeNotifier {
     final mCenter = centerTime.hour * 60 + centerTime.minute;
     final centerHour = centerTime.hour;
 
+    // 当下 严格属于 今天 的子集 (当下 ⊆ 今天)
+    final todayList = todayAdvices;
+
     // 筛选严格与 1.5 小时视窗 [centerTime-45m, centerTime+45m] 发生时段交叠的建议
-    final matched = catalog.adviceList.where((a) {
-      if (isExcluded(a.id) || !matchesTopicPreferences(a)) return false;
-      if (isHabitFormed(a.id)) return false; // 已养成的习惯剪枝隐退，不在时钟视窗流打扰
-      if (_profile.prunedOnly && !matchPersona(a)) return false;
-
-      // 应急/急救/突发处置建议（如中暑处理），除非用户显式手动自定义配置，否则严禁进入当下日常视窗流
-      if (a.isEmergencyOrIncident && !_customTriggers.containsKey(a.id)) {
-        return false;
-      }
-
+    final matched = todayList.where((a) {
       final trig = effectiveTriggerOf(a);
-      if (trig.mode == TriggerMode.dormant ||
-          trig.mode == TriggerMode.cadence) {
-        return false; // 严禁进入时钟视窗流
-      }
+      if (trig.mode == TriggerMode.dormant) return false;
 
-      if (trig.mode == TriggerMode.daily) {
-        // 检查该建议配置的任何时段（标准规范时段或自定义时段）是否与 1.5 小时视窗相交
-        for (final pk in trig.dailyPeriods) {
-          final def = PeriodDefinition.byKey(pk);
-          if (def != null) {
-            if (def.overlaps(winStartMin, winEndMin)) return true;
-          }
-          final custom = PeriodDefinition.parseCustomPeriod(pk);
-          if (custom != null) {
-            if (PeriodDefinition.timeRangesOverlap(
-              custom.$1,
-              custom.$2,
-              winStartMin,
-              winEndMin,
-            )) {
-              return true;
+      // 如果有自定义指定时点/提醒时点：
+      if (trig.reminderTimes.isNotEmpty) {
+        for (final rt in trig.reminderTimes) {
+          final parts = rt.split(':');
+          if (parts.length == 2) {
+            final h = int.tryParse(parts[0]) ?? 0;
+            final m = int.tryParse(parts[1]) ?? 0;
+            final rMin = h * 60 + m;
+            if (winStartMin <= winEndMin) {
+              if (rMin >= winStartMin && rMin <= winEndMin) return true;
+            } else {
+              if (rMin >= winStartMin || rMin <= winEndMin) return true;
             }
           }
         }
-        return false;
       }
 
-      if (trig.mode == TriggerMode.windowed && trig.targetDate != null) {
-        final target = DateTime.tryParse(trig.targetDate!);
-        if (target != null) {
-          final now = DateTime.now();
-          final diff = target
-              .difference(DateTime(now.year, now.month, now.day))
-              .inDays;
-          if (diff >= 0 && diff <= trig.leadDays) {
-            return PeriodDefinition.morning.overlaps(winStartMin, winEndMin) ||
-                PeriodDefinition.evening.overlaps(winStartMin, winEndMin);
+      // 自建待办时点匹配
+      if (a.chapter == '我的自建待办') {
+        final todo = _userTodos.cast<UserTodoItem?>().firstWhere(
+          (t) => t?.title == a.title,
+          orElse: () => null,
+        );
+        if (todo != null && todo.triggerTime != null) {
+          final parts = todo.triggerTime!.split(':');
+          if (parts.length == 2) {
+            final h = int.tryParse(parts[0]) ?? 0;
+            final m = int.tryParse(parts[1]) ?? 0;
+            final tMin = h * 60 + m;
+            if (winStartMin <= winEndMin) {
+              if (tMin >= winStartMin && tMin <= winEndMin) return true;
+            } else {
+              if (tMin >= winStartMin || tMin <= winEndMin) return true;
+            }
           }
         }
+      }
+
+      // 检查该建议配置的任何时段是否与 1.5 小时视窗相交
+      for (final pk in trig.dailyPeriods) {
+        final def = PeriodDefinition.byKey(pk);
+        if (def != null) {
+          if (def.overlaps(winStartMin, winEndMin)) return true;
+        }
+        final custom = PeriodDefinition.parseCustomPeriod(pk);
+        if (custom != null) {
+          if (PeriodDefinition.timeRangesOverlap(
+            custom.$1,
+            custom.$2,
+            winStartMin,
+            winEndMin,
+          )) {
+            return true;
+          }
+        }
+      }
+
+      // 若未设置具体时段（全天守护），但在今日流中
+      if (trig.dailyPeriods.isEmpty) {
+        return true;
       }
 
       return false;
@@ -1794,6 +1956,54 @@ class AppStore extends ChangeNotifier {
           !p.roles.contains('家长')) {
         return false;
       }
+    }
+
+    // 0.8 减重、减肥药物与量化运动强门禁 (Weight Loss & Medication Gating)
+    if (a.id == 199 ||
+        a.id == 663 ||
+        a.id == 665 ||
+        text.contains('减肥药') ||
+        text.contains('司美格鲁肽') ||
+        text.contains('减重针') ||
+        text.contains('手表的运动量化帮你减重') ||
+        text.contains('酵素梅') ||
+        text.contains('瘦身糖果')) {
+      if (!p.hasWeightLossGoal && !p.isOverweightOrObese) {
+        return false;
+      }
+    }
+
+    // 0.9 肠胃/反酸烧心强门禁 (Gastro / Omeprazole Gating)
+    if (a.id == 760 || text.contains('奥美拉唑') || text.contains('反酸烧心')) {
+      if (!p.hasGastroAcidOrStomach && !p.healthConcerns.contains('反酸胃炎')) {
+        return false;
+      }
+    }
+
+    // 0.10 止痛药常备与频繁用药门禁
+    if (a.id == 763 ||
+        text.contains('止痛药一个月别吃超过') ||
+        text.contains('复方止痛药别超过')) {
+      if (!p.hasFrequentPainOrAnalgesic &&
+          !p.healthConcerns.contains('止痛用药')) {
+        return false;
+      }
+    }
+
+    // 0.11 独居安全兜底防线
+    if (a.id == 675 ||
+        text.contains('建立三道安全兜底网') ||
+        text.contains('盯着你的那个人')) {
+      if (p.relationshipStatus != 'single' && !p.hasCrisisOrMentalStress) {
+        return false;
+      }
+    }
+
+    // 0.12 抑郁重度干预与心理热线（由情绪晴雨表弹窗交互触发，严禁直接无故推送到日常任务）
+    if (a.id == 568 ||
+        (text.contains('心情差到抑郁') && a.chapter == '怎么放松：娱乐场所和减压') ||
+        (text.contains('12356') && a.chapter == '遭遇重大打击之后')) {
+      return false;
     }
 
     // 1. 硬性排除
