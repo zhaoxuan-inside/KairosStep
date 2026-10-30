@@ -9,6 +9,7 @@ import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import 'probe_scheduler.dart';
 import 'reminder_registry.dart';
+import 'now_timing_policy.dart';
 
 /// 周期作用域：打卡记录天然按周期归零（今天跨天清空、周/月/年各自滚动）。
 enum PeriodScope { today, weekly, monthly, yearly }
@@ -792,161 +793,14 @@ class AppStore extends ChangeNotifier {
       return const CustomTriggerConfig(mode: TriggerMode.dormant);
     }
     // 原生推断
+    if (NowTimingPolicy.dormantDailyLabelIds.contains(a.id)) {
+      return const CustomTriggerConfig(mode: TriggerMode.dormant);
+    }
     if (a.tags.contains('每天') || a.tags.contains('每日多次')) {
-      final periods = <String>[];
-      final text =
-          '${a.title} ${a.tags.join(" ")} ${a.timingBadge} ${a.chapter}';
-      if ([
-        '晨',
-        '早餐',
-        '出发',
-        '起床',
-        '安全带',
-        '头盔',
-        '出行',
-        '上班',
-        '步行',
-        '早起',
-      ].any(text.contains)) {
-        periods.add('morning');
-      }
-      if ([
-        '工作',
-        '工位',
-        '久坐',
-        '专注',
-        '单线程',
-        '视力',
-        '办公',
-        '开会',
-        '同事',
-        '屏幕',
-        '咖啡',
-        '饮水',
-        '体态',
-      ].any(text.contains)) {
-        periods.add('focus');
-      }
-      if ([
-        '午睡',
-        '午后',
-        '站立',
-        '远眺',
-        '喝茶',
-        '快走',
-        '舒展',
-        '午休',
-        '小憩',
-        '下午',
-        '步数',
-        '散步',
-        '活动',
-      ].any(text.contains)) {
-        periods.add('afternoon');
-      }
-      if ([
-        '归途',
-        '晚餐',
-        '家人',
-        '沟通',
-        '回家',
-        '下班',
-        '安全带',
-        '头盔',
-        '散步',
-        '运动',
-        '锻炼',
-      ].any(text.contains)) {
-        periods.add('evening');
-      }
-      final isNightSleep = [
-        '夜里',
-        '褪黑素',
-        '安稳',
-        '睡前',
-        '刷牙',
-        '洗漱',
-        '失眠',
-        '入眠',
-        '23:00',
-        '熬夜',
-        '放松',
-      ].any(text.contains) ||
-          (text.contains('睡眠') &&
-              !text.contains('午睡') &&
-              !text.contains('小憩') &&
-              !text.contains('下午困'));
-      if (isNightSleep) {
-        periods.add('night');
-      }
-      if (periods.isEmpty) {
-        periods.addAll(['morning', 'focus', 'afternoon']);
-      }
-
-      // 智能预设黄金提醒时刻 (Smart Golden Reminder Hours)
-      final reminderTimes = <String>[];
-      if (text.contains('血压')) {
-        reminderTimes.add('07:30');
-      } else if (text.contains('早餐') ||
-          text.contains('起床') ||
-          text.contains('洗漱')) {
-        reminderTimes.add('07:30');
-      } else if (text.contains('安全带') || text.contains('头盔')) {
-        reminderTimes.addAll(['08:15', '18:15']);
-      } else if (text.contains('久坐') ||
-          text.contains('远眺') ||
-          text.contains('视力')) {
-        reminderTimes.addAll(['10:30', '15:30']);
-      } else if (text.contains('午睡') ||
-          text.contains('午休') ||
-          text.contains('小憩') ||
-          text.contains('打盹')) {
-        // 午休/午睡必须在午睡前定点提醒，绝不能落在夜间
-        reminderTimes.add('12:45');
-      } else if (text.contains('饮水') ||
-          text.contains('喝水') ||
-          text.contains('补水') ||
-          text.contains('白开水')) {
-        reminderTimes.addAll(['09:30', '11:30', '14:30', '16:30']);
-      } else if (text.contains('咖啡因') &&
-          (text.contains('两点') || text.contains('下午'))) {
-        reminderTimes.add('13:30');
-      } else if ((text.contains('0 到 3 岁') || text.contains('中小学生')) &&
-          text.contains('屏幕')) {
-        reminderTimes.add('18:30');
-      } else if (text.contains('睡前一小时') ||
-          (text.contains('屏幕') && (text.contains('睡') || text.contains('夜')))) {
-        // 睡前一小时（如 103 题：不看发光屏幕/墨水屏）提醒时间在 21:30，绝不能被“水”误伤
-        reminderTimes.add('21:30');
-      } else if (text.contains('散步') ||
-          text.contains('运动') ||
-          text.contains('慢跑') ||
-          text.contains('快走')) {
-        reminderTimes.add('19:00');
-      } else if (text.contains('睡') ||
-          text.contains('失眠') ||
-          text.contains('褪黑素') ||
-          text.contains('23:00')) {
-        reminderTimes.add('22:00');
-      } else {
-        if (periods.contains('morning')) {
-          reminderTimes.add('08:00');
-        } else if (periods.contains('focus')) {
-          reminderTimes.add('10:00');
-        } else if (periods.contains('afternoon')) {
-          reminderTimes.add('14:30');
-        } else if (periods.contains('evening')) {
-          reminderTimes.add('19:00');
-        } else if (periods.contains('night')) {
-          reminderTimes.add('22:00');
-        }
-      }
-
-      return CustomTriggerConfig(
-        mode: TriggerMode.daily,
-        dailyPeriods: periods,
-        reminderTimes: reminderTimes,
-      );
+      // A daily label makes the advice available in Today, but it does not
+      // establish a clock time. Now uses reviewed display anchors or an
+      // explicit user time; no reminder notification is inferred from words.
+      return const CustomTriggerConfig(mode: TriggerMode.daily);
     }
     if (a.tags.contains('每周')) {
       return const CustomTriggerConfig(
@@ -1360,175 +1214,59 @@ class AppStore extends ChangeNotifier {
     return list;
   }
 
-  /// 根据 1.5 小时聚焦视窗（中心时刻前后各 45 分钟）动态筛选属于该视窗的建议流（当下 ⊆ 今天）
+  /// 当下只接收精确时点；宽泛时段属于「今天」的可用范围，不是触发时刻。
   List<Advice> advicesForWindow(DateTime centerTime) {
-    final windowStart = centerTime.subtract(const Duration(minutes: 45));
-    final windowEnd = centerTime.add(const Duration(minutes: 45));
-    final winStartMin = windowStart.hour * 60 + windowStart.minute;
-    final winEndMin = windowEnd.hour * 60 + windowEnd.minute;
+    final centerMinute = centerTime.hour * 60 + centerTime.minute;
 
-    final mCenter = centerTime.hour * 60 + centerTime.minute;
-    final centerHour = centerTime.hour;
-
-    // 当下 严格属于 今天 的子集 (当下 ⊆ 今天)
-    final todayList = todayAdvices;
-
-    // 筛选严格与 1.5 小时视窗 [centerTime-45m, centerTime+45m] 发生时段交叠的建议
-    final matched = todayList.where((a) {
-      final trig = effectiveTriggerOf(a);
-      if (trig.mode == TriggerMode.dormant) return false;
-
-      // 如果有自定义指定时点/提醒时点：
-      if (trig.reminderTimes.isNotEmpty) {
-        for (final rt in trig.reminderTimes) {
-          final parts = rt.split(':');
-          if (parts.length == 2) {
-            final h = int.tryParse(parts[0]) ?? 0;
-            final m = int.tryParse(parts[1]) ?? 0;
-            final rMin = h * 60 + m;
-            if (winStartMin <= winEndMin) {
-              if (rMin >= winStartMin && rMin <= winEndMin) return true;
-            } else {
-              if (rMin >= winStartMin || rMin <= winEndMin) return true;
-            }
-          }
+    List<int> anchorsFor(Advice advice) {
+      final trigger = effectiveTriggerOf(advice);
+      if (trigger.mode != TriggerMode.daily &&
+          trigger.mode != TriggerMode.windowed) {
+        return const [];
+      }
+      final anchors = <int>{};
+      for (final value in trigger.reminderTimes) {
+        final minute = NowTimingPolicy.parseClockMinute(value);
+        if (minute != null) anchors.add(minute);
+      }
+      if (advice.chapter == '我的自建待办') {
+        for (final todo in _userTodos) {
+          if (todo.title != advice.title || todo.triggerTime == null) continue;
+          final minute = NowTimingPolicy.parseClockMinute(todo.triggerTime!);
+          if (minute != null) anchors.add(minute);
         }
       }
-
-      // 自建待办时点匹配
-      if (a.chapter == '我的自建待办') {
-        final todo = _userTodos.cast<UserTodoItem?>().firstWhere(
-          (t) => t?.title == a.title,
-          orElse: () => null,
+      // Defaults only affect display. A user override, including an empty
+      // reminder list, always wins over the built-in suggestions.
+      if (!_customTriggers.containsKey(advice.id)) {
+        anchors.addAll(
+          NowTimingPolicy.defaultDisplayMinutes[advice.id] ?? const [],
         );
-        if (todo != null && todo.triggerTime != null) {
-          final parts = todo.triggerTime!.split(':');
-          if (parts.length == 2) {
-            final h = int.tryParse(parts[0]) ?? 0;
-            final m = int.tryParse(parts[1]) ?? 0;
-            final tMin = h * 60 + m;
-            if (winStartMin <= winEndMin) {
-              if (tMin >= winStartMin && tMin <= winEndMin) return true;
-            } else {
-              if (tMin >= winStartMin || tMin <= winEndMin) return true;
-            }
-          }
-        }
       }
+      return anchors.toList();
+    }
 
-      // 检查该建议配置的任何时段是否与 1.5 小时视窗相交
-      for (final pk in trig.dailyPeriods) {
-        final def = PeriodDefinition.byKey(pk);
-        if (def != null) {
-          if (def.overlaps(winStartMin, winEndMin)) return true;
-        }
-        final custom = PeriodDefinition.parseCustomPeriod(pk);
-        if (custom != null) {
-          if (PeriodDefinition.timeRangesOverlap(
-            custom.$1,
-            custom.$2,
-            winStartMin,
-            winEndMin,
-          )) {
-            return true;
-          }
-        }
-      }
+    int distanceToCenter(Advice advice) {
+      final anchors = anchorsFor(advice);
+      return anchors.map((minute) {
+        final distance = (centerMinute - minute).abs();
+        return distance < 1440 - distance ? distance : 1440 - distance;
+      }).reduce((a, b) => a < b ? a : b);
+    }
 
-      // 若未设置具体时段（全天守护），但在今日流中
-      if (trig.dailyPeriods.isEmpty) {
-        return true;
-      }
-
-      return false;
+    final matched = todayAdvices.where((advice) {
+      return anchorsFor(advice).any(
+        (minute) => NowTimingPolicy.nearMinute(centerMinute, minute),
+      );
     }).toList();
 
-    // 按照与中心时刻的相关性与精准锚点排序
     matched.sort((a, b) {
-      // 已经打卡完成的排在下面（未完成优先充当 Hero，全部完成才轮到已完成）
       final aDone = cardState(PeriodScope.today, a.id).isDone ? 1 : 0;
       final bDone = cardState(PeriodScope.today, b.id).isDone ? 1 : 0;
-      if (aDone != bDone) {
-        return aDone.compareTo(bDone);
-      }
-
-      int score(Advice adv) {
-        int s = 0;
-        final trig = effectiveTriggerOf(adv);
-
-        // 如果建议配置了自定义时段，距离 centerTime 越近权重越高
-        for (final pk in trig.dailyPeriods) {
-          final custom = PeriodDefinition.parseCustomPeriod(pk);
-          if (custom != null) {
-            final customMid = (custom.$1 + custom.$2) ~/ 2;
-            final dist = (customMid - mCenter).abs();
-            s += (300 - dist).clamp(0, 300);
-          }
-        }
-
-        final badge = adv.timingBadge;
-        final title = adv.title;
-
-        // 针对不同时段的关键行动加权
-        if (centerHour >= 22 || centerHour < 5) {
-          if (badge.contains('23:00') ||
-              title.contains('屏幕') ||
-              title.contains('睡')) {
-            s += 60;
-          }
-          if (badge.contains('洗漱') || title.contains('刷牙')) s += 30;
-        } else if (centerHour >= 6 && centerHour <= 8) {
-          if (badge.contains('07:00') ||
-              badge.contains('晨') ||
-              title.contains('安全带') ||
-              title.contains('头盔')) {
-            s += 60;
-          }
-          if (title.contains('早餐') || title.contains('血压')) s += 40;
-        } else if (centerHour >= 9 && centerHour < 12) {
-          if (title.contains('久坐') ||
-              title.contains('专注') ||
-              title.contains('工位') ||
-              title.contains('单线程')) {
-            s += 60;
-          }
-          if (title.contains('喝水') || title.contains('视力')) s += 30;
-        } else if (centerHour >= 12 && centerHour <= 14) {
-          if (badge.contains('13:00') ||
-              title.contains('午') ||
-              title.contains('小憩')) {
-            s += 60;
-          }
-          if (title.contains('坐') || title.contains('远眺')) s += 30;
-        } else if (centerHour > 14 && centerHour < 17) {
-          if (title.contains('快走') ||
-              title.contains('步数') ||
-              title.contains('舒展') ||
-              title.contains('远眺')) {
-            s += 60;
-          }
-        } else if (centerHour >= 17 && centerHour <= 19) {
-          if (title.contains('安全带') ||
-              title.contains('头盔') ||
-              title.contains('晚') ||
-              title.contains('归途')) {
-            s += 60;
-          }
-          if (title.contains('家人') || title.contains('晚餐')) s += 30;
-        } else if (centerHour > 19 && centerHour < 22) {
-          if (title.contains('家人') ||
-              title.contains('散步') ||
-              title.contains('沟通') ||
-              title.contains('放松')) {
-            s += 60;
-          }
-        }
-        return s;
-      }
-
-      return score(b).compareTo(score(a));
+      if (aDone != bDone) return aDone.compareTo(bDone);
+      final distance = distanceToCenter(a).compareTo(distanceToCenter(b));
+      return distance != 0 ? distance : a.id.compareTo(b.id);
     });
-
     return matched;
   }
 

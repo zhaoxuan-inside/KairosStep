@@ -642,7 +642,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
         if (_mode == TriggerMode.daily) ...[
           Row(
             children: [
-              Text('浮出时段（多选）', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+              Text('日常分组（不决定当下时刻）', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
               const Spacer(),
               GestureDetector(
                 onTap: () => _showCustomPeriodDialog(context),
@@ -691,7 +691,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           Row(
             children: [
               Text(
-                '弹窗提醒时刻',
+                '精确提醒时刻（当下前后 15 分钟显示）',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -744,7 +744,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           const SizedBox(height: 6),
           if (_reminderTimes.isEmpty)
             Text(
-              '未设定精准提醒（仅在日常时段视窗内浮出）',
+              '未设精确时点：只在「今天」展示，不进入「当下」',
               style: TextStyle(fontSize: 10.5, color: p.inkMute),
             )
           else
@@ -858,6 +858,36 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           const SizedBox(height: 4),
           Text('按准备所需时间选择；目标日由上方日期决定。',
               style: TextStyle(fontSize: 10, color: p.inkMute)),
+          const SizedBox(height: 10),
+          Text('提醒时刻（当下前后 15 分钟显示）',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          const SizedBox(height: 5),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final t in _reminderTimes)
+                InputChip(
+                  label: Text(t),
+                  onDeleted: () => setState(() => _reminderTimes.remove(t)),
+                ),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.alarm_add_outlined, size: 14),
+                label: const Text('添加时刻'),
+                onPressed: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: const TimeOfDay(hour: 19, minute: 30),
+                  );
+                  if (picked == null) return;
+                  final value = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                  if (!_reminderTimes.contains(value)) {
+                    setState(() => _reminderTimes.add(value));
+                  }
+                },
+              ),
+            ],
+          ),
         ],
         const SizedBox(height: 14),
         Row(

@@ -210,7 +210,7 @@ void main() {
     expect(store.userTodos.isEmpty, isTrue);
   });
 
-  testWidgets('当下页时间尺：置顶展示、1.5小时视窗与推演回到此刻交互闭环', (tester) async {
+  testWidgets('当下页时间尺：精确时点展示与推演回到此刻交互闭环', (tester) async {
     final prefs = await _emptyPrefs();
     await prefs.setBool('kHasCompletedOnboarding', true);
     await prefs.setString(
@@ -220,11 +220,17 @@ void main() {
 
     final store = AppStore(catalog, prefs);
     await store.restore();
+    final now = DateTime.now();
+    final time = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    store.setTriggerConfig(
+      58,
+      CustomTriggerConfig(mode: TriggerMode.daily, reminderTimes: [time]),
+    );
 
     await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
-    // 默认在当下页：精简时间尺，不显示 1.5h 视窗与 -45分等冗余标注
+    // 当下只按明确时点展示建议；时间尺仍可预演更宽的时间范围。
     expect(find.text('1.5h 视窗'), findsNothing);
     expect(find.text('-45分 ‹ 此刻 › +45分'), findsNothing);
 
@@ -247,6 +253,9 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     expect(find.text('回到此刻'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    store.reminderRegistry.dispose();
+    store.probeScheduler.dispose();
   });
 
   test('严格准入规则与 3D 翻转卡片自定义触发周期闭环', () async {

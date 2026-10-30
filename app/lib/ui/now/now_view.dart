@@ -10,7 +10,7 @@ import '../cards/advice_card.dart';
 import 'breathing_practice.dart';
 import 'gear_ruler.dart';
 
-/// 当下页：1.5小时齿轮时间尺（置顶） + 时段问候 + 当下 Hero 卡。
+/// 当下页：可预演时间尺（置顶） + 时段问候 + 30 分钟焦点卡。
 ///
 /// 时段划分与 Demo getPeriodInfo 一致：晨 05:00-09:30 / 上午 09:30-12:00 /
 /// 午后 12:00-18:00 / 傍晚 18:00-22:00 / 夜间 22:00-05:00。
@@ -274,7 +274,7 @@ class _NowViewState extends State<NowView> {
             child: Row(
               children: [
                 Text(
-                  '1.5小时核心行动 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
+                  '当前 30 分钟 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -326,7 +326,7 @@ class _NowViewState extends State<NowView> {
                       Icon(Icons.schedule_outlined, size: 28, color: p.inkMute),
                       const SizedBox(height: 10),
                       Text(
-                        '此 1.5 小时视窗内暂无计划行动',
+                        '当前 30 分钟暂无定时行动',
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
@@ -335,7 +335,7 @@ class _NowViewState extends State<NowView> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '可滑动时间尺推演其他时刻，或在卡片背面/生活指南中为此时段配置行动',
+                        '可滑动时间尺查看其他时刻；未定时的建议仍可在「今天」查看',
                         style: TextStyle(fontSize: 11.5, color: p.inkMute),
                         textAlign: TextAlign.center,
                       ),
@@ -344,37 +344,6 @@ class _NowViewState extends State<NowView> {
                 ),
         ),
 
-        // 6. 当前时段其他待命建议
-        if (periodAdvices.length > 1) ...[
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Icon(Icons.checklist_rtl_outlined, size: 14, color: p.action),
-                const SizedBox(width: 6),
-                Text(
-                  '此 1.5 小时内其他待命行动（${periodAdvices.length - 1}）',
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          for (int i = 0; i < periodAdvices.length; i++)
-            if (i != (_heroOffset % periodAdvices.length))
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                child: AdviceCard(
-                  advice: periodAdvices[i],
-                  scope: PeriodScope.today,
-                  compact: true,
-                ),
-              ),
-        ],
       ],
     );
   }
