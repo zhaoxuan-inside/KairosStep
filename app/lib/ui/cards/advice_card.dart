@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -52,9 +53,10 @@ class _AdviceCardState extends State<AdviceCard>
       vsync: this,
       duration: const Duration(milliseconds: 320),
     );
-    _flipAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _flipCtl, curve: Curves.easeInOutCubic),
-    );
+    _flipAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _flipCtl, curve: Curves.easeInOutCubic));
   }
 
   @override
@@ -86,7 +88,9 @@ class _AdviceCardState extends State<AdviceCard>
       SnackBar(
         backgroundColor: const Color(0xFF19191C),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9999),
+        ),
         duration: const Duration(seconds: 5),
         content: const Text(
           '已从日常视图移除 · 画像已更新',
@@ -232,9 +236,8 @@ class _AdviceCardState extends State<AdviceCard>
                 SizedBox(height: widget.compact ? 6 : 8),
                 Text(
                   widget.advice.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: isExcluded ? p.inkMute : null,
-                      ),
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(color: isExcluded ? p.inkMute : null),
                 ),
                 if (widget.advice.caveats.isNotEmpty && !widget.compact) ...[
                   const SizedBox(height: 4),
@@ -258,7 +261,10 @@ class _AdviceCardState extends State<AdviceCard>
                 if (isExcluded)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: p.surfaceGrey,
                       borderRadius: BorderRadius.circular(10),
@@ -435,10 +441,7 @@ class _AdviceCardState extends State<AdviceCard>
       child: InkWell(
         borderRadius: BorderRadius.circular(9999),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: icon,
-        ),
+        child: Padding(padding: const EdgeInsets.all(5), child: icon),
       ),
     );
   }
@@ -514,19 +517,27 @@ class _AdviceCardState extends State<AdviceCard>
     );
   }
 
-  ({String badge, Color color}) _displayTiming(Advice a, CustomTriggerConfig trig) {
+  ({String badge, Color color}) _displayTiming(
+    Advice a,
+    CustomTriggerConfig trig,
+  ) {
     switch (trig.mode) {
       case TriggerMode.dormant:
         return (badge: '静默储备 · 指南中随查', color: const Color(0xFF838280));
       case TriggerMode.daily:
-        final periods = trig.dailyPeriods.map((pk) {
-          final def = PeriodDefinition.byKey(pk);
-          if (def != null) return def.name;
-          final custom = PeriodDefinition.parseCustomPeriod(pk);
-          if (custom != null) return custom.$3;
-          return pk;
-        }).join('/');
-        return (badge: periods.isEmpty ? '每天' : '每天 $periods', color: const Color(0xFF2A72DE));
+        final periods = trig.dailyPeriods
+            .map((pk) {
+              final def = PeriodDefinition.byKey(pk);
+              if (def != null) return def.name;
+              final custom = PeriodDefinition.parseCustomPeriod(pk);
+              if (custom != null) return custom.$3;
+              return pk;
+            })
+            .join('/');
+        return (
+          badge: periods.isEmpty ? '每天' : '每天 $periods',
+          color: const Color(0xFF2A72DE),
+        );
       case TriggerMode.cadence:
         final s = switch (trig.cadenceScopeKey) {
           'weekly' => '每周循环',
@@ -536,7 +547,10 @@ class _AdviceCardState extends State<AdviceCard>
         };
         return (badge: s, color: const Color(0xFFBC924C));
       case TriggerMode.windowed:
-        return (badge: '窗口期 · ${trig.targetDate ?? "待定"}', color: const Color(0xFFE33A22));
+        return (
+          badge: '窗口期 · ${trig.targetDate ?? "待定"}',
+          color: const Color(0xFFE33A22),
+        );
     }
   }
 }
@@ -613,7 +627,14 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           ],
         ),
         const SizedBox(height: 12),
-        Text('触发形态', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+        Text(
+          '触发形态',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: p.inkSub,
+          ),
+        ),
         const SizedBox(height: 6),
         Wrap(
           spacing: 6,
@@ -642,13 +663,23 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
         if (_mode == TriggerMode.daily) ...[
           Row(
             children: [
-              Text('日常分组（不决定当下时刻）', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+              Text(
+                '日常分组（不决定当下时刻）',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: p.inkSub,
+                ),
+              ),
               const Spacer(),
               GestureDetector(
                 onTap: () => _showCustomPeriodDialog(context),
                 behavior: HitTestBehavior.opaque,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 2,
+                    horizontal: 4,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -674,15 +705,20 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             runSpacing: 6,
             children: [
               for (final def in PeriodDefinition.standardPeriods)
-                _chip('${def.name} (${def.timeRangeLabel})', _periods.contains(def.key), () {
-                  setState(() {
-                    if (_periods.contains(def.key)) {
-                      _periods.remove(def.key);
-                    } else {
-                      _periods.add(def.key);
-                    }
-                  });
-                }, p),
+                _chip(
+                  '${def.name} (${def.timeRangeLabel})',
+                  _periods.contains(def.key),
+                  () {
+                    setState(() {
+                      if (_periods.contains(def.key)) {
+                        _periods.remove(def.key);
+                      } else {
+                        _periods.add(def.key);
+                      }
+                    });
+                  },
+                  p,
+                ),
               for (final pk in _periods.where((s) => s.startsWith('custom:')))
                 _customChip(pk, p),
             ],
@@ -691,7 +727,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           Row(
             children: [
               Text(
-                '精确提醒时刻（当下前后 15 分钟显示）',
+                '精确提醒时刻（当前时刻前后 45 分钟显示）',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -790,7 +826,14 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             ),
         ],
         if (_mode == TriggerMode.cadence) ...[
-          Text('周期频次', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          Text(
+            '周期频次',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: p.inkSub,
+            ),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -809,17 +852,27 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           ),
         ],
         if (_mode == TriggerMode.windowed) ...[
-          Text('目标到期日', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          Text(
+            '目标到期日',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: p.inkSub,
+            ),
+          ),
           const SizedBox(height: 4),
           InkWell(
             onTap: () async {
               final now = DateTime.now();
               final today = DateTime(now.year, now.month, now.day);
-              final existing = _targetDate == null ? null : DateTime.tryParse(_targetDate!);
+              final existing = _targetDate == null
+                  ? null
+                  : DateTime.tryParse(_targetDate!);
               final d = await showDatePicker(
                 context: context,
                 initialDate: existing != null && !existing.isBefore(today)
-                    ? existing : now.add(const Duration(days: 30)),
+                    ? existing
+                    : now.add(const Duration(days: 30)),
                 firstDate: today,
                 lastDate: now.add(const Duration(days: 365 * 5)),
               );
@@ -838,12 +891,22 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
               ),
               child: Text(
                 _targetDate ?? '点击选择目标到期日',
-                style: TextStyle(fontSize: 11, color: _targetDate == null ? p.inkMute : p.ink),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _targetDate == null ? p.inkMute : p.ink,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 10),
-          Text('提前多久开始提醒', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          Text(
+            '提前多久开始提醒',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: p.inkSub,
+            ),
+          ),
           const SizedBox(height: 5),
           Wrap(
             spacing: 6,
@@ -856,11 +919,19 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             ],
           ),
           const SizedBox(height: 4),
-          Text('按准备所需时间选择；目标日由上方日期决定。',
-              style: TextStyle(fontSize: 10, color: p.inkMute)),
+          Text(
+            '按准备所需时间选择；目标日由上方日期决定。',
+            style: TextStyle(fontSize: 10, color: p.inkMute),
+          ),
           const SizedBox(height: 10),
-          Text('提醒时刻（当下前后 15 分钟显示）',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          Text(
+            '提醒时刻（当前时刻前后 45 分钟显示）',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: p.inkSub,
+            ),
+          ),
           const SizedBox(height: 5),
           Wrap(
             spacing: 6,
@@ -880,7 +951,8 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                     initialTime: const TimeOfDay(hour: 19, minute: 30),
                   );
                   if (picked == null) return;
-                  final value = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                  final value =
+                      '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
                   if (!_reminderTimes.contains(value)) {
                     setState(() => _reminderTimes.add(value));
                   }
@@ -897,21 +969,28 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                 widget.store.resetTriggerConfig(widget.advice.id);
                 widget.onClose();
               },
-              child: Text('恢复默认', style: TextStyle(fontSize: 11, color: p.inkMute)),
+              child: Text(
+                '恢复默认',
+                style: TextStyle(fontSize: 11, color: p.inkMute),
+              ),
             ),
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: p.ink,
                 foregroundColor: p.surface,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(9999),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
               ),
               onPressed: () {
                 if (_mode == TriggerMode.windowed && _targetDate == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('请先选择目标到期日')),
-                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(const SnackBar(content: Text('请先选择目标到期日')));
                   return;
                 }
                 final newCfg = CustomTriggerConfig(
@@ -925,7 +1004,10 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                 widget.store.setTriggerConfig(widget.advice.id, newCfg);
                 widget.onClose();
               },
-              child: const Text('保存并翻回', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+              child: const Text(
+                '保存并翻回',
+                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+              ),
             ),
           ],
         ),
@@ -1019,7 +1101,11 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             onTap: () => setState(() => _periods.remove(key)),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(2, 4, 7, 4),
-              child: Icon(Icons.close, size: 12, color: on ? p.action : p.inkMute),
+              child: Icon(
+                Icons.close,
+                size: 12,
+                color: on ? p.action : p.inkMute,
+              ),
             ),
           ),
         ],
@@ -1042,10 +1128,16 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
 
             return AlertDialog(
               backgroundColor: p.surface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               title: Text(
                 '添加自定义时段',
-                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: p.ink),
+                style: TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w700,
+                  color: p.ink,
+                ),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -1062,7 +1154,9 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: p.hairline),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 8),
                           ),
                           onPressed: () async {
@@ -1082,13 +1176,18 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text('至', style: TextStyle(fontSize: 12, color: p.inkSub)),
+                        child: Text(
+                          '至',
+                          style: TextStyle(fontSize: 12, color: p.inkSub),
+                        ),
                       ),
                       Expanded(
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: p.hairline),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 8),
                           ),
                           onPressed: () async {
@@ -1109,7 +1208,10 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Text('快捷时段推荐：', style: TextStyle(fontSize: 11, color: p.inkMute)),
+                  Text(
+                    '快捷时段推荐：',
+                    style: TextStyle(fontSize: 11, color: p.inkMute),
+                  ),
                   const SizedBox(height: 6),
                   Wrap(
                     spacing: 6,
@@ -1128,12 +1230,21 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                             final sp = s.split(':');
                             final ep = e.split(':');
                             setDlgState(() {
-                              startTime = TimeOfDay(hour: int.parse(sp[0]), minute: int.parse(sp[1]));
-                              endTime = TimeOfDay(hour: int.parse(ep[0]), minute: int.parse(ep[1]));
+                              startTime = TimeOfDay(
+                                hour: int.parse(sp[0]),
+                                minute: int.parse(sp[1]),
+                              );
+                              endTime = TimeOfDay(
+                                hour: int.parse(ep[0]),
+                                minute: int.parse(ep[1]),
+                              );
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: p.surfaceGrey,
                               borderRadius: BorderRadius.circular(6),
@@ -1157,7 +1268,8 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                 FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: p.action),
                   onPressed: () {
-                    final key = 'custom:${format(startTime)}-${format(endTime)}';
+                    final key =
+                        'custom:${format(startTime)}-${format(endTime)}';
                     Navigator.pop(ctx, key);
                   },
                   child: const Text('确认添加'),

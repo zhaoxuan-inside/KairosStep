@@ -10,7 +10,7 @@ import '../cards/advice_card.dart';
 import 'breathing_practice.dart';
 import 'gear_ruler.dart';
 
-/// 当下页：可预演时间尺（置顶） + 时段问候 + 30 分钟焦点卡。
+/// 当下页：前后 45 分钟时间尺（置顶） + 时段问候 + 当下焦点卡。
 ///
 /// 时段划分与 Demo getPeriodInfo 一致：晨 05:00-09:30 / 上午 09:30-12:00 /
 /// 午后 12:00-18:00 / 傍晚 18:00-22:00 / 夜间 22:00-05:00。
@@ -274,7 +274,7 @@ class _NowViewState extends State<NowView> {
             child: Row(
               children: [
                 Text(
-                  '当前 30 分钟 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
+                  '前后 45 分钟 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -326,7 +326,7 @@ class _NowViewState extends State<NowView> {
                       Icon(Icons.schedule_outlined, size: 28, color: p.inkMute),
                       const SizedBox(height: 10),
                       Text(
-                        '当前 30 分钟暂无定时行动',
+                        '前后 45 分钟暂无定时行动',
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
@@ -344,6 +344,38 @@ class _NowViewState extends State<NowView> {
                 ),
         ),
 
+        // 同一视窗内的候选仍可切换查看。候选已经由精确触发时刻筛选，
+        // 不再由“早上/午后”等宽泛分组直接推入。
+        if (periodAdvices.length > 1) ...[
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Icon(Icons.checklist_rtl_outlined, size: 14, color: p.action),
+                const SizedBox(width: 6),
+                Text(
+                  '前后 45 分钟内的其他行动（${periodAdvices.length - 1}）',
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          for (int i = 0; i < periodAdvices.length; i++)
+            if (i != (_heroOffset % periodAdvices.length))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: AdviceCard(
+                  advice: periodAdvices[i],
+                  scope: PeriodScope.today,
+                  compact: true,
+                ),
+              ),
+        ],
       ],
     );
   }

@@ -44,16 +44,18 @@ void main() {
         DateTime(2026, 10, 30, minute ~/ 60, minute % 60),
       );
       expect(
-        shown.every((a) => NowTimingPolicy.defaultDisplayMinutes.containsKey(a.id)),
+        shown.every(
+          (a) => NowTimingPolicy.defaultDisplayMinutes.containsKey(a.id),
+        ),
         isTrue,
         reason: 'Unexpected default Now advice at minute $minute',
       );
     }
   });
 
-  test('focus window is only 15 minutes either side of an anchor', () {
-    expect(NowTimingPolicy.nearMinute(765, 780), isTrue);
-    expect(NowTimingPolicy.nearMinute(764, 780), isFalse);
+  test('focus window is 45 minutes either side of an anchor', () {
+    expect(NowTimingPolicy.nearMinute(735, 780), isTrue);
+    expect(NowTimingPolicy.nearMinute(734, 780), isFalse);
     expect(NowTimingPolicy.nearMinute(2, 1435), isTrue);
     expect(NowTimingPolicy.parseClockMinute('25:30'), isNull);
   });
@@ -71,13 +73,13 @@ void main() {
       ),
     );
     expect(
-      store.advicesForWindow(DateTime(2026, 10, 30, 7, 30))
+      store
+          .advicesForWindow(DateTime(2026, 10, 30, 7, 30))
           .any((a) => a.id == 58),
       isFalse,
     );
     expect(
-      store.advicesForWindow(DateTime(2026, 10, 30, 10))
-          .any((a) => a.id == 58),
+      store.advicesForWindow(DateTime(2026, 10, 30, 10)).any((a) => a.id == 58),
       isTrue,
     );
   });
