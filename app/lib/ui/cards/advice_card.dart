@@ -813,11 +813,15 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
           const SizedBox(height: 4),
           InkWell(
             onTap: () async {
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final existing = _targetDate == null ? null : DateTime.tryParse(_targetDate!);
               final d = await showDatePicker(
                 context: context,
-                initialDate: DateTime.now().add(const Duration(days: 30)),
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                initialDate: existing != null && !existing.isBefore(today)
+                    ? existing : now.add(const Duration(days: 30)),
+                firstDate: today,
+                lastDate: now.add(const Duration(days: 365 * 5)),
               );
               if (d != null) {
                 setState(() {
@@ -838,6 +842,22 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
               ),
             ),
           ),
+          const SizedBox(height: 10),
+          Text('提前多久开始提醒', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: p.inkSub)),
+          const SizedBox(height: 5),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final days in const [7, 15, 30, 60])
+                _chip('提前 $days 天', _leadDays == days, () {
+                  setState(() => _leadDays = days);
+                }, p),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text('按准备所需时间选择；目标日由上方日期决定。',
+              style: TextStyle(fontSize: 10, color: p.inkMute)),
         ],
         const SizedBox(height: 14),
         Row(
@@ -858,6 +878,12 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               ),
               onPressed: () {
+                if (_mode == TriggerMode.windowed && _targetDate == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('请先选择目标到期日')),
+                  );
+                  return;
+                }
                 final newCfg = CustomTriggerConfig(
                   mode: _mode,
                   dailyPeriods: _periods.toList(),

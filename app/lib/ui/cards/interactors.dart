@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../app.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
+import '../../models/window_timing.dart';
 import '../../state/app_store.dart';
 import 'spotlight_interactors.dart';
 import '../now/breathing_practice.dart';
@@ -555,16 +556,13 @@ class WindowCadenceInteractor extends StatelessWidget {
   final Advice advice;
   final PeriodScope scope;
 
-  static const windowDays = 14;
-
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final store = storeOf(context);
     final ctl = CardCtl(store, scope, advice);
-    final anchor = store.ensureWindowAnchor(advice.id, DateTime.now());
-    final elapsed = DateTime.now().difference(anchor).inDays + 1;
-    final day = elapsed.clamp(1, windowDays);
+    final timing = WindowTiming.fromConfig(
+      store.effectiveTriggerOf(advice), DateTime.now());
     final chips = advice.caveats.isNotEmpty
         ? advice.caveats
         : ['完成主行动'];
@@ -573,35 +571,42 @@ class WindowCadenceInteractor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              '窗口期进行中：第 $day/$windowDays 天',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: day >= windowDays - 2 ? p.rose : p.amber,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              '剩余 ${windowDays - day} 天',
-              style: TextStyle(fontSize: 10.5, color: p.inkMute),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(3),
-          child: LinearProgressIndicator(
-            value: day / windowDays,
-            minHeight: 5,
-            backgroundColor: p.pillBg,
-            valueColor: AlwaysStoppedAnimation(
-              day >= windowDays - 2 ? p.rose : p.amber,
+        if (timing == null)
+          Text(
+            '未启用指定窗口 · 可在卡片右上角设置目标日与提醒时长',
+            style: TextStyle(fontSize: 11, color: p.inkSub),
+          )
+        else ...[
+          Text(
+            timing.isOverdue
+                ? '目标日已过 ${-timing.daysUntilTarget} 天 · 请核对或调整日期'
+                : timing.isUpcoming
+                    ? '距目标日 ${timing.daysUntilTarget} 天 · 提前 ${timing.leadDays} 天开始提醒'
+                    : timing.daysUntilTarget == 0
+                        ? '今天是目标日'
+                        : '距目标日 ${timing.daysUntilTarget} 天',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: timing.isOverdue || timing.daysUntilTarget == 0
+                  ? p.rose : p.amber,
             ),
           ),
-        ),
+          if (timing.isActive) ...[
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: LinearProgressIndicator(
+                value: timing.progress,
+                minHeight: 5,
+                backgroundColor: p.pillBg,
+                valueColor: AlwaysStoppedAnimation(
+                  timing.daysUntilTarget <= 2 ? p.rose : p.amber,
+                ),
+              ),
+            ),
+          ],
+        ],
         const SizedBox(height: 10),
         Row(
           children: [
