@@ -16,8 +16,8 @@ void main() {
     catalog = await Catalog.load();
   });
 
-  test('Catalog 数据资产完整：767 条 / 34 章 / 13 形态 / 拼音全覆盖', () async {
-    expect(catalog.adviceList.length, 767);
+  test('Catalog 数据资产完整：737 条 / 34 章 / 13 形态 / 拼音全覆盖', () async {
+    expect(catalog.adviceList.length, 737);
     expect(catalog.chapters.length, 34);
     expect(catalog.byId[1]!.chapter, '不要早死');
     expect(catalog.byId[1]!.actType, 'haptic-toggle');
@@ -33,7 +33,17 @@ void main() {
     expect(catalog.nodePackages.length, 5);
   });
 
-  test('767 建议全景六大支柱覆盖全库：100% 覆盖 767 条建议与 34 章节无遗漏', () async {
+  test('事件分类依据行动阶段，不因章节或标题出现危险词而误标', () {
+    expect(catalog.byId[419]!.isEmergencyOrIncident, isTrue);
+    expect(catalog.byId[431]!.isEmergencyOrIncident, isFalse);
+    expect(catalog.byId[660]!.isEmergencyOrIncident, isFalse);
+    expect(catalog.byId[18]!.topicPaths, ['health/prevention/screening']);
+    expect(catalog.byId[24]!.topicPaths, ['health/prevention/screening']);
+    expect(catalog.byId[31]!.topicPaths, ['health/prevention/screening']);
+    expect(catalog.byId[38]!.topicPaths, ['health/treatment/medication']);
+  });
+
+  test('737 建议全景六大支柱覆盖全库：100% 覆盖 737 条建议与 34 章节无遗漏', () async {
     // 验证六大支柱包含全部 34 章
     final domainChapters = LifeDomain.values.expand((d) => d.chapters).toList();
     expect(domainChapters.length, 34);
@@ -44,12 +54,12 @@ void main() {
       reason: '34 章节 100% 映射',
     );
 
-    // 验证各支柱加总恰好 767 条
+    // 验证各支柱加总恰好 737 条
     final totalDomainCount = LifeDomain.values.fold<int>(
       0,
       (sum, d) => sum + d.totalCount,
     );
-    expect(totalDomainCount, 767);
+    expect(totalDomainCount, 737);
 
     // 验证真实计算各领域条数
     for (final domain in LifeDomain.values) {
@@ -83,7 +93,7 @@ void main() {
 
     // 验证展示了人性化引导语与纯净交付承诺
     expect(find.textContaining('数字阶跃'), findsWidgets);
-    expect(find.textContaining('生活不需要一次性记住 767 条建议'), findsOneWidget);
+    expect(find.textContaining('生活不需要一次性记住 737 条建议'), findsOneWidget);
     expect(find.text('真正交付用户的纯净承诺'), findsOneWidget);
     expect(find.text('定制专属罗盘 ›'), findsOneWidget);
 
@@ -111,11 +121,11 @@ void main() {
     expect(find.text('居住与日常情境'), findsOneWidget);
     expect(find.textContaining('日常最大的风险往往藏在最熟悉的习惯里'), findsOneWidget);
 
-    // 点击继续下一步进入第 5 步：全景六大支柱定制（100%覆盖767建议）
+    // 点击继续下一步进入第 5 步：全景六大支柱定制（100%覆盖737建议）
     await tester.tap(find.text('继续下一步 ›'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
     expect(find.text('人生六大支柱完整定制'), findsOneWidget);
-    expect(find.textContaining('全书 767 条建议由六大支柱严密咬合'), findsOneWidget);
+    expect(find.textContaining('全书 737 条建议由六大支柱严密咬合'), findsOneWidget);
     expect(find.textContaining('已点亮领域覆盖'), findsOneWidget);
 
     // 点击继续下一步进入第 6 步：罗盘校准与生成
@@ -137,17 +147,17 @@ void main() {
     expect(find.text('库'), findsOneWidget);
     expect(find.text('我的'), findsOneWidget);
 
-    // 切到库 Tab，验证 767 全景引导入口
+    // 切到库 Tab，验证 737 全景引导入口
     await tester.tap(find.text('库'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('767 全景引导'), findsOneWidget);
-    await tester.tap(find.text('767 全景引导'));
+    expect(find.text('737 全景引导'), findsOneWidget);
+    await tester.tap(find.text('737 全景引导'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('767 条建议全景引导罗盘'), findsOneWidget);
+    expect(find.text('737 条建议全景引导罗盘'), findsOneWidget);
     expect(find.textContaining('六大支柱完整覆盖'), findsOneWidget);
   });
 
-  testWidgets('真实交付数据流：零 Mock 数据，全量 767 建议动态求值与打卡闭环', (tester) async {
+  testWidgets('真实交付数据流：零 Mock 数据，全量 737 建议动态求值与打卡闭环', (tester) async {
     final prefs = await _emptyPrefs();
     await prefs.setBool('kHasCompletedOnboarding', true);
     await prefs.setString(
@@ -472,7 +482,7 @@ void main() {
     final prefs = await _emptyPrefs();
     final store = AppStore(catalog, prefs);
 
-    // 1. 全量 767 条建议均已完成树状路径与调度 Cron 注入
+    // 1. 全量 737 条建议均已完成树状路径与调度 Cron 注入
     expect(catalog.adviceList.every((a) => a.treePath.isNotEmpty), isTrue);
     expect(catalog.adviceList.every((a) => a.treeDisplay.isNotEmpty), isTrue);
     expect(catalog.adviceList.every((a) => a.cron.isNotEmpty), isTrue);

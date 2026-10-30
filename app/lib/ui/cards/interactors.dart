@@ -55,7 +55,11 @@ class CardCtl {
 
 /// 交互器分派中枢：13 种 act_type + 聚光专项。
 class AdviceInteractor extends StatelessWidget {
-  const AdviceInteractor({super.key, required this.advice, required this.scope});
+  const AdviceInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -74,16 +78,28 @@ class AdviceInteractor extends StatelessWidget {
 
     return switch (advice.actType) {
       'haptic-toggle' => ToggleChipsInteractor(
-          advice: advice, scope: scope, lockedCount: advice.id == 1 ? 2 : 0),
+        advice: advice,
+        scope: scope,
+        lockedCount: advice.id == 1 ? 2 : 0,
+      ),
       'quick-checkin' => QuickCheckinInteractor(advice: advice, scope: scope),
       'daily-streak' => DailyStreakInteractor(advice: advice, scope: scope),
-      'windowed-cadence' => WindowCadenceInteractor(advice: advice, scope: scope),
+      'windowed-cadence' => WindowCadenceInteractor(
+        advice: advice,
+        scope: scope,
+      ),
       'redline-stamp' => RedlineStampInteractor(advice: advice, scope: scope),
       'process-steps' => ProcessStepsInteractor(advice: advice, scope: scope),
       'decision-check' => DecisionCheckInteractor(advice: advice, scope: scope),
       'context-guard' => ContextGuardInteractor(advice: advice, scope: scope),
-      'emergency-action' => EmergencyActionInteractor(advice: advice, scope: scope),
-      'evidence-checklist' => EvidenceChecklistInteractor(advice: advice, scope: scope),
+      'emergency-action' => EmergencyActionInteractor(
+        advice: advice,
+        scope: scope,
+      ),
+      'evidence-checklist' => EvidenceChecklistInteractor(
+        advice: advice,
+        scope: scope,
+      ),
       'slider-calc' => SliderCalcInteractor(advice: advice, scope: scope),
       'wage-calc' => WageCalcInteractor(advice: advice, scope: scope),
       'zen-timer' => ZenTimerInteractor(advice: advice, scope: scope),
@@ -254,7 +270,11 @@ class ToggleChipsInteractor extends StatelessWidget {
 // ============================================================
 
 class QuickCheckinInteractor extends StatelessWidget {
-  const QuickCheckinInteractor({super.key, required this.advice, required this.scope});
+  const QuickCheckinInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -264,13 +284,18 @@ class QuickCheckinInteractor extends StatelessWidget {
     final ctl = CardCtl(storeOf(context), scope, advice);
     final done = ctl.st.isDone;
     return PrimaryAction(
-      label: done ? '已完成 · 点击撤销' : advice.coreAction.length > 14 ? '完成此项' : '完成：${advice.coreAction}',
+      label: done
+          ? '已完成 · 点击撤销'
+          : advice.coreAction.length > 14
+          ? '完成此项'
+          : '完成：${advice.coreAction}',
       on: done,
       icon: done ? Icons.task_alt : Icons.check,
       onTap: () {
         if (done) {
           ctl.setRatio(0);
-          storeOf(context).updateCard(scope, advice.id, (s) => s.doneParts.clear());
+          storeOf(context)
+              .updateCard(scope, advice.id, (s) => s.doneParts.clear());
         } else {
           ctl.mark('__checkin__', true, ratio: 1);
         }
@@ -284,7 +309,11 @@ class QuickCheckinInteractor extends StatelessWidget {
 // ============================================================
 
 class RedlineStampInteractor extends StatefulWidget {
-  const RedlineStampInteractor({super.key, required this.advice, required this.scope});
+  const RedlineStampInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -322,9 +351,10 @@ class _RedlineStampInteractorState extends State<RedlineStampInteractor>
             if (!stamped) _pop.forward(from: 0);
           },
           child: ScaleTransition(
-            scale: Tween(begin: 0.72, end: 1.0).animate(
-              CurvedAnimation(parent: _pop, curve: Curves.elasticOut),
-            ),
+            scale: Tween(
+              begin: 0.72,
+              end: 1.0,
+            ).animate(CurvedAnimation(parent: _pop, curve: Curves.elasticOut)),
             child: Container(
               width: 46,
               height: 46,
@@ -375,14 +405,18 @@ class _RedlineStampInteractorState extends State<RedlineStampInteractor>
 // ============================================================
 
 class DailyStreakInteractor extends StatelessWidget {
-  const DailyStreakInteractor({super.key, required this.advice, required this.scope});
+  const DailyStreakInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
 
   (String, String) _alarmPreset() {
     final t = advice.title;
-    if (advice.id == 97 || t.contains('起床')) return ('晨间闹钟', '07:00');
+    if (t.contains('起床')) return ('晨间闹钟', '07:00');
     if (t.contains('午睡') || t.contains('午休') || t.contains('小憩')) {
       return ('午休提醒', '12:45');
     }
@@ -414,11 +448,19 @@ class DailyStreakInteractor extends StatelessWidget {
         // 提醒时刻胶囊
         Row(
           children: [
-            Icon(Icons.notifications_active_outlined, size: 13, color: p.action),
+            Icon(
+              Icons.notifications_active_outlined,
+              size: 13,
+              color: p.action,
+            ),
             const SizedBox(width: 5),
             Text(
               '$alarmName $pickedTime',
-              style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: p.ink),
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                color: p.ink,
+              ),
             ),
             const Spacer(),
             _AlarmPicker(
@@ -431,7 +473,7 @@ class DailyStreakInteractor extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        // 连击点阵：最近 14 天（仅记录，不惩罚断签）
+        // 连击点阵：最近 14 天
         Row(
           children: [
             for (var i = 0; i < 14; i++)
@@ -440,7 +482,9 @@ class DailyStreakInteractor extends StatelessWidget {
                   margin: EdgeInsets.only(right: i == 13 ? 0 : 3),
                   height: 5,
                   decoration: BoxDecoration(
-                    color: i < (streak.days % 15) || (checkedToday && i == streak.days % 15)
+                    color:
+                        i < (streak.days % 15) ||
+                            (checkedToday && i == streak.days % 15)
                         ? p.emerald
                         : p.pillBg,
                     borderRadius: BorderRadius.circular(2),
@@ -460,8 +504,6 @@ class DailyStreakInteractor extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const Spacer(),
-            Text('只记录 · 断签不清零不惩罚', style: TextStyle(fontSize: 10, color: p.inkMute)),
           ],
         ),
         const SizedBox(height: 10),
@@ -473,7 +515,8 @@ class DailyStreakInteractor extends StatelessWidget {
           onTap: () {
             if (checkedToday) {
               ctl.setRatio(0);
-              storeOf(context).updateCard(scope, advice.id, (s) => s.doneParts.clear());
+              storeOf(context)
+                  .updateCard(scope, advice.id, (s) => s.doneParts.clear());
             } else {
               ctl.checkinStreak();
             }
@@ -506,14 +549,18 @@ class _AlarmPicker extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(14),
-                  child: Text('快速切换每日提醒时刻',
-                      style: Theme.of(context).textTheme.titleMedium),
+                  child: Text(
+                    '快速切换每日提醒时刻',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
                 for (final o in options)
                   ListTile(
                     dense: true,
                     leading: Icon(
-                      o.startsWith(selected) ? Icons.check_circle : Icons.schedule,
+                      o.startsWith(selected)
+                          ? Icons.check_circle
+                          : Icons.schedule,
                       size: 18,
                       color: o.startsWith(selected) ? p.action : p.inkMute,
                     ),
@@ -536,7 +583,14 @@ class _AlarmPicker extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('调时点', style: TextStyle(fontSize: 10.5, color: p.action, fontWeight: FontWeight.w600)),
+            Text(
+              '调时点',
+              style: TextStyle(
+                fontSize: 10.5,
+                color: p.action,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Icon(Icons.chevron_right, size: 13, color: p.inkMute),
           ],
         ),
@@ -550,7 +604,11 @@ class _AlarmPicker extends StatelessWidget {
 // ============================================================
 
 class WindowCadenceInteractor extends StatelessWidget {
-  const WindowCadenceInteractor({super.key, required this.advice, required this.scope});
+  const WindowCadenceInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -565,9 +623,7 @@ class WindowCadenceInteractor extends StatelessWidget {
     final anchor = store.ensureWindowAnchor(advice.id, DateTime.now());
     final elapsed = DateTime.now().difference(anchor).inDays + 1;
     final day = elapsed.clamp(1, windowDays);
-    final chips = advice.caveats.isNotEmpty
-        ? advice.caveats
-        : ['完成主行动'];
+    final chips = advice.caveats.isNotEmpty ? advice.caveats : ['完成主行动'];
     final chipsOn = chips.where(ctl.has).length;
 
     return Column(
@@ -607,12 +663,19 @@ class WindowCadenceInteractor extends StatelessWidget {
           children: [
             Text(
               '安全防线 $chipsOn/${chips.length}',
-              style: TextStyle(fontSize: 10.5, color: p.inkSub, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 10.5,
+                color: p.inkSub,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const Spacer(),
             Text(
               chipsOn == chips.length ? '全部确认 · 提醒解除' : '逐条确认防线',
-              style: TextStyle(fontSize: 10, color: chipsOn == chips.length ? p.emerald : p.inkMute),
+              style: TextStyle(
+                fontSize: 10,
+                color: chipsOn == chips.length ? p.emerald : p.inkMute,
+              ),
             ),
           ],
         ),
@@ -646,7 +709,11 @@ class WindowCadenceInteractor extends StatelessWidget {
 // ============================================================
 
 class ProcessStepsInteractor extends StatelessWidget {
-  const ProcessStepsInteractor({super.key, required this.advice, required this.scope});
+  const ProcessStepsInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -681,7 +748,11 @@ class ProcessStepsInteractor extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '全部步骤完成，行动已闭环',
-                style: TextStyle(fontSize: 10.5, color: p.indigo, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 10.5,
+                  color: p.indigo,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
@@ -724,14 +795,21 @@ class _StepRow extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: on ? p.indigo : Colors.transparent,
-                border: Border.all(color: on ? p.indigo : p.inkMute, width: 1.2),
+                border: Border.all(
+                  color: on ? p.indigo : p.inkMute,
+                  width: 1.2,
+                ),
               ),
               child: Center(
                 child: on
                     ? const Icon(Icons.check, size: 12, color: Colors.white)
                     : Text(
                         '$index',
-                        style: TextStyle(fontSize: 10, color: p.inkMute, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: p.inkMute,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
               ),
             ),
@@ -760,7 +838,11 @@ class _StepRow extends StatelessWidget {
 // ============================================================
 
 class DecisionCheckInteractor extends StatelessWidget {
-  const DecisionCheckInteractor({super.key, required this.advice, required this.scope});
+  const DecisionCheckInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -783,12 +865,19 @@ class DecisionCheckInteractor extends StatelessWidget {
                 ctl.mark(rule, !ctl.has(rule));
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: ctl.has(rule) ? p.indigo.withValues(alpha: 0.08) : p.pillBg,
+                  color: ctl.has(rule)
+                      ? p.indigo.withValues(alpha: 0.08)
+                      : p.pillBg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: ctl.has(rule) ? p.indigo.withValues(alpha: 0.5) : Colors.transparent,
+                    color: ctl.has(rule)
+                        ? p.indigo.withValues(alpha: 0.5)
+                        : Colors.transparent,
                   ),
                 ),
                 child: Row(
@@ -807,7 +896,9 @@ class DecisionCheckInteractor extends StatelessWidget {
                           fontSize: 12,
                           height: 1.45,
                           color: ctl.has(rule) ? p.ink : p.inkSub,
-                          fontWeight: ctl.has(rule) ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: ctl.has(rule)
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -838,7 +929,11 @@ class DecisionCheckInteractor extends StatelessWidget {
 // ============================================================
 
 class ContextGuardInteractor extends StatelessWidget {
-  const ContextGuardInteractor({super.key, required this.advice, required this.scope});
+  const ContextGuardInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -856,7 +951,9 @@ class ContextGuardInteractor extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(
-            color: allOn ? p.emerald.withValues(alpha: 0.1) : p.rose.withValues(alpha: 0.1),
+            color: allOn
+                ? p.emerald.withValues(alpha: 0.1)
+                : p.rose.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -906,7 +1003,11 @@ class ContextGuardInteractor extends StatelessWidget {
 // ============================================================
 
 class EmergencyActionInteractor extends StatelessWidget {
-  const EmergencyActionInteractor({super.key, required this.advice, required this.scope});
+  const EmergencyActionInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -965,7 +1066,8 @@ class EmergencyActionInteractor extends StatelessWidget {
           onTap: () {
             if (ctl.st.isDone) {
               ctl.setRatio(0);
-              storeOf(context).updateCard(scope, advice.id, (s) => s.doneParts.clear());
+              storeOf(context)
+                  .updateCard(scope, advice.id, (s) => s.doneParts.clear());
             } else {
               ctl.mark('处理完毕', true, ratio: 1);
             }
@@ -1008,7 +1110,11 @@ class _EmergencyBtn extends StatelessWidget {
             const SizedBox(height: 3),
             Text(
               label,
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: color),
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ],
         ),
@@ -1022,7 +1128,11 @@ class _EmergencyBtn extends StatelessWidget {
 // ============================================================
 
 class EvidenceChecklistInteractor extends StatelessWidget {
-  const EvidenceChecklistInteractor({super.key, required this.advice, required this.scope});
+  const EvidenceChecklistInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -1033,9 +1143,7 @@ class EvidenceChecklistInteractor extends StatelessWidget {
     final ctl = CardCtl(storeOf(context), scope, advice);
     final slots = advice.parts.length >= 4
         ? advice.parts.take(4).toList()
-        : [...advice.parts, '其他关键凭证', '备份位置索引']
-            .take(4)
-            .toList();
+        : [...advice.parts, '其他关键凭证', '备份位置索引'].take(4).toList();
 
     return GridView.count(
       crossAxisCount: 2,
@@ -1055,17 +1163,23 @@ class EvidenceChecklistInteractor extends StatelessWidget {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
               decoration: BoxDecoration(
-                color: ctl.has(slot) ? p.emerald.withValues(alpha: 0.1) : p.pillBg,
+                color: ctl.has(slot)
+                    ? p.emerald.withValues(alpha: 0.1)
+                    : p.pillBg,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: ctl.has(slot) ? p.emerald.withValues(alpha: 0.5) : p.hairline,
+                  color: ctl.has(slot)
+                      ? p.emerald.withValues(alpha: 0.5)
+                      : p.hairline,
                 ),
               ),
               child: Row(
                 children: [
                   const SizedBox(width: 10),
                   Icon(
-                    ctl.has(slot) ? Icons.inventory : Icons.inventory_2_outlined,
+                    ctl.has(slot)
+                        ? Icons.inventory
+                        : Icons.inventory_2_outlined,
                     size: 16,
                     color: ctl.has(slot) ? p.emerald : p.inkMute,
                   ),
@@ -1079,7 +1193,9 @@ class EvidenceChecklistInteractor extends StatelessWidget {
                         fontSize: 10.5,
                         height: 1.3,
                         color: ctl.has(slot) ? p.emerald : p.inkSub,
-                        fontWeight: ctl.has(slot) ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight: ctl.has(slot)
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                     ),
                   ),
@@ -1098,7 +1214,11 @@ class EvidenceChecklistInteractor extends StatelessWidget {
 // ============================================================
 
 class SliderCalcInteractor extends StatelessWidget {
-  const SliderCalcInteractor({super.key, required this.advice, required this.scope});
+  const SliderCalcInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;
@@ -1113,10 +1233,24 @@ class SliderCalcInteractor extends StatelessWidget {
     final (label, unit, max, fmt) = t.contains('酒')
         ? ('已饮', '标准杯', 10, (double v) => '约 ${_alcoholHours(v)} 小时代谢完毕')
         : t.contains('晒') || t.contains('太阳')
-            ? ('日晒', '分钟', 60, (double v) => v >= 15 && v <= 30 ? '15-30 分钟 · 合成维 D 足量' : v < 15 ? '偏短 · 维 D 合成不足' : '偏长 · 注意晒伤风险')
-            : t.contains('遛狗')
-                ? ('遛狗', '分钟', 120, (double v) => v >= 30 ? '达标 · 中等强度活动计入' : '偏短 · 建议 30 分钟起')
-                : ('强度', '档位', 10, (double v) => '当前 ${v.round()} 档');
+        ? (
+            '日晒',
+            '分钟',
+            60,
+            (double v) => v >= 15 && v <= 30
+                ? '15-30 分钟 · 合成维 D 足量'
+                : v < 15
+                ? '偏短 · 维 D 合成不足'
+                : '偏长 · 注意晒伤风险',
+          )
+        : t.contains('遛狗')
+        ? (
+            '遛狗',
+            '分钟',
+            120,
+            (double v) => v >= 30 ? '达标 · 中等强度活动计入' : '偏短 · 建议 30 分钟起',
+          )
+        : ('强度', '档位', 10, (double v) => '当前 ${v.round()} 档');
     final value = ctl.extra<double>('slider') ?? (max * 0.3);
     final readout = fmt(value);
 
@@ -1129,7 +1263,9 @@ class SliderCalcInteractor extends StatelessWidget {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 4,
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 16,
+                  ),
                 ),
                 child: Slider(
                   value: value,
@@ -1147,7 +1283,11 @@ class SliderCalcInteractor extends StatelessWidget {
             ),
             Text(
               '${value.round()} $unit',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.action),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: p.action,
+              ),
             ),
           ],
         ),
@@ -1166,7 +1306,11 @@ class SliderCalcInteractor extends StatelessWidget {
           on: ctl.has('applied'),
           color: p.action,
           icon: Icons.calculate_outlined,
-          onTap: () => ctl.mark('applied', !ctl.has('applied'), ratio: ctl.has('applied') ? 0.4 : 1),
+          onTap: () => ctl.mark(
+            'applied',
+            !ctl.has('applied'),
+            ratio: ctl.has('applied') ? 0.4 : 1,
+          ),
         ),
       ],
     );
@@ -1180,7 +1324,11 @@ class SliderCalcInteractor extends StatelessWidget {
 // ============================================================
 
 class ZenTimerInteractor extends StatelessWidget {
-  const ZenTimerInteractor({super.key, required this.advice, required this.scope});
+  const ZenTimerInteractor({
+    super.key,
+    required this.advice,
+    required this.scope,
+  });
 
   final Advice advice;
   final PeriodScope scope;

@@ -185,8 +185,8 @@ def main():
 
     # 2. Update widget_render_logic in createFullInteractiveAdviceCard
     # We will refine the daily-streak card HTML to include alarm drawer, interactive days, and science drawer
-    new_widget_logic = """  // ================= 1-C-0. 建议 97 及每日节律习惯连击打卡 (daily-streak) =================
-  else if (id === 97 || type === "daily-streak") {
+    new_widget_logic = """  // ================= 1-C-0. 建议 61 及每日节律习惯连击打卡 (daily-streak) =================
+  else if (id === 61 || type === "daily-streak") {
     completeMsg = "今日习惯打卡完成，每日连击已记录";
     const streakDays = item._streakDays || 14;
     const isChecked = item._streakChecked || false;
@@ -195,7 +195,7 @@ def main():
     let alarmLabel = "每日提醒 <b>08:30</b>（每天推送）";
     let defenseRule = (parts && parts[1]) ? parts[1] : "守住每日恒定节律 · 持续积累健康资本";
     let punchTime = "已达成";
-    let isWakeup = id === 97 || t.includes("起床");
+    let isWakeup = id === 61 || t.includes("起床");
     let scienceExp = "守住每日恒定节律，是帮助神经内分泌系统建立稳定生物节律钟的核心杠杆。";
 
     if (isWakeup) {
@@ -337,7 +337,7 @@ def main():
   }"""
 
     html = re.sub(
-        r"  // ================= 1-C-0\. 建议 97 及每日节律习惯连击打卡 \(daily-streak\) =================\n.*?  // 1-C\. 建议 7: 量血压",
+        r"  // ================= 1-C-0\. 建议 61 及每日节律习惯连击打卡 \(daily-streak\) =================\n.*?  // 1-C\. 建议 7: 量血压",
         new_widget_logic + "\n\n  // 1-C. 建议 7: 量血压",
         html,
         flags=re.DOTALL
@@ -346,8 +346,8 @@ def main():
     # 3. Update renderTodayStream to include the Today Rhythm Strip & spotlight items
     today_stream_code = """function renderTodayStream() {
   const container = document.getElementById('today-advice-stream');
-  // 精选丰富交互元型：固定起床打卡(ID 97)、全车安全带(ID 1)、血压监测(ID 7)、刷牙洁牙(ID 58)、燃气管窗口期(ID 4)
-  const spotlightIds = [97, 1, 7, 58, 4];
+  // 精选丰富交互元型：固定起床打卡(ID 61)、全车安全带(ID 1)、血压监测(ID 7)、刷牙洁牙(ID 58)、燃气管窗口期(ID 4)
+  const spotlightIds = [61, 1, 7, 58, 4];
   const items = spotlightIds.map(id => ALL_ENRICHED_ADVICE.find(it => it.id === id) || ALL_ENRICHED_ADVICE[id-1]);
 
   // 顶部沉浸式今日节律仪表盘
@@ -358,7 +358,7 @@ def main():
         <span style="color:var(--accent-emerald); font-weight:600;" id="today-rhythm-stat">已达成 2/3</span>
       </div>
       <div class="today-rhythm-pills-row">
-        <div class="today-rhythm-pill done" onclick="jumpToSpotlightCard(97)">
+        <div class="today-rhythm-pill done" onclick="jumpToSpotlightCard(61)">
           <svg class="svg-icon" style="width:11px; height:11px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span>固定作息 07:00</span>
         </div>
@@ -673,7 +673,7 @@ function generatePosterCanvas(days, title, quote, stampName) {
 // 打开分享成就弹窗
 function openShareModal(id) {
   playMicroClick(440);
-  const item = ALL_ENRICHED_ADVICE.find(x => x.id === id) || { id: 97, t: "固定起床时间，周末也一样" };
+  const item = ALL_ENRICHED_ADVICE.find(x => x.id === id) || { id: 61, t: "保证充足的睡眠" };
   const modal = document.getElementById("share-card-modal");
   if (!modal) return;
   const isChecked = item._streakChecked;

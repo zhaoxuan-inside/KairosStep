@@ -19,7 +19,7 @@ void main() {
 
   test('all advice have valid leaf memberships and unique parent counts', () {
     expect(catalog.topics.roots.length, 6);
-    expect(catalog.adviceList.length, 767);
+    expect(catalog.adviceList.length, 737);
     for (final item in catalog.adviceList) {
       for (final leaf in item.topicPaths) {
         expect(catalog.topics.byPath[leaf]!.children, isEmpty);
@@ -41,7 +41,7 @@ void main() {
     expect(catalog.search('居家安全').map((a) => a.id), containsAll([3, 13]));
     expect(catalog.search('刷屏').map((a) => a.id), contains(137));
     expect(catalog.search('高血压没感觉也要管').map((a) => a.id), contains(7));
-    expect(catalog.search('睡眠 节律').map((a) => a.id), contains(98));
+    expect(catalog.search('睡眠 节律').map((a) => a.id), contains(61));
     expect(catalog.search('头盔', topicPath: 'health'), isEmpty);
     expect(
       catalog.search('', topicPath: 'daily/commute').map((a) => a.id),
@@ -70,18 +70,18 @@ void main() {
       first.excludeTopic('daily');
       expect(first.excludedTopicPaths, {'daily'});
       expect(first.matchesTopicPreferences(catalog.byId[3]!), isFalse);
-      expect(first.matchesTopicPreferences(catalog.byId[98]!), isTrue);
+      expect(first.matchesTopicPreferences(catalog.byId[61]!), isTrue);
       final restored = AppStore(catalog, first.prefs);
       await restored.restore();
       expect(restored.excludedTopicPaths, {'daily'});
       restored.excludeTopic('health');
-      expect(restored.matchesTopicPreferences(catalog.byId[98]!), isFalse);
+      expect(restored.matchesTopicPreferences(catalog.byId[61]!), isFalse);
       // Explicit search and the emergency panel remain available for helping others.
       expect(catalog.search('安全带').map((a) => a.id), contains(1));
       expect(restored.emergencyAdvices.map((a) => a.id), contains(397));
       restored.restoreAllTopics();
       expect(restored.excludedTopicPaths, isEmpty);
-      expect(restored.matchesTopicPreferences(catalog.byId[98]!), isTrue);
+      expect(restored.matchesTopicPreferences(catalog.byId[61]!), isTrue);
       expect(() => restored.excludeTopic('unknown'), throwsArgumentError);
     },
   );
@@ -91,11 +91,11 @@ void main() {
     () async {
       final subject = await store();
       subject.profile = const UserProfile(isSmoker: true, prunedOnly: false);
-      expect(subject.todayAdvices.map((a) => a.id), contains(52));
+      expect(subject.todayAdvices.map((a) => a.id), contains(49));
       subject.excludeTopic('health/mental');
-      expect(subject.todayAdvices.map((a) => a.id), isNot(contains(52)));
+      expect(subject.todayAdvices.map((a) => a.id), isNot(contains(49)));
       subject.restoreTopic('health/mental');
-      expect(subject.todayAdvices.map((a) => a.id), contains(52));
+      expect(subject.todayAdvices.map((a) => a.id), contains(49));
     },
   );
 

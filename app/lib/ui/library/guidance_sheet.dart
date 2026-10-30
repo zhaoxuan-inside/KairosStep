@@ -6,10 +6,10 @@ import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../detail/advice_detail_sheet.dart';
 
-/// 767 条建议全景引导罗盘与领域漫游底板。
+/// 737 条建议全景引导罗盘与领域漫游底板。
 ///
 /// 覆盖 6 大人生支柱（180健康、128职场、113家庭、202财产、99应急、45节律），
-/// 确保建议的引导能够 100% 覆盖到全库 767 条建议。
+/// 确保建议的引导能够 100% 覆盖到全库 737 条建议。
 class AdviceGuidanceSheet extends StatefulWidget {
   const AdviceGuidanceSheet({
     super.key,
@@ -119,7 +119,11 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                       color: p.action.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.explore_outlined, size: 20, color: p.action),
+                    child: Icon(
+                      Icons.explore_outlined,
+                      size: 20,
+                      color: p.action,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -127,7 +131,7 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '767 条建议全景引导罗盘',
+                          '737 条建议全景引导罗盘',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
@@ -164,7 +168,10 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                     onTap: () => _switchDomain(domain),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 220),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? domain.accentColor.withValues(alpha: 0.15)
@@ -188,13 +195,18 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                             domain.shortTitle,
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                               color: isSelected ? domain.accentColor : p.ink,
                             ),
                           ),
                           const SizedBox(width: 4),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? domain.accentColor.withValues(alpha: 0.2)
@@ -206,7 +218,9 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                               style: TextStyle(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: isSelected ? domain.accentColor : p.inkMute,
+                                color: isSelected
+                                    ? domain.accentColor
+                                    : p.inkMute,
                               ),
                             ),
                           ),
@@ -223,12 +237,16 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
               child: FadeTransition(
                 opacity: _animController,
                 child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.04),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
-                  ),
+                  position:
+                      Tween<Offset>(
+                        begin: const Offset(0, 0.04),
+                        end: Offset.zero,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: _animController,
+                          curve: Curves.easeOutCubic,
+                        ),
+                      ),
                   child: ListView(
                     controller: scrollController,
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -237,10 +255,14 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                       Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: _selectedDomain.accentColor.withValues(alpha: 0.08),
+                          color: _selectedDomain.accentColor.withValues(
+                            alpha: 0.08,
+                          ),
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: _selectedDomain.accentColor.withValues(alpha: 0.25),
+                            color: _selectedDomain.accentColor.withValues(
+                              alpha: 0.25,
+                            ),
                           ),
                         ),
                         child: Column(
@@ -270,7 +292,11 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                             const SizedBox(height: 4),
                             Text(
                               _selectedDomain.description,
-                              style: TextStyle(fontSize: 11.5, color: p.inkSub, height: 1.4),
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: p.inkSub,
+                                height: 1.4,
+                              ),
                             ),
                           ],
                         ),
@@ -279,7 +305,11 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                       // 涵盖章节胶囊群
                       Text(
                         '包含章节 (${_selectedDomain.chapters.length} 章)',
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: p.inkSub),
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: p.inkSub,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
@@ -290,7 +320,8 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                           return ActionChip(
                             avatar: CircleAvatar(
                               radius: 8,
-                              backgroundColor: _selectedDomain.accentColor.withValues(alpha: 0.2),
+                              backgroundColor: _selectedDomain.accentColor
+                                  .withValues(alpha: 0.2),
                               child: Text(
                                 '$count',
                                 style: TextStyle(
@@ -323,7 +354,11 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                         children: [
                           Text(
                             '精选实证建议与黄金行动',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.ink),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: p.ink,
+                            ),
                           ),
                           const Spacer(),
                           Text(
@@ -333,7 +368,9 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
                         ],
                       ),
                       const SizedBox(height: 8),
-                      ...domainAdvices.take(15).map((a) => _adviceSampleTile(p, a)),
+                      ...domainAdvices
+                          .take(15)
+                          .map((a) => _adviceSampleTile(p, a)),
                       if (domainAdvices.length > 15) ...[
                         const SizedBox(height: 10),
                         Center(
@@ -365,17 +402,28 @@ class _AdviceGuidanceSheetState extends State<AdviceGuidanceSheet>
         color: p.surface,
         borderRadius: BorderRadius.circular(14),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 4,
+          ),
           title: Text(
             a.title,
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: p.ink, height: 1.35),
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: p.ink,
+              height: 1.35,
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _selectedDomain.accentColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(9999),

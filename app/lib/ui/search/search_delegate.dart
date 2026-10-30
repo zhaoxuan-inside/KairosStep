@@ -64,7 +64,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
                       autofocus: true,
                       onChanged: (v) => setState(() => _q = v),
                       decoration: InputDecoration(
-                        hintText: '搜索 767 条建议 · 场景 / 红线 / 办事…',
+                        hintText: '搜索 737 条建议 · 场景 / 红线 / 办事…',
                         hintStyle: TextStyle(fontSize: 12.5, color: p.inkMute),
                         prefixIcon: Icon(
                           Icons.search,

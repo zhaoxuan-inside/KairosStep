@@ -13,7 +13,7 @@ import '../tools/tools_sheet.dart';
 
 /// 今天页：今日聚光流 + 完成量胶囊。
 ///
-/// B1 语义：当日完成的卡跨天自然清零（作用域键按天生成），无断签惩罚。
+/// B1 语义：当日完成的卡按作用域键隔离。
 class TodayView extends StatelessWidget {
   const TodayView({super.key});
 
@@ -37,7 +37,7 @@ class TodayView extends StatelessWidget {
                   Text('今天', style: Theme.of(context).textTheme.displaySmall),
                   const SizedBox(height: 4),
                   Text(
-                    '按画像动态匹配 $total 项日常节律 · 跨天自然清零',
+                    '按画像动态匹配 $total 项日常节律',
                     style: TextStyle(fontSize: 12, color: p.inkSub),
                   ),
                 ],

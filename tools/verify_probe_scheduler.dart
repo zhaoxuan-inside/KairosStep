@@ -269,7 +269,7 @@ void main() {
   final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
   final list = (json['list'] as List).cast<Map<String, dynamic>>();
   print('已载入建议全库: ${list.length} 条');
-  assert(list.length == 767, '全库必须正好为 767 条建议');
+  assert(list.length == 737, '全库必须正好为 737 条建议');
 
   // 1. 全库归并与分类验证
   final categoryCounts = <ProbeCategory, int>{};
@@ -286,7 +286,7 @@ void main() {
     print('  - ${cat.name}: $count 条');
     assert(count > 0, '分类 ${cat.name} 不能为空');
   }
-  print('✓ [PASS] 全库 767 条建议均已完成主动探查方式绑定，7 大类别全面覆盖！');
+  print('✓ [PASS] 全库 737 条建议均已完成主动探查方式绑定，7 大类别全面覆盖！');
 
   // 2. 核心建议显式映射精准度
   print('\n[2/4] 验证重点痛点建议的显式探查映射:');

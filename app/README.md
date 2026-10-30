@@ -1,6 +1,6 @@
 # 数字阶跃 KairosStep（Flutter 跨平台版）
 
-把《高性价比人生指南》**767 条建议**转化为可交互的行动系统 —— 移植自
+把《高性价比人生指南》**737 条建议**转化为可交互的行动系统 —— 移植自
 `docs/AdviceInteractiveDemo.html`（建议深度交互全景 Demo），本地优先，不访问网络。
 
 技术栈：**Flutter 3.47+ / Dart 3**，一套代码，六端发布（Android / iOS / Web / macOS / Windows / Linux）。
@@ -15,7 +15,7 @@
 | 当下 | 按真实时段（晨/上午/午后/傍晚/夜间）切换问候与 Hero 卡；齿轮时间尺可拖动预演其他时段 |
 | 今天 | 今日聚光流（起床连击 97、安全带 1、血压 7、刷牙 58、燃气窗口 4）+ 完成量胶囊 |
 | 周期 | 每周 / 每月 / 每年 三分段聚光流，完成量随分段胶囊滚动 |
-| 库 | 767 条全景流：拼音 A–Z 字母矩阵、34 章节矩阵、13 交互形态矩阵三维度筛选；范围三态（画像专属 → 父母适用 139 条 → 全量 767） |
+| 库 | 737 条全景流：拼音 A–Z 字母矩阵、34 章节矩阵、13 交互形态矩阵三维度筛选；范围三态（画像专属 → 父母适用 139 条 → 全量 737） |
 | 交互卡 | 13 种 act_type 微交互器（见下）+ 3 个聚光专项（四座安全带舱 / 血压计 / 家务时薪计算器） |
 | 详情层 | 证据包（说人话/成本/收益/证据等级/来源/关联建议），只读不影响打卡闭环 |
 | 全局搜索 | 标题/章节/标签/时机徽章全文检索（搜索秒开通道） |
@@ -85,7 +85,7 @@ flutter build linux --release        # Linux
 
 ### Android 说明
 
-- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 1.0.0
+- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 1.0.17
 - **release 构建不申请任何权限**（INTERNET 仅存在于 debug/profile 清单，用于开发工具；
   装机后系统里唯一可见的是应用自用的签名级 `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`，非敏感权限）
 - minSdk/targetSdk 由 Flutter 默认模板管理
@@ -99,7 +99,7 @@ Web 端本地持久化基于 localStorage，分享走浏览器降级，其余功
 ## 验证状态
 
 - `flutter analyze`：0 issues
-- `flutter test`：3 个测试全过（数据完整性 767/34 章/13 形态；画像排除孕产条目；五 Tab 渲染 + 安全带打卡闭环 + 计数）
+- `flutter test`：3 个测试全过（数据完整性 737/34 章/13 形态；画像排除孕产条目；五 Tab 渲染 + 安全带打卡闭环 + 计数）
 - `flutter build web --release`：构建成功并经浏览器端到端冒烟验证（当下页、库页、画像过滤 441 条）
 
 ## 跨平台注意事项

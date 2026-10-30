@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/advice.dart';
@@ -34,7 +35,7 @@ class _RegisteredReminder {
 /// 弹窗提示与提醒注册器 (Reminder Registry)
 ///
 /// 架构优势：
-/// 1. 彻底避免每次轮询全量线性扫描 767 条大库；
+/// 1. 彻底避免每次轮询全量线性扫描 737 条大库；
 /// 2. 仅对当前画像有效且已开启提醒的 5~15 条活跃建议进行按需注册；
 /// 3. 到达提醒时间点时精准弹出应用内提示卡，支持立即打卡、稍后提醒与今日忽略。
 class ReminderRegistry extends ChangeNotifier {
@@ -97,6 +98,9 @@ class ReminderRegistry extends ChangeNotifier {
   /// 检测给定时刻是否命中提醒点（精确到分钟）
   void checkCurrentTick(DateTime now) {
     if (_currentAlert != null) return; // 已有未关闭弹窗时不重复打扰
+
+    // 移动端夜间统一静默，避免 23:00-05:00 的提醒打扰睡眠。
+    if (now.hour >= 23 || now.hour < 5) return;
 
     final nowHour = now.hour;
     final nowMinute = now.minute;

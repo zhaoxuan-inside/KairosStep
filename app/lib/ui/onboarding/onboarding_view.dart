@@ -9,7 +9,7 @@ import '../../state/app_store.dart';
 /// 10 阶全息画像与生活防线引导向导：
 ///
 /// 特性：
-/// 1. 100% 覆盖 767 条建议与 34 个章节、6 大支柱；
+/// 1. 100% 覆盖 737 条建议与 34 个章节、6 大支柱；
 /// 2. 深度定制与无死角剪枝：根据用户画像逐阶级联激活或拦截专属防线；
 /// 3. 全天候随时跳过：顶部与底部均常驻“跳过/以此配置直接开启”，既给想精细化配置的用户充分的机会，又随时保障用户快速进入；
 /// 4. 实时反馈量化：每一步实时动态演算“已激活专属条目数”与“已剪枝降噪数”。
@@ -111,7 +111,14 @@ class _OnboardingViewState extends State<OnboardingView>
     _hasWeightLossGoal = false;
     _hasGastroAcidOrStomach = false;
     _hasFrequentPainOrAnalgesic = false;
-    _selectedDomains = {'health', 'career', 'family', 'finance', 'safety', 'resilience'};
+    _selectedDomains = {
+      'health',
+      'career',
+      'family',
+      'finance',
+      'safety',
+      'resilience',
+    };
     _prunedOnly = true;
 
     // 动画
@@ -135,13 +142,13 @@ class _OnboardingViewState extends State<OnboardingView>
       parent: _pageAnimController,
       curve: Curves.easeOutCubic,
     );
-    _pageSlideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.03),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _pageAnimController,
-      curve: Curves.easeOutCubic,
-    ));
+    _pageSlideAnim =
+        Tween<Offset>(begin: const Offset(0, 0.03), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _pageAnimController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _pageAnimController.forward();
   }
@@ -155,21 +162,33 @@ class _OnboardingViewState extends State<OnboardingView>
       _age = cur.age;
       _hasCar = cur.hasCar;
       _hasTwowheeler = cur.hasTwowheeler;
-      _livingStatus = cur.hasMortgage ? 'owner_loan' : (cur.isTenant ? 'tenant' : 'owner_free');
+      _livingStatus = cur.hasMortgage
+          ? 'owner_loan'
+          : (cur.isTenant ? 'tenant' : 'owner_free');
       _hasPipedGas = cur.hasPipedGas;
       _hasPets = cur.hasPets;
       _relationshipStatus = cur.roles.contains('伴侣') ? 'partner' : 'single';
       _hasChildren = cur.hasChildren || cur.roles.contains('家长');
       _childAgeStage = cur.childAgeStage;
-      _hasAgingParents = cur.hasAgingParents || cur.livingConditions.contains('家有老人');
+      _hasAgingParents =
+          cur.hasAgingParents || cur.livingConditions.contains('家有老人');
       _isProgrammer = cur.isProgrammer || cur.roles.contains('程序员');
       _isEntrepreneur = cur.isEntrepreneur || cur.roles.contains('创业者');
-      _hasDigitalAssetsConcern = cur.hasDigitalAssetsConcern || cur.roles.contains('平台运营');
-      _isPregnantOrPlanning = cur.isPregnantOrPlanning || cur.roles.contains('孕产') || cur.roles.contains('准父母');
-      _hasAbroadTravelOrStudy = cur.hasAbroadTravelOrStudy || cur.roles.contains('出境者') || cur.roles.contains('留学生');
-      _hasDebtPressure = cur.hasDebtPressure || cur.livingConditions.contains('负债人群');
+      _hasDigitalAssetsConcern =
+          cur.hasDigitalAssetsConcern || cur.roles.contains('平台运营');
+      _isPregnantOrPlanning =
+          cur.isPregnantOrPlanning ||
+          cur.roles.contains('孕产') ||
+          cur.roles.contains('准父母');
+      _hasAbroadTravelOrStudy =
+          cur.hasAbroadTravelOrStudy ||
+          cur.roles.contains('出境者') ||
+          cur.roles.contains('留学生');
+      _hasDebtPressure =
+          cur.hasDebtPressure || cur.livingConditions.contains('负债人群');
       _hasDisabilityCare = cur.hasDisabilityCare || cur.roles.contains('残障人士');
-      _hasCrisisOrMentalStress = cur.hasCrisisOrMentalStress || cur.healthConcerns.contains('心理减压');
+      _hasCrisisOrMentalStress =
+          cur.hasCrisisOrMentalStress || cur.healthConcerns.contains('心理减压');
 
       if (_isProgrammer) {
         _careerType = 'programmer';
@@ -184,16 +203,21 @@ class _OnboardingViewState extends State<OnboardingView>
       }
 
       _isSmoker = cur.isSmoker;
-      _hasHypertension = cur.hasHypertension || cur.healthConcerns.contains('血压关注');
+      _hasHypertension =
+          cur.hasHypertension || cur.healthConcerns.contains('血压关注');
       _hasDiabetes = cur.hasDiabetes || cur.healthConcerns.contains('血糖关注');
-      _hasKidneyStones = cur.hasKidneyStones || cur.healthConcerns.contains('肾结石');
+      _hasKidneyStones =
+          cur.hasKidneyStones || cur.healthConcerns.contains('肾结石');
       _hasGout = cur.hasGout || cur.healthConcerns.contains('痛风');
       _hasDeskJob = cur.healthConcerns.contains('久坐伏案');
       _heightCm = cur.heightCm ?? 170.0;
       _weightKg = cur.weightKg ?? 65.0;
-      _hasWeightLossGoal = cur.hasWeightLossGoal || cur.healthConcerns.contains('减重管理');
-      _hasGastroAcidOrStomach = cur.hasGastroAcidOrStomach || cur.healthConcerns.contains('反酸胃炎');
-      _hasFrequentPainOrAnalgesic = cur.hasFrequentPainOrAnalgesic || cur.healthConcerns.contains('止痛用药');
+      _hasWeightLossGoal =
+          cur.hasWeightLossGoal || cur.healthConcerns.contains('减重管理');
+      _hasGastroAcidOrStomach =
+          cur.hasGastroAcidOrStomach || cur.healthConcerns.contains('反酸胃炎');
+      _hasFrequentPainOrAnalgesic =
+          cur.hasFrequentPainOrAnalgesic || cur.healthConcerns.contains('止痛用药');
       _prunedOnly = cur.prunedOnly;
       if (cur.focusDomains.isNotEmpty) {
         _selectedDomains = Set<String>.from(cur.focusDomains);
@@ -214,8 +238,10 @@ class _OnboardingViewState extends State<OnboardingView>
   UserProfile _buildCurrentProfile() {
     final roles = <String>['全民'];
     if (_careerType == 'employed') roles.add('上班族');
-    if (_careerType == 'programmer' || _isProgrammer) roles.addAll(['上班族', '程序员']);
-    if (_careerType == 'entrepreneur' || _isEntrepreneur) roles.addAll(['创业者', '合伙人']);
+    if (_careerType == 'programmer' || _isProgrammer)
+      roles.addAll(['上班族', '程序员']);
+    if (_careerType == 'entrepreneur' || _isEntrepreneur)
+      roles.addAll(['创业者', '合伙人']);
     if (_careerType == 'student') roles.add('学生');
     if (_careerType == 'freelance') roles.add('灵活就业者');
 
@@ -296,40 +322,75 @@ class _OnboardingViewState extends State<OnboardingView>
       if (pr['has_car'] == true && !p.hasCar) return false;
       if (pr['has_twowheeler'] == true && !p.hasTwowheeler) return false;
       if (pr['is_smoker'] == true && !p.isSmoker) return false;
-      if (pr['has_children'] == true && !p.hasChildren && !p.roles.contains('家长') && !p.roles.contains('准父母')) return false;
-      if (pr['is_pregnant_or_parent'] == true && !p.hasChildren && !p.roles.contains('孕产') && !p.roles.contains('准父母') && !p.roles.contains('家长')) return false;
-      if (pr['has_aging_parents'] == true && !p.hasAgingParents && !p.livingConditions.contains('家有老人') && !p.roles.contains('照护者')) return false;
-      if (pr['is_tenant'] == true && !p.isTenant && !p.livingConditions.contains('租房人')) return false;
-      if (pr['has_mortgage'] == true && !p.hasMortgage && !p.livingConditions.contains('购房人')) return false;
-      if (pr['has_pets'] == true && !p.hasPets && !p.livingConditions.contains('养犬人')) return false;
+      if (pr['has_children'] == true &&
+          !p.hasChildren &&
+          !p.roles.contains('家长') &&
+          !p.roles.contains('准父母'))
+        return false;
+      if (pr['is_pregnant_or_parent'] == true &&
+          !p.hasChildren &&
+          !p.roles.contains('孕产') &&
+          !p.roles.contains('准父母') &&
+          !p.roles.contains('家长'))
+        return false;
+      if (pr['has_aging_parents'] == true &&
+          !p.hasAgingParents &&
+          !p.livingConditions.contains('家有老人') &&
+          !p.roles.contains('照护者'))
+        return false;
+      if (pr['is_tenant'] == true &&
+          !p.isTenant &&
+          !p.livingConditions.contains('租房人'))
+        return false;
+      if (pr['has_mortgage'] == true &&
+          !p.hasMortgage &&
+          !p.livingConditions.contains('购房人'))
+        return false;
+      if (pr['has_pets'] == true &&
+          !p.hasPets &&
+          !p.livingConditions.contains('养犬人'))
+        return false;
       if (pr['has_piped_gas'] == true && !p.hasPipedGas) return false;
-      if (pr['is_entrepreneur'] == true && !p.isEntrepreneur && !p.roles.contains('创业者') && !p.roles.contains('合伙人')) return false;
+      if (pr['is_entrepreneur'] == true &&
+          !p.isEntrepreneur &&
+          !p.roles.contains('创业者') &&
+          !p.roles.contains('合伙人'))
+        return false;
       if (pr['gender_female'] == true && p.gender != '女') return false;
       if (pr['gender_male'] == true && p.gender != '男') return false;
       if (pr['min_age'] is int && p.age < (pr['min_age'] as int)) return false;
     }
 
     final text = '${a.title} ${a.tags.join(" ")} ${a.chapter}';
-    final hasChronic = a.tags.contains('确诊慢病') ||
+    final hasChronic =
+        a.tags.contains('确诊慢病') ||
         a.tags.contains('慢性病') ||
         a.chapter == '得了慢性病之后怎么活' ||
         a.chapter == '残疾之后怎么活';
 
-    if (hasChronic || text.contains('肾结石') || text.contains('痛风') || text.contains('高尿酸')) {
+    if (hasChronic ||
+        text.contains('肾结石') ||
+        text.contains('痛风') ||
+        text.contains('高尿酸')) {
       if (text.contains('肾结石')) {
-        if (!p.hasKidneyStones && !p.healthConcerns.contains('肾结石')) return false;
+        if (!p.hasKidneyStones && !p.healthConcerns.contains('肾结石'))
+          return false;
       }
       if (text.contains('痛风') || text.contains('高尿酸')) {
         if (!p.hasGout && !p.healthConcerns.contains('痛风')) return false;
       }
       if (text.contains('高血压') || (text.contains('血压') && hasChronic)) {
-        if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) return false;
+        if (!p.hasHypertension && !p.healthConcerns.contains('血压关注'))
+          return false;
       }
       if (text.contains('糖尿病') || text.contains('血糖') || text.contains('胰岛素')) {
         if (!p.hasDiabetes && !p.healthConcerns.contains('血糖关注')) return false;
       }
-      if (a.chapter == '残疾之后怎么活' || a.tags.contains('残疾') || a.tags.contains('残障人士')) {
-        if (!p.roles.contains('残障人士') && !p.healthConcerns.contains('残疾照护')) return false;
+      if (a.chapter == '残疾之后怎么活' ||
+          a.tags.contains('残疾') ||
+          a.tags.contains('残障人士')) {
+        if (!p.roles.contains('残障人士') && !p.healthConcerns.contains('残疾照护'))
+          return false;
       }
       if (a.chapter == '得了慢性病之后怎么活' &&
           !p.hasHypertension &&
@@ -342,7 +403,9 @@ class _OnboardingViewState extends State<OnboardingView>
     }
 
     // 减重药物与手环运动量化 (ID 663, 665, 199)
-    if (a.id == 663 || a.id == 665 || a.id == 199 ||
+    if (a.id == 663 ||
+        a.id == 665 ||
+        a.id == 199 ||
         text.contains('司美格鲁肽') ||
         text.contains('减肥针') ||
         text.contains('减肥药') ||
@@ -351,45 +414,74 @@ class _OnboardingViewState extends State<OnboardingView>
     }
 
     // 肠胃反酸与奥美拉唑 (ID 760)
-    if (a.id == 760 || text.contains('奥美拉唑') || (text.contains('反酸') && text.contains('胃'))) {
+    if (a.id == 760 ||
+        text.contains('奥美拉唑') ||
+        (text.contains('反酸') && text.contains('胃'))) {
       if (!p.hasGastroAcidOrStomach) return false;
     }
 
     // 止痛药限制 (ID 763)
-    if (a.id == 763 || (text.contains('止疼药') && text.contains('15天')) || (text.contains('止痛药') && text.contains('15天'))) {
+    if (a.id == 763 ||
+        (text.contains('止疼药') && text.contains('15天')) ||
+        (text.contains('止痛药') && text.contains('15天'))) {
       if (!p.hasFrequentPainOrAnalgesic) return false;
     }
 
     // 独居与安全兜底 (ID 675)
-    if (a.id == 675 || text.contains('盯着你的那个人') || text.contains('散养东西') || text.contains('三道安全兜底网')) {
-      if (p.relationshipStatus != 'single' && !p.livingConditions.contains('独居')) return false;
+    if (a.id == 675 ||
+        text.contains('盯着你的那个人') ||
+        text.contains('散养东西') ||
+        text.contains('三道安全兜底网')) {
+      if (p.relationshipStatus != 'single' &&
+          !p.livingConditions.contains('独居'))
+        return false;
     }
 
     // 抑郁危机与自杀干预 (ID 25, 264, 568)
-    if (a.id == 568 || a.id == 25 || a.id == 264 || text.contains('有自杀念头时打 12356') || text.contains('带着孩子一起走')) {
+    if (a.id == 568 ||
+        a.id == 25 ||
+        a.id == 264 ||
+        text.contains('有自杀念头时打 12356') ||
+        text.contains('带着孩子一起走')) {
       return false;
     }
 
     // 孕产专科急重症与子痫用药强门禁 (ID 644, 646, 647)
-    if (a.id == 644 || a.id == 646 || a.id == 647 || text.contains('破水了就地平躺') || text.contains('子痫前期')) {
-      if (p.gender != '女' || (!p.isPregnantOrPlanning && !p.roles.contains('孕产') && !p.roles.contains('准父母'))) {
+    if (a.id == 644 ||
+        a.id == 646 ||
+        a.id == 647 ||
+        text.contains('破水了就地平躺') ||
+        text.contains('子痫前期')) {
+      if (p.gender != '女' ||
+          (!p.isPregnantOrPlanning &&
+              !p.roles.contains('孕产') &&
+              !p.roles.contains('准父母'))) {
         return false;
       }
     }
 
     // 婴幼儿与学龄儿童突发及欺凌门禁 (ID 545, 686, 704)
-    if (a.id == 545 || a.id == 686 || a.id == 704 || text.contains('新生儿黄疸') || text.contains('孩子被欺凌') || text.contains('撞了头、之后头痛')) {
-      if (!p.hasChildren && !p.roles.contains('家长') && !p.roles.contains('准父母')) {
+    if (a.id == 545 ||
+        a.id == 686 ||
+        a.id == 704 ||
+        text.contains('新生儿黄疸') ||
+        text.contains('孩子被欺凌') ||
+        text.contains('撞了头、之后头痛')) {
+      if (!p.hasChildren &&
+          !p.roles.contains('家长') &&
+          !p.roles.contains('准父母')) {
         return false;
       }
     }
 
     // 专病与特殊高危用药强门禁 (ID 44 房颤, ID 121 失眠安眠药, ID 757 60岁布洛芬)
     if (a.id == 44 || text.contains('查出房颤请医生评估吃抗凝药')) {
-      if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) return false;
+      if (!p.hasHypertension && !p.healthConcerns.contains('血压关注'))
+        return false;
     }
     if (a.id == 121 || text.contains('别一上来就长期吃安眠药')) {
-      if (!p.healthConcerns.contains('心理减压') && !p.hasCrisisOrMentalStress) return false;
+      if (!p.healthConcerns.contains('心理减压') && !p.hasCrisisOrMentalStress)
+        return false;
     }
     if (a.id == 757 || text.contains('60 岁以上、胃出过血、在吃抗凝药')) {
       if (p.age < 60 && !p.hasGastroAcidOrStomach) return false;
@@ -410,10 +502,16 @@ class _OnboardingViewState extends State<OnboardingView>
       }
     }
     if (chap == '创业与做生意：别把家底赔进去') {
-      if (!p.isEntrepreneur && !p.roles.contains('创业者') && !p.roles.contains('合伙人')) return false;
+      if (!p.isEntrepreneur &&
+          !p.roles.contains('创业者') &&
+          !p.roles.contains('合伙人'))
+        return false;
     }
     if (chap == '出国、旅行与境外安全' || chap == '出国留学：身份、打工、保险和回国认证') {
-      if (!p.hasAbroadTravelOrStudy && !p.roles.contains('出境者') && !p.roles.contains('留学生')) return false;
+      if (!p.hasAbroadTravelOrStudy &&
+          !p.roles.contains('出境者') &&
+          !p.roles.contains('留学生'))
+        return false;
     }
     if (chap == '怀孕和生产：从发现怀孕到出院办证') {
       if (p.gender == '男' &&
@@ -425,10 +523,16 @@ class _OnboardingViewState extends State<OnboardingView>
       }
     }
     if (chap == '刚出生的孩子怎么带') {
-      if (p.childAgeStage != 'infant' && !p.hasChildren && !p.roles.contains('家长')) return false;
+      if (p.childAgeStage != 'infant' &&
+          !p.hasChildren &&
+          !p.roles.contains('家长'))
+        return false;
     }
     if (chap == '上学以后的孩子') {
-      if (p.childAgeStage != 'school' && !p.hasChildren && !p.roles.contains('家长')) return false;
+      if (p.childAgeStage != 'school' &&
+          !p.hasChildren &&
+          !p.roles.contains('家长'))
+        return false;
     }
 
     if (a.tags.any(p.exclude.contains)) return false;
@@ -436,7 +540,8 @@ class _OnboardingViewState extends State<OnboardingView>
 
     final stageTags = const ['少年', '青年', '中年', '老年'];
     final adviceStages = a.tags.where(stageTags.contains).toList();
-    if (adviceStages.isNotEmpty && !adviceStages.any(p.stages.contains)) return false;
+    if (adviceStages.isNotEmpty && !adviceStages.any(p.stages.contains))
+      return false;
 
     return true;
   }
@@ -527,8 +632,10 @@ class _OnboardingViewState extends State<OnboardingView>
   Widget _buildTopBar(AppPalettes p) {
     final catalog = catalogOf(context);
     final tempProfile = _buildCurrentProfile();
-    final activeCount = catalog.adviceList.where((a) => _evalAdviceMatch(a, tempProfile)).length;
-    final prunedCount = 767 - activeCount;
+    final activeCount = catalog.adviceList
+        .where((a) => _evalAdviceMatch(a, tempProfile))
+        .length;
+    final prunedCount = catalog.adviceList.length - activeCount;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -548,7 +655,10 @@ class _OnboardingViewState extends State<OnboardingView>
               // 实时剪枝指标指示器
               if (_currentPage > 0 && _currentPage < _totalSteps - 1)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: p.action.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(9999),
@@ -556,7 +666,11 @@ class _OnboardingViewState extends State<OnboardingView>
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.filter_alt_outlined, size: 12, color: p.action),
+                      Icon(
+                        Icons.filter_alt_outlined,
+                        size: 12,
+                        color: p.action,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '专属激活 $activeCount · 剪枝过滤 $prunedCount',
@@ -614,7 +728,10 @@ class _OnboardingViewState extends State<OnboardingView>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: p.action.withValues(alpha: 0.1),
-              border: Border.all(color: p.action.withValues(alpha: 0.25), width: 1.5),
+              border: Border.all(
+                color: p.action.withValues(alpha: 0.25),
+                width: 1.5,
+              ),
             ),
             child: Center(
               child: Icon(Icons.shield_outlined, size: 40, color: p.action),
@@ -634,7 +751,7 @@ class _OnboardingViewState extends State<OnboardingView>
         ),
         const SizedBox(height: 12),
         Text(
-          'KairosStep 汇聚了 767 条涵盖生存防线、人身安全、医疗急救、合规法律、亲情教育与危机韧性的实操智慧。\n\n我们不推崇无意义的信息轰炸——通过构建您的专属全息画像，应用将智能剪枝与您无关的冗余规则（如未患肾结石绝不推肾结石喝水提示），将日常待办化繁为简。',
+          'KairosStep 汇聚了 737 条涵盖生存防线、人身安全、医疗急救、合规法律、亲情教育与危机韧性的实操智慧。\n\n我们不推崇无意义的信息轰炸——通过构建您的专属全息画像，应用将智能剪枝与您无关的冗余规则（如未患肾结石绝不推肾结石喝水提示），将日常待办化繁为简。',
           textAlign: TextAlign.left,
           style: TextStyle(fontSize: 14, height: 1.6, color: p.inkSub),
         ),
@@ -695,7 +812,11 @@ class _OnboardingViewState extends State<OnboardingView>
             Text('当前年龄', style: _groupLabelStyle(p)),
             Text(
               '$_age 岁 (${_getStageLabel(_age)})',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: p.action),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: p.action,
+              ),
             ),
           ],
         ),
@@ -963,12 +1084,22 @@ class _OnboardingViewState extends State<OnboardingView>
             child: Wrap(
               spacing: 8,
               children: [
-                _buildChoiceChip(p, '婴幼儿期 (0~3岁)', _childAgeStage == 'infant', () {
-                  setState(() => _childAgeStage = 'infant');
-                }),
-                _buildChoiceChip(p, '学龄期 (幼小初高)', _childAgeStage == 'school', () {
-                  setState(() => _childAgeStage = 'school');
-                }),
+                _buildChoiceChip(
+                  p,
+                  '婴幼儿期 (0~3岁)',
+                  _childAgeStage == 'infant',
+                  () {
+                    setState(() => _childAgeStage = 'infant');
+                  },
+                ),
+                _buildChoiceChip(
+                  p,
+                  '学龄期 (幼小初高)',
+                  _childAgeStage == 'school',
+                  () {
+                    setState(() => _childAgeStage = 'school');
+                  },
+                ),
               ],
             ),
           ),
@@ -1057,7 +1188,9 @@ class _OnboardingViewState extends State<OnboardingView>
     final heightM = _heightCm / 100.0;
     final bmi = (heightM > 0) ? (_weightKg / (heightM * heightM)) : 22.0;
     final bmiStr = bmi.toStringAsFixed(1);
-    final bmiCategory = bmi < 18.5 ? '偏瘦' : (bmi < 24.0 ? '正常' : (bmi < 28.0 ? '超重' : '肥胖'));
+    final bmiCategory = bmi < 18.5
+        ? '偏瘦'
+        : (bmi < 24.0 ? '正常' : (bmi < 28.0 ? '超重' : '肥胖'));
     final bmiColor = (bmi >= 18.5 && bmi < 24.0) ? p.emerald : p.amber;
 
     return _buildPageWrapper(
@@ -1082,15 +1215,31 @@ class _OnboardingViewState extends State<OnboardingView>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('身高: ${_heightCm.round()} cm', style: TextStyle(color: p.ink, fontWeight: FontWeight.w600)),
-                  Text('体重: ${_weightKg.toStringAsFixed(1)} kg', style: TextStyle(color: p.ink, fontWeight: FontWeight.w600)),
+                  Text(
+                    '身高: ${_heightCm.round()} cm',
+                    style: TextStyle(color: p.ink, fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    '体重: ${_weightKg.toStringAsFixed(1)} kg',
+                    style: TextStyle(color: p.ink, fontWeight: FontWeight.w600),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: bmiColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text('BMI $bmiStr · $bmiCategory', style: TextStyle(color: bmiColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'BMI $bmiStr · $bmiCategory',
+                      style: TextStyle(
+                        color: bmiColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -1173,14 +1322,16 @@ class _OnboardingViewState extends State<OnboardingView>
           title: '反酸烧心 / 慢性胃炎 / 胃食管反流',
           desc: '未勾选绝不推荐奥美拉唑等强效抑酸药；提醒饭后勿躺及抑酸疗程严控 (ID 760)',
           value: _hasGastroAcidOrStomach,
-          onChanged: (v) => setState(() => _hasGastroAcidOrStomach = v ?? false),
+          onChanged: (v) =>
+              setState(() => _hasGastroAcidOrStomach = v ?? false),
         ),
         _buildCheckboxTile(
           p,
           title: '常备止痛药 / 偏头痛或关节慢性疼痛',
           desc: '未勾选绝不打扰；开启后提醒一个月吃止痛药严禁超过15天防药物过度性头痛 (ID 763)',
           value: _hasFrequentPainOrAnalgesic,
-          onChanged: (v) => setState(() => _hasFrequentPainOrAnalgesic = v ?? false),
+          onChanged: (v) =>
+              setState(() => _hasFrequentPainOrAnalgesic = v ?? false),
         ),
         const SizedBox(height: 14),
         Text('日常身体习性', style: _groupLabelStyle(p)),
@@ -1201,7 +1352,13 @@ class _OnboardingViewState extends State<OnboardingView>
         ),
         _buildPruneHint(
           p,
-          !_hasKidneyStones && !_hasGout && !_hasHypertension && !_hasDiabetes && !_hasGastroAcidOrStomach && !_hasFrequentPainOrAnalgesic && !_hasWeightLossGoal
+          !_hasKidneyStones &&
+                  !_hasGout &&
+                  !_hasHypertension &&
+                  !_hasDiabetes &&
+                  !_hasGastroAcidOrStomach &&
+                  !_hasFrequentPainOrAnalgesic &&
+                  !_hasWeightLossGoal
               ? '已拦截全部慢病、特殊抑酸药与减重干预条目，确保日常清单绝对纯净！'
               : '已按您勾选的体征与病史开放对应的精准康复及安全用药日程',
         ),
@@ -1237,7 +1394,11 @@ class _OnboardingViewState extends State<OnboardingView>
           children: LifeDomain.values.map((domain) {
             final isSel = _selectedDomains.contains(domain.id);
             return FilterChip(
-              avatar: Icon(domain.icon, size: 16, color: isSel ? Colors.white : domain.accentColor),
+              avatar: Icon(
+                domain.icon,
+                size: 16,
+                color: isSel ? Colors.white : domain.accentColor,
+              ),
               label: Text(domain.shortTitle),
               selected: isSel,
               selectedColor: domain.accentColor,
@@ -1268,8 +1429,10 @@ class _OnboardingViewState extends State<OnboardingView>
   Widget _buildStep10Synthesis(AppPalettes p) {
     final tempProfile = _buildCurrentProfile();
     final catalog = catalogOf(context);
-    final activeAdvice = catalog.adviceList.where((a) => _evalAdviceMatch(a, tempProfile)).toList();
-    final prunedCount = 767 - activeAdvice.length;
+    final activeAdvice = catalog.adviceList
+        .where((a) => _evalAdviceMatch(a, tempProfile))
+        .toList();
+    final prunedCount = catalog.adviceList.length - activeAdvice.length;
 
     return _buildPageWrapper(
       children: [
@@ -1285,12 +1448,7 @@ class _OnboardingViewState extends State<OnboardingView>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
-                    colors: [
-                      p.action,
-                      Colors.cyan,
-                      Colors.indigo,
-                      p.action,
-                    ],
+                    colors: [p.action, Colors.cyan, Colors.indigo, p.action],
                   ),
                 ),
                 child: Center(
@@ -1301,7 +1459,11 @@ class _OnboardingViewState extends State<OnboardingView>
                       shape: BoxShape.circle,
                       color: p.surface,
                     ),
-                    child: Icon(Icons.verified_outlined, size: 36, color: p.action),
+                    child: Icon(
+                      Icons.verified_outlined,
+                      size: 36,
+                      color: p.action,
+                    ),
                   ),
                 ),
               ),
@@ -1320,7 +1482,7 @@ class _OnboardingViewState extends State<OnboardingView>
         ),
         const SizedBox(height: 8),
         Text(
-          '已从 767 条建议中为您量身剪裁',
+          '已从 737 条建议中为您量身剪裁',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14, color: p.inkSub),
         ),
@@ -1374,16 +1536,24 @@ class _OnboardingViewState extends State<OnboardingView>
               child: FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: p.action,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: _nextPage,
-                child: const Text('开始定制全息防线 (推荐)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                child: const Text(
+                  '开始定制全息防线 (推荐)',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: _complete,
-              child: Text('使用默认标准画像快速进入', style: TextStyle(color: p.inkSub, fontSize: 13)),
+              child: Text(
+                '使用默认标准画像快速进入',
+                style: TextStyle(color: p.inkSub, fontSize: 13),
+              ),
             ),
           ],
         ),
@@ -1399,7 +1569,9 @@ class _OnboardingViewState extends State<OnboardingView>
           child: FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: p.action,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             onPressed: _complete,
             child: Text(
@@ -1415,7 +1587,9 @@ class _OnboardingViewState extends State<OnboardingView>
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       decoration: BoxDecoration(
         color: p.surface,
-        border: Border(top: BorderSide(color: p.hairline.withValues(alpha: 0.5), width: 0.5)),
+        border: Border(
+          top: BorderSide(color: p.hairline.withValues(alpha: 0.5), width: 0.5),
+        ),
       ),
       child: Row(
         children: [
@@ -1423,13 +1597,19 @@ class _OnboardingViewState extends State<OnboardingView>
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: p.hairline),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: _complete,
               child: Text(
                 '以此配置直接开启',
-                style: TextStyle(color: p.inkSub, fontSize: 13, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: p.inkSub,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -1439,14 +1619,19 @@ class _OnboardingViewState extends State<OnboardingView>
             child: FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: p.action,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onPressed: _nextPage,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Text('下一步', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text(
+                    '下一步',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
                   SizedBox(width: 4),
                   Icon(Icons.arrow_forward_ios, size: 14),
                 ],
@@ -1501,11 +1686,8 @@ class _OnboardingViewState extends State<OnboardingView>
     );
   }
 
-  TextStyle _groupLabelStyle(AppPalettes p) => TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: p.ink,
-      );
+  TextStyle _groupLabelStyle(AppPalettes p) =>
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: p.ink);
 
   Widget _buildInfoBox(
     AppPalettes p, {
@@ -1531,7 +1713,11 @@ class _OnboardingViewState extends State<OnboardingView>
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: p.action),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: p.action,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -1597,7 +1783,8 @@ class _OnboardingViewState extends State<OnboardingView>
               children: [
                 Icon(icon, size: 20, color: selected ? p.action : p.inkSub),
                 const Spacer(),
-                if (selected) Icon(Icons.check_circle, size: 16, color: p.action),
+                if (selected)
+                  Icon(Icons.check_circle, size: 16, color: p.action),
               ],
             ),
             const SizedBox(height: 10),
@@ -1610,10 +1797,7 @@ class _OnboardingViewState extends State<OnboardingView>
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 11, color: p.inkSub),
-            ),
+            Text(subtitle, style: TextStyle(fontSize: 11, color: p.inkSub)),
           ],
         ),
       ),
@@ -1741,10 +1925,7 @@ class _OnboardingViewState extends State<OnboardingView>
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    desc,
-                    style: TextStyle(fontSize: 11, color: p.inkSub),
-                  ),
+                  Text(desc, style: TextStyle(fontSize: 11, color: p.inkSub)),
                 ],
               ),
             ),
@@ -1767,15 +1948,13 @@ class _OnboardingViewState extends State<OnboardingView>
       decoration: BoxDecoration(
         color: p.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: value ? p.action.withValues(alpha: 0.5) : p.hairline),
+        border: Border.all(
+          color: value ? p.action.withValues(alpha: 0.5) : p.hairline,
+        ),
       ),
       child: Row(
         children: [
-          Checkbox(
-            value: value,
-            activeColor: p.action,
-            onChanged: onChanged,
-          ),
+          Checkbox(value: value, activeColor: p.action, onChanged: onChanged),
           const SizedBox(width: 6),
           Expanded(
             child: Column(
@@ -1783,7 +1962,11 @@ class _OnboardingViewState extends State<OnboardingView>
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: p.ink),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: p.ink,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -1820,7 +2003,14 @@ class _OnboardingViewState extends State<OnboardingView>
             children: [
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 6),
-              Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -1830,7 +2020,11 @@ class _OnboardingViewState extends State<OnboardingView>
             children: [
               Text(
                 count,
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: color),
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
               ),
               const SizedBox(width: 4),
               Text(unit, style: TextStyle(fontSize: 12, color: color)),
@@ -1883,7 +2077,11 @@ class _OnboardingViewState extends State<OnboardingView>
                 ),
                 child: Text(
                   t,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: p.action),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: p.action,
+                  ),
                 ),
               );
             }).toList(),

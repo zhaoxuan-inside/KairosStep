@@ -8,6 +8,9 @@ class Boot {
   static Future<AppStore> restore(Catalog catalog) async {
     final prefs = await SharedPreferences.getInstance();
     final store = AppStore(catalog, prefs);
+    await store.mobileNotificationService.initialize(
+      onTap: store.probeScheduler.handleNotificationTap,
+    );
     await store.restore();
     return store;
   }

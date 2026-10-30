@@ -4,7 +4,7 @@ import 'dart:math' as math;
 
 void main() {
   print('=====================================================');
-  print('执行全库 767 条建议治理与门禁加固综合验证 (Pure Dart Engine)');
+  print('执行全库 737 条建议治理与门禁加固综合验证 (Pure Dart Engine)');
   print('=====================================================');
 
   final file = File('app/assets/data/advice.json');

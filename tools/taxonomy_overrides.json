@@ -32,44 +32,41 @@
     ],
     "reason": "平衡训练与居家适老改造，移出饮食兜底"
   },
+  "18": {
+    "paths": [
+      "health/prevention/screening"
+    ],
+    "reason": "HPV 检测是宫颈癌筛查，不是接种 HPV 疫苗"
+  },
+  "24": {
+    "paths": [
+      "health/prevention/screening"
+    ],
+    "reason": "低剂量胸部 CT 是高危人群筛查，不是戒烟行动"
+  },
+  "31": {
+    "paths": [
+      "health/prevention/screening"
+    ],
+    "reason": "高危行为后的 HIV 检测属于筛查，不属于饮食"
+  },
+  "38": {
+    "paths": [
+      "health/treatment/medication"
+    ],
+    "reason": "暴露前预防药的咨询与用药管理属于医疗用药，不属于饮食"
+  },
   "61": {
     "paths": [
       "health/prevention/sleep"
     ],
     "reason": "睡眠节律"
   },
-  "65": {
-    "paths": [
-      "health/prevention/exercise",
-      "daily/digital/time_energy"
-    ],
-    "reason": "久坐活动与工作节奏"
-  },
   "85": {
     "paths": [
       "health/prevention/sleep"
     ],
     "reason": "午睡属于睡眠节律"
-  },
-  "96": {
-    "paths": [
-      "daily/digital/screen_time",
-      "daily/digital/time_energy"
-    ],
-    "reason": "减少手机打断"
-  },
-  "97": {
-    "paths": [
-      "health/prevention/sleep"
-    ],
-    "reason": "固定起床时间"
-  },
-  "98": {
-    "paths": [
-      "health/prevention/sleep",
-      "daily/digital/time_energy"
-    ],
-    "reason": "睡眠与精力管理交叉"
   },
   "99": {
     "paths": [
@@ -84,19 +81,6 @@
       "daily/digital/screen_time"
     ],
     "reason": "睡前屏幕与睡眠"
-  },
-  "104": {
-    "paths": [
-      "health/prevention/sleep",
-      "daily/digital/screen_time"
-    ],
-    "reason": "娱乐挤占睡眠"
-  },
-  "106": {
-    "paths": [
-      "health/prevention/sleep"
-    ],
-    "reason": "小憩属于睡眠节律"
   },
   "115": {
     "paths": [
@@ -178,5 +162,51 @@
       "health/mental/stress"
     ],
     "reason": "体重管理与心理相关防护"
+  },
+  "49": {
+    "paths": [
+      "health/mental/addiction",
+      "daily/lifestyle/diet"
+    ]
+  },
+  "67": {
+    "paths": [
+      "daily/lifestyle/diet",
+      "health/mental/addiction"
+    ]
+  },
+  "64": {
+    "paths": [
+      "health/prevention/exercise",
+      "daily/lifestyle/diet"
+    ]
+  },
+  "100": {
+    "paths": [
+      "daily/digital/time_energy",
+      "daily/digital/screen_time"
+    ]
+  },
+  "110": {
+    "paths": [
+      "health/mental/stress",
+      "daily/digital/time_energy"
+    ]
+  },
+  "192": {
+    "paths": [
+      "finance/budget/spending",
+      "health/prevention/body_care"
+    ]
+  },
+  "588": {
+    "paths": [
+      "career/growth/skill"
+    ]
+  },
+  "457": {
+    "paths": [
+      "daily/housing/rental"
+    ]
   }
 }

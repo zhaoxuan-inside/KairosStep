@@ -91,14 +91,18 @@ class MeView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('身高 ${(profile.heightCm ?? 170).round()} cm', style: TextStyle(fontSize: 10, color: p.inkMute)),
+                        Text(
+                          '身高 ${(profile.heightCm ?? 170).round()} cm',
+                          style: TextStyle(fontSize: 10, color: p.inkMute),
+                        ),
                         Slider(
                           value: (profile.heightCm ?? 170).clamp(120.0, 220.0),
                           min: 120,
                           max: 220,
                           divisions: 100,
                           activeColor: p.action,
-                          onChanged: (v) => store.profile = store.profile.copyWith(heightCm: v),
+                          onChanged: (v) => store.profile = store.profile
+                              .copyWith(heightCm: v),
                         ),
                       ],
                     ),
@@ -108,14 +112,18 @@ class MeView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('体重 ${(profile.weightKg ?? 65).toStringAsFixed(1)} kg', style: TextStyle(fontSize: 10, color: p.inkMute)),
+                        Text(
+                          '体重 ${(profile.weightKg ?? 65).toStringAsFixed(1)} kg',
+                          style: TextStyle(fontSize: 10, color: p.inkMute),
+                        ),
                         Slider(
                           value: (profile.weightKg ?? 65).clamp(35.0, 150.0),
                           min: 35,
                           max: 150,
                           divisions: 115,
                           activeColor: p.action,
-                          onChanged: (v) => store.profile = store.profile.copyWith(weightKg: v),
+                          onChanged: (v) => store.profile = store.profile
+                              .copyWith(weightKg: v),
                         ),
                       ],
                     ),
@@ -338,7 +346,9 @@ class MeView extends StatelessWidget {
                         profile.healthConcerns.contains('减重管理'),
                     onTap: () {
                       final cur = profile.hasWeightLossGoal;
-                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      final nextConcerns = Set<String>.from(
+                        profile.healthConcerns,
+                      );
                       if (cur) {
                         nextConcerns.remove('减重管理');
                       } else {
@@ -358,7 +368,9 @@ class MeView extends StatelessWidget {
                         profile.healthConcerns.contains('反酸胃炎'),
                     onTap: () {
                       final cur = profile.hasGastroAcidOrStomach;
-                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      final nextConcerns = Set<String>.from(
+                        profile.healthConcerns,
+                      );
                       if (cur) {
                         nextConcerns.remove('反酸胃炎');
                       } else {
@@ -378,7 +390,9 @@ class MeView extends StatelessWidget {
                         profile.healthConcerns.contains('止痛用药'),
                     onTap: () {
                       final cur = profile.hasFrequentPainOrAnalgesic;
-                      final nextConcerns = Set<String>.from(profile.healthConcerns);
+                      final nextConcerns = Set<String>.from(
+                        profile.healthConcerns,
+                      );
                       if (cur) {
                         nextConcerns.remove('止痛用药');
                       } else {
@@ -500,7 +514,7 @@ class MeView extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        '当前画像专属匹配：${catalogOf(context).adviceList.where(store.matchPersona).length} / 767 条',
+                        '当前画像专属匹配：${catalogOf(context).adviceList.where(store.matchPersona).length} / 737 条',
                         style: TextStyle(
                           fontSize: 11,
                           color: p.action,
@@ -560,7 +574,10 @@ class MeView extends StatelessWidget {
                   Text('我的生活防线', style: _cardTitle(context)),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2E7D47).withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(9999),
@@ -589,7 +606,10 @@ class MeView extends StatelessWidget {
               if (store.formedHabits.isEmpty)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: p.surfaceGrey,
                     borderRadius: BorderRadius.circular(12),
@@ -598,7 +618,11 @@ class MeView extends StatelessWidget {
                     child: Text(
                       '正在日常中练习微动作。\n在建议卡片点击【🛡️ 我已养成】即可沉淀为生活防线并移出每日待办。',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 11.5, color: p.inkSub, height: 1.5),
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: p.inkSub,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 )
@@ -622,11 +646,16 @@ class MeView extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.check_circle_outline, size: 14, color: Color(0xFF48BB78)),
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  size: 14,
+                                  color: Color(0xFF48BB78),
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         a.title,
@@ -639,30 +668,42 @@ class MeView extends StatelessWidget {
                                       const SizedBox(height: 2),
                                       Text(
                                         '已形成肌肉记忆${dateStr != null ? " · $dateStr 养成" : ""} · 待办已免打扰',
-                                        style: TextStyle(fontSize: 9.5, color: p.inkMute),
+                                        style: TextStyle(
+                                          fontSize: 9.5,
+                                          color: p.inkMute,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                                 TextButton(
                                   style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   onPressed: () {
                                     HapticFeedback.lightImpact();
                                     store.relearnHabit(id);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('已将“${a.title}”恢复至今日待办流，重新练习'),
+                                        content: Text(
+                                          '已将“${a.title}”恢复至今日待办流，重新练习',
+                                        ),
                                         duration: const Duration(seconds: 3),
                                       ),
                                     );
                                   },
                                   child: const Text(
                                     '重新练习',
-                                    style: TextStyle(fontSize: 10.5, color: Color(0xFFBC924C)),
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      color: Color(0xFFBC924C),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -829,11 +870,7 @@ class MeView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.calculate_outlined,
-                        size: 15,
-                        color: p.amber,
-                      ),
+                      Icon(Icons.calculate_outlined, size: 15, color: p.amber),
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Column(
@@ -893,7 +930,6 @@ class MeView extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               _fact(context, '本地优先：不访问网络、相册、通讯录、蓝牙、语音'),
-              _fact(context, '打卡只作记录与复盘入口，无断签惩罚、无排名'),
               _fact(context, '医疗/法律内容仅供参考，按当地政策与医生/律师意见执行'),
               _fact(context, '内容来源《高性价比人生指南》，标注来源与更新时间'),
             ],

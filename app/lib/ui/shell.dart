@@ -27,7 +27,7 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends State<AppShell> with WidgetsBindingObserver {
   int _index = 0;
   bool _alertShown = false;
   bool _probeShown = false;
@@ -35,12 +35,26 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final store = storeOf(context);
       store.reminderRegistry.addListener(_handleReminderAlert);
       store.probeScheduler.addListener(_handleProbePayload);
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      storeOf(context).probeScheduler.checkScheduledProbes(DateTime.now());
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   void _handleProbePayload() {
@@ -181,12 +195,18 @@ class _AppShellState extends State<AppShell> {
                       decoration: BoxDecoration(
                         color: p.error.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: p.error.withValues(alpha: 0.45), width: 1.1),
+                        border: Border.all(
+                          color: p.error.withValues(alpha: 0.45),
+                          width: 1.1,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          AppHairlineIcons.emergencyBell(color: p.error, size: 13),
+                          AppHairlineIcons.emergencyBell(
+                            color: p.error,
+                            size: 13,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '紧急',
@@ -204,9 +224,7 @@ class _AppShellState extends State<AppShell> {
               ),
             ),
             // 各页面视图流
-            Expanded(
-              child: _views[_index],
-            ),
+            Expanded(child: _views[_index]),
           ],
         ),
       ),

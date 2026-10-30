@@ -13,10 +13,10 @@ import 'guidance_sheet.dart';
 import 'jump_deck.dart';
 import 'topic_tree_sheet.dart';
 
-/// 生活指南：767 条建议的可筛选列表。
+/// 生活指南：737 条建议的可筛选列表。
 ///
 /// - 右侧滑出式拼音索引，另可按章节和交互形态筛选。
-/// - 范围三态：画像专属（默认）→ 父母适用 → 全量 767。
+/// - 范围三态：画像专属（默认）→ 父母适用 → 全量 737。
 /// - 列表正文不显示字母分组标题。
 class LibraryView extends StatefulWidget {
   const LibraryView({super.key});
@@ -201,7 +201,7 @@ class _LibraryViewState extends State<LibraryView> {
                   ),
                   _scopeChip(
                     context,
-                    '全量 767',
+                    '全量 737',
                     on: !store.profile.prunedOnly,
                     onTap: () {
                       store.profile = store.profile.copyWith(
@@ -245,7 +245,7 @@ class _LibraryViewState extends State<LibraryView> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '767 全景引导',
+                            '737 全景引导',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,

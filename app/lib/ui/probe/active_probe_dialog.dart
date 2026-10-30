@@ -31,10 +31,7 @@ class ActiveProbeDialog extends StatefulWidget {
       barrierDismissible: !payload.isMandatory,
       builder: (_) => PopScope(
         canPop: !payload.isMandatory,
-        child: ActiveProbeDialog(
-          payload: payload,
-          scheduler: scheduler,
-        ),
+        child: ActiveProbeDialog(payload: payload, scheduler: scheduler),
       ),
     );
   }
@@ -61,7 +58,7 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
     final payload = widget.payload;
     final isUrgent = payload.isMandatory;
 
-    // 收集当前所有选中的选项所关联的建议列表
+    // 将本次弹窗中选中的选项即时映射到关联建议；当前不会持久化答案。
     final matchedAdviceIds = <int>{};
     for (final q in payload.questions) {
       final selectedKey = _selectedOptionKeys[q.id];
@@ -105,8 +102,10 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(isUrgent ? '🚨' : (payload.isMerged ? '🔄' : '🌿'),
-                    style: const TextStyle(fontSize: 13)),
+                Text(
+                  isUrgent ? '🚨' : (payload.isMerged ? '🔄' : '🌿'),
+                  style: const TextStyle(fontSize: 13),
+                ),
                 const SizedBox(width: 5),
                 Text(
                   isUrgent
@@ -201,8 +200,13 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                       ),
                     ),
                     icon: const Icon(Icons.phone_in_talk, size: 15),
-                    label: const Text('一键拨打 12356 心理危机干预热线',
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                    label: const Text(
+                      '一键拨打 12356 心理危机干预热线',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     onPressed: () => launchUrl(
                       Uri.parse('tel:12356'),
                       mode: LaunchMode.externalApplication,
@@ -210,7 +214,9 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                   ),
                 ),
               ],
-              if (isUrgent || matchedAdviceIds.contains(423) || matchedAdviceIds.contains(424)) ...[
+              if (isUrgent ||
+                  matchedAdviceIds.contains(423) ||
+                  matchedAdviceIds.contains(424)) ...[
                 const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
@@ -223,8 +229,13 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                       ),
                     ),
                     icon: const Icon(Icons.emergency, size: 16),
-                    label: const Text('一键拨打 120 医疗急救',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                    label: const Text(
+                      '一键拨打 120 医疗急救',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     onPressed: () => launchUrl(
                       Uri.parse('tel:120'),
                       mode: LaunchMode.externalApplication,
@@ -253,20 +264,32 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                       itemBuilder: (ctx) => [
                         const PopupMenuItem(
                           value: 'snooze',
-                          child: Text('稍后 30 分钟提醒', style: TextStyle(fontSize: 12.5)),
+                          child: Text(
+                            '稍后 30 分钟提醒',
+                            style: TextStyle(fontSize: 12.5),
+                          ),
                         ),
                         const PopupMenuItem(
                           value: 'dismiss_today',
-                          child: Text('今日不再主动探查', style: TextStyle(fontSize: 12.5)),
+                          child: Text(
+                            '今日不再主动探查',
+                            style: TextStyle(fontSize: 12.5),
+                          ),
                         ),
                       ],
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 8,
+                        ),
                         child: Row(
                           children: [
                             Icon(Icons.schedule, size: 14, color: p.inkSub),
                             const SizedBox(width: 4),
-                            Text('防打扰', style: TextStyle(fontSize: 11.5, color: p.inkSub)),
+                            Text(
+                              '防打扰',
+                              style: TextStyle(fontSize: 11.5, color: p.inkSub),
+                            ),
                           ],
                         ),
                       ),
@@ -280,7 +303,10 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(9999),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 9,
+                      ),
                     ),
                     onPressed: () {
                       HapticFeedback.lightImpact();
@@ -288,8 +314,11 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      isUrgent ? '我已了解并采取自救' : '确认记录',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      isUrgent ? '我已了解并采取自救' : '完成探查',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -317,10 +346,7 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
         ),
         if (q.subtitle != null) ...[
           const SizedBox(height: 2),
-          Text(
-            q.subtitle!,
-            style: TextStyle(fontSize: 11.5, color: p.inkMute),
-          ),
+          Text(q.subtitle!, style: TextStyle(fontSize: 11.5, color: p.inkMute)),
         ],
         const SizedBox(height: 10),
         for (final opt in q.options) ...[
@@ -370,7 +396,9 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                     opt.label,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      fontWeight: isSelected
+                          ? FontWeight.w800
+                          : FontWeight.w600,
                       color: isSelected ? p.action : p.ink,
                     ),
                   ),
@@ -378,7 +406,11 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                     const SizedBox(height: 2),
                     Text(
                       opt.description!,
-                      style: TextStyle(fontSize: 11, color: p.inkSub, height: 1.3),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: p.inkSub,
+                        height: 1.3,
+                      ),
                     ),
                   ],
                 ],
@@ -457,7 +489,10 @@ class _ActiveProbeDialogState extends State<ActiveProbeDialog> {
                 },
                 borderRadius: BorderRadius.circular(9999),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: p.action.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(9999),

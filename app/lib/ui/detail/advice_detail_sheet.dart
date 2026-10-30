@@ -28,6 +28,7 @@ class AdviceDetailSheet extends StatelessWidget {
     final d = catalog.detailOf(adviceId);
     if (advice == null || d == null) return const SizedBox(height: 120);
     final summary = d.humanized.isNotEmpty ? d.humanized : _lead(d.plain ?? '');
+    final explanation = _withoutRepeatedLead(d.plain, summary);
 
     final gradeColor =
         d.grade == 'A' ? p.emerald : d.grade == 'B' ? p.action : p.amber;
@@ -89,7 +90,7 @@ class AdviceDetailSheet extends StatelessWidget {
             childrenPadding: pad,
             children: [
               _section(context, '成本', d.cost),
-              _section(context, '完整解释', d.plain),
+              _section(context, '完整解释', explanation),
               _section(context, '收益 · 研究数据', d.benefit),
           if (d.sources.isNotEmpty)
             Padding(
@@ -190,6 +191,11 @@ class AdviceDetailSheet extends StatelessWidget {
       return plain.substring(0, sentence.end);
     }
     return plain.length <= 180 ? plain : '';
+  }
+
+  String? _withoutRepeatedLead(String? plain, String lead) {
+    if (plain == null || lead.isEmpty || !plain.startsWith(lead)) return plain;
+    return plain.substring(lead.length).trim();
   }
 
   Widget _section(BuildContext context, String label, String? text, {bool muted = false}) {

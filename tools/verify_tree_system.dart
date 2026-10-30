@@ -8,7 +8,7 @@ void main() {
 
   print('验证 advice.json: 共 ${list.length} 条建议');
 
-  assert(list.length == 767, '总数必须为 767 条');
+  assert(list.length == 737, '总数必须为 737 条');
 
   int hasCarCount = 0;
   int hasTwowheelerCount = 0;
@@ -38,7 +38,7 @@ void main() {
     if (prereqs['has_piped_gas'] == true) hasPipedGasCount++;
   }
 
-  print('【校验通过】全部 767 条建议均已具备树路径、层级描述、调度Cron！');
+  print('【校验通过】全部 737 条建议均已具备树路径、层级描述、调度Cron！');
   print('画像守卫统计：');
   print('  机动车守卫 (has_car): $hasCarCount 条');
   print('  两轮车守卫 (has_twowheeler): $hasTwowheelerCount 条');

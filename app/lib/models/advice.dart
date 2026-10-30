@@ -189,51 +189,10 @@ class Advice {
       presentation.coreAction.isNotEmpty ? presentation.coreAction : raw.title;
   List<String> get caveats => presentation.caveats;
 
-  /// 是否属于突发事件、急救处置、黄金救治等偶发应急建议（非日常固定时段流，如中暑、骨折、海姆立克、工伤认定等）
+  /// 当前事件的处置建议。章节、标题中的风险词和展示文案不构成事件分类。
   bool get isEmergencyOrIncident {
-    if (chapter == '紧急情况：先做什么') return true;
-    if (chapter == '遭遇重大打击之后') return true;
-    if (actType == 'emergency-action') return true;
-    if (tags.contains('急救') || tags.contains('速查')) return true;
-    if (tags.contains('突发事件')) return true;
-    if (timingBadge.contains('黄金救治') ||
-        timingBadge.contains('紧急') ||
-        timingBadge.contains('突发应急')) {
-      return true;
-    }
-    final t = title;
-    if (t.contains('中暑') ||
-        t.contains('海姆立克') ||
-        t.contains('心肺复苏') ||
-        t.contains('触电') ||
-        t.contains('溺水') ||
-        t.contains('毒蛇咬伤') ||
-        t.contains('被狗') ||
-        t.contains('被蛇') ||
-        t.contains('破伤风') ||
-        t.contains('失温') ||
-        t.contains('火灾') ||
-        t.contains('化学品') ||
-        t.contains('骨折') ||
-        t.contains('破水') ||
-        t.contains('洗胃') ||
-        t.contains('催吐') ||
-        t.contains('工伤认定') ||
-        t.contains('上班受伤') ||
-        t.contains('路上被撞') ||
-        t.contains('醉酒') ||
-        t.contains('喝醉') ||
-        t.contains('牙掉') ||
-        t.contains('自杀念头') ||
-        t.contains('主动辞职') ||
-        t.contains('欺凌') ||
-        t.contains('打 120') ||
-        t.contains('打120') ||
-        t.contains('打 12356') ||
-        t.contains('打12356')) {
-      return true;
-    }
-    return false;
+    return tags.contains('突发事件') &&
+        (tags.contains('事中') || tags.contains('事后'));
   }
 
   factory Advice.fromJson(Map<String, dynamic> json) => Advice(
@@ -270,7 +229,8 @@ class UserTodoItem {
     this.timePeriod = 'all_day', // 'morning', 'focus', 'afternoon', 'evening', 'night', 'all_day'
     this.reminderTimes = const [], // 提醒时间列表如 ["08:30", "12:00"]
     this.leadMinutes = 0, // 提前提醒：0 (准时), 5, 15, 30
-    this.frequency = 'daily', // 'daily', 'workday', 'weekend', 'weekly', 'monthly', 'once'
+    this.frequency =
+        'daily', // 'daily', 'workday', 'weekend', 'weekly', 'monthly', 'once'
     this.triggerCount = 1,
   });
 
@@ -335,11 +295,7 @@ class UserTodoItem {
     final synId = syntheticId ?? (id.hashCode.abs() % 80000 + 10000);
     final detail = content ?? note ?? title;
     return Advice(
-      raw: RawAdvice(
-        id: synId,
-        chapter: '我的自建待办',
-        title: title,
-      ),
+      raw: RawAdvice(id: synId, chapter: '我的自建待办', title: title),
       facets: AdviceFacets(
         tags: [
           '全民',
@@ -404,8 +360,7 @@ class UserTodoItem {
     content: json['content'] as String?,
     triggerTime: json['triggerTime'] as String?,
     timePeriod: json['timePeriod'] as String? ?? 'all_day',
-    reminderTimes:
-        (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
+    reminderTimes: (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
     leadMinutes: json['leadMinutes'] as int? ?? 0,
     frequency: json['frequency'] as String? ?? 'daily',
     triggerCount: json['triggerCount'] as int? ?? 1,
@@ -483,7 +438,7 @@ class ActionTypeDef {
 typedef PinyinMap = Map<String, String>;
 
 // ============================================================================
-// 5. 建议全景六大人生领域 (Life Domain Pillars) - 100% 覆盖全库 767 条建议
+// 5. 建议全景六大人生领域 (Life Domain Pillars) - 100% 覆盖全库 737 条建议
 // ============================================================================
 
 enum LifeDomain {
@@ -493,7 +448,7 @@ enum LifeDomain {
     shortTitle: '健康防线',
     icon: Icons.health_and_safety_outlined,
     accentColor: Color(0xFF10B981),
-    totalCount: 180,
+    totalCount: 170,
     description: '涵盖防癌早筛、慢病康复、科学用药、就医防坑、运动与减压',
     chapters: [
       '不要早死',
@@ -512,7 +467,7 @@ enum LifeDomain {
     shortTitle: '职场事业',
     icon: Icons.business_center_outlined,
     accentColor: Color(0xFF3B82F6),
-    totalCount: 128,
+    totalCount: 123,
     description: '涵盖在职维权、工伤离职、技术人红线、创业合伙、技能投资',
     chapters: [
       '在职、离职和工伤',
@@ -547,7 +502,7 @@ enum LifeDomain {
     shortTitle: '财产法律',
     icon: Icons.shield_outlined,
     accentColor: Color(0xFFF59E0B),
-    totalCount: 202,
+    totalCount: 197,
     description: '涵盖法律红线、防诈反骗、房产租售、反面清单、金钱节省与债务隔离',
     chapters: [
       '别把自己搭进去：法律与财产安全',
@@ -580,7 +535,7 @@ enum LifeDomain {
     shortTitle: '日常节律',
     icon: Icons.today_outlined,
     accentColor: Color(0xFF06B6D4),
-    totalCount: 45,
+    totalCount: 35,
     description: '涵盖每日微习惯打卡、时间精力管理、昼夜节律与专注复盘',
     chapters: ['不要浪费时间', '不要浪费精力'],
   );
@@ -687,22 +642,21 @@ class CustomTriggerConfig {
     'reminderTimes': reminderTimes,
   };
 
-  factory CustomTriggerConfig.fromJson(Map<String, dynamic> json) =>
-      CustomTriggerConfig(
-        mode: TriggerMode.values.firstWhere(
-          (m) => m.name == json['mode'],
-          orElse: () => TriggerMode.dormant,
-        ),
-        dailyPeriods:
-            (json['dailyPeriods'] as List?)?.cast<String>() ?? const [],
-        cadenceScopeKey: json['cadenceScopeKey'] as String? ?? 'weekly',
-        targetDate: json['targetDate'] as String?,
-        leadDays: json['leadDays'] as int? ?? 15,
-        weekday: json['weekday'] as int? ?? 1,
-        monthDay: json['monthDay'] as int? ?? 1,
-        reminderTimes:
-            (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
-      );
+  factory CustomTriggerConfig.fromJson(
+    Map<String, dynamic> json,
+  ) => CustomTriggerConfig(
+    mode: TriggerMode.values.firstWhere(
+      (m) => m.name == json['mode'],
+      orElse: () => TriggerMode.dormant,
+    ),
+    dailyPeriods: (json['dailyPeriods'] as List?)?.cast<String>() ?? const [],
+    cadenceScopeKey: json['cadenceScopeKey'] as String? ?? 'weekly',
+    targetDate: json['targetDate'] as String?,
+    leadDays: json['leadDays'] as int? ?? 15,
+    weekday: json['weekday'] as int? ?? 1,
+    monthDay: json['monthDay'] as int? ?? 1,
+    reminderTimes: (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
+  );
 }
 
 /// 浮出时段规范定义：包含具体时间段范围与交叠判定算法

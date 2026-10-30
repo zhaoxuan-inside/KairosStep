@@ -8,6 +8,7 @@ import '../data/catalog.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import 'probe_scheduler.dart';
+import 'mobile_notification_service.dart';
 import 'reminder_registry.dart';
 
 /// 周期作用域：打卡记录天然按周期归零（今天跨天清空、周/月/年各自滚动）。
@@ -236,16 +237,21 @@ class UserProfile {
     hasGout: hasGout ?? this.hasGout,
     isProgrammer: isProgrammer ?? this.isProgrammer,
     isPregnantOrPlanning: isPregnantOrPlanning ?? this.isPregnantOrPlanning,
-    hasAbroadTravelOrStudy: hasAbroadTravelOrStudy ?? this.hasAbroadTravelOrStudy,
+    hasAbroadTravelOrStudy:
+        hasAbroadTravelOrStudy ?? this.hasAbroadTravelOrStudy,
     hasDebtPressure: hasDebtPressure ?? this.hasDebtPressure,
-    hasDigitalAssetsConcern: hasDigitalAssetsConcern ?? this.hasDigitalAssetsConcern,
+    hasDigitalAssetsConcern:
+        hasDigitalAssetsConcern ?? this.hasDigitalAssetsConcern,
     hasDisabilityCare: hasDisabilityCare ?? this.hasDisabilityCare,
-    hasCrisisOrMentalStress: hasCrisisOrMentalStress ?? this.hasCrisisOrMentalStress,
+    hasCrisisOrMentalStress:
+        hasCrisisOrMentalStress ?? this.hasCrisisOrMentalStress,
     heightCm: heightCm ?? this.heightCm,
     weightKg: weightKg ?? this.weightKg,
     hasWeightLossGoal: hasWeightLossGoal ?? this.hasWeightLossGoal,
-    hasGastroAcidOrStomach: hasGastroAcidOrStomach ?? this.hasGastroAcidOrStomach,
-    hasFrequentPainOrAnalgesic: hasFrequentPainOrAnalgesic ?? this.hasFrequentPainOrAnalgesic,
+    hasGastroAcidOrStomach:
+        hasGastroAcidOrStomach ?? this.hasGastroAcidOrStomach,
+    hasFrequentPainOrAnalgesic:
+        hasFrequentPainOrAnalgesic ?? this.hasFrequentPainOrAnalgesic,
     childAgeStage: childAgeStage ?? this.childAgeStage,
     relationshipStatus: relationshipStatus ?? this.relationshipStatus,
     formedHabits: formedHabits ?? this.formedHabits,
@@ -331,10 +337,15 @@ class UserProfile {
     weightKg: (json['weightKg'] as num?)?.toDouble(),
     hasWeightLossGoal: json['hasWeightLossGoal'] as bool? ?? false,
     hasGastroAcidOrStomach: json['hasGastroAcidOrStomach'] as bool? ?? false,
-    hasFrequentPainOrAnalgesic: json['hasFrequentPainOrAnalgesic'] as bool? ?? false,
+    hasFrequentPainOrAnalgesic:
+        json['hasFrequentPainOrAnalgesic'] as bool? ?? false,
     childAgeStage: json['childAgeStage'] as String? ?? 'none',
     relationshipStatus: json['relationshipStatus'] as String? ?? 'single',
-    formedHabits: (json['formedHabits'] as List?)?.map((e) => (e as num).toInt()).toList() ?? const [],
+    formedHabits:
+        (json['formedHabits'] as List?)
+            ?.map((e) => (e as num).toInt())
+            .toList() ??
+        const [],
   );
 
   String get label =>
@@ -484,6 +495,42 @@ const List<int> parentsAdviceIds = [
   767,
 ];
 
+/// 合并建议后的历史 ID 迁移表。旧版本本地记录仍可恢复到新的主建议。
+const Map<int, int> adviceIdAliases = {
+  97: 61,
+  98: 61,
+  104: 61,
+  106: 85,
+  74: 99,
+  51: 49,
+  52: 49,
+  53: 49,
+  54: 49,
+  68: 67,
+  69: 67,
+  59: 64,
+  63: 64,
+  65: 64,
+  96: 100,
+  101: 100,
+  102: 100,
+  107: 100,
+  116: 110,
+  117: 110,
+  193: 192,
+  194: 192,
+  195: 192,
+  459: 457,
+  462: 457,
+  589: 588,
+  590: 588,
+  591: 588,
+  592: 588,
+  593: 588,
+};
+
+int canonicalAdviceId(int id) => adviceIdAliases[id] ?? id;
+
 /// 卡片交互状态：某个作用域内一张卡的完成部件集合 + 附加数据。
 ///
 /// 设计要点：交互器只改 [doneParts] / [extra]，完成判定由卡片统一求值，
@@ -542,8 +589,14 @@ class AppStore extends ChangeNotifier {
   /// 弹窗提示与提醒注册器
   late final ReminderRegistry reminderRegistry = ReminderRegistry(this);
 
+  /// 移动端系统通知通道
+  late final MobileNotificationService mobileNotificationService =
+      MobileNotificationService();
+
   /// 主动探测调度器
-  late final ProbeScheduler probeScheduler = ProbeScheduler();
+  late final ProbeScheduler probeScheduler = ProbeScheduler(
+    mobileNotificationService,
+  );
 
   /// 同步当前活跃防线至提醒注册器与主动探测调度器（零全盘扫描开销，仅注册剪枝后的活跃条目）
   void syncReminderRegistry() {
@@ -604,18 +657,18 @@ class AppStore extends ChangeNotifier {
   final Set<int> _excludedAdviceIds = {};
   Set<int> get excludedAdviceIds => Set.unmodifiable(_excludedAdviceIds);
 
-  bool isExcluded(int id) => _excludedAdviceIds.contains(id);
+  bool isExcluded(int id) => _excludedAdviceIds.contains(canonicalAdviceId(id));
 
   /// 排除某条建议（不进日常所有流）
   void excludeAdvice(int id) {
-    _excludedAdviceIds.add(id);
+    _excludedAdviceIds.add(canonicalAdviceId(id));
     _persistExcluded();
     notifyListeners();
   }
 
   /// 恢复某条被排除的建议
   void restoreAdvice(int id) {
-    _excludedAdviceIds.remove(id);
+    _excludedAdviceIds.remove(canonicalAdviceId(id));
     _persistExcluded();
     notifyListeners();
   }
@@ -632,11 +685,12 @@ class AppStore extends ChangeNotifier {
   final Map<int, String> _formedHabitDates = {};
 
   Set<int> get formedHabits => Set.unmodifiable(_formedHabits);
-  bool isHabitFormed(int id) => _formedHabits.contains(id);
-  String? habitFormedDate(int id) => _formedHabitDates[id];
+  bool isHabitFormed(int id) => _formedHabits.contains(canonicalAdviceId(id));
+  String? habitFormedDate(int id) => _formedHabitDates[canonicalAdviceId(id)];
 
   /// 标记某项建议已成为习惯：从今日/当下待办中剪枝移出，沉淀为生活防线，并联动演进用户画像
   void markHabitFormed(int id, {DateTime? date}) {
+    id = canonicalAdviceId(id);
     final now = date ?? DateTime.now();
     _formedHabits.add(id);
     _formedHabitDates[id] =
@@ -648,13 +702,12 @@ class AppStore extends ChangeNotifier {
 
   /// 重新带我练习一周（当用户生活节奏被打乱松懈时，温和恢复至今日待办）
   void relearnHabit(int id) {
+    id = canonicalAdviceId(id);
     _formedHabits.remove(id);
     _formedHabitDates.remove(id);
     _persistFormedHabits();
 
-    _profile = _profile.copyWith(
-      formedHabits: _formedHabits.toList(),
-    );
+    _profile = _profile.copyWith(formedHabits: _formedHabits.toList());
     _persistProfile();
     notifyListeners();
   }
@@ -673,16 +726,14 @@ class AppStore extends ChangeNotifier {
 
   /// 根据已养成的建议演化用户画像特质
   void _evolveProfileByHabit(int adviceId) {
+    adviceId = canonicalAdviceId(adviceId);
     var p = _profile;
     final nextFormed = Set<int>.from(p.formedHabits)..add(adviceId);
 
-    if (adviceId >= 49 && adviceId <= 54) {
+    if (adviceId == 49) {
       // 戒烟系列习惯毕业：画像更新为非吸烟者，健康关注移除吸烟者
       final nextHealth = Set<String>.from(p.healthConcerns)..remove('吸烟者');
-      p = p.copyWith(
-        isSmoker: false,
-        healthConcerns: nextHealth.toList(),
-      );
+      p = p.copyWith(isSmoker: false, healthConcerns: nextHealth.toList());
     } else if (adviceId == 7 || adviceId == 57) {
       // 血压达标/低钠盐习惯毕业
       final nextHealth = Set<String>.from(p.healthConcerns)..remove('血压关注');
@@ -690,7 +741,7 @@ class AppStore extends ChangeNotifier {
         hasHypertension: false,
         healthConcerns: nextHealth.toList(),
       );
-    } else if (adviceId == 61 || adviceId == 97 || adviceId == 98) {
+    } else if (adviceId == 61) {
       // 睡眠规律/固定起床习惯养成
       final nextHealth = Set<String>.from(p.healthConcerns)..add('作息规律');
       p = p.copyWith(healthConcerns: nextHealth.toList());
@@ -859,19 +910,20 @@ class AppStore extends ChangeNotifier {
       ].any(text.contains)) {
         periods.add('evening');
       }
-      final isNightSleep = [
-        '夜里',
-        '褪黑素',
-        '安稳',
-        '睡前',
-        '刷牙',
-        '洗漱',
-        '失眠',
-        '入眠',
-        '23:00',
-        '熬夜',
-        '放松',
-      ].any(text.contains) ||
+      final isNightSleep =
+          [
+            '夜里',
+            '褪黑素',
+            '安稳',
+            '睡前',
+            '刷牙',
+            '洗漱',
+            '失眠',
+            '入眠',
+            '23:00',
+            '熬夜',
+            '放松',
+          ].any(text.contains) ||
           (text.contains('睡眠') &&
               !text.contains('午睡') &&
               !text.contains('小憩') &&
@@ -974,7 +1026,7 @@ class AppStore extends ChangeNotifier {
 
   /// 设置自定义触发方式与周期
   void setTriggerConfig(int id, CustomTriggerConfig cfg) {
-    _customTriggers[id] = cfg;
+    _customTriggers[canonicalAdviceId(id)] = cfg;
     _persistCustomTriggers();
     syncReminderRegistry();
     notifyListeners();
@@ -982,7 +1034,7 @@ class AppStore extends ChangeNotifier {
 
   /// 恢复系统默认触发与周期
   void resetTriggerConfig(int id) {
-    _customTriggers.remove(id);
+    _customTriggers.remove(canonicalAdviceId(id));
     _persistCustomTriggers();
     syncReminderRegistry();
     notifyListeners();
@@ -1011,6 +1063,8 @@ class AppStore extends ChangeNotifier {
 
   /// 替换本周期某个动作
   void swapCycleGoal(int oldId, int newId) {
+    oldId = canonicalAdviceId(oldId);
+    newId = canonicalAdviceId(newId);
     final list = List<int>.from(_ninetyDayPlan.goalAdviceIds);
     final idx = list.indexOf(oldId);
     if (idx != -1) {
@@ -1224,6 +1278,90 @@ class AppStore extends ChangeNotifier {
   StreakState streakOf(int id) => _streaks[id] ?? const StreakState();
   DateTime? windowAnchorOf(int id) => _windowAnchors[id];
 
+  int? _parseTimeMinutes(String value) {
+    final parts = value.split(':');
+    if (parts.length != 2) return null;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null ||
+        minute == null ||
+        hour < 0 ||
+        hour > 23 ||
+        minute < 0 ||
+        minute > 59) {
+      return null;
+    }
+    return hour * 60 + minute;
+  }
+
+  /// Returns concrete daily anchors from a simple five-field cron expression.
+  /// Wildcards are intentionally ignored: they do not provide a useful display
+  /// anchor and should fall back to the explicitly configured daily periods.
+  List<int> _cronDailyAnchors(String cron) {
+    final fields = cron.trim().split(RegExp(r'\s+'));
+    if (fields.length != 5) return const [];
+    final minuteField = fields[0];
+    final hourField = fields[1];
+    if (minuteField == '*' || hourField == '*') return const [];
+
+    List<int>? parseField(String field, int min, int max) {
+      final values = <int>{};
+      for (final part in field.split(',')) {
+        final range = part.split('-');
+        if (range.length == 1) {
+          final value = int.tryParse(range[0]);
+          if (value == null || value < min || value > max) return null;
+          values.add(value);
+        } else if (range.length == 2) {
+          final start = int.tryParse(range[0]);
+          final end = int.tryParse(range[1]);
+          if (start == null ||
+              end == null ||
+              start < min ||
+              end > max ||
+              start > end) {
+            return null;
+          }
+          values.addAll([for (var v = start; v <= end; v++) v]);
+        } else {
+          return null;
+        }
+      }
+      return values.toList()..sort();
+    }
+
+    final minutes = parseField(minuteField, 0, 59);
+    final hours = parseField(hourField, 0, 23);
+    if (minutes == null || hours == null) return const [];
+    return [
+      for (final h in hours)
+        for (final m in minutes) h * 60 + m,
+    ];
+  }
+
+  List<int> _displayAnchors(Advice a, CustomTriggerConfig trig) {
+    final reminders = trig.reminderTimes
+        .map(_parseTimeMinutes)
+        .whereType<int>()
+        .toList();
+    return {...reminders, ..._cronDailyAnchors(a.cron)}.toList()..sort();
+  }
+
+  bool _minuteInPeriod(int minute, String periodKey) {
+    final def = PeriodDefinition.byKey(periodKey);
+    if (def == null) {
+      final custom = PeriodDefinition.parseCustomPeriod(periodKey);
+      return custom != null &&
+          PeriodDefinition.timeRangesOverlap(
+            custom.$1,
+            custom.$2,
+            minute,
+            minute + 1,
+          );
+    }
+    return def.overlaps(minute, minute + 1);
+  }
+
   /// 真实动态今天待办流（严格准入，包含今日有效自建待办，当下 ⊆ 今天）
   List<Advice> get todayAdvices {
     checkPeriodRollover();
@@ -1378,21 +1516,18 @@ class AppStore extends ChangeNotifier {
       final trig = effectiveTriggerOf(a);
       if (trig.mode == TriggerMode.dormant) return false;
 
-      // 如果有自定义指定时点/提醒时点：
-      if (trig.reminderTimes.isNotEmpty) {
-        for (final rt in trig.reminderTimes) {
-          final parts = rt.split(':');
-          if (parts.length == 2) {
-            final h = int.tryParse(parts[0]) ?? 0;
-            final m = int.tryParse(parts[1]) ?? 0;
-            final rMin = h * 60 + m;
-            if (winStartMin <= winEndMin) {
-              if (rMin >= winStartMin && rMin <= winEndMin) return true;
-            } else {
-              if (rMin >= winStartMin || rMin <= winEndMin) return true;
-            }
+      // 建议原始 cron 和用户提醒时间共同构成精确展示锚点。
+      // 一旦存在精确锚点，就不再用宽泛的 dailyPeriods 扩大展示范围。
+      final anchors = _displayAnchors(a, trig);
+      if (anchors.isNotEmpty) {
+        for (final anchor in anchors) {
+          if (winStartMin <= winEndMin) {
+            if (anchor >= winStartMin && anchor <= winEndMin) return true;
+          } else {
+            if (anchor >= winStartMin || anchor <= winEndMin) return true;
           }
         }
+        return false;
       }
 
       // 自建待办时点匹配
@@ -1416,7 +1551,7 @@ class AppStore extends ChangeNotifier {
         }
       }
 
-      // 检查该建议配置的任何时段是否与 1.5 小时视窗相交
+      // 只有没有精确触发时刻时，才退回到手动配置的宽泛浮出时段。
       for (final pk in trig.dailyPeriods) {
         final def = PeriodDefinition.byKey(pk);
         if (def != null) {
@@ -1551,6 +1686,10 @@ class AppStore extends ChangeNotifier {
       }
 
       if (trig.mode == TriggerMode.daily) {
+        final anchors = _displayAnchors(a, trig);
+        if (anchors.isNotEmpty) {
+          return anchors.any((minute) => _minuteInPeriod(minute, periodKey));
+        }
         return trig.dailyPeriods.contains(periodKey);
       }
 
@@ -1620,7 +1759,7 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 每日连击打卡（跨天自然续接，不惩罚断签——只记录）。
+  /// 每日连击打卡，按日历日期维护连续天数。
   void checkinStreak(int id, DateTime now) {
     final today = _dayKey(now);
     final next =
@@ -1664,6 +1803,9 @@ class AppStore extends ChangeNotifier {
     if (p != null) {
       try {
         _profile = UserProfile.fromJson(jsonDecode(p) as Map<String, dynamic>);
+        _profile = _profile.copyWith(
+          formedHabits: _profile.formedHabits.map(canonicalAdviceId).toList(),
+        );
         _hasProfile = completed;
       } catch (_) {
         _hasProfile = false;
@@ -1690,7 +1832,7 @@ class AppStore extends ChangeNotifier {
       _excludedAdviceIds.clear();
       for (final s in exList) {
         final id = int.tryParse(s);
-        if (id != null) _excludedAdviceIds.add(id);
+        if (id != null) _excludedAdviceIds.add(canonicalAdviceId(id));
       }
     }
 
@@ -1708,7 +1850,7 @@ class AppStore extends ChangeNotifier {
       _formedHabits.clear();
       for (final s in fhList) {
         final id = int.tryParse(s);
-        if (id != null) _formedHabits.add(id);
+        if (id != null) _formedHabits.add(canonicalAdviceId(id));
       }
     }
     final fhDatesJson = prefs.getString('kFormedHabitDates');
@@ -1719,7 +1861,7 @@ class AppStore extends ChangeNotifier {
         map.forEach((k, v) {
           final id = int.tryParse(k);
           if (id != null && v is String) {
-            _formedHabitDates[id] = v;
+            _formedHabitDates[canonicalAdviceId(id)] = v;
           }
         });
       } catch (_) {}
@@ -1733,7 +1875,9 @@ class AppStore extends ChangeNotifier {
         map.forEach((k, v) {
           final id = int.tryParse(k);
           if (id != null) {
-            _customTriggers[id] = CustomTriggerConfig.fromJson(
+            _customTriggers[canonicalAdviceId(
+              id,
+            )] = CustomTriggerConfig.fromJson(
               jsonDecode(v as String) as Map<String, dynamic>,
             );
           }
@@ -1744,8 +1888,11 @@ class AppStore extends ChangeNotifier {
     final p90Raw = prefs.getString('kNinetyDayPlan');
     if (p90Raw != null) {
       try {
-        _ninetyDayPlan = NinetyDayPlan.fromJson(
+        final plan = NinetyDayPlan.fromJson(
           jsonDecode(p90Raw) as Map<String, dynamic>,
+        );
+        _ninetyDayPlan = plan.copyWith(
+          goalAdviceIds: plan.goalAdviceIds.map(canonicalAdviceId).toList(),
         );
       } catch (_) {}
     }
@@ -1793,7 +1940,7 @@ class AppStore extends ChangeNotifier {
       try {
         final map = jsonDecode(raw) as Map<String, dynamic>;
         for (final e in map.entries) {
-          _cards[s]?[int.parse(e.key)] = CardState.fromJson(
+          _cards[s]?[canonicalAdviceId(int.parse(e.key))] = CardState.fromJson(
             jsonDecode(e.value as String) as Map<String, dynamic>,
           );
         }
@@ -1806,7 +1953,7 @@ class AppStore extends ChangeNotifier {
         if (id != null && raw != null) {
           try {
             final m = jsonDecode(raw) as Map<String, dynamic>;
-            _streaks[id] = StreakState(
+            _streaks[canonicalAdviceId(id)] = StreakState(
               lastDay: m['lastDay'] as String,
               days: m['days'] as int,
             );
@@ -1817,7 +1964,7 @@ class AppStore extends ChangeNotifier {
         final raw = prefs.getString(key);
         if (id != null && raw != null) {
           final dt = DateTime.tryParse(raw);
-          if (dt != null) _windowAnchors[id] = dt;
+          if (dt != null) _windowAnchors[canonicalAdviceId(id)] = dt;
         }
       }
     }
@@ -1896,7 +2043,8 @@ class AppStore extends ChangeNotifier {
     // 0.6 慢性病与特殊病理史强门禁 (Condition Strong Gating)
     // 凡涉及特定确诊疾病、慢性病或特殊病理史的条目，一票否决「全民/通用」穿透特权
     final text = '${a.title} ${a.tags.join(" ")} ${a.chapter}';
-    final hasChronic = a.tags.contains('确诊慢病') ||
+    final hasChronic =
+        a.tags.contains('确诊慢病') ||
         a.tags.contains('慢性病') ||
         a.chapter == '得了慢性病之后怎么活' ||
         a.chapter == '残疾之后怎么活';
@@ -1920,9 +2068,7 @@ class AppStore extends ChangeNotifier {
           return false;
         }
       }
-      if (text.contains('糖尿病') ||
-          text.contains('血糖') ||
-          text.contains('胰岛素')) {
+      if (text.contains('糖尿病') || text.contains('血糖') || text.contains('胰岛素')) {
         if (!p.hasDiabetes && !p.healthConcerns.contains('血糖关注')) {
           return false;
         }
@@ -1930,8 +2076,7 @@ class AppStore extends ChangeNotifier {
       if (a.chapter == '残疾之后怎么活' ||
           a.tags.contains('残疾') ||
           a.tags.contains('残障人士')) {
-        if (!p.roles.contains('残障人士') &&
-            !p.healthConcerns.contains('残疾照护')) {
+        if (!p.roles.contains('残障人士') && !p.healthConcerns.contains('残疾照护')) {
           return false;
         }
       }
@@ -1968,8 +2113,7 @@ class AppStore extends ChangeNotifier {
         return false;
       }
     }
-    if (chap == '出国、旅行与境外安全' ||
-        chap == '出国留学：身份、打工、保险和回国认证') {
+    if (chap == '出国、旅行与境外安全' || chap == '出国留学：身份、打工、保险和回国认证') {
       if (!p.hasAbroadTravelOrStudy &&
           !p.roles.contains('出境者') &&
           !p.roles.contains('留学生')) {
@@ -2026,16 +2170,13 @@ class AppStore extends ChangeNotifier {
     if (a.id == 763 ||
         text.contains('止痛药一个月别吃超过') ||
         text.contains('复方止痛药别超过')) {
-      if (!p.hasFrequentPainOrAnalgesic &&
-          !p.healthConcerns.contains('止痛用药')) {
+      if (!p.hasFrequentPainOrAnalgesic && !p.healthConcerns.contains('止痛用药')) {
         return false;
       }
     }
 
     // 0.11 独居安全兜底防线
-    if (a.id == 675 ||
-        text.contains('建立三道安全兜底网') ||
-        text.contains('盯着你的那个人')) {
+    if (a.id == 675 || text.contains('建立三道安全兜底网') || text.contains('盯着你的那个人')) {
       if (p.relationshipStatus != 'single' && !p.hasCrisisOrMentalStress) {
         return false;
       }
@@ -2053,15 +2194,29 @@ class AppStore extends ChangeNotifier {
     }
 
     // 0.13 孕产专科急重症与子痫用药强门禁 (ID 644, 646, 647)
-    if (a.id == 644 || a.id == 646 || a.id == 647 || text.contains('破水了就地平躺') || text.contains('子痫前期')) {
-      if (p.gender != '女' || (!p.isPregnantOrPlanning && !p.roles.contains('孕产') && !p.roles.contains('准父母'))) {
+    if (a.id == 644 ||
+        a.id == 646 ||
+        a.id == 647 ||
+        text.contains('破水了就地平躺') ||
+        text.contains('子痫前期')) {
+      if (p.gender != '女' ||
+          (!p.isPregnantOrPlanning &&
+              !p.roles.contains('孕产') &&
+              !p.roles.contains('准父母'))) {
         return false;
       }
     }
 
     // 0.14 婴幼儿与学龄儿童突发及欺凌门禁 (ID 545, 686, 704)
-    if (a.id == 545 || a.id == 686 || a.id == 704 || text.contains('新生儿黄疸') || text.contains('孩子被欺凌') || text.contains('撞了头、之后头痛')) {
-      if (!p.hasChildren && !p.roles.contains('家长') && !p.roles.contains('准父母')) {
+    if (a.id == 545 ||
+        a.id == 686 ||
+        a.id == 704 ||
+        text.contains('新生儿黄疸') ||
+        text.contains('孩子被欺凌') ||
+        text.contains('撞了头、之后头痛')) {
+      if (!p.hasChildren &&
+          !p.roles.contains('家长') &&
+          !p.roles.contains('准父母')) {
         return false;
       }
     }

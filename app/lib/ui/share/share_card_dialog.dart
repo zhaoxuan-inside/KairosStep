@@ -33,8 +33,9 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
 
   Future<Uint8List?> _captureCardBytes() async {
     try {
-      final boundary = _cardBoundaryKey.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
+      final boundary =
+          _cardBoundaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return null;
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -54,9 +55,8 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
 
     if (bytes == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('卡片图片生成失败，请重试')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('卡片图片生成失败，请重试')));
       }
       return;
     }
@@ -73,8 +73,9 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
           ),
         ],
         text: '【数字阶跃 · 人生防线】${widget.advice.title}',
-        sharePositionOrigin:
-            box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+        sharePositionOrigin: box == null
+            ? null
+            : box.localToGlobal(Offset.zero) & box.size,
       ),
     );
     if (mounted) Navigator.of(context).pop();
@@ -83,12 +84,12 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
   void _copyText() {
     HapticFeedback.selectionClick();
     final a = widget.advice;
-    final text = '【数字阶跃 · 人生防线】${a.title}\n时机：${a.timingBadge}\n章节：${a.chapter}\n—— 来自 KairosStep 本地优先防线系统';
+    final text =
+        '【数字阶跃 · 人生防线】${a.title}\n时机：${a.timingBadge}\n章节：${a.chapter}\n—— 来自 KairosStep 本地优先防线系统';
     Clipboard.setData(ClipboardData(text: text));
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('文案已成功复制到剪贴板')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('文案已成功复制到剪贴板')));
   }
 
   @override
@@ -126,11 +127,19 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.photo_size_select_actual_outlined, size: 20, color: p.action),
+                  Icon(
+                    Icons.photo_size_select_actual_outlined,
+                    size: 20,
+                    color: p.action,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     '分享专属精美卡片',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: p.ink),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: p.ink,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -182,10 +191,16 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: domain.accentColor.withValues(alpha: 0.18),
+                                color: domain.accentColor.withValues(
+                                  alpha: 0.18,
+                                ),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(domain.icon, size: 16, color: domain.accentColor),
+                              child: Icon(
+                                domain.icon,
+                                size: 16,
+                                color: domain.accentColor,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Column(
@@ -201,16 +216,24 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                                   ),
                                 ),
                                 Text(
-                                  '767 条实证实操生活防线',
-                                  style: TextStyle(fontSize: 9.5, color: p.inkSub),
+                                  '737 条实证实操生活防线',
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    color: p.inkSub,
+                                  ),
                                 ),
                               ],
                             ),
                             const Spacer(),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
-                                color: domain.accentColor.withValues(alpha: 0.12),
+                                color: domain.accentColor.withValues(
+                                  alpha: 0.12,
+                                ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -230,7 +253,10 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 2.5,
+                              ),
                               decoration: BoxDecoration(
                                 color: p.inkMute.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(5),
@@ -273,7 +299,10 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                         // 核心操作拆解 (Parts items)
                         if (a.parts.isNotEmpty)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: p.surface.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(12),
@@ -284,16 +313,27 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                               children: [
                                 for (int i = 0; i < a.parts.length; i++)
                                   Padding(
-                                    padding: EdgeInsets.only(bottom: i < a.parts.length - 1 ? 6 : 0),
+                                    padding: EdgeInsets.only(
+                                      bottom: i < a.parts.length - 1 ? 6 : 0,
+                                    ),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Icon(Icons.check_circle_outline, size: 14, color: domain.accentColor),
+                                        Icon(
+                                          Icons.check_circle_outline,
+                                          size: 14,
+                                          color: domain.accentColor,
+                                        ),
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
                                             a.parts[i],
-                                            style: TextStyle(fontSize: 12, height: 1.35, color: p.ink),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              height: 1.35,
+                                              color: p.ink,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -316,7 +356,11 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                             ),
                             Text(
                               '${DateTime.now().year}.${DateTime.now().month.toString().padLeft(2, '0')}.${DateTime.now().day.toString().padLeft(2, '0')}',
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: p.inkMute),
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: p.inkMute,
+                              ),
                             ),
                           ],
                         ),
@@ -331,19 +375,27 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
               FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: p.action,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 icon: _isExporting
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.share, size: 18),
                 label: Text(
                   _isExporting ? '正在生成精美卡片...' : '分享精美图片卡片',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 onPressed: _isExporting ? null : _shareImage,
               ),
@@ -351,11 +403,16 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: p.hairline),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 icon: Icon(Icons.copy, size: 16, color: p.inkSub),
-                label: Text('复制文本内容', style: TextStyle(fontSize: 13, color: p.inkSub)),
+                label: Text(
+                  '复制文本内容',
+                  style: TextStyle(fontSize: 13, color: p.inkSub),
+                ),
                 onPressed: _copyText,
               ),
             ],

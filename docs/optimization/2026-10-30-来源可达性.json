@@ -1,0 +1,3841 @@
+{
+  "checked_on": "2026-10-30",
+  "meaning": "First cited URL reachability only; status does not verify recommendation facts.",
+  "items": [
+    {
+      "id": 1,
+      "first_url": "https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813573",
+      "result": "200"
+    },
+    {
+      "id": 2,
+      "first_url": "https://doi.org/10.1002/14651858.CD004333.pub3",
+      "result": "403"
+    },
+    {
+      "id": 3,
+      "first_url": "https://doi.org/10.1001/jama.279.20.1633",
+      "result": "403"
+    },
+    {
+      "id": 4,
+      "first_url": "http://www.gov.cn/gongbao/content/2010/content_1758214.htm",
+      "result": "200"
+    },
+    {
+      "id": 5,
+      "first_url": "https://doi.org/10.46234/ccdcw2026.120",
+      "result": "200"
+    },
+    {
+      "id": 6,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-08/01/content_5628815.htm",
+      "result": "200"
+    },
+    {
+      "id": 7,
+      "first_url": "https://doi.org/10.1016/S0140-6736(15)01225-8",
+      "result": "200"
+    },
+    {
+      "id": 8,
+      "first_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/screening-for-prediabetes-and-type-2-diabetes",
+      "result": "200"
+    },
+    {
+      "id": 9,
+      "first_url": "https://www.who.int/news-room/fact-sheets/detail/road-traffic-injuries",
+      "result": "200"
+    },
+    {
+      "id": 10,
+      "first_url": "https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813573",
+      "result": "200"
+    },
+    {
+      "id": 11,
+      "first_url": "https://doi.org/10.2105/AJPH.67.12.1143",
+      "result": "403"
+    },
+    {
+      "id": 12,
+      "first_url": "https://doi.org/10.1016/S0140-6736(10)61350-5",
+      "result": "200"
+    },
+    {
+      "id": 13,
+      "first_url": "https://doi.org/10.1002/14651858.CD012424.pub2",
+      "result": "403"
+    },
+    {
+      "id": 14,
+      "first_url": "https://doi.org/10.1371/journal.pmed.1001774",
+      "result": "200"
+    },
+    {
+      "id": 15,
+      "first_url": "https://www.cdc.gov/tetanus/about/index.html",
+      "result": "200"
+    },
+    {
+      "id": 16,
+      "first_url": "https://doi.org/10.1056/NEJMoa1917338",
+      "result": "403"
+    },
+    {
+      "id": 17,
+      "first_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening",
+      "result": "200"
+    },
+    {
+      "id": 18,
+      "first_url": "https://doi.org/10.1056/NEJMoa0808516",
+      "result": "403"
+    },
+    {
+      "id": 19,
+      "first_url": "https://doi.org/10.1002/14651858.CD001216.pub2",
+      "result": "403"
+    },
+    {
+      "id": 20,
+      "first_url": "https://doi.org/10.1161/CIRCULATIONAHA.121.057042",
+      "result": "403"
+    },
+    {
+      "id": 21,
+      "first_url": "https://doi.org/10.1056/NEJMoa1501184",
+      "result": "403"
+    },
+    {
+      "id": 22,
+      "first_url": "https://doi.org/10.1056/NEJMoa1408544",
+      "result": "403"
+    },
+    {
+      "id": 23,
+      "first_url": "https://doi.org/10.1136/bmj.l5016",
+      "result": "403"
+    },
+    {
+      "id": 24,
+      "first_url": "https://doi.org/10.1056/NEJMoa1102873",
+      "result": "403"
+    },
+    {
+      "id": 25,
+      "first_url": "https://doi.org/10.1016/S2215-0366(16)30030-X",
+      "result": "200"
+    },
+    {
+      "id": 26,
+      "first_url": "https://www.mem.gov.cn/kp/shaq/202011/t20201129_372149.shtml",
+      "result": "200"
+    },
+    {
+      "id": 27,
+      "first_url": "https://doi.org/10.3399/bjgp14X681409",
+      "result": "200"
+    },
+    {
+      "id": 28,
+      "first_url": "https://doi.org/10.1161/CIRCOUTCOMES.112.966903",
+      "result": "403"
+    },
+    {
+      "id": 29,
+      "first_url": "https://doi.org/10.1001/archinternmed.2011.440",
+      "result": "403"
+    },
+    {
+      "id": 30,
+      "first_url": "https://doi.org/10.1586/14737167.2016.1102635",
+      "result": "403"
+    },
+    {
+      "id": 31,
+      "first_url": "https://doi.org/10.1016/S0140-6736(19)30418-0",
+      "result": "200"
+    },
+    {
+      "id": 32,
+      "first_url": "https://doi.org/10.4088/JCP.07m03904",
+      "result": "200"
+    },
+    {
+      "id": 33,
+      "first_url": "https://doi.org/10.1111/j.1365-2125.2011.04026.x",
+      "result": "403"
+    },
+    {
+      "id": 34,
+      "first_url": "https://doi.org/10.1186/s12245-025-00959-4",
+      "result": "200"
+    },
+    {
+      "id": 35,
+      "first_url": "https://doi.org/10.1001/jama.2013.285141",
+      "result": "403"
+    },
+    {
+      "id": 36,
+      "first_url": "https://www.mee.gov.cn/ywgz/sthjjcgl/hjzljcypj/202506/t20250605_1120773.shtml",
+      "result": "200"
+    },
+    {
+      "id": 37,
+      "first_url": "https://doi.org/10.1556/2006.7.2018.112",
+      "result": "403"
+    },
+    {
+      "id": 38,
+      "first_url": "https://doi.org/10.1056/NEJMoa1011205",
+      "result": "403"
+    },
+    {
+      "id": 39,
+      "first_url": "https://doi.org/10.1001/jama.2024.27154",
+      "result": "403"
+    },
+    {
+      "id": 40,
+      "first_url": "https://html.rhhz.net/GUSS/html/cc825127-29a3-47c1-9a95-7a212fdcce55.htm",
+      "result": "200"
+    },
+    {
+      "id": 41,
+      "first_url": "https://www.cma.gov.cn/kppd/kppdqxyr/kppdtyqx/201901/t20190124_513302.html",
+      "result": "200"
+    },
+    {
+      "id": 42,
+      "first_url": "https://www.ccohs.ca/oshanswers/safety_haz/abrasive_wheels/safeuse1.html",
+      "result": "200"
+    },
+    {
+      "id": 43,
+      "first_url": "https://doi.org/10.1001/jama.293.13.1635",
+      "result": "403"
+    },
+    {
+      "id": 44,
+      "first_url": "https://doi.org/10.7326/0003-4819-146-12-200706190-00007",
+      "result": "403"
+    },
+    {
+      "id": 45,
+      "first_url": "https://doi.org/10.1001/jama.2020.1123",
+      "result": "403"
+    },
+    {
+      "id": 46,
+      "first_url": "https://www.mem.gov.cn/gk/zcjd/202312/t20231212_471584.shtml",
+      "result": "200"
+    },
+    {
+      "id": 47,
+      "first_url": "https://www.nhc.gov.cn/wjw/c100378/202406/7008ffe1c77d4457ac73361be75760c7.shtml",
+      "result": "412"
+    },
+    {
+      "id": 48,
+      "first_url": "https://doi.org/10.1371/journal.pone.0279957",
+      "result": "200"
+    },
+    {
+      "id": 49,
+      "first_url": "https://doi.org/10.1056/NEJMsa1211128",
+      "result": "403"
+    },
+    {
+      "id": 50,
+      "first_url": "https://doi.org/10.1016/S0140-6736(10)61388-8",
+      "result": "200"
+    },
+    {
+      "id": 51,
+      "first_url": "https://doi.org/10.1002/14651858.CD006103.pub8",
+      "result": "403"
+    },
+    {
+      "id": 52,
+      "first_url": "https://doi.org/10.7326/M14-2805",
+      "result": "403"
+    },
+    {
+      "id": 53,
+      "first_url": "https://doi.org/10.1002/14651858.CD008286.pub3",
+      "result": "403"
+    },
+    {
+      "id": 54,
+      "first_url": "https://doi.org/10.1002/14651858.CD010216.pub11",
+      "result": "403"
+    },
+    {
+      "id": 55,
+      "first_url": "https://doi.org/10.1161/CIRCULATIONAHA.118.037401",
+      "result": "403"
+    },
+    {
+      "id": 56,
+      "first_url": "https://doi.org/10.1371/journal.pone.0070679",
+      "result": "200"
+    },
+    {
+      "id": 57,
+      "first_url": "https://doi.org/10.1056/NEJMoa2105675",
+      "result": "403"
+    },
+    {
+      "id": 58,
+      "first_url": "https://doi.org/10.1016/j.jdent.2026.106789",
+      "result": "200"
+    },
+    {
+      "id": 59,
+      "first_url": "https://doi.org/10.1016/S2468-2667(21)00302-9",
+      "result": "200"
+    },
+    {
+      "id": 60,
+      "first_url": "https://doi.org/10.1016/S0140-6736(15)01225-8",
+      "result": "200"
+    },
+    {
+      "id": 61,
+      "first_url": "https://doi.org/10.1093/sleep/33.5.585",
+      "result": "403"
+    },
+    {
+      "id": 62,
+      "first_url": "https://doi.org/10.1136/bjsports-2016-096822",
+      "result": "403"
+    },
+    {
+      "id": 63,
+      "first_url": "https://doi.org/10.1038/s41591-022-02100-x",
+      "result": "200"
+    },
+    {
+      "id": 64,
+      "first_url": "https://doi.org/10.1136/bjsports-2021-105061",
+      "result": "403"
+    },
+    {
+      "id": 65,
+      "first_url": "https://doi.org/10.7326/M17-0212",
+      "result": "403"
+    },
+    {
+      "id": 66,
+      "first_url": "https://doi.org/10.1093/aje/kwt261",
+      "result": "403"
+    },
+    {
+      "id": 67,
+      "first_url": "https://doi.org/10.1016/S0140-6736(18)30134-X",
+      "result": "200"
+    },
+    {
+      "id": 68,
+      "first_url": "https://doi.org/10.1016/j.ejim.2026.107103",
+      "result": "200"
+    },
+    {
+      "id": 69,
+      "first_url": "https://doi.org/10.1002/14651858.CD004148.pub4",
+      "result": "403"
+    },
+    {
+      "id": 70,
+      "first_url": "https://doi.org/10.1056/NEJMoa1307352",
+      "result": "403"
+    },
+    {
+      "id": 71,
+      "first_url": "https://doi.org/10.1001/jamainternmed.2019.6969",
+      "result": "403"
+    },
+    {
+      "id": 72,
+      "first_url": "https://doi.org/10.1136/bmj.i2716",
+      "result": "403"
+    },
+    {
+      "id": 73,
+      "first_url": "https://doi.org/10.1177/2047487319894685",
+      "result": "403"
+    },
+    {
+      "id": 74,
+      "first_url": "https://doi.org/10.1136/bmj.j5024",
+      "result": "403"
+    },
+    {
+      "id": 75,
+      "first_url": "https://doi.org/10.1093/ije/dyw319",
+      "result": "403"
+    },
+    {
+      "id": 76,
+      "first_url": "https://doi.org/10.1136/bmj-2023-077310",
+      "result": "403"
+    },
+    {
+      "id": 77,
+      "first_url": "https://doi.org/10.1001/jama.2018.2151",
+      "result": "403"
+    },
+    {
+      "id": 78,
+      "first_url": "https://doi.org/10.1136/bmj.b929",
+      "result": "403"
+    },
+    {
+      "id": 79,
+      "first_url": "https://doi.org/10.1111/joim.12496",
+      "result": "403"
+    },
+    {
+      "id": 80,
+      "first_url": "https://doi.org/10.1016/S0140-6736(16)30175-1",
+      "result": "200"
+    },
+    {
+      "id": 81,
+      "first_url": "https://doi.org/10.1016/j.jacc.2019.09.068",
+      "result": "200"
+    },
+    {
+      "id": 82,
+      "first_url": "https://doi.org/10.1016/S0140-6736(18)31812-9",
+      "result": "200"
+    },
+    {
+      "id": 83,
+      "first_url": "https://doi.org/10.1371/journal.pmed.1003508",
+      "result": "200"
+    },
+    {
+      "id": 84,
+      "first_url": "https://doi.org/10.1136/heartjnl-2019-315752",
+      "result": "403"
+    },
+    {
+      "id": 85,
+      "first_url": "https://doi.org/10.3389/phrs.2026.1609013",
+      "result": "200"
+    },
+    {
+      "id": 86,
+      "first_url": "https://doi.org/10.1038/s41467-026-72461-1",
+      "result": "200"
+    },
+    {
+      "id": 87,
+      "first_url": "https://doi.org/10.3389/fpubh.2025.1668848",
+      "result": "200"
+    },
+    {
+      "id": 88,
+      "first_url": "https://doi.org/10.3389/fpubh.2024.1484414",
+      "result": "200"
+    },
+    {
+      "id": 89,
+      "first_url": "https://doi.org/10.1002/14651858.CD011737.pub3",
+      "result": "403"
+    },
+    {
+      "id": 90,
+      "first_url": "https://doi.org/10.2147/OTT.S100949",
+      "result": "200"
+    },
+    {
+      "id": 91,
+      "first_url": "https://doi.org/10.1002/14651858.CD002978.pub2",
+      "result": "403"
+    },
+    {
+      "id": 92,
+      "first_url": "https://doi.org/10.1161/CIRCOUTCOMES.119.005554",
+      "result": "403"
+    },
+    {
+      "id": 93,
+      "first_url": "https://doi.org/10.2337/diacare.20.4.537",
+      "result": "403"
+    },
+    {
+      "id": 94,
+      "first_url": "https://publications.iarc.fr/123",
+      "result": "200"
+    },
+    {
+      "id": 95,
+      "first_url": "https://publications.iarc.who.int/119",
+      "result": "200"
+    },
+    {
+      "id": 96,
+      "first_url": "https://doi.org/10.1037/xhp0000100",
+      "result": "403"
+    },
+    {
+      "id": 97,
+      "first_url": "https://doi.org/10.1038/s41598-017-03171-4",
+      "result": "200"
+    },
+    {
+      "id": 98,
+      "first_url": "https://doi.org/10.1093/sleep/26.2.117",
+      "result": "403"
+    },
+    {
+      "id": 99,
+      "first_url": "https://doi.org/10.5664/jcsm.3170",
+      "result": "200"
+    },
+    {
+      "id": 100,
+      "first_url": "https://doi.org/10.1016/j.chb.2014.11.005",
+      "result": "200"
+    },
+    {
+      "id": 101,
+      "first_url": "https://doi.org/10.1037/a0030986",
+      "result": "403"
+    },
+    {
+      "id": 102,
+      "first_url": "https://doi.org/10.1016/S1364-6613(03)00028-7",
+      "result": "200"
+    },
+    {
+      "id": 103,
+      "first_url": "https://doi.org/10.1073/pnas.1418490112",
+      "result": "403"
+    },
+    {
+      "id": 104,
+      "first_url": "https://doi.org/10.1001/jamapediatrics.2016.2341",
+      "result": "403"
+    },
+    {
+      "id": 105,
+      "first_url": "https://doi.org/10.1111/j.1365-2869.2006.00487.x",
+      "result": "403"
+    },
+    {
+      "id": 106,
+      "first_url": "https://doi.org/10.1093/sleep/29.6.831",
+      "result": "403"
+    },
+    {
+      "id": 107,
+      "first_url": "https://doi.org/10.1016/j.jenvp.2011.07.002",
+      "result": "200"
+    },
+    {
+      "id": 108,
+      "first_url": "https://doi.org/10.1111/ecoj.12166",
+      "result": "403"
+    },
+    {
+      "id": 109,
+      "first_url": "https://doi.org/10.1111/j.1745-6924.2008.00088.x",
+      "result": "403"
+    },
+    {
+      "id": 110,
+      "first_url": "https://doi.org/10.1038/s41598-020-69388-y",
+      "result": "200"
+    },
+    {
+      "id": 111,
+      "first_url": "https://doi.org/10.1037/0022-3514.46.5.1097",
+      "result": "403"
+    },
+    {
+      "id": 112,
+      "first_url": "https://doi.org/10.1037/a0027600",
+      "result": "403"
+    },
+    {
+      "id": 113,
+      "first_url": "https://doi.org/10.1136/bmj-2023-075847",
+      "result": "403"
+    },
+    {
+      "id": 114,
+      "first_url": "http://www.gov.cn/gongbao/content/2020/content_5549884.htm",
+      "result": "200"
+    },
+    {
+      "id": 115,
+      "first_url": "https://doi.org/10.3389/fpsyg.2026.1825169",
+      "result": "200"
+    },
+    {
+      "id": 116,
+      "first_url": "https://doi.org/10.1037/0022-3514.78.2.211",
+      "result": "403"
+    },
+    {
+      "id": 117,
+      "first_url": "https://doi.org/10.1111/jopy.12333",
+      "result": "403"
+    },
+    {
+      "id": 118,
+      "first_url": "https://doi.org/10.1016/j.cpr.2024.102414",
+      "result": "200"
+    },
+    {
+      "id": 119,
+      "first_url": "https://doi.org/10.1037/0033-2909.132.6.823",
+      "result": "403"
+    },
+    {
+      "id": 120,
+      "first_url": "https://doi.org/10.1002/14651858.CD001751.pub3",
+      "result": "403"
+    },
+    {
+      "id": 121,
+      "first_url": "https://www.nhc.gov.cn/yzygj/c100068/202012/b4305ace9e14440792eb76d29602c88a.shtml",
+      "result": "412"
+    },
+    {
+      "id": 122,
+      "first_url": "https://doi.org/10.5664/jcsm.6506",
+      "result": "200"
+    },
+    {
+      "id": 123,
+      "first_url": "https://doi.org/10.1016/S0065-2601(06)38002-1",
+      "result": "200"
+    },
+    {
+      "id": 124,
+      "first_url": "https://doi.org/10.1016/S0065-2601(06)38002-1",
+      "result": "200"
+    },
+    {
+      "id": 125,
+      "first_url": "https://doi.org/10.1016/0749-5978(85)90049-4",
+      "result": "200"
+    },
+    {
+      "id": 126,
+      "first_url": "https://doi.org/10.1037/0022-3514.67.3.366",
+      "result": "403"
+    },
+    {
+      "id": 127,
+      "first_url": "https://doi.org/10.1007/s10869-009-9092-6",
+      "result": "200"
+    },
+    {
+      "id": 128,
+      "first_url": "https://doi.org/10.1037/0021-9010.91.1.83",
+      "result": "403"
+    },
+    {
+      "id": 129,
+      "first_url": "https://doi.org/10.1016/j.jesp.2003.11.001",
+      "result": "200"
+    },
+    {
+      "id": 130,
+      "first_url": "https://doi.org/10.1037/0022-3514.67.3.366",
+      "result": "403"
+    },
+    {
+      "id": 131,
+      "first_url": "https://doi.org/10.1037/0033-2909.133.1.65",
+      "result": "403"
+    },
+    {
+      "id": 132,
+      "first_url": "https://doi.org/10.1002/14651858.CD012573.pub3",
+      "result": "403"
+    },
+    {
+      "id": 133,
+      "first_url": "https://doi.org/10.1056/NEJMoa1414293",
+      "result": "403"
+    },
+    {
+      "id": 134,
+      "first_url": "https://doi.org/10.1002/ejsp.674",
+      "result": "403"
+    },
+    {
+      "id": 135,
+      "first_url": "https://doi.org/10.1037/ccp0000023",
+      "result": "403"
+    },
+    {
+      "id": 136,
+      "first_url": "https://doi.org/10.1073/pnas.1706541114",
+      "result": "403"
+    },
+    {
+      "id": 137,
+      "first_url": "https://www.stats.gov.cn/sj/zxfb/202410/t20241031_1957216.html",
+      "result": "200"
+    },
+    {
+      "id": 138,
+      "first_url": "https://www.bls.gov/news.release/atus.nr0.htm",
+      "result": "200"
+    },
+    {
+      "id": 139,
+      "first_url": "https://doi.org/10.1207/s15327590ijhc1802_1",
+      "result": "403"
+    },
+    {
+      "id": 140,
+      "first_url": "https://doi.org/10.1111/j.1467-9442.2008.00542.x",
+      "result": "403"
+    },
+    {
+      "id": 141,
+      "first_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/fgs/art/2025/art_4b47c79b8d994a42bba4835997688faa.html",
+      "result": "200"
+    },
+    {
+      "id": 142,
+      "first_url": "https://www.gov.cn/zhengce/202502/content_7006465.htm",
+      "result": "200"
+    },
+    {
+      "id": 143,
+      "first_url": "https://www.gov.cn/gongbao/2026/issue_12946/202608/content_7079363.html",
+      "result": "200"
+    },
+    {
+      "id": 144,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2019-11/13/content_5451483.htm",
+      "result": "200"
+    },
+    {
+      "id": 145,
+      "first_url": "http://m.mof.gov.cn/czxw/201511/t20151113_1560814.htm",
+      "result": "200"
+    },
+    {
+      "id": 146,
+      "first_url": "https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=182418",
+      "result": "200"
+    },
+    {
+      "id": 147,
+      "first_url": "https://xining.pbc.gov.cn/zhengwugongkai/4081330/4406346/4693549/4159909/index.html",
+      "result": "200"
+    },
+    {
+      "id": 148,
+      "first_url": "https://www.nppa.gov.cn/xxfb/ywdt/202412/t20241216_877445.html",
+      "result": "200"
+    },
+    {
+      "id": 149,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 150,
+      "first_url": "http://gat.fujian.gov.cn/ztzl/fjjffpzxrx/spjq/202510/t20251028_7026836.htm",
+      "result": "200"
+    },
+    {
+      "id": 151,
+      "first_url": "https://doi.org/10.1086/605298",
+      "result": "403"
+    },
+    {
+      "id": 152,
+      "first_url": "https://www.nhsa.gov.cn/art/2020/1/17/art_38_2264.html",
+      "result": "200"
+    },
+    {
+      "id": 153,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-04/22/content_5601280.htm",
+      "result": "200"
+    },
+    {
+      "id": 154,
+      "first_url": "https://fgw.beijing.gov.cn/bmcx/djcx/jzldj/202003/t20200331_1752796.htm",
+      "result": "200"
+    },
+    {
+      "id": 155,
+      "first_url": "https://doi.org/10.1111/0022-1082.00226",
+      "result": "403"
+    },
+    {
+      "id": 156,
+      "first_url": "https://www.csrc.gov.cn/csrc/c106256/c1654005/content.shtml",
+      "result": "200"
+    },
+    {
+      "id": 157,
+      "first_url": "https://doi.org/10.1111/j.1540-6261.2010.01598.x",
+      "result": "403"
+    },
+    {
+      "id": 158,
+      "first_url": "http://www.csrc.gov.cn/csrc/c100028/c7418692/content.shtml",
+      "result": "200"
+    },
+    {
+      "id": 159,
+      "first_url": "https://doi.org/10.1111/j.1540-6261.1952.tb01525.x",
+      "result": "403"
+    },
+    {
+      "id": 160,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c102416/c5237110/content.html",
+      "result": "200"
+    },
+    {
+      "id": 161,
+      "first_url": "https://doi.org/10.1257/aer.96.3.694",
+      "result": "403"
+    },
+    {
+      "id": 162,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202403/content_6940159.htm",
+      "result": "200"
+    },
+    {
+      "id": 163,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2020-11/03/content_5557118.htm",
+      "result": "200"
+    },
+    {
+      "id": 164,
+      "first_url": "https://doi.org/10.1126/science.185.4157.1124",
+      "result": "403"
+    },
+    {
+      "id": 165,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2023-01/04/content_5735014.htm",
+      "result": "200"
+    },
+    {
+      "id": 166,
+      "first_url": "http://www.gov.cn/gongbao/content/2012/content_2131962.htm",
+      "result": "200"
+    },
+    {
+      "id": 167,
+      "first_url": "https://www.gov.cn/zhengce/content/2015-03/31/content_9562.htm",
+      "result": "200"
+    },
+    {
+      "id": 168,
+      "first_url": "https://www.chinamoney.com.cn/chinese/rdgz/20260820/3399885.html",
+      "result": "200"
+    },
+    {
+      "id": 169,
+      "first_url": "https://www.samr.gov.cn/zfjcj/tzgg/art/2023/art_615af9ed6bcd4974bf853dd2e02bc663.html",
+      "result": "200"
+    },
+    {
+      "id": 170,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202403/content_6940159.htm",
+      "result": "200"
+    },
+    {
+      "id": 171,
+      "first_url": "https://flk.npc.gov.cn/detail?id=7b5a76d0461745a08d3f964916b87ef3",
+      "result": "200"
+    },
+    {
+      "id": 172,
+      "first_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/zljds/art/2025/art_02676c16ac634fd9a48ec6ea10eb000d.html",
+      "result": "200"
+    },
+    {
+      "id": 173,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-11/14/content_1795.htm",
+      "result": "200"
+    },
+    {
+      "id": 174,
+      "first_url": "https://www.gov.cn/zhengce/2021-04/22/content_5723677.htm",
+      "result": "200"
+    },
+    {
+      "id": 175,
+      "first_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/zfjcs/art/2023/art_e2facd76a7fb4e90b03912cffb5e7d53.html",
+      "result": "200"
+    },
+    {
+      "id": 176,
+      "first_url": "https://flk.npc.gov.cn/detail?id=7b5a76d0461745a08d3f964916b87ef3",
+      "result": "200"
+    },
+    {
+      "id": 177,
+      "first_url": "https://doi.org/10.1111/0022-1082.00072",
+      "result": "403"
+    },
+    {
+      "id": 178,
+      "first_url": "https://www.csrc.gov.cn/csrc/c100028/c7634324/content.shtml",
+      "result": "200"
+    },
+    {
+      "id": 179,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-01/12/content_5579193.htm",
+      "result": "200"
+    },
+    {
+      "id": 180,
+      "first_url": "http://www.gov.cn/gongbao/content/2012/content_2163594.htm",
+      "result": "200"
+    },
+    {
+      "id": 181,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2019-12/03/content_5457853.htm",
+      "result": "200"
+    },
+    {
+      "id": 182,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2019-12/03/content_5457853.htm",
+      "result": "200"
+    },
+    {
+      "id": 183,
+      "first_url": "https://www.cac.gov.cn/2026-02/06/c_1772110875635198.htm",
+      "result": "200"
+    },
+    {
+      "id": 184,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf7c4060811",
+      "result": "200"
+    },
+    {
+      "id": 185,
+      "first_url": "https://www.csrc.gov.cn/csrc/c100028/c7614318/content.shtml",
+      "result": "200"
+    },
+    {
+      "id": 186,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-03/28/content_7376.htm",
+      "result": "200"
+    },
+    {
+      "id": 187,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-07/27/content_5627788.htm",
+      "result": "200"
+    },
+    {
+      "id": 188,
+      "first_url": "http://www.gov.cn/gongbao/content/2006/content_327851.htm",
+      "result": "200"
+    },
+    {
+      "id": 189,
+      "first_url": "http://www.gov.cn/gongbao/content/2017/content_5230275.htm",
+      "result": "200"
+    },
+    {
+      "id": 190,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8080816f135f46016f1d08f6da12f6",
+      "result": "200"
+    },
+    {
+      "id": 191,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202503/content_7015054.htm",
+      "result": "200"
+    },
+    {
+      "id": 192,
+      "first_url": "https://doi.org/10.1001/jama.2012.14805",
+      "result": "403"
+    },
+    {
+      "id": 193,
+      "first_url": "https://doi.org/10.1056/NEJMoa1811403",
+      "result": "403"
+    },
+    {
+      "id": 194,
+      "first_url": "https://doi.org/10.1056/NEJMoa1809944",
+      "result": "403"
+    },
+    {
+      "id": 195,
+      "first_url": "https://doi.org/10.1002/14651858.CD007176.pub2",
+      "result": "403"
+    },
+    {
+      "id": 196,
+      "first_url": "https://doi.org/10.1056/NEJMoa052771",
+      "result": "403"
+    },
+    {
+      "id": 197,
+      "first_url": "https://doi.org/10.1002/14651858.CD000980.pub4",
+      "result": "403"
+    },
+    {
+      "id": 198,
+      "first_url": "https://doi.org/10.1001/jama.2017.21926",
+      "result": "403"
+    },
+    {
+      "id": 199,
+      "first_url": "https://doi.org/10.1001/jama.2016.12858",
+      "result": "403"
+    },
+    {
+      "id": 200,
+      "first_url": "https://doi.org/10.7326/0003-4819-157-5-201209040-00007",
+      "result": "403"
+    },
+    {
+      "id": 201,
+      "first_url": "https://www.samr.gov.cn/tssps/sjdt/tpxw/art/2023/art_4b658b824b1b4b0ba57c09a56cc93aad.html",
+      "result": "200"
+    },
+    {
+      "id": 202,
+      "first_url": "https://doi.org/10.1038/s41430-018-0135-9",
+      "result": "200"
+    },
+    {
+      "id": 203,
+      "first_url": "https://doi.org/10.1371/journal.pone.0161749",
+      "result": "200"
+    },
+    {
+      "id": 204,
+      "first_url": "https://doi.org/10.1111/jhn.12286",
+      "result": "403"
+    },
+    {
+      "id": 205,
+      "first_url": "https://doi.org/10.1152/ajpregu.00365.2002",
+      "result": "403"
+    },
+    {
+      "id": 206,
+      "first_url": "https://doi.org/10.1037/h0059240",
+      "result": "403"
+    },
+    {
+      "id": 207,
+      "first_url": "https://doi.org/10.1002/14651858.CD013244.pub2",
+      "result": "403"
+    },
+    {
+      "id": 208,
+      "first_url": "https://doi.org/10.1093/oxfordjournals.aje.a009669",
+      "result": "403"
+    },
+    {
+      "id": 209,
+      "first_url": "https://doi.org/10.1002/14651858.CD009009.pub3",
+      "result": "403"
+    },
+    {
+      "id": 210,
+      "first_url": "https://doi.org/10.1002/acr.24180",
+      "result": "403"
+    },
+    {
+      "id": 211,
+      "first_url": "https://doi.org/10.1111/j.1440-1746.2009.06146.x",
+      "result": "403"
+    },
+    {
+      "id": 212,
+      "first_url": "https://doi.org/10.1056/NEJMoa010369",
+      "result": "403"
+    },
+    {
+      "id": 213,
+      "first_url": "https://doi.org/10.1037/h0059240",
+      "result": "403"
+    },
+    {
+      "id": 214,
+      "first_url": "https://doi.org/10.1037/a0037409",
+      "result": "403"
+    },
+    {
+      "id": 215,
+      "first_url": "https://doi.org/10.1093/qje/120.3.963",
+      "result": "403"
+    },
+    {
+      "id": 216,
+      "first_url": "https://doi.org/10.1177/1745691616652873",
+      "result": "403"
+    },
+    {
+      "id": 217,
+      "first_url": "https://doi.org/10.1136/bmj.l42",
+      "result": "403"
+    },
+    {
+      "id": 218,
+      "first_url": "https://doi.org/10.1016/j.eururo.2016.03.027",
+      "result": "200"
+    },
+    {
+      "id": 219,
+      "first_url": "https://www.apa.org/pi/lgbt/resources/therapeutic-response.pdf",
+      "result": "200"
+    },
+    {
+      "id": 220,
+      "first_url": "https://doi.org/10.1002/14651858.CD005958.pub3",
+      "result": "403"
+    },
+    {
+      "id": 221,
+      "first_url": "https://doi.org/10.1155/2023/6236045",
+      "result": "403"
+    },
+    {
+      "id": 222,
+      "first_url": "https://doi.org/10.1038/s41591-025-04074-y",
+      "result": "200"
+    },
+    {
+      "id": 223,
+      "first_url": "https://ghoapi.azureedge.net/api/LIFE_0000000031?$filter=SpatialDim%20eq%20'CHN'%20and%20TimeDim%20eq%202023",
+      "result": "500"
+    },
+    {
+      "id": 224,
+      "first_url": "https://doi.org/10.1056/NEJMoa013259",
+      "result": "403"
+    },
+    {
+      "id": 225,
+      "first_url": "https://doi.org/10.1371/journal.pone.0063773",
+      "result": "200"
+    },
+    {
+      "id": 226,
+      "first_url": "https://www.conghua.gov.cn/attachment/7/7361/7361750/7215543.pdf",
+      "result": "200"
+    },
+    {
+      "id": 227,
+      "first_url": "https://xzfg.moj.gov.cn/front/law/detail?LawID=517",
+      "result": "200"
+    },
+    {
+      "id": 228,
+      "first_url": "https://www.mohrss.gov.cn/SYrlzyhshbzb/zwgk/szrs/tjgb/202506/W020250616518526345602.pdf",
+      "result": "200"
+    },
+    {
+      "id": 229,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6944.htm",
+      "result": "200"
+    },
+    {
+      "id": 230,
+      "first_url": "https://www.gov.cn/gongbao/content/2003/content_62246.htm",
+      "result": "200"
+    },
+    {
+      "id": 231,
+      "first_url": "https://www.gov.cn/guoqing/2021-10/29/content_5647636.htm",
+      "result": "200"
+    },
+    {
+      "id": 232,
+      "first_url": "https://www.gov.cn/gongbao/content/2019/content_5468952.htm",
+      "result": "200"
+    },
+    {
+      "id": 233,
+      "first_url": "https://www.gov.cn/gongbao/content/2019/content_5468952.htm",
+      "result": "200"
+    },
+    {
+      "id": 234,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2015-09/25/content_10181.htm",
+      "result": "200"
+    },
+    {
+      "id": 235,
+      "first_url": "https://www.nhsa.gov.cn/art/2024/8/26/art_105_13634.html",
+      "result": "200"
+    },
+    {
+      "id": 236,
+      "first_url": "https://www.gov.cn/gongbao/content/2021/content_5659514.htm",
+      "result": "200"
+    },
+    {
+      "id": 237,
+      "first_url": "https://www.gov.cn/gongbao/content/2003/content_62254.htm",
+      "result": "200"
+    },
+    {
+      "id": 238,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202401/content_6926462.htm",
+      "result": "200"
+    },
+    {
+      "id": 239,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202401/content_6926462.htm",
+      "result": "200"
+    },
+    {
+      "id": 240,
+      "first_url": "https://doi.org/10.1037/a0035923",
+      "result": "403"
+    },
+    {
+      "id": 241,
+      "first_url": "https://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 242,
+      "first_url": "https://www.gov.cn/gongbao/content/2012/content_2226147.htm",
+      "result": "200"
+    },
+    {
+      "id": 243,
+      "first_url": "https://www.stats.gov.cn/sj/zxfbhjd/202601/t20260119_1962321.html",
+      "result": "200"
+    },
+    {
+      "id": 244,
+      "first_url": "https://www.gov.cn/guoqing/2021-10/29/content_5647616.htm",
+      "result": "200"
+    },
+    {
+      "id": 245,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202604/t20260430_726746.shtml",
+      "result": "200"
+    },
+    {
+      "id": 246,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2019-12/04/content_5458542.htm",
+      "result": "200"
+    },
+    {
+      "id": 247,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2022-12/11/content_5731351.htm",
+      "result": "200"
+    },
+    {
+      "id": 248,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "result": "200"
+    },
+    {
+      "id": 249,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1893974.htm",
+      "result": "200"
+    },
+    {
+      "id": 250,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/205308/index.html",
+      "result": "200"
+    },
+    {
+      "id": 251,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202209/t20220902_575631.shtml",
+      "result": "200"
+    },
+    {
+      "id": 252,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202209/t20220902_575631.shtml",
+      "result": "200"
+    },
+    {
+      "id": 253,
+      "first_url": "http://gat.fujian.gov.cn/ztzl/fjjffpzxrx/spjq/202509/t20250922_7013008.htm",
+      "result": "200"
+    },
+    {
+      "id": 254,
+      "first_url": "https://www.spp.gov.cn/zdgz/201810/t20181027_396818.shtml",
+      "result": "200"
+    },
+    {
+      "id": 255,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808181796a636a0179822a19640c92",
+      "result": "200"
+    },
+    {
+      "id": 256,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/205308/index.html",
+      "result": "200"
+    },
+    {
+      "id": 257,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202209/t20220902_575631.shtml",
+      "result": "200"
+    },
+    {
+      "id": 258,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2013-01/29/content_2303.htm",
+      "result": "200"
+    },
+    {
+      "id": 259,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 260,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 261,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 262,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 263,
+      "first_url": "https://doi.org/10.4088/JCP.07m03904",
+      "result": "200"
+    },
+    {
+      "id": 264,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 265,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 266,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 267,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 268,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 269,
+      "first_url": "https://www.gov.cn/gongbao/content/2002/content_61738.htm",
+      "result": "200"
+    },
+    {
+      "id": 270,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/37182.html",
+      "result": "200"
+    },
+    {
+      "id": 271,
+      "first_url": "https://www.spp.gov.cn/spp/sfjs/201802/t20180201_363736.shtml",
+      "result": "200"
+    },
+    {
+      "id": 272,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 273,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 274,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 275,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 276,
+      "first_url": "http://www.gov.cn/gongbao/content/2012/content_2231695.htm",
+      "result": "200"
+    },
+    {
+      "id": 277,
+      "first_url": "https://www.gov.cn/yaowen/liebiao/202312/content_6923395.htm",
+      "result": "200"
+    },
+    {
+      "id": 278,
+      "first_url": "https://cs.mfa.gov.cn/zggmcgx/lsbhyxz/cjwd_149483/202607/t20260713_11981016.html",
+      "result": "200"
+    },
+    {
+      "id": 279,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 280,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 281,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 282,
+      "first_url": "https://gaj.beijing.gov.cn/wsgs/2024zcwj/zcfg/202506/t20250630_4134266.html",
+      "result": "200"
+    },
+    {
+      "id": 283,
+      "first_url": "https://www.spp.gov.cn/zdgz/201810/t20181027_396818.shtml",
+      "result": "200"
+    },
+    {
+      "id": 284,
+      "first_url": "https://www.stats.gov.cn/gk/tjfg/xgfxfg/202503/t20250306_1958899.html",
+      "result": "200"
+    },
+    {
+      "id": 285,
+      "first_url": "http://www.gd.jcy.gov.cn/jcyw2/201704/t20170411_1975029.shtml",
+      "result": "200"
+    },
+    {
+      "id": 286,
+      "first_url": "https://www.court.gov.cn/zixun/xiangqing/412992.html",
+      "result": "200"
+    },
+    {
+      "id": 287,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf7c4060811",
+      "result": "200"
+    },
+    {
+      "id": 288,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8080816f135f46016f1d1b81b01351",
+      "result": "200"
+    },
+    {
+      "id": 289,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808181796a636a0179822a19640c92",
+      "result": "200"
+    },
+    {
+      "id": 290,
+      "first_url": "https://fgw.sh.gov.cn/ys-syjf-zc-2.4.1-h5/20240408/073febdb2b04464390546232d4089f51.html",
+      "result": "200"
+    },
+    {
+      "id": 291,
+      "first_url": "https://fgw.sh.gov.cn/ys-syjf-zc-2.4.1-h5/20240408/073febdb2b04464390546232d4089f51.html",
+      "result": "200"
+    },
+    {
+      "id": 292,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf7f9d60889",
+      "result": "200"
+    },
+    {
+      "id": 293,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/36982.html",
+      "result": "200"
+    },
+    {
+      "id": 294,
+      "first_url": "https://www.nfra.gov.cn/branch/fujian/view/pages/common/ItemDetail.html?docId=1072844&itemId=1104&generaltype=0",
+      "result": "200"
+    },
+    {
+      "id": 295,
+      "first_url": "https://doi.org/10.1057/sj.2014.30",
+      "result": "200"
+    },
+    {
+      "id": 296,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 297,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 298,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 299,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 300,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 301,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202012/t20201227_503700.shtml",
+      "result": "200"
+    },
+    {
+      "id": 302,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 303,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 304,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 305,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 306,
+      "first_url": "https://www.gov.cn/zhengce/content/202306/content_6888799.htm",
+      "result": "200"
+    },
+    {
+      "id": 307,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 308,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 309,
+      "first_url": "https://www.mee.gov.cn/ywgz/fgbz/fl/202302/t20230220_1016885.shtml",
+      "result": "200"
+    },
+    {
+      "id": 310,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 311,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/203777/index.html",
+      "result": "200"
+    },
+    {
+      "id": 312,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 313,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 314,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 315,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 316,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808181796a636a0179822a19640c92",
+      "result": "200"
+    },
+    {
+      "id": 317,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202312/content_6920196.htm",
+      "result": "200"
+    },
+    {
+      "id": 318,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 319,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202011/t20201119_308796.html",
+      "result": "200"
+    },
+    {
+      "id": 320,
+      "first_url": "https://www.gipc.gov.cn/front/content.action?id=7b7cb9a7b2cc45f286199fd427fc6b1f",
+      "result": "SSLError"
+    },
+    {
+      "id": 321,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 322,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 323,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202511/content_7049205.htm",
+      "result": "200"
+    },
+    {
+      "id": 324,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180205_364562.shtml",
+      "result": "200"
+    },
+    {
+      "id": 325,
+      "first_url": "https://doi.org/10.1177/0956797617714580",
+      "result": "403"
+    },
+    {
+      "id": 326,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202506/t20250627_699863.shtml",
+      "result": "200"
+    },
+    {
+      "id": 327,
+      "first_url": "https://doi.org/10.1177/0093650214534972",
+      "result": "403"
+    },
+    {
+      "id": 328,
+      "first_url": "https://doi.org/10.1073/pnas.1917036117",
+      "result": "403"
+    },
+    {
+      "id": 329,
+      "first_url": "https://doi.org/10.1177/0146167297234003",
+      "result": "403"
+    },
+    {
+      "id": 330,
+      "first_url": "https://doi.org/10.1177/0265407506070472",
+      "result": "403"
+    },
+    {
+      "id": 331,
+      "first_url": "https://www.mca.gov.cn/n1288/n1294/n1554/c1662004999980006190/content.html",
+      "result": "200"
+    },
+    {
+      "id": 332,
+      "first_url": "https://doi.org/10.1016/j.socscimed.2006.08.031",
+      "result": "200"
+    },
+    {
+      "id": 333,
+      "first_url": "https://www.stats.gov.cn/sj/zxfb/202410/t20241031_1957216.html",
+      "result": "200"
+    },
+    {
+      "id": 334,
+      "first_url": "https://flk.npc.gov.cn/detail?title=%E4%B8%AD%E5%8D%8E%E4%BA%BA%E6%B0%91%E5%85%B1%E5%92%8C%E5%9B%BD%E6%B0%91%E6%B3%95%E5%85%B8&id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 335,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/282071.html",
+      "result": "200"
+    },
+    {
+      "id": 336,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 337,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202504/content_7017752.htm",
+      "result": "200"
+    },
+    {
+      "id": 338,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 339,
+      "first_url": "http://gongbao.court.gov.cn/Details/7f184078694d811fb3314f6af9accf.html",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 340,
+      "first_url": null,
+      "result": "missing"
+    },
+    {
+      "id": 341,
+      "first_url": "https://doi.org/10.1037/a0031859",
+      "result": "403"
+    },
+    {
+      "id": 342,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 343,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 344,
+      "first_url": "https://doi.org/10.1037/ccp0000514",
+      "result": "403"
+    },
+    {
+      "id": 345,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 346,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 347,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 348,
+      "first_url": "https://www.spp.gov.cn/zdgz/201810/t20181027_396818.shtml",
+      "result": "200"
+    },
+    {
+      "id": 349,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 350,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 351,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 352,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 353,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 354,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 355,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 356,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 357,
+      "first_url": "https://www.gov.cn/gongbao/content/2021/content_5641351.htm",
+      "result": "200"
+    },
+    {
+      "id": 358,
+      "first_url": "https://nyncw.cq.gov.cn/wsdw/zz/zhfb/wlyxxaq/202406/t20240619_13306645.html",
+      "result": "200"
+    },
+    {
+      "id": 359,
+      "first_url": "https://yjglj.fushun.gov.cn/008/20260622/d846d3c2-df3d-4c4c-af16-898ede43e1ee.html",
+      "result": "200"
+    },
+    {
+      "id": 360,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202011/t20201119_308796.html",
+      "result": "200"
+    },
+    {
+      "id": 361,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202011/t20201119_308796.html",
+      "result": "200"
+    },
+    {
+      "id": 362,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202108/t20210820_313088.html",
+      "result": "200"
+    },
+    {
+      "id": 363,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1860864.htm",
+      "result": "200"
+    },
+    {
+      "id": 364,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6891752.htm",
+      "result": "200"
+    },
+    {
+      "id": 365,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808181971552b40197b1016efc5437",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 366,
+      "first_url": "https://www.szzg.gov.cn/2026/xwzx/szkx/202606/t20260608_5331487.htm",
+      "result": "200"
+    },
+    {
+      "id": 367,
+      "first_url": "https://www.spp.gov.cn/zdgz/202012/t20201227_503682.shtml",
+      "result": "200"
+    },
+    {
+      "id": 368,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 369,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 370,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 371,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 372,
+      "first_url": "https://www.gov.cn/yaowen/liebiao/202312/content_6923395.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 373,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-03/28/content_4179.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 374,
+      "first_url": "https://www.gov.cn/gongbao/content/2021/content_5636139.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 375,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2017-08/23/content_5219861.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 376,
+      "first_url": "https://flk.npc.gov.cn/detail?id=7b5a76d0461745a08d3f964916b87ef3",
+      "result": "200"
+    },
+    {
+      "id": 377,
+      "first_url": "https://flk.npc.gov.cn/detail?id=7b5a76d0461745a08d3f964916b87ef3",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 378,
+      "first_url": "https://flk.npc.gov.cn/detail?id=7b5a76d0461745a08d3f964916b87ef3",
+      "result": "200"
+    },
+    {
+      "id": 379,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808181796a636a0179822a19640c92",
+      "result": "200"
+    },
+    {
+      "id": 380,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100010/c5195082/content.html",
+      "result": "200"
+    },
+    {
+      "id": 381,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5237365/content.html",
+      "result": "200"
+    },
+    {
+      "id": 382,
+      "first_url": "https://www.chinatax.gov.cn/chinatax/n810219/n810724/c5243181/content.html",
+      "result": "200"
+    },
+    {
+      "id": 383,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 384,
+      "first_url": "https://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 385,
+      "first_url": "https://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 386,
+      "first_url": "https://doi.org/10.1287/mnsc.2018.3249",
+      "result": "403"
+    },
+    {
+      "id": 387,
+      "first_url": "http://www.gov.cn/gongbao/content/2010/content_1533513.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 388,
+      "first_url": "https://www.spp.gov.cn/zdgz/202012/t20201227_503682.shtml",
+      "result": "200"
+    },
+    {
+      "id": 389,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202011/t20201119_308796.html",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 390,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6169.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 391,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-08/24/content_5632964.htm",
+      "result": "200"
+    },
+    {
+      "id": 392,
+      "first_url": "https://www.gdcourts.gov.cn/gsxx/quanweifabu/anlihuicui/content/post_1388464.html",
+      "result": "200"
+    },
+    {
+      "id": 393,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8081819c46fcc5019cd18fc6e9557d",
+      "result": "200"
+    },
+    {
+      "id": 394,
+      "first_url": "https://www.spp.gov.cn/zdgz/202012/t20201227_503682.shtml",
+      "result": "200"
+    },
+    {
+      "id": 395,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 396,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf63dce034d",
+      "result": "200"
+    },
+    {
+      "id": 397,
+      "first_url": "https://doi.org/10.1161/CIRCOUTCOMES.109.889576",
+      "result": "403"
+    },
+    {
+      "id": 398,
+      "first_url": "http://cdcp.gd.gov.cn/gcdcdfiles/editor/uploadfile/20111027094832117.pdf",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 399,
+      "first_url": "https://doi.org/10.1016/S0140-6736(14)60584-5",
+      "result": "200"
+    },
+    {
+      "id": 400,
+      "first_url": "https://doi.org/10.1161/STROKEAHA.116.015169",
+      "result": "403"
+    },
+    {
+      "id": 401,
+      "first_url": "https://doi.org/10.1161/STR.0000000000000366",
+      "result": "403"
+    },
+    {
+      "id": 402,
+      "first_url": "https://doi.org/10.3389/fmed.2022.1078237",
+      "result": "200"
+    },
+    {
+      "id": 403,
+      "first_url": "https://doi.org/10.1093/ehjqcco/qcaa037",
+      "result": "403"
+    },
+    {
+      "id": 404,
+      "first_url": "https://doi.org/10.1001/jama.283.7.897",
+      "result": "403"
+    },
+    {
+      "id": 405,
+      "first_url": "https://doi.org/10.1001/jama.2013.278018",
+      "result": "403"
+    },
+    {
+      "id": 406,
+      "first_url": "https://doi.org/10.1186/s41016-021-00263-z",
+      "result": "200"
+    },
+    {
+      "id": 407,
+      "first_url": "https://doi.org/10.1016/S0140-6736(98)07534-5",
+      "result": "200"
+    },
+    {
+      "id": 408,
+      "first_url": "https://doi.org/10.1016/j.jamcollsurg.2018.01.047",
+      "result": "403"
+    },
+    {
+      "id": 409,
+      "first_url": "https://www.ndcpa.gov.cn/jbkzzx/c100014/common/content/content_1706569159854649344.html",
+      "result": "200"
+    },
+    {
+      "id": 410,
+      "first_url": "https://doi.org/10.1016/j.annemergmed.2019.06.028",
+      "result": "200"
+    },
+    {
+      "id": 411,
+      "first_url": "https://doi.org/10.3389/fphar.2022.845689",
+      "result": "200"
+    },
+    {
+      "id": 412,
+      "first_url": "https://www.cdc.gov/epilepsy/first-aid-for-seizures/index.html",
+      "result": "200"
+    },
+    {
+      "id": 413,
+      "first_url": "https://doi.org/10.2337/dc25-S006",
+      "result": "403"
+    },
+    {
+      "id": 414,
+      "first_url": "https://www.cdc.gov/natural-disasters/response/what-to-do-protect-yourself-from-electrical-hazards.html",
+      "result": "200"
+    },
+    {
+      "id": 415,
+      "first_url": "https://doi.org/10.46234/ccdcw2020.008",
+      "result": "200"
+    },
+    {
+      "id": 416,
+      "first_url": "https://niohp.chinacdc.cn/kpdw/202507/t20250722_308659.htm",
+      "result": "200"
+    },
+    {
+      "id": 417,
+      "first_url": "https://niohp.chinacdc.cn/kpdw/202507/t20250722_308659.htm",
+      "result": "200"
+    },
+    {
+      "id": 418,
+      "first_url": "https://www.weather.gov/safety/heat-illness",
+      "result": "200"
+    },
+    {
+      "id": 419,
+      "first_url": "https://niohp.chinacdc.cn/sndt/201405/t20140530_97623.htm",
+      "result": "200"
+    },
+    {
+      "id": 420,
+      "first_url": "https://www.ready.gov/home-fires",
+      "result": "403"
+    },
+    {
+      "id": 421,
+      "first_url": "https://www.who.int/zh/news-room/fact-sheets/detail/drowning",
+      "result": "200"
+    },
+    {
+      "id": 422,
+      "first_url": "https://medlineplus.gov/ency/article/000047.htm",
+      "result": "200"
+    },
+    {
+      "id": 423,
+      "first_url": "https://www.nps.gov/moja/planyourvisit/safety.htm",
+      "result": "200"
+    },
+    {
+      "id": 424,
+      "first_url": "https://www.weather.gov/safety/cold-during",
+      "result": "200"
+    },
+    {
+      "id": 425,
+      "first_url": "https://www.who.int/zh/news-room/fact-sheets/detail/animal-bites",
+      "result": "200"
+    },
+    {
+      "id": 426,
+      "first_url": "https://www.cea.gov.cn/cea/dzpd/dzcs/5537260/index.html",
+      "result": "200"
+    },
+    {
+      "id": 427,
+      "first_url": "https://www.nps.gov/subjects/bears/safety.htm",
+      "result": "200"
+    },
+    {
+      "id": 428,
+      "first_url": "https://www.weather.gov/safety/lightning-outdoors",
+      "result": "200"
+    },
+    {
+      "id": 429,
+      "first_url": "https://www.cdc.gov/yellow-book/hcp/environmental-hazards-risks/high-altitude-travel-and-altitude-illness.html",
+      "result": "200"
+    },
+    {
+      "id": 430,
+      "first_url": "https://www.cdc.gov/ticks/after-a-tick-bite/index.html",
+      "result": "200"
+    },
+    {
+      "id": 431,
+      "first_url": "https://www.cdc.gov/yellow-book/hcp/preparing-international-travelers/water-disinfection-for-travelers.html",
+      "result": "200"
+    },
+    {
+      "id": 432,
+      "first_url": "https://jtgl.beijing.gov.cn/jgj/jgxx/flfg/fl/11033925/index.html",
+      "result": "200"
+    },
+    {
+      "id": 433,
+      "first_url": "https://www.spp.gov.cn/spp/fl/201802/t20180206_364975.shtml",
+      "result": "200"
+    },
+    {
+      "id": 434,
+      "first_url": "https://www.beijing.gov.cn/fuwu/bmfw/jhsyfwzdzx/sjazbr/fakp/202311/t20231110_3299397.html",
+      "result": "200"
+    },
+    {
+      "id": 435,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 436,
+      "first_url": "https://www.ifrc.org/sites/default/files/2026-03/IFRC%20International%20First%20Aid,%20Resuscitation%20and%20Education%20Guidelines%202025.pdf",
+      "result": "200"
+    },
+    {
+      "id": 437,
+      "first_url": "https://www.ifrc.org/sites/default/files/2026-03/IFRC%20International%20First%20Aid,%20Resuscitation%20and%20Education%20Guidelines%202025.pdf",
+      "result": "200"
+    },
+    {
+      "id": 438,
+      "first_url": "https://www.bjjc.gov.cn/c/bjoweb/mtbg1/75046.jhtml",
+      "result": "200"
+    },
+    {
+      "id": 439,
+      "first_url": "https://doi.org/10.1161/CIR.0000000000001370",
+      "result": "403"
+    },
+    {
+      "id": 440,
+      "first_url": "https://doi.org/10.1161/CIR.0000000000001370",
+      "result": "403"
+    },
+    {
+      "id": 441,
+      "first_url": "https://doi.org/10.1542/peds.2009-3037",
+      "result": "403"
+    },
+    {
+      "id": 442,
+      "first_url": "https://www.nhs.uk/conditions/alcohol-poisoning/",
+      "result": "200"
+    },
+    {
+      "id": 443,
+      "first_url": "https://medlineplus.gov/ency/article/000006.htm",
+      "result": "200"
+    },
+    {
+      "id": 444,
+      "first_url": "https://www.nhs.uk/conditions/knocked-out-tooth/",
+      "result": "200"
+    },
+    {
+      "id": 445,
+      "first_url": "https://doi.org/10.1145/3308558.3313481",
+      "result": "403"
+    },
+    {
+      "id": 446,
+      "first_url": "https://www.cisa.gov/secure-our-world/use-strong-passwords",
+      "result": "403"
+    },
+    {
+      "id": 447,
+      "first_url": "https://app.www.gov.cn/govdata/gov/202010/22/464049/article.html",
+      "result": "200"
+    },
+    {
+      "id": 448,
+      "first_url": "https://www.fcc.gov/consumers/guides/protect-your-mobile-device",
+      "result": "200"
+    },
+    {
+      "id": 449,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/304771.html",
+      "result": "200"
+    },
+    {
+      "id": 450,
+      "first_url": "https://www.ncsc.gov.uk/guidance/recovering-a-hacked-account",
+      "result": "200"
+    },
+    {
+      "id": 451,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202108/t20210820_313088.html",
+      "result": "200"
+    },
+    {
+      "id": 452,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202108/t20210820_313088.html",
+      "result": "200"
+    },
+    {
+      "id": 453,
+      "first_url": "https://www.cac.gov.cn/2025-03/21/c_1744174262156096.htm",
+      "result": "200"
+    },
+    {
+      "id": 454,
+      "first_url": "https://www.szzg.gov.cn/2026/xwzx/szkx/202606/t20260608_5331487.htm",
+      "result": "200"
+    },
+    {
+      "id": 455,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202209/t20220902_575631.shtml",
+      "result": "200"
+    },
+    {
+      "id": 456,
+      "first_url": "https://www.miit.gov.cn/zwgk/zcwj/flfg/art/2020/art_0cff75e226764dc7b811cd4e954415c5.html",
+      "result": "200"
+    },
+    {
+      "id": 457,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032956.htm",
+      "result": "200"
+    },
+    {
+      "id": 458,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032956.htm",
+      "result": "200"
+    },
+    {
+      "id": 459,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032956.htm",
+      "result": "200"
+    },
+    {
+      "id": 460,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032956.htm",
+      "result": "200"
+    },
+    {
+      "id": 461,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 462,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032956.htm",
+      "result": "200"
+    },
+    {
+      "id": 463,
+      "first_url": "http://www.gov.cn/gongbao/content/2011/content_1918920.htm",
+      "result": "200"
+    },
+    {
+      "id": 464,
+      "first_url": "http://www.gov.cn/gongbao/content/2011/content_1845070.htm",
+      "result": "200"
+    },
+    {
+      "id": 465,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-03/28/content_2395.htm",
+      "result": "200"
+    },
+    {
+      "id": 466,
+      "first_url": "https://www.gov.cn/gongbao/2026/issue_13026/202610/content_7082773.html",
+      "result": "200"
+    },
+    {
+      "id": 467,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/282621.html",
+      "result": "200"
+    },
+    {
+      "id": 468,
+      "first_url": "http://www.gov.cn/gongbao/content/2002/content_70143.htm",
+      "result": "200"
+    },
+    {
+      "id": 469,
+      "first_url": "https://www.court.gov.cn/fabu/xiangqing/282621.html",
+      "result": "200"
+    },
+    {
+      "id": 470,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 471,
+      "first_url": "https://www.gov.cn/gongbao/2026/issue_13026/202610/content_7082770.html",
+      "result": "200"
+    },
+    {
+      "id": 472,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202505/content_7022708.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 473,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 474,
+      "first_url": "http://www.gov.cn/gongbao/content/2002/content_70143.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 475,
+      "first_url": "https://doi.org/10.1136/bmj.38875.675486.55",
+      "result": "403"
+    },
+    {
+      "id": 476,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202409/content_6974467.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 477,
+      "first_url": "https://doi.org/10.1371/journal.pmed.1002389",
+      "result": "200"
+    },
+    {
+      "id": 478,
+      "first_url": "https://doi.org/10.1093/jnci/djx145",
+      "result": "403"
+    },
+    {
+      "id": 479,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 480,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "200"
+    },
+    {
+      "id": 481,
+      "first_url": "https://doi.org/10.2337/dc26-S012",
+      "result": "403"
+    },
+    {
+      "id": 482,
+      "first_url": "https://doi.org/10.1016/s0022-5347(01)66321-3",
+      "result": "403"
+    },
+    {
+      "id": 483,
+      "first_url": "https://doi.org/10.1016/S0140-6736(18)32158-5",
+      "result": "200"
+    },
+    {
+      "id": 484,
+      "first_url": "https://doi.org/10.1136/annrheumdis-2011-201215",
+      "result": "200"
+    },
+    {
+      "id": 485,
+      "first_url": "https://doi.org/10.1007/s00432-004-0552-0",
+      "result": "200"
+    },
+    {
+      "id": 486,
+      "first_url": "https://doi.org/10.1016/S0140-6736(18)30841-9",
+      "result": "200"
+    },
+    {
+      "id": 487,
+      "first_url": "https://doi.org/10.1001/jamainternmed.2022.6817",
+      "result": "403"
+    },
+    {
+      "id": 488,
+      "first_url": "https://doi.org/10.1056/NEJMoa2502760",
+      "result": "403"
+    },
+    {
+      "id": 489,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 490,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202006/t20200602_463888.shtml",
+      "result": "200"
+    },
+    {
+      "id": 491,
+      "first_url": "https://www.spp.gov.cn/xwfbh/wsfbt/202206/t20220617_560010.shtml",
+      "result": "200"
+    },
+    {
+      "id": 492,
+      "first_url": "https://consumer.ftc.gov/articles/how-avoid-scam",
+      "result": "200"
+    },
+    {
+      "id": 493,
+      "first_url": "https://www.gov.cn/lianbo/bumen/202306/content_6886556.htm",
+      "result": "200"
+    },
+    {
+      "id": 494,
+      "first_url": "https://dfjrjgj.hunan.gov.cn/dfjrjgj/yhlj/202106/t20210608_19450856.html",
+      "result": "200"
+    },
+    {
+      "id": 495,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202603/content_7063915.htm",
+      "result": "200"
+    },
+    {
+      "id": 496,
+      "first_url": "https://doi.org/10.5435/JAAOSGlobal-D-22-00117",
+      "result": "200"
+    },
+    {
+      "id": 497,
+      "first_url": "https://doi.org/10.1136/bjo.2004.049478",
+      "result": "429"
+    },
+    {
+      "id": 498,
+      "first_url": "https://doi.org/10.1001/jamasurg.2019.0061",
+      "result": "403"
+    },
+    {
+      "id": 499,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2020-09/19/content_5544761.htm",
+      "result": "200"
+    },
+    {
+      "id": 500,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c90e5ba65c68cf70165d0eed8020053",
+      "result": "200"
+    },
+    {
+      "id": 501,
+      "first_url": "https://www.nice.org.uk/guidance/ng97/chapter/Recommendations",
+      "result": "200"
+    },
+    {
+      "id": 502,
+      "first_url": "https://www.gov.cn/gongbao/2025/issue_12206/202508/content_7035435.html",
+      "result": "200"
+    },
+    {
+      "id": 503,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2012-05/07/content_6584.htm",
+      "result": "200"
+    },
+    {
+      "id": 504,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2012-05/07/content_6584.htm",
+      "result": "200"
+    },
+    {
+      "id": 505,
+      "first_url": null,
+      "result": "missing"
+    },
+    {
+      "id": 506,
+      "first_url": null,
+      "result": "missing"
+    },
+    {
+      "id": 507,
+      "first_url": null,
+      "result": "missing"
+    },
+    {
+      "id": 508,
+      "first_url": "https://doi.org/10.1016/j.fertnstert.2016.02.028",
+      "result": "200"
+    },
+    {
+      "id": 509,
+      "first_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_d9aa750028b14b99a776cb93726a360d.html",
+      "result": "200"
+    },
+    {
+      "id": 510,
+      "first_url": "http://www.gov.cn/gongbao/content/2008/content_859865.htm",
+      "result": "200"
+    },
+    {
+      "id": 511,
+      "first_url": "http://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 512,
+      "first_url": "http://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 513,
+      "first_url": "http://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 514,
+      "first_url": "http://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 515,
+      "first_url": "http://www.gov.cn/gongbao/content/2007/content_711013.htm",
+      "result": "200"
+    },
+    {
+      "id": 516,
+      "first_url": "https://rsj.ankang.gov.cn/Content-2150407.html",
+      "result": "200"
+    },
+    {
+      "id": 517,
+      "first_url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/qtwj/201711/t20171104_779851.html",
+      "result": "200"
+    },
+    {
+      "id": 518,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202412/content_6992843.htm",
+      "result": "200"
+    },
+    {
+      "id": 519,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1778064.htm",
+      "result": "200"
+    },
+    {
+      "id": 520,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1778064.htm",
+      "result": "200"
+    },
+    {
+      "id": 521,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1778064.htm",
+      "result": "200"
+    },
+    {
+      "id": 522,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1778064.htm",
+      "result": "200"
+    },
+    {
+      "id": 523,
+      "first_url": "https://www.gov.cn/gongbao/content/2011/content_1778064.htm",
+      "result": "200"
+    },
+    {
+      "id": 524,
+      "first_url": "https://doi.org/10.1093/eurheartj/ehy683",
+      "result": "403"
+    },
+    {
+      "id": 525,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf74d7106b3",
+      "result": "200"
+    },
+    {
+      "id": 526,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c102416/c5202364/content.html",
+      "result": "200"
+    },
+    {
+      "id": 527,
+      "first_url": "https://www.gov.cn/guoqing/2021-10/29/content_5647616.htm",
+      "result": "200"
+    },
+    {
+      "id": 528,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "result": "200"
+    },
+    {
+      "id": 529,
+      "first_url": "https://www.gov.cn/guoqing/2021-10/29/content_5647616.htm",
+      "result": "200"
+    },
+    {
+      "id": 530,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "result": "200"
+    },
+    {
+      "id": 531,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "result": "200"
+    },
+    {
+      "id": 532,
+      "first_url": "https://fgk.chinatax.gov.cn/zcfgk/c100009/c5193025/content.html",
+      "result": "200"
+    },
+    {
+      "id": 533,
+      "first_url": "https://doi.org/10.1542/peds.2022-057990",
+      "result": "403"
+    },
+    {
+      "id": 534,
+      "first_url": "https://www.who.int/news-room/fact-sheets/detail/hepatitis-b",
+      "result": "200"
+    },
+    {
+      "id": 535,
+      "first_url": "http://ynswsjkw.yn.gov.cn/html/2019/faguiguizhangxin_0731/6509.html",
+      "result": "200"
+    },
+    {
+      "id": 536,
+      "first_url": "https://www.who.int/health-topics/breastfeeding",
+      "result": "200"
+    },
+    {
+      "id": 537,
+      "first_url": "https://doi.org/10.1016/j.jfp.2025.100571",
+      "result": "200"
+    },
+    {
+      "id": 538,
+      "first_url": "https://www.cdc.gov/botulism/prevention/index.html",
+      "result": "200"
+    },
+    {
+      "id": 539,
+      "first_url": "https://doi.org/10.3390/nu13114109",
+      "result": "200"
+    },
+    {
+      "id": 540,
+      "first_url": "https://doi.org/10.1542/peds.2021-052228",
+      "result": "403"
+    },
+    {
+      "id": 541,
+      "first_url": "https://doi.org/10.15585/mmwr.mm6520a1",
+      "result": "403"
+    },
+    {
+      "id": 542,
+      "first_url": "https://www.samr.gov.cn/xw/zj/art/2026/art_78c0425db7604b27bd7a3f36ba319975.html",
+      "result": "200"
+    },
+    {
+      "id": 543,
+      "first_url": "https://www.nhtsa.gov/car-seats-and-booster-seats/car-seat-use-after-crash",
+      "result": "403"
+    },
+    {
+      "id": 544,
+      "first_url": "https://doi.org/10.1056/NEJMoa1414850",
+      "result": "403"
+    },
+    {
+      "id": 545,
+      "first_url": "https://doi.org/10.1542/peds.2022-058859",
+      "result": "403"
+    },
+    {
+      "id": 546,
+      "first_url": "https://www.cdc.gov/mmwr/preview/mmwrhtml/mm5204a1.htm",
+      "result": "200"
+    },
+    {
+      "id": 547,
+      "first_url": "https://doi.org/10.1542/peds.2017-4332",
+      "result": "403"
+    },
+    {
+      "id": 548,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2020-08/01/content_5531915.htm",
+      "result": "200"
+    },
+    {
+      "id": 549,
+      "first_url": "https://www.cpsc.gov/s3fs-public/5098.pdf",
+      "result": "200"
+    },
+    {
+      "id": 550,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202607/content_7077173.htm",
+      "result": "200"
+    },
+    {
+      "id": 551,
+      "first_url": "https://cs.mfa.gov.cn/zggmzhw/lsbh/aqtx/202311/t20231109_11176682.shtml",
+      "result": "200"
+    },
+    {
+      "id": 552,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6891761.htm",
+      "result": "200"
+    },
+    {
+      "id": 553,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6891761.htm",
+      "result": "200"
+    },
+    {
+      "id": 554,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202607/content_7077173.htm",
+      "result": "200"
+    },
+    {
+      "id": 555,
+      "first_url": "https://www.safe.gov.cn/safe/2017/1230/21873.html",
+      "result": "200"
+    },
+    {
+      "id": 556,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6891761.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 557,
+      "first_url": "https://treaties.un.org/pages/ViewDetailsV.aspx?src=TREATY&mtdsg_no=XI-B-1&chapter=11&clang=_en",
+      "result": "200"
+    },
+    {
+      "id": 558,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202607/content_7077173.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 559,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202607/content_7077173.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 560,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6891761.htm",
+      "result": "200"
+    },
+    {
+      "id": 561,
+      "first_url": "https://www.ncd.mhlw.go.jp/en/application2.html",
+      "result": "200"
+    },
+    {
+      "id": 562,
+      "first_url": "https://www.moa.gov.cn/nybgb/2022/202202/202203/t20220324_6393815.htm",
+      "result": "200"
+    },
+    {
+      "id": 563,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6297.htm",
+      "result": "200"
+    },
+    {
+      "id": 564,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6297.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 565,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6297.htm",
+      "result": "200"
+    },
+    {
+      "id": 566,
+      "first_url": "https://www.spp.gov.cn/spp/zdgz/202110/t20211011_531831.shtml",
+      "result": "200"
+    },
+    {
+      "id": 567,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2022-06/27/content_5698021.htm",
+      "result": "200"
+    },
+    {
+      "id": 568,
+      "first_url": "https://doi.org/10.1136/bmj-2023-075847",
+      "result": "403"
+    },
+    {
+      "id": 569,
+      "first_url": "https://doi.org/10.1001/jamapsychiatry.2022.3679",
+      "result": "403"
+    },
+    {
+      "id": 570,
+      "first_url": "https://doi.org/10.1016/j.xcrm.2022.100895",
+      "result": "200"
+    },
+    {
+      "id": 571,
+      "first_url": "https://doi.org/10.1177/1745691614568352",
+      "result": "403"
+    },
+    {
+      "id": 572,
+      "first_url": "https://doi.org/10.1016/S2542-5196(19)30215-3",
+      "result": "200"
+    },
+    {
+      "id": 573,
+      "first_url": "https://doi.org/10.1111/j.1556-4029.2008.00703.x",
+      "result": "403"
+    },
+    {
+      "id": 574,
+      "first_url": "https://doi.org/10.1503/cmaj.091080",
+      "result": "403"
+    },
+    {
+      "id": 575,
+      "first_url": "http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/zcfg_jyfl/202110/t20211029_575949.html",
+      "result": "200"
+    },
+    {
+      "id": 576,
+      "first_url": "https://doi.org/10.1016/S2468-2667(23)00306-7",
+      "result": "200"
+    },
+    {
+      "id": 577,
+      "first_url": "https://www.stats.gov.cn/sj/tjgb/rkpcgb/qgrkpcgb/202302/t20230206_1902006.html",
+      "result": "200"
+    },
+    {
+      "id": 578,
+      "first_url": "http://www.gov.cn/gongbao/content/2013/content_2332779.htm",
+      "result": "200"
+    },
+    {
+      "id": 579,
+      "first_url": "http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/zcfg_jyfl/202204/t20220421_620064.html",
+      "result": "200"
+    },
+    {
+      "id": 580,
+      "first_url": "https://doi.org/10.1016/j.jce.2005.05.008",
+      "result": "200"
+    },
+    {
+      "id": 581,
+      "first_url": "https://doi.org/10.1080/09645292.2018.1484426",
+      "result": "403"
+    },
+    {
+      "id": 582,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2022-03/18/content_5679641.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 583,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032222.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 584,
+      "first_url": "https://doi.org/10.1016/j.techfore.2016.08.019",
+      "result": "200"
+    },
+    {
+      "id": 585,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032222.htm",
+      "result": "200"
+    },
+    {
+      "id": 586,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032222.htm",
+      "result": "200"
+    },
+    {
+      "id": 587,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7032222.htm",
+      "result": "200"
+    },
+    {
+      "id": 588,
+      "first_url": "https://doi.org/10.1037/bul0000309",
+      "result": "403"
+    },
+    {
+      "id": 589,
+      "first_url": "https://doi.org/10.1037/0033-2909.132.3.354",
+      "result": "403"
+    },
+    {
+      "id": 590,
+      "first_url": "https://doi.org/10.1177/1529100612453266",
+      "result": "403"
+    },
+    {
+      "id": 591,
+      "first_url": "https://doi.org/10.1037/bul0000209",
+      "result": "403"
+    },
+    {
+      "id": 592,
+      "first_url": "https://doi.org/10.1111/j.1539-6053.2009.01038.x",
+      "result": "403"
+    },
+    {
+      "id": 593,
+      "first_url": "https://doi.org/10.1037/bul0000151",
+      "result": "403"
+    },
+    {
+      "id": 594,
+      "first_url": "https://www.gov.cn/gongbao/content/2019/content_5437137.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 595,
+      "first_url": "https://www.gov.cn/gongbao/content/2017/content_5163445.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 596,
+      "first_url": "https://www.gov.cn/gongbao/content/2019/content_5437137.htm",
+      "result": "200"
+    },
+    {
+      "id": 597,
+      "first_url": "https://www.gov.cn/gongbao/content/2019/content_5437137.htm",
+      "result": "200"
+    },
+    {
+      "id": 598,
+      "first_url": "https://www.gov.cn/gongbao/content/2013/content_2404719.htm",
+      "result": "200"
+    },
+    {
+      "id": 599,
+      "first_url": "https://assets.publishing.service.gov.uk/media/5f609e478fa8f5106d1563cc/PG_LEO_report_FINAL.pdf",
+      "result": "200"
+    },
+    {
+      "id": 600,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 601,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "200"
+    },
+    {
+      "id": 602,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "200"
+    },
+    {
+      "id": 603,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065031.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 604,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2018-08/31/content_5318057.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 605,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2018-08/31/content_5318057.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 606,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202405/content_6951260.htm",
+      "result": "200"
+    },
+    {
+      "id": 607,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2013-03/01/content_6069.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 608,
+      "first_url": "https://www.moj.gov.cn/pub/sfbgw/zwxxgk/fdzdgknr/fdzdgknrtzwj/201908/P020210316701681025917.pdf",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 609,
+      "first_url": "https://www.bdpf.org.cn/cms68/web1459/subject/n1/n1459/n1508/n1509/n1512/c68465/content.html",
+      "result": "200"
+    },
+    {
+      "id": 610,
+      "first_url": "http://www.gov.cn/gongbao/content/2022/content_5678098.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 611,
+      "first_url": "https://www.nhsa.gov.cn/art/2024/1/12/art_109_11954.html",
+      "result": "200"
+    },
+    {
+      "id": 612,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-05/10/content_5605595.htm",
+      "result": "200"
+    },
+    {
+      "id": 613,
+      "first_url": "http://www.gov.cn/gongbao/content/2019/content_5358684.htm",
+      "result": "200"
+    },
+    {
+      "id": 614,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-02/19/content_5587668.htm",
+      "result": "200"
+    },
+    {
+      "id": 615,
+      "first_url": "http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/mpost_2531969.html",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 616,
+      "first_url": "https://mzj.sz.gov.cn/szmz/pc/zwgk/jcxxgk/zcfg/byfw/content/post_2952215.html",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 617,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202601/content_7054169.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 618,
+      "first_url": "https://www.gov.cn/zhengce/content/2018-08/31/content_5318057.htm",
+      "result": "200"
+    },
+    {
+      "id": 619,
+      "first_url": "http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/mpost_2531969.html",
+      "result": "200"
+    },
+    {
+      "id": 620,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202601/content_7054169.htm",
+      "result": "200"
+    },
+    {
+      "id": 621,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202601/content_7054169.htm",
+      "result": "200"
+    },
+    {
+      "id": 622,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202601/content_7054169.htm",
+      "result": "200"
+    },
+    {
+      "id": 623,
+      "first_url": "https://www.gov.cn/gongbao/2026/issue_12946/202608/content_7079363.html",
+      "result": "200"
+    },
+    {
+      "id": 624,
+      "first_url": "http://www.npc.gov.cn/npc/c2/c30834/202108/t20210820_313088.html",
+      "result": "200"
+    },
+    {
+      "id": 625,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 626,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-02/04/content_5584887.htm",
+      "result": "200"
+    },
+    {
+      "id": 627,
+      "first_url": "https://www.gov.cn/gongbao/2024/issue_11086/202401/content_6924970.html",
+      "result": "200"
+    },
+    {
+      "id": 628,
+      "first_url": "https://gdca.miit.gov.cn/bsfw/bszn/jyxk/tzgg/art/2025/art_6bcbfa4f041247868c0de08e765b33e9.html",
+      "result": "200"
+    },
+    {
+      "id": 629,
+      "first_url": "https://zwgk.mct.gov.cn/zfxxgkml/scgl/202012/t20201206_918194.html",
+      "result": "200"
+    },
+    {
+      "id": 630,
+      "first_url": "https://www.miit.gov.cn/gyhxxhb/jgsj/cyzcyfgs/bmgz/xxtxl/art/2024/art_84a0cfa0ebd049bbbe751dca9a008e56.html",
+      "result": "200"
+    },
+    {
+      "id": 631,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf8af050b81",
+      "result": "200"
+    },
+    {
+      "id": 632,
+      "first_url": "http://www.cac.gov.cn/2019-12/20/c_1578375159509309.htm",
+      "result": "200"
+    },
+    {
+      "id": 633,
+      "first_url": "https://www.cac.gov.cn/2025-12/29/c_1768735112911946.htm",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 634,
+      "first_url": "https://www.cac.gov.cn/2020-10/22/c_1604928959588622.htm",
+      "result": "200"
+    },
+    {
+      "id": 635,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf8af050b81",
+      "result": "200"
+    },
+    {
+      "id": 636,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202108/t20210820_527244.shtml",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 637,
+      "first_url": null,
+      "result": "missing"
+    },
+    {
+      "id": 638,
+      "first_url": "https://www.spp.gov.cn/spp/fl/202108/t20210820_527244.shtml",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 639,
+      "first_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/fgs/art/2025/art_4b47c79b8d994a42bba4835997688faa.html",
+      "result": "200"
+    },
+    {
+      "id": 640,
+      "first_url": "https://doi.org/10.1002/14651858.CD007950.pub3",
+      "result": "403"
+    },
+    {
+      "id": 641,
+      "first_url": "https://www.nhc.gov.cn/ewebeditor/uploadfile/2017/04/20170417104506514.pdf",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 642,
+      "first_url": "https://wjw.xinjiang.gov.cn/hfpc/zhgl6/202012/08b7de496f0b40e586d4b99d00cf79c4.shtml",
+      "result": "ReadTimeout"
+    },
+    {
+      "id": 643,
+      "first_url": "https://www.cdc.gov/tobacco/campaign/tips/diseases/pregnancy.html",
+      "result": "200"
+    },
+    {
+      "id": 644,
+      "first_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/low-dose-aspirin-use-for-the-prevention-of-morbidity-and-mortality-from-preeclampsia-preventive-medication",
+      "result": "200"
+    },
+    {
+      "id": 645,
+      "first_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/gestational-diabetes-screening",
+      "result": "200"
+    },
+    {
+      "id": 646,
+      "first_url": "https://www.cdc.gov/hearher/maternal-warning-signs/index.html",
+      "result": "200"
+    },
+    {
+      "id": 647,
+      "first_url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jzjj/202001/t20200115_1575632.html",
+      "result": "200"
+    },
+    {
+      "id": 648,
+      "first_url": "https://doi.org/10.1002/14651858.CD000331.pub4",
+      "result": "403"
+    },
+    {
+      "id": 649,
+      "first_url": "https://www.who.int/publications/i/item/WHO-RHR-15.02",
+      "result": "200"
+    },
+    {
+      "id": 650,
+      "first_url": "https://guangdong.chinatax.gov.cn/gdsw/qysw_gkwj/2020-02/12/content_8e8c485d0db34b989531f3ba57cec5a9.shtml",
+      "result": "200"
+    },
+    {
+      "id": 651,
+      "first_url": "https://www.gov.cn/guoqing/2021-10/29/content_5647619.htm",
+      "result": "200"
+    },
+    {
+      "id": 652,
+      "first_url": "http://www.gov.cn/gongbao/content/2009/content_1371363.htm",
+      "result": "200"
+    },
+    {
+      "id": 653,
+      "first_url": "https://www.gov.cn/zhengce/202409/content_6973567.htm",
+      "result": "200"
+    },
+    {
+      "id": 654,
+      "first_url": "http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/post_2531969.html",
+      "result": "200"
+    },
+    {
+      "id": 655,
+      "first_url": "https://www.nhc.gov.cn/ewebeditor/uploadfile/2017/04/20170417104506514.pdf",
+      "result": "200"
+    },
+    {
+      "id": 656,
+      "first_url": "https://www.cdc.gov/toxoplasmosis/risk-factors/index.html",
+      "result": "200"
+    },
+    {
+      "id": 657,
+      "first_url": "https://iris.who.int/server/api/core/bitstreams/420b8e49-9f16-461d-a5d8-263069778432/content",
+      "result": "200"
+    },
+    {
+      "id": 658,
+      "first_url": "https://doi.org/10.1016/j.eclinm.2019.03.014",
+      "result": "200"
+    },
+    {
+      "id": 659,
+      "first_url": "https://www.nhs.uk/baby/support-and-services/sex-and-contraception-after-birth/",
+      "result": "200"
+    },
+    {
+      "id": 660,
+      "first_url": "https://doi.org/10.1001/archgenpsychiatry.2011.74",
+      "result": "403"
+    },
+    {
+      "id": 661,
+      "first_url": "http://www.gov.cn/gongbao/content/2003/content_62198.htm",
+      "result": "200"
+    },
+    {
+      "id": 662,
+      "first_url": "https://doi.org/10.1093/asj/sjz053",
+      "result": "403"
+    },
+    {
+      "id": 663,
+      "first_url": "https://doi.org/10.1056/NEJMoa1003114",
+      "result": "403"
+    },
+    {
+      "id": 664,
+      "first_url": "https://doi.org/10.1111/joim.12850",
+      "result": "403"
+    },
+    {
+      "id": 665,
+      "first_url": "https://www.gov.cn/gongbao/2023/issue_10846/202311/content_6917322.html",
+      "result": "200"
+    },
+    {
+      "id": 666,
+      "first_url": "https://doi.org/10.7326/M17-2785",
+      "result": "403"
+    },
+    {
+      "id": 667,
+      "first_url": "https://doi.org/10.1007/s00266-017-0869-0",
+      "result": "200"
+    },
+    {
+      "id": 668,
+      "first_url": "https://www.cmde.org.cn/flfg/zdyz/zdyzwbk/20230103095116100.html",
+      "result": "202"
+    },
+    {
+      "id": 669,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2020-06/29/content_5522593.htm",
+      "result": "200"
+    },
+    {
+      "id": 670,
+      "first_url": "https://doi.org/10.1161/CIRCULATIONAHA.111.061770",
+      "result": "403"
+    },
+    {
+      "id": 671,
+      "first_url": "https://doi.org/10.1056/NEJMoa1110307",
+      "result": "403"
+    },
+    {
+      "id": 672,
+      "first_url": "https://doi.org/10.1016/j.socscimed.2011.01.005",
+      "result": "200"
+    },
+    {
+      "id": 673,
+      "first_url": "https://doi.org/10.1001/jamapsychiatry.2017.0226",
+      "result": "403"
+    },
+    {
+      "id": 674,
+      "first_url": "https://doi.org/10.1371/journal.pone.0023465",
+      "result": "200"
+    },
+    {
+      "id": 675,
+      "first_url": "https://doi.org/10.1001/archinternmed.2012.2782",
+      "result": "403"
+    },
+    {
+      "id": 676,
+      "first_url": "https://doi.org/10.1371/journal.pmed.1001679",
+      "result": "200"
+    },
+    {
+      "id": 677,
+      "first_url": "https://doi.org/10.1016/j.jad.2017.01.030",
+      "result": "200"
+    },
+    {
+      "id": 678,
+      "first_url": "https://doi.org/10.1037/0033-2909.134.5.648",
+      "result": "403"
+    },
+    {
+      "id": 679,
+      "first_url": "https://doi.org/10.1177/1745691611414724",
+      "result": "403"
+    },
+    {
+      "id": 680,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065035.htm",
+      "result": "200"
+    },
+    {
+      "id": 681,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202604/content_7065035.htm",
+      "result": "200"
+    },
+    {
+      "id": 682,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf7c4060811",
+      "result": "200"
+    },
+    {
+      "id": 683,
+      "first_url": "https://doi.org/10.1080/20008198.2020.1729633",
+      "result": "403"
+    },
+    {
+      "id": 684,
+      "first_url": "https://doi.org/10.1097/PEC.0000000000001287",
+      "result": "403"
+    },
+    {
+      "id": 685,
+      "first_url": "https://doi.org/10.1056/NEJMoa1307337",
+      "result": "403"
+    },
+    {
+      "id": 686,
+      "first_url": "https://doi.org/10.1001/jamapediatrics.2013.4143",
+      "result": "403"
+    },
+    {
+      "id": 687,
+      "first_url": "https://doi.org/10.1001/jama.2015.10803",
+      "result": "403"
+    },
+    {
+      "id": 688,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6894284.htm",
+      "result": "200"
+    },
+    {
+      "id": 689,
+      "first_url": "https://doi.org/10.1167/iovs.61.4.49",
+      "result": "403"
+    },
+    {
+      "id": 690,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-10/21/content_5644100.htm",
+      "result": "200"
+    },
+    {
+      "id": 691,
+      "first_url": "https://doi.org/10.1001/jama.2022.16946",
+      "result": "403"
+    },
+    {
+      "id": 692,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-11/12/content_5650400.htm",
+      "result": "200"
+    },
+    {
+      "id": 693,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-04/02/content_5597443.htm",
+      "result": "200"
+    },
+    {
+      "id": 694,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202502/content_7002620.htm",
+      "result": "200"
+    },
+    {
+      "id": 695,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202307/content_6894284.htm",
+      "result": "200"
+    },
+    {
+      "id": 696,
+      "first_url": "https://doi.org/10.1002/14651858.CD001830.pub5",
+      "result": "403"
+    },
+    {
+      "id": 697,
+      "first_url": "https://doi.org/10.1177/0004867420962851",
+      "result": "403"
+    },
+    {
+      "id": 698,
+      "first_url": "https://doi.org/10.1136/bmjopen-2017-020969",
+      "result": "403"
+    },
+    {
+      "id": 699,
+      "first_url": "https://doi.org/10.1037/fam0000191",
+      "result": "403"
+    },
+    {
+      "id": 700,
+      "first_url": "https://doi.org/10.1002/14651858.CD008225.pub2",
+      "result": "403"
+    },
+    {
+      "id": 701,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8081818f197cf001905e567af635a0",
+      "result": "200"
+    },
+    {
+      "id": 702,
+      "first_url": "https://doi.org/10.1002/14651858.CD004380.pub3",
+      "result": "403"
+    },
+    {
+      "id": 703,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8080816f3cbb3c016f40f566c10e23",
+      "result": "200"
+    },
+    {
+      "id": 704,
+      "first_url": "https://doi.org/10.1542/peds.2016-0910",
+      "result": "403"
+    },
+    {
+      "id": 705,
+      "first_url": "http://www.mod.gov.cn/regulatory/2021-08/20/content_4892491.htm",
+      "result": "200"
+    },
+    {
+      "id": 706,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202512/content_7051363.htm",
+      "result": "200"
+    },
+    {
+      "id": 707,
+      "first_url": "http://www.mod.gov.cn/regulatory/2021-08/20/content_4892491.htm",
+      "result": "200"
+    },
+    {
+      "id": 708,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202411/content_6984812.htm",
+      "result": "200"
+    },
+    {
+      "id": 709,
+      "first_url": "https://www.gov.cn/gongbao/2024/issue_11526/202408/content_6969192.html",
+      "result": "200"
+    },
+    {
+      "id": 710,
+      "first_url": "https://www.gov.cn/gongbao/2024/issue_11526/202408/content_6969192.html",
+      "result": "200"
+    },
+    {
+      "id": 711,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-06/04/content_5615404.htm",
+      "result": "200"
+    },
+    {
+      "id": 712,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202405/content_6950803.htm",
+      "result": "200"
+    },
+    {
+      "id": 713,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-08/27/content_5633684.htm",
+      "result": "200"
+    },
+    {
+      "id": 714,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8080816f3cbb3c016f415d64e5236d",
+      "result": "200"
+    },
+    {
+      "id": 715,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2021-07/23/content_5626761.htm",
+      "result": "200"
+    },
+    {
+      "id": 716,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202507/content_7031656.htm",
+      "result": "200"
+    },
+    {
+      "id": 717,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202406/content_6957261.htm",
+      "result": "200"
+    },
+    {
+      "id": 718,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2012-06/11/content_1091.htm",
+      "result": "200"
+    },
+    {
+      "id": 719,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2018-12/22/content_5351177.htm",
+      "result": "200"
+    },
+    {
+      "id": 720,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/202309/content_6903691.htm",
+      "result": "200"
+    },
+    {
+      "id": 721,
+      "first_url": "https://www.trs.gov.cn/xwzx/tzgg/zkxx/202610/t20261013_90984626.html",
+      "result": "200"
+    },
+    {
+      "id": 722,
+      "first_url": "http://yxcx.cscse.edu.cn/",
+      "result": "SSLError"
+    },
+    {
+      "id": 723,
+      "first_url": "https://www.federalregister.gov/documents/2026/07/17/2026-14439/establishing-a-fixed-time-period-of-admission-and-an-extension-of-stay-procedure-for-nonimmigrant",
+      "result": "200"
+    },
+    {
+      "id": 724,
+      "first_url": "https://www.ecfr.gov/current/title-8/chapter-I/subchapter-B/part-214/section-214.2",
+      "result": "200"
+    },
+    {
+      "id": 725,
+      "first_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/work/work-off-campus.html",
+      "result": "200"
+    },
+    {
+      "id": 726,
+      "first_url": "https://www.ecfr.gov/current/title-8/chapter-I/subchapter-B/part-265/section-265.1",
+      "result": "200"
+    },
+    {
+      "id": 727,
+      "first_url": "https://jsj.moe.gov.cn/",
+      "result": "200"
+    },
+    {
+      "id": 728,
+      "first_url": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500",
+      "result": "200"
+    },
+    {
+      "id": 729,
+      "first_url": "https://www.gov.uk/student-visa",
+      "result": "200"
+    },
+    {
+      "id": 730,
+      "first_url": "http://zwfw.cscse.edu.cn/",
+      "result": "SSLError"
+    },
+    {
+      "id": 731,
+      "first_url": "https://www.cscse.edu.cn/cscse/sy/tzgg/2025102809225023345/index.html",
+      "result": "SSLError"
+    },
+    {
+      "id": 732,
+      "first_url": "https://www.ecfr.gov/current/title-8/chapter-I/subchapter-B/part-214/section-214.2",
+      "result": "200"
+    },
+    {
+      "id": 733,
+      "first_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/provincial-attestation-letter.html",
+      "result": "200"
+    },
+    {
+      "id": 734,
+      "first_url": "https://doi.org/10.1016/j.apmr.2008.10.017",
+      "result": "200"
+    },
+    {
+      "id": 735,
+      "first_url": "https://doi.org/10.1038/sc.2017.98",
+      "result": "200"
+    },
+    {
+      "id": 736,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf7448a066d",
+      "result": "200"
+    },
+    {
+      "id": 737,
+      "first_url": "https://doi.org/10.1001/jama.282.23.2215",
+      "result": "403"
+    },
+    {
+      "id": 738,
+      "first_url": "https://doi.org/10.1111/j.1532-5415.2010.03168.x",
+      "result": "403"
+    },
+    {
+      "id": 739,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8081817ab231eb017abd6bd860052d",
+      "result": "200"
+    },
+    {
+      "id": 740,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2017-02/27/content_5171308.htm",
+      "result": "200"
+    },
+    {
+      "id": 741,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2018-07/10/content_5305296.htm",
+      "result": "200"
+    },
+    {
+      "id": 742,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff80818188d7430b0189018493370940",
+      "result": "200"
+    },
+    {
+      "id": 743,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2008-03/28/content_6646.htm",
+      "result": "200"
+    },
+    {
+      "id": 744,
+      "first_url": "https://flk.npc.gov.cn/detail?id=2c909fdd678bf17901678bf724bd0609",
+      "result": "200"
+    },
+    {
+      "id": 745,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff80818188d7430b0189018493370940",
+      "result": "200"
+    },
+    {
+      "id": 746,
+      "first_url": "http://www.gov.cn/zhengce/zhengceku/2017-04/12/content_5650060.htm",
+      "result": "200"
+    },
+    {
+      "id": 747,
+      "first_url": "https://www.gov.cn/zhengce/zhengceku/2017-02/23/content_5170264.htm",
+      "result": "200"
+    },
+    {
+      "id": 748,
+      "first_url": "https://www.gov.cn/gongbao/2025/issue_11866/202502/content_7004031.html",
+      "result": "200"
+    },
+    {
+      "id": 749,
+      "first_url": "https://doi.org/10.1002/14651858.CD000197.pub4",
+      "result": "403"
+    },
+    {
+      "id": 750,
+      "first_url": "https://doi.org/10.1016/S0140-6736(23)01406-X",
+      "result": "200"
+    },
+    {
+      "id": 751,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 752,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff808081729d1efe01729d50b5c500bf",
+      "result": "200"
+    },
+    {
+      "id": 753,
+      "first_url": "https://flk.npc.gov.cn/detail?id=ff8080816f135f46016f1d134c88132b",
+      "result": "200"
+    },
+    {
+      "id": 754,
+      "first_url": "https://doi.org/10.1038/sc.2017.64",
+      "result": "200"
+    },
+    {
+      "id": 755,
+      "first_url": "https://doi.org/10.1002/hep.20948",
+      "result": "403"
+    },
+    {
+      "id": 756,
+      "first_url": "https://doi.org/10.1056/NEJM199905063401801",
+      "result": "403"
+    },
+    {
+      "id": 757,
+      "first_url": "https://doi.org/10.1016/S0140-6736(13)60900-9",
+      "result": "200"
+    },
+    {
+      "id": 758,
+      "first_url": "https://www.nmpa.gov.cn/directory/web/nmpa/xxgk/ggtg/ypggtg/ypshmshxdgg/20210423105404141.html",
+      "result": "412"
+    },
+    {
+      "id": 759,
+      "first_url": "https://www.fda.gov/drugs/drug-safety-and-availability/fda-recommends-avoiding-use-nsaids-pregnancy-20-weeks-or-later-because-they-can-result-low-amniotic",
+      "result": "200"
+    },
+    {
+      "id": 760,
+      "first_url": "https://www.nmpa.gov.cn/yaopin/ypggtg/20220826171517123.html",
+      "result": "412"
+    },
+    {
+      "id": 761,
+      "first_url": "https://doi.org/10.1002/14651858.CD000247.pub4",
+      "result": "403"
+    },
+    {
+      "id": 762,
+      "first_url": "https://iris.who.int/handle/10665/43209",
+      "result": "200"
+    },
+    {
+      "id": 763,
+      "first_url": "https://doi.org/10.1177/0333102417738202",
+      "result": "403"
+    },
+    {
+      "id": 764,
+      "first_url": "https://doi.org/10.1542/peds.2015-2092",
+      "result": "403"
+    },
+    {
+      "id": 765,
+      "first_url": "https://yjj.scjgj.fujian.gov.cn/ztzl/kpzl/qgaqyyy/202312/t20231215_6334595.htm",
+      "result": "200"
+    },
+    {
+      "id": 766,
+      "first_url": "https://www.nmpa.gov.cn/xxgk/yjjsh/ypblfytb/20100919162601498.html",
+      "result": "412"
+    },
+    {
+      "id": 767,
+      "first_url": "https://doi.org/10.1503/cmaj.120951",
+      "result": "403"
+    }
+  ]
+}

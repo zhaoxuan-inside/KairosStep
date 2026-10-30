@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/advice.dart';
 import '../models/probe_binding.dart';
 import '../models/probe_model.dart';
 import 'app_store.dart' show UserProfile;
+import 'mobile_notification_service.dart';
 
 /// 主动探测调度器模块 (Proactive Probe Scheduler)
 ///
@@ -15,9 +17,11 @@ import 'app_store.dart' show UserProfile;
 ///    - 非必须的常规信号（Routine Signal：活动情境、身体微体征、心情关怀）进行合并通知；
 /// 3. 严格控制通知频率（防打扰冷却机制、每日上限、深夜免打扰），避免过度打扰用户。
 class ProbeScheduler extends ChangeNotifier {
-  ProbeScheduler() {
+  ProbeScheduler(this._notifications) {
     _startTicker();
   }
+
+  final MobileNotificationService _notifications;
 
   Timer? _ticker;
 
@@ -36,19 +40,21 @@ class ProbeScheduler extends ChangeNotifier {
   static const int maxDailyRoutineProbes = 3;
   static const int minCooldownMinutes = 90;
   static const int quietHoursStart = 23; // 23:00 开始免打扰
-  static const int quietHoursEnd = 7; // 07:00 结束免打扰
+  static const int quietHoursEnd = 5; // 05:00 结束免打扰
 
   // 当前等待 UI 处理的探查通知数据包
   ProbePayload? _currentPayload;
   ProbePayload? get currentPayload => _currentPayload;
+  final Map<String, ProbePayload> _pendingNotifications = {};
+  final Set<String> _scheduledKinds = {};
 
   int get registeredAdviceCount =>
       _categoryAdvices.values.fold(0, (acc, list) => acc + list.length);
 
   void _startTicker() {
     _ticker?.cancel();
-    // 每 15 秒心跳检测一次
-    _ticker = Timer.periodic(const Duration(seconds: 15), (_) {
+    // 每 10 分钟检查一次，避免高频轮询打扰设备和用户。
+    _ticker = Timer.periodic(const Duration(minutes: 10), (_) {
       checkScheduledProbes(DateTime.now());
     });
   }
@@ -62,6 +68,65 @@ class ProbeScheduler extends ChangeNotifier {
       final spec = AdviceProbeBindingEngine.specFor(a);
       _categoryAdvices.putIfAbsent(spec.category, () => []).add(a);
     }
+
+    _syncDailySystemNotifications();
+
+    // 注册完成后立即做一次判断，避免用户恰好在探查窗口内打开应用却要等满 10 分钟。
+    checkScheduledProbes(DateTime.now());
+  }
+
+  void _syncDailySystemNotifications() {
+    _scheduledKinds.clear();
+    if (!_notifications.isReady) return;
+
+    final items = <DailyProbeNotification>[];
+    if ((_categoryAdvices[ProbeCategory.activity] ?? const []).isNotEmpty) {
+      _scheduledKinds.add('probe_morning');
+      items.add(
+        const DailyProbeNotification(
+          id: 9101,
+          hour: 9,
+          minute: 30,
+          title: '上午情境与状态探查',
+          body: '告诉我你现在正在工作、学习、运动还是通勤。',
+          payload: 'probe_morning_scheduled',
+        ),
+      );
+    }
+    if ((_categoryAdvices[ProbeCategory.body] ?? const []).isNotEmpty) {
+      _scheduledKinds.add('probe_afternoon');
+      items.add(
+        const DailyProbeNotification(
+          id: 9102,
+          hour: 14,
+          minute: 15,
+          title: '午后身体与疲劳度探查',
+          body: '午后状态探查：今天身体和用眼感觉怎么样？',
+          payload: 'probe_afternoon_scheduled',
+        ),
+      );
+    }
+    if ((_categoryAdvices[ProbeCategory.mood] ?? const []).isNotEmpty ||
+        (_categoryAdvices[ProbeCategory.weight] ?? const []).isNotEmpty) {
+      _scheduledKinds.add('probe_evening');
+      final roles = _currentProfile?.roles ?? const <String>[];
+      final body = roles.contains('上班族') || roles.contains('程序员')
+          ? '下班后了，用几十秒告诉我今天的工作感受。'
+          : roles.contains('学生')
+          ? '晚间了，用几十秒告诉我今天的学习压力。'
+          : '用几十秒告诉我今天的状态，帮我校准接下来的建议。';
+      items.add(
+        DailyProbeNotification(
+          id: 9103,
+          hour: 20,
+          minute: 0,
+          title: '晚间状态与心理韧性探查',
+          body: body,
+          payload: 'probe_evening_scheduled',
+        ),
+      );
+    }
+    unawaited(_notifications.replaceDailyProbes(items));
   }
 
   /// 周期性心跳检查调度规则
@@ -82,7 +147,10 @@ class ProbeScheduler extends ChangeNotifier {
       return;
     }
 
-    // 1. 检查是否有必须立即通知的高危紧急信号（无视免打扰与限频）
+    // 用户设定的夜间静默优先于所有常规探查通知。
+    if (_isQuietHours(now)) return;
+
+    // 1. 检查是否有必须立即通知的高危紧急信号（仍受夜间静默保护）
     final mandatoryPayload = _checkMandatorySignals(now);
     if (mandatoryPayload != null) {
       _currentPayload = mandatoryPayload;
@@ -98,11 +166,61 @@ class ProbeScheduler extends ChangeNotifier {
     // 3. 按照时段生成合并探查通知
     final routinePayload = _generateRoutineProbeIfDue(now);
     if (routinePayload != null) {
-      _currentPayload = routinePayload;
+      _pendingNotifications[routinePayload.id] = routinePayload;
       _lastRoutineProbeTime = now;
       _todayProbeCount++;
-      notifyListeners();
+      _sendMobileNotification(routinePayload, now);
     }
+  }
+
+  void _sendMobileNotification(ProbePayload payload, DateTime now) {
+    if (!_notifications.isReady) {
+      // 桌面、Web 或通知权限不可用时，保留应用内弹窗兜底。
+      _currentPayload = payload;
+      notifyListeners();
+      return;
+    }
+
+    final kind = payload.id.split('_').take(2).join('_');
+    if (_scheduledKinds.contains(kind)) return;
+    final role = _currentProfile?.roles ?? const <String>[];
+    final body = switch (kind) {
+      'probe_morning' => '现在是 ${_formatHour(now)}，告诉我你正在工作、学习、运动还是通勤。',
+      'probe_afternoon' => '午后状态探查：今天身体和用眼感觉怎么样？',
+      'probe_evening' when role.contains('上班族') || role.contains('程序员') =>
+        '下班后了，用几十秒告诉我今天的工作感受。',
+      'probe_evening' when role.contains('学生') => '晚间了，用几十秒告诉我今天的学习压力。',
+      _ => '用几十秒告诉我今天的状态，帮我校准接下来的建议。',
+    };
+    _notifications.showProbe(
+      id: payload.id.hashCode & 0x7fffffff,
+      title: payload.title,
+      body: body,
+      payload: payload.id,
+    );
+  }
+
+  String _formatHour(DateTime now) =>
+      '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+  /// 用户点击系统通知后才打开探查弹窗；应用被系统回收时按通知类型重建题目。
+  void handleNotificationTap(String? notificationId) {
+    if (notificationId == null || notificationId.isEmpty) return;
+    final pending = _pendingNotifications.remove(notificationId);
+    final now = DateTime.now();
+    final payload = pending ?? _payloadForNotificationId(notificationId, now);
+    if (payload == null) return;
+    _currentPayload = payload;
+    notifyListeners();
+  }
+
+  ProbePayload? _payloadForNotificationId(String id, DateTime now) {
+    if (id.startsWith('probe_morning_')) return createMorningContextProbe(now);
+    if (id.startsWith('probe_afternoon_')) return createAfternoonBodyProbe(now);
+    if (id.startsWith('probe_evening_')) {
+      return createEveningMoodAndActivityProbe(now);
+    }
+    return null;
   }
 
   /// 检查必须立即通知的紧急信号
@@ -155,11 +273,8 @@ class ProbeScheduler extends ChangeNotifier {
 
   /// 判断是否需要抑制常规非必须探查
   bool _shouldSuppressRoutine(DateTime now) {
-    // 规则 A: 深夜免打扰 (23:00 ~ 07:00)
-    final hour = now.hour;
-    if (hour >= quietHoursStart || hour < quietHoursEnd) {
-      return true;
-    }
+    // 规则 A: 深夜免打扰 (23:00 ~ 05:00)
+    if (_isQuietHours(now)) return true;
 
     // 规则 B: 每日最大主动探查频次控制
     if (_todayProbeCount >= maxDailyRoutineProbes) {
@@ -177,23 +292,38 @@ class ProbeScheduler extends ChangeNotifier {
     return false;
   }
 
+  bool _isQuietHours(DateTime now) =>
+      now.hour >= quietHoursStart || now.hour < quietHoursEnd;
+
   /// 按时段聚合与合并生成非必须常规探查
   ProbePayload? _generateRoutineProbeIfDue(DateTime now) {
     final hour = now.hour;
     final minute = now.minute;
 
     // 探查时机窗口 1: 上午 09:30 ~ 10:00 (工作/学业情境探查)
-    final isMorningSlot = (hour == 9 && minute >= 30) || (hour == 10 && minute <= 15);
+    final isMorningSlot =
+        (hour == 9 && minute >= 30) || (hour == 10 && minute <= 15);
     // 探查时机窗口 2: 下午 14:15 ~ 15:00 (午后身体微体征与用眼疲劳合并探查)
-    final isAfternoonSlot = (hour == 14 && minute >= 15) || (hour == 15 && minute <= 0);
-    // 探查时机窗口 3: 傍晚/晚间 18:30 ~ 19:30 (下班心情关照与运动/减重合并探查)
-    final isEveningSlot = (hour == 18 && minute >= 30) || (hour == 19 && minute <= 30);
+    final isAfternoonSlot =
+        (hour == 14 && minute >= 15) || (hour == 15 && minute <= 0);
+    // 探查时机窗口 3: 晚间 20:00 ~ 21:00（通常已下班，再询问工作感受）
+    final isEveningSlot = hour == 20;
 
     if (isMorningSlot) {
+      if ((_categoryAdvices[ProbeCategory.activity] ?? const []).isEmpty) {
+        return null;
+      }
       return createMorningContextProbe(now);
     } else if (isAfternoonSlot) {
+      if ((_categoryAdvices[ProbeCategory.body] ?? const []).isEmpty) {
+        return null;
+      }
       return createAfternoonBodyProbe(now);
     } else if (isEveningSlot) {
+      if ((_categoryAdvices[ProbeCategory.mood] ?? const []).isEmpty &&
+          (_categoryAdvices[ProbeCategory.weight] ?? const []).isEmpty) {
+        return null;
+      }
       return createEveningMoodAndActivityProbe(now);
     }
 
@@ -332,8 +462,18 @@ class ProbeScheduler extends ChangeNotifier {
     List<ProbeOption> roleOptions = [
       const ProbeOption(key: 'smooth', label: '推进顺畅，充实从容', emoji: '😊'),
       const ProbeOption(key: 'tired', label: '略显疲劳，有点透支', emoji: '🥱'),
-      const ProbeOption(key: 'exhausted', label: '加班心累，严重内耗', emoji: '😫', associatedAdviceIds: [568, 113]),
-      const ProbeOption(key: 'depressed', label: '情绪低落，提不起劲', emoji: '🌧️', associatedAdviceIds: [568, 113, 680]),
+      const ProbeOption(
+        key: 'exhausted',
+        label: '加班心累，严重内耗',
+        emoji: '😫',
+        associatedAdviceIds: [568, 113],
+      ),
+      const ProbeOption(
+        key: 'depressed',
+        label: '情绪低落，提不起劲',
+        emoji: '🌧️',
+        associatedAdviceIds: [568, 113, 680],
+      ),
     ];
 
     if (isWorker) {
@@ -341,14 +481,29 @@ class ProbeScheduler extends ChangeNotifier {
       roleOptions = [
         const ProbeOption(key: 'w_good', label: '工作高效，同事融洽', emoji: '👍'),
         const ProbeOption(key: 'w_tired', label: '会议琐碎，略有心累', emoji: '💼'),
-        const ProbeOption(key: 'w_burnout', label: '严重内耗/被刁难摩擦', emoji: '🌧️', associatedAdviceIds: [568, 680]),
+        const ProbeOption(
+          key: 'w_burnout',
+          label: '严重内耗/被刁难摩擦',
+          emoji: '🌧️',
+          associatedAdviceIds: [568, 680],
+        ),
       ];
     } else if (isStudent) {
       roleQTitle = '晚修自习：今日学业压力与相处如何？';
       roleOptions = [
         const ProbeOption(key: 's_good', label: '学业适中，跟上节奏', emoji: '📖'),
-        const ProbeOption(key: 's_stressed', label: '备考吃力，焦虑紧绷', emoji: '⚡', associatedAdviceIds: [113]),
-        const ProbeOption(key: 's_lonely', label: '室友同学摩擦/略感孤单', emoji: '🌧️', associatedAdviceIds: [680]),
+        const ProbeOption(
+          key: 's_stressed',
+          label: '备考吃力，焦虑紧绷',
+          emoji: '⚡',
+          associatedAdviceIds: [113],
+        ),
+        const ProbeOption(
+          key: 's_lonely',
+          label: '室友同学摩擦/略感孤单',
+          emoji: '🌧️',
+          associatedAdviceIds: [680],
+        ),
       ];
     }
 
@@ -397,26 +552,13 @@ class ProbeScheduler extends ChangeNotifier {
       title: '晚间状态与心理韧性探查 (合并)',
       description: '合并关照今日心理负荷、人际感受与晚间生活安排',
       questions: questions,
-      boundAdvices: _getAdvicesForCategories([ProbeCategory.mood, ProbeCategory.weight]),
+      boundAdvices: _getAdvicesForCategories([
+        ProbeCategory.mood,
+        ProbeCategory.weight,
+      ]),
       createdAt: now,
       isMerged: true,
     );
-  }
-
-  /// 用户在界面主动点击“立即探查”时，生成当前最适宜的综合探查包
-  void triggerManualOnDemandProbe(DateTime now) {
-    final hour = now.hour;
-    ProbePayload payload;
-    if (hour >= 12 && hour < 17) {
-      payload = createAfternoonBodyProbe(now);
-    } else if (hour >= 17) {
-      payload = createEveningMoodAndActivityProbe(now);
-    } else {
-      payload = createMorningContextProbe(now);
-    }
-
-    _currentPayload = payload;
-    notifyListeners();
   }
 
   List<Advice> _getAdvicesForCategories(List<ProbeCategory> categories) {
