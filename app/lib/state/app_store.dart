@@ -11,9 +11,9 @@ import '../domain/trigger_engine.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import '../data/catalog.dart';
-import 'mobile_notification_service.dart';
-import 'probe_scheduler.dart';
-import 'reminder_registry.dart';
+import '../domain/probe_engine.dart';
+import '../domain/reminder_engine.dart';
+import '../infra/notifications/mobile_notification_service.dart';
 
 // 建议身份与周期作用域迁移后的兼容导出（存量 import app_store 的引用方零改动）
 export '../domain/advice_identity.dart' show adviceIdAliases, canonicalAdviceId;
@@ -34,15 +34,20 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
 
   // ── 领域引擎装配（依赖规则见 docs/refactor/ARCHITECTURE.md §2） ──
 
-  /// 弹窗提示与提醒注册器（应用内提醒出口，Phase 3-6 迁 domain）
-  late final ReminderRegistry reminderRegistry = ReminderRegistry(this);
+  /// 通知推送引擎——应用内弹窗出口（打卡完成经 CheckinEngine，广播经 onStoreChange）
+  late final ReminderEngine reminderRegistry = ReminderEngine(
+    catalog: catalog,
+    trigger: triggerEngine,
+    checkin: checkinEngine,
+    onStoreChange: notifyListeners,
+  );
 
-  /// 移动端系统通知通道
+  /// 移动端系统通知通道（NotificationSink 的系统实现）
   late final MobileNotificationService mobileNotificationService =
       MobileNotificationService();
 
-  /// 主动探测调度器（限频/静默/窗口配置来自 L7 engines.json）
-  late final ProbeScheduler probeScheduler = ProbeScheduler(
+  /// 主动探测引擎（限频/静默/窗口配置来自 L7 engines.json）
+  late final ProbeEngine probeScheduler = ProbeEngine(
     mobileNotificationService,
     catalog.engines.probe,
   );

@@ -169,3 +169,22 @@ class ProbePayload {
 
   bool get isMandatory => signalLevel == ProbeSignalLevel.mandatory;
 }
+
+class DailyProbeNotification {
+  const DailyProbeNotification({
+    required this.id,
+    required this.hour,
+    required this.minute,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+
+  final int id;
+  final int hour;
+  final int minute;
+  final String title;
+  final String body;
+  final String payload;
+}
+
