@@ -54,10 +54,11 @@ class ReminderRegistry extends ChangeNotifier {
 
   int get registeredCount => _registeredList.length;
 
-  /// 启动心跳定时器（每 10 秒检测一次时刻）
+  /// 启动心跳定时器（秒数来自 L7 engines.json）
   void _startTicker() {
     _ticker?.cancel();
-    _ticker = Timer.periodic(const Duration(seconds: 10), (_) {
+    final seconds = _store.catalog.engines.reminder.tickerSeconds;
+    _ticker = Timer.periodic(Duration(seconds: seconds), (_) {
       checkCurrentTick(DateTime.now());
     });
   }
@@ -99,8 +100,8 @@ class ReminderRegistry extends ChangeNotifier {
   void checkCurrentTick(DateTime now) {
     if (_currentAlert != null) return; // 已有未关闭弹窗时不重复打扰
 
-    // 移动端夜间统一静默，避免 23:00-05:00 的提醒打扰睡眠。
-    if (now.hour >= 23 || now.hour < 5) return;
+    // 移动端夜间统一静默（时段来自 L7 engines.json），避免深夜提醒打扰睡眠。
+    if (_store.catalog.engines.reminder.quietHours.covers(now.hour)) return;
 
     final nowHour = now.hour;
     final nowMinute = now.minute;
@@ -145,12 +146,14 @@ class ReminderRegistry extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 稍后提醒（默认 10 分钟后再次提醒）
-  void snoozeCurrentAlert({int minutes = 10}) {
+  /// 稍后提醒（默认分钟数来自 L7 engines.json）
+  void snoozeCurrentAlert({int? minutes}) {
     final alert = _currentAlert;
     if (alert == null) return;
 
-    final targetTime = DateTime.now().add(Duration(minutes: minutes));
+    final targetTime = DateTime.now().add(
+      Duration(minutes: minutes ?? _store.catalog.engines.reminder.snoozeMinutes),
+    );
     _registeredList.add(
       _RegisteredReminder(
         adviceId: alert.advice.id,

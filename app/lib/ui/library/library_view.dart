@@ -81,7 +81,7 @@ class _LibraryViewState extends State<LibraryView> {
     var list = catalog.adviceList.toList();
     if (store.profile.prunedOnly) {
       list = store.profile.parentsOnly
-          ? list.where((a) => parentsAdviceIds.contains(a.id)).toList()
+          ? list.where((a) => catalog.gates.parentsAdviceIds.contains(a.id)).toList()
           : list
                 .where(
                   (a) => store.matchPersona(

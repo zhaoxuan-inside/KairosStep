@@ -129,6 +129,27 @@
 
 > §4.9 Schema 精化记录：cron/prerequisites/style 为作者原始 1:1 字段，留在 advice 基表；advice_trigger 仅承载派生计划（mode/periods/times）——Phase 3 TriggerEngine 接管前，运行时仍走旧算法，本表只读不改行为。
 
+## 6b. L7 引擎配置（assets/data/config/，Phase 2 外置）
+
+### config/engines.json — 运行参数（typed: lib/data/engine_config.dart）
+| 段 | 内容 | 运行时消费 |
+|---|---|---|
+| reminder | tickerSeconds=10 / snoozeMinutes=10 / quietHours 23-5 | reminder_registry（心跳/静默/稍后提醒） |
+| probe | tickerMinutes=10 / maxDailyRoutine=3 / cooldownMinutes=90 / quietHours / routineWindows 3 窗口 / dailySystemNotifications 9101-3 时刻 | probe_scheduler（构造注入 ProbeEngineConfig） |
+| stream | windowMinutes=45 / customPeriodDistanceScale=300 / boostWindows 7 组时段-关键词加权（首窗命中即止、组内 OR） | app_store.advicesForWindow |
+| defaults | leadDays/BMI 阈值/阶段分界/90天目标/周期阶段——**数据记录口径**，模型默认值的消费接管待 Phase 3+ | 暂无（模型默认仍为准） |
+
+### config/gates.json — 门禁数据表
+| 键 | 内容 | 运行时消费 |
+|---|---|---|
+| dormantChapters | 13 个静默储备章节 | effectiveTriggerOf dormant 门禁 |
+| dormantActTypes | 6 个非日常交互形态 | 同上 |
+| parentsAdviceIds | 139 条父母清单 | library_view 父母专用视图 |
+| habitEvolution | 3 条习惯毕业→画像演进规则（clearFlags/removeConcerns/addConcerns） | _evolveProfileByHabit（数据驱动） |
+| ruleIdSets | 10 组门禁 ID 集（weight-loss/gastro/analgesic/living-alone/mood-trigger-only/maternity-emergency/child-emergency/afib/sleep-pills/elderly-painkiller） | matchPersona 0.8-0.15（关键词条件仍在代码，Phase 3 收编为规则谓词） |
+
+> 排期调整记录：probe 题目文案与绑定规则的外置（probes.json）随 Phase 4 交互器内容数据化同批执行；adviceIdAliases 迁移表保留为代码常量（冻结的历史数据，消费面广）。
+
 ## 7. 保留资产（未分层，原样）
 
 `assets/data/node_packages.json`（5 个年龄节点包，items[].src → advice.id，可为 null）、`assets/data/pinyin.json`（首字 → A-Z/#）。

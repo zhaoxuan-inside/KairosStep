@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "_comment": "L7 引擎运行配置（REFACTOR_DESIGN §4.8）。值与 Phase 2 前的代码硬编码逐一对齐，修改需通过 golden 快照。",
+  "reminder": {
+    "tickerSeconds": 10,
+    "snoozeMinutes": 10,
+    "quietHours": {"start": 23, "end": 5}
+  },
+  "probe": {
+    "tickerMinutes": 10,
+    "maxDailyRoutine": 3,
+    "cooldownMinutes": 90,
+    "quietHours": {"start": 23, "end": 5},
+    "mandatoryBypassesQuietHours": false,
+    "_note": "mandatory 穿透静默与 probe_model 注释矛盾，行为保持模式取 false，裁决延后",
+    "routineWindows": [
+      {"key": "morning", "startHour": 9, "startMinute": 30, "endHour": 10, "endMinute": 15},
+      {"key": "afternoon", "startHour": 14, "startMinute": 15, "endHour": 15, "endMinute": 0},
+      {"key": "evening", "startHour": 20, "startMinute": 0, "endHour": 20, "endMinute": 59}
+    ],
+    "dailySystemNotifications": [
+      {"id": 9101, "hour": 9, "minute": 30},
+      {"id": 9102, "hour": 14, "minute": 15},
+      {"id": 9103, "hour": 20, "minute": 0}
+    ]
+  },
+  "stream": {
+    "windowMinutes": 45,
+    "customPeriodDistanceScale": 300,
+    "boostWindows": [
+      {"fromHour": 22, "toHour": 4, "wrap": true, "boosts": [
+        {"boost": 60, "any": [{"on": "badge", "text": ["23:00"]}, {"on": "title", "text": ["屏幕", "睡"]}]},
+        {"boost": 30, "any": [{"on": "badge", "text": ["洗漱"]}, {"on": "title", "text": ["刷牙"]}]}
+      ]},
+      {"fromHour": 6, "toHour": 8, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "badge", "text": ["07:00", "晨"]}, {"on": "title", "text": ["安全带", "头盔"]}]},
+        {"boost": 40, "any": [{"on": "title", "text": ["早餐", "血压"]}]}
+      ]},
+      {"fromHour": 9, "toHour": 11, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "title", "text": ["久坐", "专注", "工位", "单线程"]}]},
+        {"boost": 30, "any": [{"on": "title", "text": ["喝水", "视力"]}]}
+      ]},
+      {"fromHour": 12, "toHour": 14, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "badge", "text": ["13:00"]}, {"on": "title", "text": ["午", "小憩"]}]},
+        {"boost": 30, "any": [{"on": "title", "text": ["坐", "远眺"]}]}
+      ]},
+      {"fromHour": 15, "toHour": 16, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "title", "text": ["快走", "步数", "舒展", "远眺"]}]}
+      ]},
+      {"fromHour": 17, "toHour": 19, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "title", "text": ["安全带", "头盔", "晚", "归途"]}]},
+        {"boost": 30, "any": [{"on": "title", "text": ["家人", "晚餐"]}]}
+      ]},
+      {"fromHour": 20, "toHour": 21, "wrap": false, "boosts": [
+        {"boost": 60, "any": [{"on": "title", "text": ["家人", "散步", "沟通", "放松"]}]}
+      ]}
+    ]
+  },
+  "defaults": {
+    "leadDays": 15,
+    "bmiOverweight": 24.0,
+    "stageBoundaries": [22, 35, 55],
+    "ninetyDayDefaultGoals": [1, 387, 13],
+    "cyclePhases": {
+      "kickoff": [1, 21],
+      "consolidate": [22, 66],
+      "evaluate": [67, 90],
+      "maintenance": [91, 9999]
+    },
+    "_note": "defaults 为数据记录口径（模型内默认值的单一事实源待 Phase 3+ 接管），当前运行时仍读模型默认"
+  }
+}

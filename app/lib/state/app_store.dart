@@ -353,147 +353,6 @@ class UserProfile {
 }
 
 /// 父母适用清单（人工复核，来源 HowToLiveBetterFor35Dev.md，139 条）。
-const List<int> parentsAdviceIds = [
-  13,
-  20,
-  22,
-  37,
-  40,
-  58,
-  111,
-  138,
-  153,
-  232,
-  233,
-  259,
-  264,
-  342,
-  397,
-  398,
-  399,
-  400,
-  401,
-  402,
-  403,
-  404,
-  405,
-  406,
-  407,
-  408,
-  409,
-  410,
-  411,
-  412,
-  413,
-  414,
-  415,
-  416,
-  417,
-  418,
-  419,
-  420,
-  421,
-  422,
-  423,
-  424,
-  425,
-  426,
-  427,
-  428,
-  430,
-  431,
-  432,
-  433,
-  435,
-  436,
-  437,
-  438,
-  442,
-  443,
-  444,
-  475,
-  476,
-  477,
-  478,
-  479,
-  480,
-  481,
-  482,
-  483,
-  484,
-  485,
-  486,
-  487,
-  488,
-  489,
-  490,
-  491,
-  492,
-  493,
-  494,
-  495,
-  496,
-  497,
-  498,
-  499,
-  501,
-  560,
-  614,
-  615,
-  616,
-  617,
-  618,
-  619,
-  620,
-  621,
-  622,
-  623,
-  624,
-  625,
-  626,
-  670,
-  671,
-  673,
-  674,
-  675,
-  677,
-  678,
-  679,
-  680,
-  681,
-  682,
-  683,
-  734,
-  735,
-  736,
-  737,
-  738,
-  739,
-  740,
-  742,
-  743,
-  744,
-  745,
-  746,
-  747,
-  748,
-  749,
-  750,
-  751,
-  752,
-  753,
-  754,
-  755,
-  757,
-  760,
-  761,
-  762,
-  763,
-  764,
-  765,
-  766,
-  767,
-];
 
 /// 合并建议后的历史 ID 迁移表。旧版本本地记录仍可恢复到新的主建议。
 const Map<int, int> adviceIdAliases = {
@@ -593,9 +452,10 @@ class AppStore extends ChangeNotifier {
   late final MobileNotificationService mobileNotificationService =
       MobileNotificationService();
 
-  /// 主动探测调度器
+  /// 主动探测调度器（限频/静默/窗口配置来自 L7 engines.json）
   late final ProbeScheduler probeScheduler = ProbeScheduler(
     mobileNotificationService,
+    catalog.engines.probe,
   );
 
   /// 同步当前活跃防线至提醒注册器与主动探测调度器（零全盘扫描开销，仅注册剪枝后的活跃条目）
@@ -724,27 +584,22 @@ class AppStore extends ChangeNotifier {
     prefs.setString('kFormedHabitDates', jsonEncode(dateMap));
   }
 
-  /// 根据已养成的建议演化用户画像特质
+  /// 根据已养成的建议演化用户画像特质（规则数据化于 L7 gates.json habitEvolution）
   void _evolveProfileByHabit(int adviceId) {
     adviceId = canonicalAdviceId(adviceId);
     var p = _profile;
     final nextFormed = Set<int>.from(p.formedHabits)..add(adviceId);
 
-    if (adviceId == 49) {
-      // 戒烟系列习惯毕业：画像更新为非吸烟者，健康关注移除吸烟者
-      final nextHealth = Set<String>.from(p.healthConcerns)..remove('吸烟者');
-      p = p.copyWith(isSmoker: false, healthConcerns: nextHealth.toList());
-    } else if (adviceId == 7 || adviceId == 57) {
-      // 血压达标/低钠盐习惯毕业
-      final nextHealth = Set<String>.from(p.healthConcerns)..remove('血压关注');
+    for (final rule in catalog.gates.habitEvolution) {
+      if (!rule.matches(adviceId)) continue;
+      final nextHealth = Set<String>.from(p.healthConcerns)
+        ..removeAll(rule.removeConcerns)
+        ..addAll(rule.addConcerns);
       p = p.copyWith(
-        hasHypertension: false,
+        isSmoker: rule.clearFlags.contains('isSmoker') ? false : null,
+        hasHypertension: rule.clearFlags.contains('hasHypertension') ? false : null,
         healthConcerns: nextHealth.toList(),
       );
-    } else if (adviceId == 61) {
-      // 睡眠规律/固定起床习惯养成
-      final nextHealth = Set<String>.from(p.healthConcerns)..add('作息规律');
-      p = p.copyWith(healthConcerns: nextHealth.toList());
     }
 
     _profile = p.copyWith(formedHabits: nextFormed.toList());
@@ -812,30 +667,9 @@ class AppStore extends ChangeNotifier {
     // 突发急救、重大变故、身后事、残疾照护、法律红线、反面清单、合规防线
     // 以及非微习惯卡片形态（红线盖章、决策核对、办事步骤、情境拦截、应急直达、举证清单）
     // 原生推断一律为静默储备态（TriggerMode.dormant），严禁污染每日待办时间流！
-    const dormantChapters = {
-      '紧急情况：先做什么',
-      '遭遇重大打击之后',
-      '人走了以后要办什么',
-      '残疾之后怎么活',
-      '反面清单',
-      '别把自己搭进去：法律与财产安全',
-      '普通人容易踩的法律红线',
-      '创业与做生意：别把家底赔进去',
-      '做一个网站或平台：资质、备案和服务器',
-      '在职、离职和工伤',
-      '看病：怎么少花钱少走弯路',
-      '没钱的时候怎么活',
-      '租房与买房',
-    };
-
-    const nonDailyActTypes = {
-      'redline-stamp',
-      'decision-check',
-      'process-steps',
-      'context-guard',
-      'emergency-action',
-      'evidence-checklist',
-    };
+    // 章节名单与形态名单数据化于 L7 gates.json（Phase 2）。
+    final dormantChapters = catalog.gates.dormantChapters;
+    final nonDailyActTypes = catalog.gates.dormantActTypes;
 
     if (a.isEmergencyOrIncident ||
         dormantChapters.contains(a.chapter) ||
@@ -1498,10 +1332,13 @@ class AppStore extends ChangeNotifier {
     return list;
   }
 
-  /// 根据 1.5 小时聚焦视窗（中心时刻前后各 45 分钟）动态筛选属于该视窗的建议流（当下 ⊆ 今天）
+  /// 根据聚焦视窗（中心时刻前后各 windowMinutes 分钟，L7 engines.json）动态筛选属于该视窗的建议流（当下 ⊆ 今天）
   List<Advice> advicesForWindow(DateTime centerTime) {
-    final windowStart = centerTime.subtract(const Duration(minutes: 45));
-    final windowEnd = centerTime.add(const Duration(minutes: 45));
+    final streamCfg = catalog.engines.stream;
+    final windowStart = centerTime.subtract(
+      Duration(minutes: streamCfg.windowMinutes),
+    );
+    final windowEnd = centerTime.add(Duration(minutes: streamCfg.windowMinutes));
     final winStartMin = windowStart.hour * 60 + windowStart.minute;
     final winEndMin = windowEnd.hour * 60 + windowEnd.minute;
 
@@ -1591,72 +1428,30 @@ class AppStore extends ChangeNotifier {
         int s = 0;
         final trig = effectiveTriggerOf(adv);
 
-        // 如果建议配置了自定义时段，距离 centerTime 越近权重越高
+        // 如果建议配置了自定义时段，距离 centerTime 越近权重越高（距离标尺来自 L7）
         for (final pk in trig.dailyPeriods) {
           final custom = PeriodDefinition.parseCustomPeriod(pk);
           if (custom != null) {
             final customMid = (custom.$1 + custom.$2) ~/ 2;
             final dist = (customMid - mCenter).abs();
-            s += (300 - dist).clamp(0, 300);
+            s += (streamCfg.customPeriodDistanceScale - dist).clamp(
+              0,
+              streamCfg.customPeriodDistanceScale,
+            );
           }
         }
 
         final badge = adv.timingBadge;
         final title = adv.title;
 
-        // 针对不同时段的关键行动加权
-        if (centerHour >= 22 || centerHour < 5) {
-          if (badge.contains('23:00') ||
-              title.contains('屏幕') ||
-              title.contains('睡')) {
-            s += 60;
+        // 针对不同时段的关键行动加权（时段-关键词加权表数据化于 L7 engines.json，
+        // 与原 if-else 链同序、首窗命中即止、组内任一命中加一次 boost）
+        for (final window in streamCfg.boostWindows) {
+          if (!window.covers(centerHour)) continue;
+          for (final group in window.boosts) {
+            if (group.matches(badge, title)) s += group.boost;
           }
-          if (badge.contains('洗漱') || title.contains('刷牙')) s += 30;
-        } else if (centerHour >= 6 && centerHour <= 8) {
-          if (badge.contains('07:00') ||
-              badge.contains('晨') ||
-              title.contains('安全带') ||
-              title.contains('头盔')) {
-            s += 60;
-          }
-          if (title.contains('早餐') || title.contains('血压')) s += 40;
-        } else if (centerHour >= 9 && centerHour < 12) {
-          if (title.contains('久坐') ||
-              title.contains('专注') ||
-              title.contains('工位') ||
-              title.contains('单线程')) {
-            s += 60;
-          }
-          if (title.contains('喝水') || title.contains('视力')) s += 30;
-        } else if (centerHour >= 12 && centerHour <= 14) {
-          if (badge.contains('13:00') ||
-              title.contains('午') ||
-              title.contains('小憩')) {
-            s += 60;
-          }
-          if (title.contains('坐') || title.contains('远眺')) s += 30;
-        } else if (centerHour > 14 && centerHour < 17) {
-          if (title.contains('快走') ||
-              title.contains('步数') ||
-              title.contains('舒展') ||
-              title.contains('远眺')) {
-            s += 60;
-          }
-        } else if (centerHour >= 17 && centerHour <= 19) {
-          if (title.contains('安全带') ||
-              title.contains('头盔') ||
-              title.contains('晚') ||
-              title.contains('归途')) {
-            s += 60;
-          }
-          if (title.contains('家人') || title.contains('晚餐')) s += 30;
-        } else if (centerHour > 19 && centerHour < 22) {
-          if (title.contains('家人') ||
-              title.contains('散步') ||
-              title.contains('沟通') ||
-              title.contains('放松')) {
-            s += 60;
-          }
+          break; // 首个命中窗口即止（窗口互斥）
         }
         return s;
       }
@@ -2145,9 +1940,8 @@ class AppStore extends ChangeNotifier {
     }
 
     // 0.8 减重、减肥药物与量化运动强门禁 (Weight Loss & Medication Gating)
-    if (a.id == 199 ||
-        a.id == 663 ||
-        a.id == 665 ||
+    // ID 集数据化于 L7 gates.json（ruleIdSets），关键词条件保留在代码（Phase 3 收编为规则谓词）
+    if (catalog.gates.ruleSet('weight-loss').contains(a.id) ||
         text.contains('减肥药') ||
         text.contains('司美格鲁肽') ||
         text.contains('减重针') ||
@@ -2160,14 +1954,16 @@ class AppStore extends ChangeNotifier {
     }
 
     // 0.9 肠胃/反酸烧心强门禁 (Gastro / Omeprazole Gating)
-    if (a.id == 760 || text.contains('奥美拉唑') || text.contains('反酸烧心')) {
+    if (catalog.gates.ruleSet('gastro').contains(a.id) ||
+        text.contains('奥美拉唑') ||
+        text.contains('反酸烧心')) {
       if (!p.hasGastroAcidOrStomach && !p.healthConcerns.contains('反酸胃炎')) {
         return false;
       }
     }
 
     // 0.10 止痛药常备与频繁用药门禁
-    if (a.id == 763 ||
+    if (catalog.gates.ruleSet('analgesic').contains(a.id) ||
         text.contains('止痛药一个月别吃超过') ||
         text.contains('复方止痛药别超过')) {
       if (!p.hasFrequentPainOrAnalgesic && !p.healthConcerns.contains('止痛用药')) {
@@ -2176,16 +1972,16 @@ class AppStore extends ChangeNotifier {
     }
 
     // 0.11 独居安全兜底防线
-    if (a.id == 675 || text.contains('建立三道安全兜底网') || text.contains('盯着你的那个人')) {
+    if (catalog.gates.ruleSet('living-alone').contains(a.id) ||
+        text.contains('建立三道安全兜底网') ||
+        text.contains('盯着你的那个人')) {
       if (p.relationshipStatus != 'single' && !p.hasCrisisOrMentalStress) {
         return false;
       }
     }
 
     // 0.12 抑郁重度干预与心理热线（由情绪晴雨表弹窗交互触发，严禁直接无故推送到日常任务）
-    if (a.id == 568 ||
-        a.id == 25 ||
-        a.id == 264 ||
+    if (catalog.gates.ruleSet('mood-trigger-only').contains(a.id) ||
         (text.contains('心情差到抑郁') && a.chapter == '怎么放松：娱乐场所和减压') ||
         (text.contains('12356') && a.chapter == '遭遇重大打击之后') ||
         text.contains('有自杀念头时打 12356') ||
@@ -2193,10 +1989,8 @@ class AppStore extends ChangeNotifier {
       return false;
     }
 
-    // 0.13 孕产专科急重症与子痫用药强门禁 (ID 644, 646, 647)
-    if (a.id == 644 ||
-        a.id == 646 ||
-        a.id == 647 ||
+    // 0.13 孕产专科急重症与子痫用药强门禁
+    if (catalog.gates.ruleSet('maternity-emergency').contains(a.id) ||
         text.contains('破水了就地平躺') ||
         text.contains('子痫前期')) {
       if (p.gender != '女' ||
@@ -2207,10 +2001,8 @@ class AppStore extends ChangeNotifier {
       }
     }
 
-    // 0.14 婴幼儿与学龄儿童突发及欺凌门禁 (ID 545, 686, 704)
-    if (a.id == 545 ||
-        a.id == 686 ||
-        a.id == 704 ||
+    // 0.14 婴幼儿与学龄儿童突发及欺凌门禁
+    if (catalog.gates.ruleSet('child-emergency').contains(a.id) ||
         text.contains('新生儿黄疸') ||
         text.contains('孩子被欺凌') ||
         text.contains('撞了头、之后头痛')) {
@@ -2221,18 +2013,21 @@ class AppStore extends ChangeNotifier {
       }
     }
 
-    // 0.15 专病与特殊高危用药强门禁 (ID 44 房颤, ID 121 失眠安眠药, ID 757 60岁布洛芬)
-    if (a.id == 44 || text.contains('查出房颤请医生评估吃抗凝药')) {
+    // 0.15 专病与特殊高危用药强门禁 (44 房颤, 121 失眠安眠药, 757 60岁布洛芬)
+    if (catalog.gates.ruleSet('afib').contains(a.id) ||
+        text.contains('查出房颤请医生评估吃抗凝药')) {
       if (!p.hasHypertension && !p.healthConcerns.contains('血压关注')) {
         return false;
       }
     }
-    if (a.id == 121 || text.contains('别一上来就长期吃安眠药')) {
+    if (catalog.gates.ruleSet('sleep-pills').contains(a.id) ||
+        text.contains('别一上来就长期吃安眠药')) {
       if (!p.healthConcerns.contains('心理减压') && !p.hasCrisisOrMentalStress) {
         return false;
       }
     }
-    if (a.id == 757 || text.contains('60 岁以上、胃出过血、在吃抗凝药')) {
+    if (catalog.gates.ruleSet('elderly-painkiller').contains(a.id) ||
+        text.contains('60 岁以上、胃出过血、在吃抗凝药')) {
       if (p.age < 60 && !p.hasGastroAcidOrStomach) {
         return false;
       }

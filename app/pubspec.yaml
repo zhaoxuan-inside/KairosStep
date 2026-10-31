@@ -49,6 +49,9 @@ flutter:
     - assets/data/views/display_info.json
     # L6 触发数据
     - assets/data/triggers/advice_trigger.json
+    # L7 引擎配置
+    - assets/data/config/engines.json
+    - assets/data/config/gates.json
     # 保留资产
     - assets/data/node_packages.json
     - assets/data/pinyin.json

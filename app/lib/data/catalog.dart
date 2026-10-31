@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'engine_config.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 
@@ -49,6 +50,8 @@ class Catalog {
     required this.nodePackages,
     required this.pinyin,
     required this.topics,
+    required this.engines,
+    required this.gates,
   });
 
   final List<Advice> adviceList;
@@ -56,6 +59,10 @@ class Catalog {
   final List<NodePackage> nodePackages;
   final PinyinMap pinyin;
   final TopicTree topics;
+
+  /// L7 引擎配置（engines.json / gates.json，Phase 2 外置）
+  final EngineConfig engines;
+  final GateConfig gates;
 
   late final Map<int, Advice> byId = {for (final a in adviceList) a.id: a};
 
@@ -132,6 +139,10 @@ class Catalog {
     final nodeJson = await loadJson('entity/advice_node');
     requireSchema(nodeJson, 'entity/advice_node');
     final taxonomyJson = await loadJson('dimensions/taxonomy');
+    final enginesJson = await loadJson('config/engines');
+    requireSchema(enginesJson, 'config/engines');
+    final gatesJson = await loadJson('config/gates');
+    requireSchema(gatesJson, 'config/gates');
     final nodePkgJson = await loadJson('node_packages');
     final pinyinJson = await loadJson('pinyin');
 
@@ -204,6 +215,8 @@ class Catalog {
     return Catalog._(
       adviceList: adviceList,
       topics: TopicTree.fromJson(taxonomyJson, adviceList),
+      engines: EngineConfig.fromJson(enginesJson),
+      gates: GateConfig.fromJson(gatesJson),
       details: {
         for (final row
             in (detailJson['list'] as List).cast<Map<String, dynamic>>())

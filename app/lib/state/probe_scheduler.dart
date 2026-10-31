@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../data/engine_config.dart';
 import '../models/advice.dart';
 import '../models/probe_binding.dart';
 import '../models/probe_model.dart';
@@ -17,11 +18,14 @@ import 'mobile_notification_service.dart';
 ///    - 非必须的常规信号（Routine Signal：活动情境、身体微体征、心情关怀）进行合并通知；
 /// 3. 严格控制通知频率（防打扰冷却机制、每日上限、深夜免打扰），避免过度打扰用户。
 class ProbeScheduler extends ChangeNotifier {
-  ProbeScheduler(this._notifications) {
+  ProbeScheduler(this._notifications, this._config) {
     _startTicker();
   }
 
   final MobileNotificationService _notifications;
+
+  /// L7 引擎配置（engines.json probe 段）：限频、静默、探查窗口、系统级通知时刻
+  final ProbeEngineConfig _config;
 
   Timer? _ticker;
 
@@ -36,11 +40,7 @@ class ProbeScheduler extends ChangeNotifier {
   bool _dismissedForToday = false;
   DateTime? _snoozedUntil;
 
-  // 频率控制常量（可配置）
-  static const int maxDailyRoutineProbes = 3;
-  static const int minCooldownMinutes = 90;
-  static const int quietHoursStart = 23; // 23:00 开始免打扰
-  static const int quietHoursEnd = 5; // 05:00 结束免打扰
+  // 频率控制参数来自 L7 engines.json（见 _config；原 static const 已外置）
 
   // 当前等待 UI 处理的探查通知数据包
   ProbePayload? _currentPayload;
@@ -54,7 +54,7 @@ class ProbeScheduler extends ChangeNotifier {
   void _startTicker() {
     _ticker?.cancel();
     // 每 10 分钟检查一次，避免高频轮询打扰设备和用户。
-    _ticker = Timer.periodic(const Duration(minutes: 10), (_) {
+    _ticker = Timer.periodic(Duration(minutes: _config.tickerMinutes), (_) {
       checkScheduledProbes(DateTime.now());
     });
   }
@@ -277,14 +277,14 @@ class ProbeScheduler extends ChangeNotifier {
     if (_isQuietHours(now)) return true;
 
     // 规则 B: 每日最大主动探查频次控制
-    if (_todayProbeCount >= maxDailyRoutineProbes) {
+    if (_todayProbeCount >= _config.maxDailyRoutine) {
       return true;
     }
 
-    // 规则 C: 冷却时间控制 (两次非紧急探查至少间隔 minCooldownMinutes 分钟)
+    // 规则 C: 冷却时间控制 (两次非紧急探查至少间隔 cooldownMinutes 分钟)
     if (_lastRoutineProbeTime != null) {
       final elapsed = now.difference(_lastRoutineProbeTime!).inMinutes;
-      if (elapsed < minCooldownMinutes) {
+      if (elapsed < _config.cooldownMinutes) {
         return true;
       }
     }
@@ -292,22 +292,17 @@ class ProbeScheduler extends ChangeNotifier {
     return false;
   }
 
-  bool _isQuietHours(DateTime now) =>
-      now.hour >= quietHoursStart || now.hour < quietHoursEnd;
+  bool _isQuietHours(DateTime now) => _config.quietHours.covers(now.hour);
 
-  /// 按时段聚合与合并生成非必须常规探查
+  /// 按时段聚合与合并生成非必须常规探查（探查窗口来自 L7 engines.json）
   ProbePayload? _generateRoutineProbeIfDue(DateTime now) {
-    final hour = now.hour;
-    final minute = now.minute;
-
-    // 探查时机窗口 1: 上午 09:30 ~ 10:00 (工作/学业情境探查)
-    final isMorningSlot =
-        (hour == 9 && minute >= 30) || (hour == 10 && minute <= 15);
-    // 探查时机窗口 2: 下午 14:15 ~ 15:00 (午后身体微体征与用眼疲劳合并探查)
-    final isAfternoonSlot =
-        (hour == 14 && minute >= 15) || (hour == 15 && minute <= 0);
-    // 探查时机窗口 3: 晚间 20:00 ~ 21:00（通常已下班，再询问工作感受）
-    final isEveningSlot = hour == 20;
+    final isMorningSlot = _config.routineWindows[0].isDue(now.hour, now.minute);
+    final isAfternoonSlot = _config.routineWindows.length > 1
+        ? _config.routineWindows[1].isDue(now.hour, now.minute)
+        : false;
+    final isEveningSlot = _config.routineWindows.length > 2
+        ? _config.routineWindows[2].isDue(now.hour, now.minute)
+        : false;
 
     if (isMorningSlot) {
       if ((_categoryAdvices[ProbeCategory.activity] ?? const []).isEmpty) {
