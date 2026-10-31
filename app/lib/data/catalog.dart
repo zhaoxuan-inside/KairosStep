@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 
+// 时机模型自 presentation.dart 再导出（Phase 2 分域重组，存量引用路径兼容）
+export '../models/presentation.dart' show TimingModel;
+
 /// 交互形态中枢：与 Demo ACTION_TYPE_DEFS 同构，图标用 Material 线性图标近似。
 const List<ActionTypeDef> actionTypes = [
   ActionTypeDef('all', '全部形态', Icons.apps),
@@ -36,36 +39,6 @@ IconData actionTypeIcon(String id) {
     if (d.id == id) return d.icon;
   }
   return Icons.category_outlined;
-}
-
-/// 时机徽章前缀（模型名）→ 风险色语义，用于卡片徽章着色。
-enum TimingModel {
-  situational('情境感知', Color(0xFF3B82F6)),
-  continuous('持续事件', Color(0xFFF59E0B)),
-  redline('红线知识', Color(0xFFF43F5E)),
-  daily('每日节律', Color(0xFF10B981)),
-  process('办事流程', Color(0xFF6366F1)),
-  decision('决策规则', Color(0xFF6366F1)),
-  contextGuard('情境拦截', Color(0xFFF43F5E)),
-  emergency('P0 紧急', Color(0xFFF43F5E)),
-  search('搜索秒开', Color(0xFF3B82F6)),
-  periodic('周期节律', Color(0xFF10B981)),
-  slider('时长感知', Color(0xFF3B82F6)),
-  finance('理财决策', Color(0xFF10B981));
-
-  const TimingModel(this.label, this.color);
-  final String label;
-  final Color color;
-
-  static TimingModel of(String badge) {
-    final prefix = badge.split(' · ').first.trim();
-    for (final m in values) {
-      if (prefix.contains(m.label) || m.label.contains(prefix)) return m;
-    }
-    // 每日 XX / 每周 / 每月 / N年周期 一律归节律
-    if (prefix.startsWith('每日') || prefix.contains('周期')) return periodic;
-    return search;
-  }
 }
 
 /// 建议目录：加载资产、建立索引、计算字母、画像匹配。
