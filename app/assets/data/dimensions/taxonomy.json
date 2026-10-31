@@ -1,0 +1,531 @@
+{
+  "health": {
+    "name": "健康与身心",
+    "description": "涵盖防病筛查、科学用药、就医防坑、运动体态与心理减压",
+    "sub": {
+      "prevention": {
+        "name": "预防保健",
+        "sub": {
+          "exercise": {
+            "name": "运动与体态",
+            "aliases": [
+              "锻炼",
+              "健身",
+              "平衡训练"
+            ]
+          },
+          "screening": {
+            "name": "筛查与体检",
+            "aliases": [
+              "体检",
+              "检查",
+              "早筛"
+            ]
+          },
+          "vaccine": {
+            "name": "疫苗防护",
+            "aliases": [
+              "接种",
+              "打针"
+            ]
+          },
+          "sleep": {
+            "name": "节律与睡眠",
+            "aliases": [
+              "作息",
+              "睡觉",
+              "起床",
+              "午睡"
+            ]
+          },
+          "body_care": {
+            "name": "身体护理与防坑"
+          }
+        },
+        "aliases": [
+          "预防",
+          "保健"
+        ]
+      },
+      "treatment": {
+        "name": "诊疗干预",
+        "sub": {
+          "medication": {
+            "name": "用药安全",
+            "aliases": [
+              "药物",
+              "吃药",
+              "服药"
+            ]
+          },
+          "chronic": {
+            "name": "慢病管理",
+            "aliases": [
+              "慢性病",
+              "血压",
+              "血糖",
+              "结石"
+            ]
+          },
+          "clinic": {
+            "name": "就医与问诊",
+            "aliases": [
+              "挂号",
+              "问诊",
+              "医院"
+            ]
+          }
+        }
+      },
+      "mental": {
+        "name": "心理精神",
+        "sub": {
+          "stress": {
+            "name": "压力与情绪调节"
+          },
+          "relaxation": {
+            "name": "娱乐与身心放松"
+          },
+          "trauma_recovery": {
+            "name": "创伤复原与危机"
+          },
+          "addiction": {
+            "name": "成瘾戒断",
+            "aliases": [
+              "戒烟",
+              "戒酒",
+              "成瘾"
+            ]
+          }
+        }
+      },
+      "emergency": {
+        "name": "应急急救",
+        "sub": {
+          "golden_window": {
+            "name": "黄金抢救",
+            "aliases": [
+              "抢救",
+              "紧急救助"
+            ]
+          },
+          "first_aid": {
+            "name": "突发救治",
+            "aliases": [
+              "受伤",
+              "现场处置"
+            ]
+          }
+        },
+        "aliases": [
+          "急救",
+          "自救"
+        ]
+      }
+    },
+    "aliases": [
+      "健康",
+      "医疗",
+      "身体"
+    ]
+  },
+  "daily": {
+    "name": "日常与起居",
+    "description": "衣食住行细节、通勤防护、居家设施与数字生活节律",
+    "sub": {
+      "commute": {
+        "name": "交通出行",
+        "sub": {
+          "vehicle": {
+            "name": "机动车出行",
+            "aliases": [
+              "汽车",
+              "坐车",
+              "驾乘"
+            ]
+          },
+          "twowheeler": {
+            "name": "两轮骑行",
+            "aliases": [
+              "电动车",
+              "摩托车",
+              "骑车"
+            ]
+          },
+          "transit": {
+            "name": "公共交通与步行"
+          }
+        },
+        "aliases": [
+          "出行",
+          "通勤",
+          "乘车"
+        ]
+      },
+      "lifestyle": {
+        "name": "衣食养生",
+        "sub": {
+          "diet": {
+            "name": "饮食营养与贮存"
+          },
+          "pet": {
+            "name": "宠物陪伴与防护"
+          }
+        }
+      },
+      "housing": {
+        "name": "居住设施",
+        "sub": {
+          "facility": {
+            "name": "燃气与家居设施"
+          },
+          "rental": {
+            "name": "租房生活",
+            "aliases": [
+              "房租",
+              "租屋"
+            ]
+          }
+        }
+      },
+      "home_safety": {
+        "name": "居家安全",
+        "sub": {
+          "fire": {
+            "name": "消防与燃气安全",
+            "aliases": [
+              "消防",
+              "燃气",
+              "报警器"
+            ]
+          },
+          "fall_prevention": {
+            "name": "防跌防坠改造",
+            "aliases": [
+              "跌倒",
+              "扶手",
+              "防滑"
+            ]
+          }
+        },
+        "aliases": [
+          "家居安全",
+          "家庭安全"
+        ]
+      },
+      "digital": {
+        "name": "数字生活与效能",
+        "sub": {
+          "security": {
+            "name": "账号与隐私安全",
+            "aliases": [
+              "信息安全",
+              "密码",
+              "隐私"
+            ]
+          },
+          "time_energy": {
+            "name": "精力与时间管理"
+          },
+          "screen_time": {
+            "name": "屏幕时长与防沉迷",
+            "aliases": [
+              "刷屏",
+              "短视频",
+              "手机限时"
+            ]
+          }
+        }
+      }
+    },
+    "aliases": [
+      "生活",
+      "日常"
+    ]
+  },
+  "relationships": {
+    "name": "人际与家庭",
+    "description": "职场人际、伴侣关系、亲子育儿、孝亲照护与社会防线",
+    "sub": {
+      "workplace": {
+        "name": "职场人际",
+        "sub": {
+          "manager": {
+            "name": "上级与雇主"
+          },
+          "peer": {
+            "name": "同事协同"
+          },
+          "subordinate": {
+            "name": "下属团队"
+          }
+        }
+      },
+      "family": {
+        "name": "亲子与长辈",
+        "sub": {
+          "partner": {
+            "name": "婚姻与伴侣",
+            "aliases": [
+              "伴侣",
+              "夫妻"
+            ]
+          },
+          "pregnancy": {
+            "name": "怀孕与生产",
+            "aliases": [
+              "怀孕",
+              "产后",
+              "准父母"
+            ]
+          },
+          "children": {
+            "name": "子女抚育与学业",
+            "aliases": [
+              "育儿",
+              "孩子"
+            ]
+          },
+          "parents": {
+            "name": "父母长辈照护",
+            "aliases": [
+              "老人",
+              "照护"
+            ]
+          },
+          "afterlife": {
+            "name": "身后事与公证",
+            "aliases": [
+              "丧葬",
+              "继承"
+            ]
+          }
+        }
+      },
+      "society": {
+        "name": "社会交互与保障",
+        "sub": {
+          "interaction": {
+            "name": "契约与人际防线"
+          },
+          "disability_support": {
+            "name": "残障保障与权益",
+            "aliases": [
+              "残疾",
+              "无障碍"
+            ]
+          }
+        }
+      }
+    },
+    "aliases": [
+      "家庭",
+      "关系"
+    ]
+  },
+  "career": {
+    "name": "职场与学业",
+    "description": "劳动维权、五险一金、技能投资、合规创业与商业防坑",
+    "sub": {
+      "labor_rights": {
+        "name": "劳动权益",
+        "sub": {
+          "contract": {
+            "name": "合同与五险一金",
+            "aliases": [
+              "劳动合同",
+              "社保",
+              "入职"
+            ]
+          },
+          "compensation": {
+            "name": "离职工伤与维权",
+            "aliases": [
+              "欠薪",
+              "工资",
+              "裁员",
+              "工伤",
+              "劳动仲裁"
+            ]
+          }
+        },
+        "aliases": [
+          "劳动",
+          "雇佣"
+        ]
+      },
+      "growth": {
+        "name": "学业进阶",
+        "sub": {
+          "skill": {
+            "name": "技能与学业投资",
+            "aliases": [
+              "学习",
+              "培训",
+              "技能"
+            ]
+          },
+          "study_abroad": {
+            "name": "留学与跨境发展",
+            "aliases": [
+              "留学",
+              "签证"
+            ]
+          }
+        }
+      },
+      "business": {
+        "name": "创业经营",
+        "sub": {
+          "founder": {
+            "name": "合规与风控",
+            "aliases": [
+              "创业",
+              "合伙",
+              "经营"
+            ]
+          }
+        }
+      }
+    },
+    "aliases": [
+      "工作",
+      "学业"
+    ]
+  },
+  "finance": {
+    "name": "财富与财产",
+    "description": "日常收支、房贷租售、稳健理财、保险条款与反诈防套路",
+    "sub": {
+      "budget": {
+        "name": "收支预算",
+        "sub": {
+          "spending": {
+            "name": "消费决策与备用金",
+            "aliases": [
+              "消费",
+              "花钱",
+              "冲动购物"
+            ]
+          },
+          "social_security": {
+            "name": "低谷保障与救济",
+            "aliases": [
+              "救助",
+              "补贴",
+              "公积金"
+            ]
+          }
+        }
+      },
+      "real_estate": {
+        "name": "房产与住房财务",
+        "sub": {
+          "mortgage": {
+            "name": "房贷公积金与产权",
+            "aliases": [
+              "买房",
+              "房贷",
+              "产权"
+            ]
+          }
+        }
+      },
+      "investment": {
+        "name": "稳健理财",
+        "sub": {
+          "wealth": {
+            "name": "低费率工具与风控",
+            "aliases": [
+              "基金",
+              "投资"
+            ]
+          }
+        }
+      },
+      "insurance": {
+        "name": "保险保障",
+        "sub": {
+          "policy": {
+            "name": "条款核对与免责",
+            "aliases": [
+              "保单",
+              "理赔"
+            ]
+          }
+        }
+      },
+      "anti_fraud": {
+        "name": "防骗与反诈",
+        "sub": {
+          "scam": {
+            "name": "反诈骗与维权",
+            "aliases": [
+              "诈骗",
+              "被骗",
+              "止付",
+              "反诈"
+            ]
+          }
+        }
+      }
+    },
+    "aliases": [
+      "钱",
+      "财务"
+    ]
+  },
+  "safety": {
+    "name": "安全与合规",
+    "description": "作业安全、户外防险、刑事红线、技术人合规与危机应对",
+    "sub": {
+      "physical": {
+        "name": "物理人身安全",
+        "sub": {
+          "work_safety": {
+            "name": "施工作业劳保"
+          },
+          "outdoor": {
+            "name": "户外与水上安全",
+            "aliases": [
+              "户外",
+              "野外",
+              "涉水"
+            ]
+          },
+          "travel": {
+            "name": "旅行与境外安全",
+            "aliases": [
+              "旅行",
+              "境外"
+            ]
+          }
+        }
+      },
+      "legal": {
+        "name": "法律合规红线",
+        "sub": {
+          "red_line": {
+            "name": "普法与治安红线"
+          },
+          "tech_boundary": {
+            "name": "技术人红线",
+            "aliases": [
+              "程序员",
+              "开发",
+              "技术合规"
+            ]
+          }
+        },
+        "aliases": [
+          "法律",
+          "合规"
+        ]
+      }
+    },
+    "aliases": [
+      "安全",
+      "避险"
+    ]
+  }
+}

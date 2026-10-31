@@ -137,25 +137,115 @@ class Catalog {
       return jsonDecode(raw) as Map<String, dynamic>;
     }
 
-    final adviceJson = await loadJson('advice');
-    final detailJson = await loadJson('detail');
-    final nodeJson = await loadJson('node_packages');
+    void requireSchema(Map<String, dynamic> json, String name) {
+      if (json['schemaVersion'] != 1) {
+        throw FormatException('$name schemaVersion 异常：${json['schemaVersion']}');
+      }
+    }
+
+    // ── 分层加载（L0 实体层 + L1 维度树；关系化 Schema 见 docs/refactor §4.9） ──
+    final adviceBaseJson = await loadJson('entity/advice');
+    requireSchema(adviceBaseJson, 'entity/advice');
+    final actionJson = await loadJson('entity/advice_action');
+    requireSchema(actionJson, 'entity/advice_action');
+    final tagRowsJson = await loadJson('facets/advice_tag');
+    requireSchema(tagRowsJson, 'facets/advice_tag');
+    final detailJson = await loadJson('entity/advice_detail');
+    requireSchema(detailJson, 'entity/advice_detail');
+    final sourceJson = await loadJson('entity/detail_source');
+    requireSchema(sourceJson, 'entity/detail_source');
+    final relationJson = await loadJson('entity/advice_relation');
+    requireSchema(relationJson, 'entity/advice_relation');
+    final nodeJson = await loadJson('entity/advice_node');
+    requireSchema(nodeJson, 'entity/advice_node');
+    final taxonomyJson = await loadJson('dimensions/taxonomy');
+    final nodePkgJson = await loadJson('node_packages');
     final pinyinJson = await loadJson('pinyin');
-    final topicJson = await loadJson('taxonomy_tree');
-    final adviceList = (adviceJson['list'] as List)
-        .map((e) => Advice.fromJson(e as Map<String, dynamic>))
-        .toList();
+
+    // 子表按 id 聚合（行已按 (id, ordinal) 排序，聚合即保序）：
+    // 原子动作 → parts、维度挂载 → treePaths、标签 → tags、来源 → sources、关联 → rel
+    final partsById = <int, List<String>>{};
+    final pathsById = <int, List<String>>{};
+    final tagsById = <int, List<String>>{};
+    final sourcesById = <int, List<List<String>>>{};
+    final relById = <int, List<int>>{};
+    for (final row
+        in (actionJson['list'] as List).cast<Map<String, dynamic>>()) {
+      partsById.putIfAbsent(row['id'] as int, () => []).add(row['text'] as String);
+    }
+    for (final row in (nodeJson['list'] as List).cast<Map<String, dynamic>>()) {
+      pathsById.putIfAbsent(row['id'] as int, () => []).add(row['path'] as String);
+    }
+    for (final row in (tagRowsJson['list'] as List).cast<Map<String, dynamic>>()) {
+      tagsById.putIfAbsent(row['id'] as int, () => []).add(row['tag'] as String);
+    }
+    for (final row
+        in (sourceJson['list'] as List).cast<Map<String, dynamic>>()) {
+      final name = row['name'] as String;
+      final url = row['url'] as String?;
+      sourcesById
+          .putIfAbsent(row['adviceId'] as int, () => [])
+          .add(url == null ? [name] : [name, url]);
+    }
+    // kind=related 按 ordinal 还原 detail.rel（known_gap 孤儿行原样保留，UI 空安全）
+    for (final row
+        in (relationJson['list'] as List).cast<Map<String, dynamic>>()) {
+      if (row['kind'] != 'related') continue;
+      relById.putIfAbsent(row['fromId'] as int, () => []).add(row['toId'] as int);
+    }
+
+    // 维度树先行构建（空建议集不触发逐条校验），仅为面包屑重算；
+    // 装配完成后用完整建议集重建以启用叶子/唯一性校验与倒排索引。
+    final topicTreeForBreadcrumbs = TopicTree.fromJson(taxonomyJson, const []);
+
+    final adviceList = <Advice>[];
+    for (final row
+        in (adviceBaseJson['list'] as List).cast<Map<String, dynamic>>()) {
+      final id = row['id'] as int;
+      final paths = pathsById[id] ?? const <String>[];
+      adviceList.add(
+        Advice(
+          raw: RawAdvice(
+            id: id,
+            chapter: row['chapterCode'] as String,
+            title: row['title'] as String,
+          ),
+          facets: AdviceFacets(tags: tagsById[id] ?? const []),
+          presentation: AdvicePresentation(
+            parts: partsById[id] ?? const [],
+            timingBadge: row['badgeKey'] as String,
+            actType: row['style'] as String,
+          ),
+          treePath: paths.isNotEmpty ? paths.first : 'daily/lifestyle/diet',
+          treeDisplay: paths.isNotEmpty
+              ? topicTreeForBreadcrumbs.breadcrumbOf(paths.first)
+              : '日常与起居 > 衣食养生 > 饮食营养与贮存',
+          treePaths: paths,
+          prerequisites:
+              (row['prerequisites'] as Map<String, dynamic>?) ?? const {},
+          cron: row['cron'] as String,
+        ),
+      );
+    }
 
     return Catalog._(
       adviceList: adviceList,
-      topics: TopicTree.fromJson(topicJson, adviceList),
+      topics: TopicTree.fromJson(taxonomyJson, adviceList),
       details: {
-        for (final e in detailJson.entries)
-          int.parse(e.key): AdviceDetail.fromJson(
-            e.value as Map<String, dynamic>,
+        for (final row
+            in (detailJson['list'] as List).cast<Map<String, dynamic>>())
+          row['adviceId'] as int: AdviceDetail(
+            humanized: row['humanized'] as String,
+            cost: row['cost'] as String?,
+            plain: row['plain'] as String?,
+            benefit: row['benefit'] as String?,
+            grade: row['grade'] as String? ?? 'C',
+            sources: sourcesById[row['adviceId'] as int] ?? const [],
+            notes: row['notes'] as String?,
+            rel: relById[row['adviceId'] as int] ?? const [],
           ),
       },
-      nodePackages: (nodeJson['list'] as List)
+      nodePackages: (nodePkgJson['list'] as List)
           .map((e) => NodePackage.fromJson(e as Map<String, dynamic>))
           .toList(),
       pinyin: {for (final e in pinyinJson.entries) e.key: e.value as String},

@@ -6,11 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('every advice has complete detail and timers are independent', () {
     final advices =
-        (jsonDecode(File('assets/data/advice.json').readAsStringSync())
+        (jsonDecode(File('data-src/advice.json').readAsStringSync())
                 as Map<String, dynamic>)['list']
             as List<dynamic>;
     final details = jsonDecode(
-      File('assets/data/detail.json').readAsStringSync(),
+      File('data-src/detail.json').readAsStringSync(),
     ) as Map<String, dynamic>;
     expect(advices, hasLength(737));
     expect(details, hasLength(advices.length));

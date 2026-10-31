@@ -31,8 +31,24 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/data/advice.json
-    - assets/data/detail.json
+    # L0 实体层（关系化 Schema：docs/refactor/REFACTOR_DESIGN.md §4.9）
+    - assets/data/entity/advice.json
+    - assets/data/entity/advice_action.json
+    - assets/data/entity/advice_detail.json
+    - assets/data/entity/detail_source.json
+    - assets/data/entity/advice_relation.json
+    - assets/data/entity/advice_node.json
+    # L1 维度结构
+    - assets/data/dimensions/taxonomy.json
+    - assets/data/dimensions/badge.json
+    # L3 分维度标签
+    - assets/data/facets/tag_dimension.json
+    - assets/data/facets/tag.json
+    - assets/data/facets/advice_tag.json
+    # L4 展示信息（物化视图）
+    - assets/data/views/display_info.json
+    # L6 触发数据
+    - assets/data/triggers/advice_trigger.json
+    # 保留资产
     - assets/data/node_packages.json
     - assets/data/pinyin.json
-    - assets/data/taxonomy_tree.json
