@@ -212,3 +212,5 @@ class PeriodDefinition {
     return periodKey;
   }
 }
+
+enum PeriodScope { today, weekly, monthly, yearly }

@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kairo_step/data/catalog.dart';
+import 'package:kairo_step/models/user.dart';
 import 'package:kairo_step/state/app_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

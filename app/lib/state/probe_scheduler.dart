@@ -6,7 +6,6 @@ import '../data/engine_config.dart';
 import '../models/advice.dart';
 import '../models/probe_binding.dart';
 import '../models/probe_model.dart';
-import 'app_store.dart' show UserProfile;
 import 'mobile_notification_service.dart';
 
 /// 主动探测调度器模块 (Proactive Probe Scheduler)

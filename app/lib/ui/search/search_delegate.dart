@@ -4,7 +4,6 @@ import '../../app.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../cards/advice_card.dart';
-import '../../state/app_store.dart';
 import '../library/topic_tree_sheet.dart';
 
 /// 全局搜索：搜索秒开通道 —— 标题 / 章节 / 标签 / 时机徽章全文匹配。

@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import '../../app.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
-import '../../state/app_store.dart';
 import 'interactors.dart';
 
 /// 聚光专项 1 —— 建议 1「系安全带」：四座拟物车舱。

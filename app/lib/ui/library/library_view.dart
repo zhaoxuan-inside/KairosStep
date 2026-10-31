@@ -7,7 +7,6 @@ import '../../app.dart';
 import '../../core/theme.dart';
 import '../../data/catalog.dart';
 import '../../models/advice.dart';
-import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
 import 'guidance_sheet.dart';
 import 'jump_deck.dart';
