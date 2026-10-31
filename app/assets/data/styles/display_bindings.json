@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "_comment": "L5 展示信息↔交互样式关联（Phase 4）：聚光专项覆盖 + 参数。override 指向 interactors 的专属交互器；无显式绑定的建议按 style（act_type）默认关联。BP 阈值/时薪默认值/座位名在此登记为数据口径，交互器内部消费接线随 Phase 4.5。",
+  "list": [
+    {"id": 1, "style": "haptic-toggle", "override": "cabin-seats",
+     "params": {"seats": ["主驾", "副驾", "后排左", "后排右"], "lockedCount": 2}},
+    {"id": 7, "style": "slider-calc", "override": "blood-pressure",
+     "params": {"sysRange": [90, 180], "diaRange": [50, 120], "normalSys": 120, "normalDia": 80, "highSys": 140, "highDia": 90, "defaultSys": 125, "defaultDia": 80}},
+    {"id": 136, "style": "wage-calc",
+     "params": {"defaultCost": 1500, "defaultMyWage": 80, "myWageRange": [10, 500], "myWageStep": 5}}
+  ]
+}

@@ -52,6 +52,10 @@ flutter:
     # L7 引擎配置
     - assets/data/config/engines.json
     - assets/data/config/gates.json
+    - assets/data/config/probes.json
+    # L2 交互样式 / L5 展示↔样式绑定
+    - assets/data/styles/act_styles.json
+    - assets/data/styles/display_bindings.json
     # 保留资产
     - assets/data/node_packages.json
     - assets/data/pinyin.json

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../app.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
+import '../../models/style.dart';
 import '../../state/app_store.dart';
 import 'spotlight_interactors.dart';
 import '../now/breathing_practice.dart';
@@ -66,13 +67,15 @@ class AdviceInteractor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 聚光专项：安全带四座舱 / 血压计 / 家务时薪
-    switch (advice.id) {
-      case 1:
+    // 聚光专项分派数据化于 L5 display_bindings.json（override → 专属交互器）
+    final catalog = storeOf(context).catalog;
+    final binding = catalog.displayBindings.bindingOf(advice.id);
+    switch (binding?.override) {
+      case 'cabin-seats':
         return CabinSeatsInteractor(advice: advice, scope: scope);
-      case 7:
+      case 'blood-pressure':
         return BloodPressureInteractor(advice: advice, scope: scope);
-      case 136:
+      case 'wage-calc':
         return WageCalcInteractor(advice: advice, scope: scope);
     }
 
@@ -80,7 +83,7 @@ class AdviceInteractor extends StatelessWidget {
       'haptic-toggle' => ToggleChipsInteractor(
         advice: advice,
         scope: scope,
-        lockedCount: advice.id == 1 ? 2 : 0,
+        lockedCount: binding?.intParam('lockedCount', 0) ?? 0,
       ),
       'quick-checkin' => QuickCheckinInteractor(advice: advice, scope: scope),
       'daily-streak' => DailyStreakInteractor(advice: advice, scope: scope),
@@ -414,30 +417,27 @@ class DailyStreakInteractor extends StatelessWidget {
   final Advice advice;
   final PeriodScope scope;
 
-  (String, String) _alarmPreset() {
+  /// 闹钟预设数据化于 L2 act_styles.json（daily-streak.params.alarmPresets，
+  /// 与原关键词 if 链同序、首个命中即止；fallback 兜底）。
+  (String, String) _alarmPreset(ActStyleDef? style) {
     final t = advice.title;
-    if (t.contains('起床')) return ('晨间闹钟', '07:00');
-    if (t.contains('午睡') || t.contains('午休') || t.contains('小憩')) {
-      return ('午休提醒', '12:45');
+    final presets = ((style?.params['alarmPresets'] as List?) ?? const [])
+        .map((e) => AlarmPreset.fromJson(e as Map<String, dynamic>))
+        .toList();
+    for (final preset in presets) {
+      if (preset.matches(t)) return (preset.alarmName, preset.defaultTime);
     }
-    if (t.contains('睡前一小时') || (t.contains('屏幕') && t.contains('睡'))) {
-      return ('离屏打卡', '21:30');
-    }
-    if (t.contains('睡')) return ('睡前提醒', '23:00');
-    if (t.contains('刷牙') || t.contains('牙缝')) return ('早晚洗漱', '07:30 / 22:30');
-    if (t.contains('步') || t.contains('力量') || t.contains('运动')) {
-      return ('日间活力', '10:00 / 16:00');
-    }
-    if (t.contains('血压') || t.contains('吃药')) return ('慢病监测', '每日晨起定点');
-    if (t.contains('戒烟')) return ('无烟生活', '全天守护');
     return ('每日提醒', '08:30');
   }
 
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
-    final ctl = CardCtl(storeOf(context), scope, advice);
-    final (alarmName, defaultTime) = _alarmPreset();
+    final store = storeOf(context);
+    final ctl = CardCtl(store, scope, advice);
+    final (alarmName, defaultTime) = _alarmPreset(
+      store.catalog.actStyles.style('daily-streak'),
+    );
     final pickedTime = ctl.extra<String?>('alarm') ?? defaultTime;
     final streak = ctl.streak;
     final checkedToday = ctl.has('__checkin__');
@@ -465,6 +465,9 @@ class DailyStreakInteractor extends StatelessWidget {
             const Spacer(),
             _AlarmPicker(
               selected: pickedTime,
+              options: _AlarmPicker.optionsOf(
+                store.catalog.actStyles.style('daily-streak'),
+              ),
               onPick: (t) {
                 HapticFeedback.selectionClick();
                 ctl.setExtra('alarm', t);
@@ -528,12 +531,19 @@ class DailyStreakInteractor extends StatelessWidget {
 }
 
 class _AlarmPicker extends StatelessWidget {
-  const _AlarmPicker({required this.selected, required this.onPick});
+  const _AlarmPicker({
+    required this.selected,
+    required this.options,
+    required this.onPick,
+  });
 
   final String selected;
+  final List<String> options;
   final ValueChanged<String> onPick;
 
-  static const options = ['06:30 晨光', '07:00 标准', '07:30 宽裕', '23:00 就寝'];
+  /// 快捷时刻选项来自 L2 act_styles.json（daily-streak.params.quickOptions）
+  static List<String> optionsOf(ActStyleDef? style) =>
+      ((style?.params['quickOptions'] as List?) ?? const []).cast<String>();
 
   @override
   Widget build(BuildContext context) {
@@ -1226,31 +1236,39 @@ class SliderCalcInteractor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
-    final ctl = CardCtl(storeOf(context), scope, advice);
+    final store = storeOf(context);
+    final ctl = CardCtl(store, scope, advice);
     final t = advice.title;
 
-    // 关键词特化：酒精代谢 / 日晒 / 遛狗 / 其他通用
-    final (label, unit, max, fmt) = t.contains('酒')
-        ? ('已饮', '标准杯', 10, (double v) => '约 ${_alcoholHours(v)} 小时代谢完毕')
-        : t.contains('晒') || t.contains('太阳')
-        ? (
-            '日晒',
-            '分钟',
-            60,
-            (double v) => v >= 15 && v <= 30
-                ? '15-30 分钟 · 合成维 D 足量'
-                : v < 15
-                ? '偏短 · 维 D 合成不足'
-                : '偏长 · 注意晒伤风险',
-          )
-        : t.contains('遛狗')
-        ? (
-            '遛狗',
-            '分钟',
-            120,
-            (double v) => v >= 30 ? '达标 · 中等强度活动计入' : '偏短 · 建议 30 分钟起',
-          )
-        : ('强度', '档位', 10, (double v) => '当前 ${v.round()} 档');
+    // 变体匹配数据化于 L2 act_styles.json（variants 声明序即优先级）；
+    // 判定读数公式属机制，按 variant key 分派保留在代码。
+    final styleDef = store.catalog.actStyles.style('slider-calc');
+    final variant = _pickVariant(styleDef, t);
+    final (label, unit, max, fmt) = switch (variant.key) {
+      'alcohol' => (
+          variant.label,
+          variant.unit,
+          variant.max,
+          (double v) => '约 ${_alcoholHours(v)} 小时代谢完毕',
+        ),
+      'sun' => (
+          variant.label,
+          variant.unit,
+          variant.max,
+          (double v) => v >= 15 && v <= 30
+              ? '15-30 分钟 · 合成维 D 足量'
+              : v < 15
+              ? '偏短 · 维 D 合成不足'
+              : '偏长 · 注意晒伤风险',
+        ),
+      'dog' => (
+          variant.label,
+          variant.unit,
+          variant.max,
+          (double v) => v >= 30 ? '达标 · 中等强度活动计入' : '偏短 · 建议 30 分钟起',
+        ),
+      _ => (variant.label, variant.unit, variant.max, (double v) => '当前 ${v.round()} 档'),
+    };
     final value = ctl.extra<double>('slider') ?? (max * 0.3);
     final readout = fmt(value);
 
@@ -1314,6 +1332,20 @@ class SliderCalcInteractor extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  static SliderVariant _pickVariant(ActStyleDef? styleDef, String title) {
+    final params = styleDef?.params ?? const {};
+    final variants = ((params['variants'] as List?) ?? const [])
+        .map((e) => SliderVariant.fromJson(e as Map<String, dynamic>))
+        .toList();
+    for (final v in variants) {
+      if (v.matches(title)) return v;
+    }
+    final d = params['default'] as Map<String, dynamic>?;
+    return d == null
+        ? SliderVariant(key: 'generic', match: const [], label: '强度', unit: '档位', max: 10)
+        : SliderVariant.fromJson(d);
   }
 
   static int _alcoholHours(double cups) => (cups * 1.5).ceil().clamp(1, 15);

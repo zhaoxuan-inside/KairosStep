@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'engine_config.dart';
+import '../models/style.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 
@@ -52,6 +53,9 @@ class Catalog {
     required this.topics,
     required this.engines,
     required this.gates,
+    required this.probes,
+    required this.actStyles,
+    required this.displayBindings,
   });
 
   final List<Advice> adviceList;
@@ -63,6 +67,15 @@ class Catalog {
   /// L7 引擎配置（engines.json / gates.json，Phase 2 外置）
   final EngineConfig engines;
   final GateConfig gates;
+
+  /// L7 探查内容（probes.json，Phase 4 外置）
+  final ProbeContent probes;
+
+  /// L2 交互样式（styles/act_styles.json，Phase 4 外置）
+  final ActStylesConfig actStyles;
+
+  /// L5 展示↔样式绑定（styles/display_bindings.json，Phase 4 外置）
+  final DisplayBindingsConfig displayBindings;
 
   late final Map<int, Advice> byId = {for (final a in adviceList) a.id: a};
 
@@ -143,6 +156,12 @@ class Catalog {
     requireSchema(enginesJson, 'config/engines');
     final gatesJson = await loadJson('config/gates');
     requireSchema(gatesJson, 'config/gates');
+    final probesJson = await loadJson('config/probes');
+    requireSchema(probesJson, 'config/probes');
+    final actStylesJson = await loadJson('styles/act_styles');
+    requireSchema(actStylesJson, 'styles/act_styles');
+    final displayBindingsJson = await loadJson('styles/display_bindings');
+    requireSchema(displayBindingsJson, 'styles/display_bindings');
     final nodePkgJson = await loadJson('node_packages');
     final pinyinJson = await loadJson('pinyin');
 
@@ -217,6 +236,9 @@ class Catalog {
       topics: TopicTree.fromJson(taxonomyJson, adviceList),
       engines: EngineConfig.fromJson(enginesJson),
       gates: GateConfig.fromJson(gatesJson),
+      probes: ProbeContent.fromJson(probesJson),
+      actStyles: ActStylesConfig.fromJson(actStylesJson),
+      displayBindings: DisplayBindingsConfig.fromJson(displayBindingsJson),
       details: {
         for (final row
             in (detailJson['list'] as List).cast<Map<String, dynamic>>())

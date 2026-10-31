@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "_comment": "L2 交互样式（Phase 4）：13 形态注册表 + 参数。iconKey 指向 catalog.dart 的图标映射；判定读数公式（酒精代谢/日晒文案）属机制，保留在交互器代码按 variant key 分派。",
+  "styles": [
+    {"style": "quick-checkin", "name": "行动打卡", "iconKey": "check", "params": {"longTitleThreshold": 14}},
+    {"style": "daily-streak", "name": "每日连击", "iconKey": "pulse", "params": {
+      "windowDays": 14,
+      "alarmPresets": [
+        {"match": ["起床"], "alarmName": "晨间闹钟", "defaultTime": "07:00"},
+        {"match": ["午睡", "午休", "小憩"], "alarmName": "午休提醒", "defaultTime": "12:45"},
+        {"match": ["睡前一小时"], "allOf": [["屏幕", "睡"]], "alarmName": "离屏打卡", "defaultTime": "21:30"},
+        {"match": ["睡"], "alarmName": "睡前提醒", "defaultTime": "23:00"},
+        {"match": ["刷牙", "牙缝"], "alarmName": "早晚洗漱", "defaultTime": "07:30 / 22:30"},
+        {"match": ["步", "力量", "运动"], "alarmName": "日间活力", "defaultTime": "10:00 / 16:00"},
+        {"match": ["血压", "吃药"], "alarmName": "慢病监测", "defaultTime": "每日晨起定点"},
+        {"match": ["戒烟"], "alarmName": "无烟生活", "defaultTime": "全天守护"},
+        {"match": [], "fallback": true, "alarmName": "每日提醒", "defaultTime": "08:30"}
+      ],
+      "quickOptions": ["06:30 晨光", "07:00 标准", "07:30 宽裕", "23:00 就寝"]}},
+    {"style": "windowed-cadence", "name": "持续窗口期", "iconKey": "tree", "params": {"windowDays": 14}},
+    {"style": "slider-calc", "name": "测算滑块", "iconKey": "tune", "params": {
+      "variants": [
+        {"key": "alcohol", "match": ["酒"], "label": "已饮", "unit": "标准杯", "max": 10},
+        {"key": "sun", "match": ["晒", "太阳"], "label": "日晒", "unit": "分钟", "max": 60},
+        {"key": "dog", "match": ["遛狗"], "label": "遛狗", "unit": "分钟", "max": 120}
+      ],
+      "default": {"key": "generic", "label": "强度", "unit": "档位", "max": 10}}},
+    {"style": "haptic-toggle", "name": "触感卡扣", "iconKey": "toggle", "params": {}},
+    {"style": "emergency-action", "name": "紧急直达", "iconKey": "emergencyBell", "params": {}},
+    {"style": "zen-timer", "name": "计时屏息", "iconKey": "tune", "params": {}},
+    {"style": "evidence-checklist", "name": "证据清单", "iconKey": "vault", "params": {}},
+    {"style": "wage-calc", "name": "时薪决策", "iconKey": "calculator", "params": {
+      "defaults": {"cost": 1500, "myWage": 80, "myWageRange": [10, 500], "myWageStep": 5}}},
+    {"style": "redline-stamp", "name": "红线铭记", "iconKey": "cross", "params": {}},
+    {"style": "context-guard", "name": "情境拦截", "iconKey": "shield", "params": {}},
+    {"style": "decision-check", "name": "决策核对", "iconKey": "tune", "params": {}},
+    {"style": "process-steps", "name": "办事分步", "iconKey": "tree", "params": {}}
+  ]
+}

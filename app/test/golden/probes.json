@@ -1,0 +1,435 @@
+{
+  "morning": {
+    "title": "上午情境与状态探查",
+    "description": "确认你当前的核心活动，让建议精准适配当下情境",
+    "signalLevel": "routine",
+    "categories": [
+      "activity"
+    ],
+    "isMerged": false,
+    "questions": [
+      {
+        "id": "q_activity_context",
+        "category": "activity",
+        "title": "你现在正在做什么？",
+        "subtitle": "KairosStep 会根据你的实时动作智能校准当下防线",
+        "options": [
+          {
+            "key": "working",
+            "label": "上班办公 / 业务处理",
+            "emoji": "💼",
+            "description": "久坐提醒、颈椎腰椎减压、工位补水",
+            "associatedAdviceIds": [
+              264,
+              401
+            ]
+          },
+          {
+            "key": "studying",
+            "label": "课堂学习 / 备考自习",
+            "emoji": "📚",
+            "description": "20-20-20 视疲劳缓解、高效专注间隔",
+            "associatedAdviceIds": [
+              401
+            ]
+          },
+          {
+            "key": "exercising",
+            "label": "健身锻炼 / 户外运动",
+            "emoji": "🏃",
+            "description": "热身防拉伤、动态补水、手环虚高心率警惕",
+            "associatedAdviceIds": [
+              474,
+              568
+            ]
+          },
+          {
+            "key": "resting",
+            "label": "居家休息 / 调养状态",
+            "emoji": "🏠",
+            "description": "居室通风、规律作息、从容生活",
+            "associatedAdviceIds": [
+              113
+            ]
+          },
+          {
+            "key": "commuting",
+            "label": "通勤出行 / 在路上",
+            "emoji": "🚇",
+            "description": "注意乘车防跌撞、盲区避让",
+            "associatedAdviceIds": []
+          }
+        ]
+      }
+    ]
+  },
+  "afternoon": {
+    "title": "午后身体与疲劳度探查",
+    "description": "关照午后身体体征，守住健康安全底线",
+    "signalLevel": "routine",
+    "categories": [
+      "body"
+    ],
+    "isMerged": false,
+    "questions": [
+      {
+        "id": "q_body_symptom",
+        "category": "body",
+        "title": "今天身体感觉如何？有无以下微不适？",
+        "subtitle": "提早识别身体微症状，避免错误用药或延误调理",
+        "options": [
+          {
+            "key": "fine",
+            "label": "精力充沛，状态良好",
+            "emoji": "✨",
+            "description": "保持当前良好节奏，适时起身活动",
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "acid_reflux",
+            "label": "反酸烧心 / 胃部灼热痛",
+            "emoji": "🔥",
+            "description": "反酸烧心自买奥美拉唑需严控指征，避免掩盖器质性病变",
+            "associatedAdviceIds": [
+              44
+            ]
+          },
+          {
+            "key": "headache_pain",
+            "label": "头痛颈肩痛 / 想吃止痛药",
+            "emoji": "🤕",
+            "description": "止痛药每月勿超 15 天，防药物过量性头痛与胃粘膜损伤",
+            "associatedAdviceIds": [
+              401
+            ]
+          },
+          {
+            "key": "dizzy_shaky",
+            "label": "头晕心慌 / 疑似低血糖",
+            "emoji": "🌀",
+            "description": "立即坐下平卧，迅速补充 15~20g 糖分防摔倒跌伤",
+            "associatedAdviceIds": [
+              402
+            ]
+          },
+          {
+            "key": "eye_neck_tired",
+            "label": "用眼干涩 / 颈椎僵硬",
+            "emoji": "💻",
+            "description": "远眺 20 秒，做颈部后仰等长收缩抗阻放松",
+            "associatedAdviceIds": []
+          }
+        ]
+      }
+    ]
+  },
+  "evening_worker": {
+    "title": "晚间状态与心理韧性探查 (合并)",
+    "description": "合并关照今日心理负荷、人际感受与晚间生活安排",
+    "signalLevel": "routine",
+    "categories": [
+      "mood",
+      "weight"
+    ],
+    "isMerged": true,
+    "questions": [
+      {
+        "id": "q_evening_mood",
+        "category": "mood",
+        "title": "下班前盘点：今日上班感受与人际如何？",
+        "subtitle": "倾听内心真实感受，及时给予针对性疏导",
+        "options": [
+          {
+            "key": "w_good",
+            "label": "工作高效，同事融洽",
+            "emoji": "👍",
+            "description": null,
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "w_tired",
+            "label": "会议琐碎，略有心累",
+            "emoji": "💼",
+            "description": null,
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "w_burnout",
+            "label": "严重内耗/被刁难摩擦",
+            "emoji": "🌧️",
+            "description": null,
+            "associatedAdviceIds": [
+              568,
+              680
+            ]
+          }
+        ]
+      },
+      {
+        "id": "q_evening_activity",
+        "category": "weight",
+        "title": "今晚是否有锻炼减重或形体管理打算？",
+        "subtitle": "科学看待热量消耗，避免过度量化焦虑",
+        "options": [
+          {
+            "key": "rest_tonight",
+            "label": "今晚好好休息早点睡",
+            "emoji": "🛌",
+            "description": null,
+            "associatedAdviceIds": [
+              113
+            ]
+          },
+          {
+            "key": "run_workout",
+            "label": "去慢跑/健身减压",
+            "emoji": "🏃",
+            "description": "运动抗抑郁效应显著；别迷信手环卡路里虚高量化",
+            "associatedAdviceIds": [
+              568,
+              474
+            ]
+          },
+          {
+            "key": "weight_query",
+            "label": "有减重困惑/咨询减肥药针剂",
+            "emoji": "⚖️",
+            "description": "严格画像门禁，避免非适应症使用处方药",
+            "associatedAdviceIds": [
+              333,
+              335,
+              474
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "evening_student": {
+    "title": "晚间状态与心理韧性探查 (合并)",
+    "description": "合并关照今日心理负荷、人际感受与晚间生活安排",
+    "signalLevel": "routine",
+    "categories": [
+      "mood",
+      "weight"
+    ],
+    "isMerged": true,
+    "questions": [
+      {
+        "id": "q_evening_mood",
+        "category": "mood",
+        "title": "晚修自习：今日学业压力与相处如何？",
+        "subtitle": "倾听内心真实感受，及时给予针对性疏导",
+        "options": [
+          {
+            "key": "s_good",
+            "label": "学业适中，跟上节奏",
+            "emoji": "📖",
+            "description": null,
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "s_stressed",
+            "label": "备考吃力，焦虑紧绷",
+            "emoji": "⚡",
+            "description": null,
+            "associatedAdviceIds": [
+              113
+            ]
+          },
+          {
+            "key": "s_lonely",
+            "label": "室友同学摩擦/略感孤单",
+            "emoji": "🌧️",
+            "description": null,
+            "associatedAdviceIds": [
+              680
+            ]
+          }
+        ]
+      },
+      {
+        "id": "q_evening_activity",
+        "category": "weight",
+        "title": "今晚是否有锻炼减重或形体管理打算？",
+        "subtitle": "科学看待热量消耗，避免过度量化焦虑",
+        "options": [
+          {
+            "key": "rest_tonight",
+            "label": "今晚好好休息早点睡",
+            "emoji": "🛌",
+            "description": null,
+            "associatedAdviceIds": [
+              113
+            ]
+          },
+          {
+            "key": "run_workout",
+            "label": "去慢跑/健身减压",
+            "emoji": "🏃",
+            "description": "运动抗抑郁效应显著；别迷信手环卡路里虚高量化",
+            "associatedAdviceIds": [
+              568,
+              474
+            ]
+          },
+          {
+            "key": "weight_query",
+            "label": "有减重困惑/咨询减肥药针剂",
+            "emoji": "⚖️",
+            "description": "严格画像门禁，避免非适应症使用处方药",
+            "associatedAdviceIds": [
+              333,
+              335,
+              474
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "evening_default": {
+    "title": "晚间状态与心理韧性探查 (合并)",
+    "description": "合并关照今日心理负荷、人际感受与晚间生活安排",
+    "signalLevel": "routine",
+    "categories": [
+      "mood",
+      "weight"
+    ],
+    "isMerged": true,
+    "questions": [
+      {
+        "id": "q_evening_mood",
+        "category": "mood",
+        "title": "今日工作生活感受怎么样？",
+        "subtitle": "倾听内心真实感受，及时给予针对性疏导",
+        "options": [
+          {
+            "key": "smooth",
+            "label": "推进顺畅，充实从容",
+            "emoji": "😊",
+            "description": null,
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "tired",
+            "label": "略显疲劳，有点透支",
+            "emoji": "🥱",
+            "description": null,
+            "associatedAdviceIds": []
+          },
+          {
+            "key": "exhausted",
+            "label": "加班心累，严重内耗",
+            "emoji": "😫",
+            "description": null,
+            "associatedAdviceIds": [
+              568,
+              113
+            ]
+          },
+          {
+            "key": "depressed",
+            "label": "情绪低落，提不起劲",
+            "emoji": "🌧️",
+            "description": null,
+            "associatedAdviceIds": [
+              568,
+              113,
+              680
+            ]
+          }
+        ]
+      },
+      {
+        "id": "q_evening_activity",
+        "category": "weight",
+        "title": "今晚是否有锻炼减重或形体管理打算？",
+        "subtitle": "科学看待热量消耗，避免过度量化焦虑",
+        "options": [
+          {
+            "key": "rest_tonight",
+            "label": "今晚好好休息早点睡",
+            "emoji": "🛌",
+            "description": null,
+            "associatedAdviceIds": [
+              113
+            ]
+          },
+          {
+            "key": "run_workout",
+            "label": "去慢跑/健身减压",
+            "emoji": "🏃",
+            "description": "运动抗抑郁效应显著；别迷信手环卡路里虚高量化",
+            "associatedAdviceIds": [
+              568,
+              474
+            ]
+          },
+          {
+            "key": "weight_query",
+            "label": "有减重困惑/咨询减肥药针剂",
+            "emoji": "⚖️",
+            "description": "严格画像门禁，避免非适应症使用处方药",
+            "associatedAdviceIds": [
+              333,
+              335,
+              474
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "bindings": {
+    "44": {
+      "category": "body",
+      "signalLevel": "routine",
+      "promptQuestion": "近期是否有反酸、烧心或胃部灼痛感？",
+      "matchingOption": "反酸烧心/胃部灼痛",
+      "responseGuidance": "反酸烧心自买奥美拉唑需注意严格指征，警惕盲目长期抑酸掩盖器质性病变。"
+    },
+    "401": {
+      "category": "body",
+      "signalLevel": "routine",
+      "promptQuestion": "今天身体是否有头痛、关节痛或正在考虑吃止疼药？",
+      "matchingOption": "头痛酸痛想吃止疼药",
+      "responseGuidance": "止疼药一个月别吃超过 15 天，超量极易诱发药物过量性头痛与消化道粘膜损伤。"
+    },
+    "568": {
+      "category": "mood",
+      "signalLevel": "routine",
+      "promptQuestion": "今天的心情是否差到了抑郁消沉、提不起精神的程度？",
+      "matchingOption": "心情差到抑郁",
+      "responseGuidance": "心情差到抑郁的程度，就去走或者跑，运动抗抑郁效应显著且能打破反刍思维。"
+    },
+    "113": {
+      "category": "mood",
+      "signalLevel": "routine",
+      "promptQuestion": "情绪低落时，是否感到无力面对琐事？",
+      "matchingOption": "情绪低落提不起劲",
+      "responseGuidance": "先做性价比最高的自救几件事：多见自然光、按时早睡、找信赖的人倾诉。"
+    },
+    "1": {
+      "category": "lifestyle",
+      "signalLevel": "routine",
+      "promptQuestion": "日常习惯与生活底线守护检查。",
+      "matchingOption": "日常常规生活",
+      "responseGuidance": "稳步推进习惯打卡，巩固生活确定性。"
+    },
+    "210": {
+      "category": "body",
+      "signalLevel": "routine",
+      "promptQuestion": "今日身体是否有不适、酸痛、反酸或其他微症状？",
+      "matchingOption": "身体不适或用药疑问",
+      "responseGuidance": "遵从医嘱与药品说明书，避免滥用抗生素与超频使用止痛药。"
+    },
+    "7": {
+      "category": "body",
+      "signalLevel": "routine",
+      "promptQuestion": "今日身体是否有不适、酸痛、反酸或其他微症状？",
+      "matchingOption": "身体不适或用药疑问",
+      "responseGuidance": "遵从医嘱与药品说明书，避免滥用抗生素与超频使用止痛药。"
+    }
+  }
+}

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../data/engine_config.dart';
+import 'probe_binding_engine.dart';
 import '../models/advice.dart';
-import '../models/probe_binding.dart';
 import '../models/probe_model.dart';
 import 'delivery/notification_sink.dart';
 
@@ -17,12 +17,24 @@ import 'delivery/notification_sink.dart';
 ///    - 非必须的常规信号（Routine Signal：活动情境、身体微体征、心情关怀）进行合并通知；
 /// 3. 严格控制通知频率（防打扰冷却机制、每日上限、深夜免打扰），避免过度打扰用户。
 class ProbeEngine extends ChangeNotifier {
-  ProbeEngine(this._notifications, this._config) {
+  ProbeEngine(this._notifications, this._config, {required this.probes}) {
+
     _startTicker();
   }
 
   /// 通知出口（系统通知实现；不可用时任回退应用内弹窗）
   final NotificationSink _notifications;
+
+  /// L7 探查内容（probes.json）：绑定规则 + 题目模板 + 每日通知
+  final ProbeContent probes;
+
+  /// 绑定引擎（配置驱动，解析顺序与原实现一致）
+  late final AdviceProbeBindingEngine _bindingEngine = AdviceProbeBindingEngine(
+    probes.bindings,
+  );
+
+  /// 对外暴露绑定判定（测试与调试用）
+  AdviceProbeSpec bindingSpecFor(Advice advice) => _bindingEngine.specFor(advice);
 
   /// L7 引擎配置（engines.json probe 段）：限频、静默、探查窗口、系统级通知时刻
   final ProbeEngineConfig _config;
@@ -65,7 +77,7 @@ class ProbeEngine extends ChangeNotifier {
     _categoryAdvices.clear();
 
     for (final a in activeAdvices) {
-      final spec = AdviceProbeBindingEngine.specFor(a);
+      final spec = _bindingEngine.specFor(a);
       _categoryAdvices.putIfAbsent(spec.category, () => []).add(a);
     }
 
@@ -79,52 +91,31 @@ class ProbeEngine extends ChangeNotifier {
     _scheduledKinds.clear();
     if (!_notifications.isReady) return;
 
+    // 每日系统通知的时刻/文案/触发类别来自 L7 probes.json
+    final dn = probes.dailyNotifications;
     final items = <DailyProbeNotification>[];
+    final roles = _currentProfile?.roles ?? const <String>[];
+
+    final morning = dn['morning']!;
     if ((_categoryAdvices[ProbeCategory.activity] ?? const []).isNotEmpty) {
       _scheduledKinds.add('probe_morning');
-      items.add(
-        const DailyProbeNotification(
-          id: 9101,
-          hour: 9,
-          minute: 30,
-          title: '上午情境与状态探查',
-          body: '告诉我你现在正在工作、学习、运动还是通勤。',
-          payload: 'probe_morning_scheduled',
-        ),
-      );
+      items.add(morning.toNotification(roleBody: morning.body ?? ''));
     }
+    final afternoon = dn['afternoon']!;
     if ((_categoryAdvices[ProbeCategory.body] ?? const []).isNotEmpty) {
       _scheduledKinds.add('probe_afternoon');
-      items.add(
-        const DailyProbeNotification(
-          id: 9102,
-          hour: 14,
-          minute: 15,
-          title: '午后身体与疲劳度探查',
-          body: '午后状态探查：今天身体和用眼感觉怎么样？',
-          payload: 'probe_afternoon_scheduled',
-        ),
-      );
+      items.add(afternoon.toNotification(roleBody: afternoon.body ?? ''));
     }
+    final evening = dn['evening']!;
     if ((_categoryAdvices[ProbeCategory.mood] ?? const []).isNotEmpty ||
         (_categoryAdvices[ProbeCategory.weight] ?? const []).isNotEmpty) {
       _scheduledKinds.add('probe_evening');
-      final roles = _currentProfile?.roles ?? const <String>[];
-      final body = roles.contains('上班族') || roles.contains('程序员')
-          ? '下班后了，用几十秒告诉我今天的工作感受。'
+      final roleBody = roles.contains('上班族') || roles.contains('程序员')
+          ? evening.roleBodies['worker']!
           : roles.contains('学生')
-          ? '晚间了，用几十秒告诉我今天的学习压力。'
-          : '用几十秒告诉我今天的状态，帮我校准接下来的建议。';
-      items.add(
-        DailyProbeNotification(
-          id: 9103,
-          hour: 20,
-          minute: 0,
-          title: '晚间状态与心理韧性探查',
-          body: body,
-          payload: 'probe_evening_scheduled',
-        ),
-      );
+          ? evening.roleBodies['student']!
+          : evening.roleBodies['default']!;
+      items.add(evening.toNotification(roleBody: roleBody));
     }
     unawaited(_notifications.replaceDailyProbes(items));
   }
@@ -235,7 +226,7 @@ class ProbeEngine extends ChangeNotifier {
 
   /// 触发必须立即通知的紧急信号（例如通过手动测试、紧急按钮或传感器触发）
   void triggerMandatoryEmergencySignal(Advice urgentAdvice) {
-    final spec = AdviceProbeBindingEngine.specFor(urgentAdvice);
+    final spec = _bindingEngine.specFor(urgentAdvice);
     _currentPayload = ProbePayload(
       id: 'mandatory_${urgentAdvice.id}_${DateTime.now().millisecondsSinceEpoch}',
       signalLevel: ProbeSignalLevel.mandatory,
@@ -325,234 +316,41 @@ class ProbeEngine extends ChangeNotifier {
     return null;
   }
 
-  /// 上午：合并当前活动情境探查（上班？上课？运动？）
-  ProbePayload createMorningContextProbe(DateTime now) {
-    final questions = <ProbeQuestion>[
-      ProbeQuestion(
-        id: 'q_activity_context',
-        category: ProbeCategory.activity,
-        title: '你现在正在做什么？',
-        subtitle: 'KairosStep 会根据你的实时动作智能校准当下防线',
-        options: [
-          const ProbeOption(
-            key: 'working',
-            label: '上班办公 / 业务处理',
-            emoji: '💼',
-            description: '久坐提醒、颈椎腰椎减压、工位补水',
-            associatedAdviceIds: [264, 401],
-          ),
-          const ProbeOption(
-            key: 'studying',
-            label: '课堂学习 / 备考自习',
-            emoji: '📚',
-            description: '20-20-20 视疲劳缓解、高效专注间隔',
-            associatedAdviceIds: [401],
-          ),
-          const ProbeOption(
-            key: 'exercising',
-            label: '健身锻炼 / 户外运动',
-            emoji: '🏃',
-            description: '热身防拉伤、动态补水、手环虚高心率警惕',
-            associatedAdviceIds: [474, 568],
-          ),
-          const ProbeOption(
-            key: 'resting',
-            label: '居家休息 / 调养状态',
-            emoji: '🏠',
-            description: '居室通风、规律作息、从容生活',
-            associatedAdviceIds: [113],
-          ),
-          const ProbeOption(
-            key: 'commuting',
-            label: '通勤出行 / 在路上',
-            emoji: '🚇',
-            description: '注意乘车防跌撞、盲区避让',
-            associatedAdviceIds: [],
-          ),
-        ],
-      ),
-    ];
+  /// 上午：合并当前活动情境探查（题目模板来自 L7 probes.json）
+  ProbePayload createMorningContextProbe(DateTime now) =>
+      _payloadFromTemplate(probes.questions['morning']!, now);
 
-    return ProbePayload(
-      id: 'probe_morning_${now.millisecondsSinceEpoch}',
-      signalLevel: ProbeSignalLevel.routine,
-      categories: [ProbeCategory.activity],
-      title: '上午情境与状态探查',
-      description: '确认你当前的核心活动，让建议精准适配当下情境',
-      questions: questions,
-      boundAdvices: _getAdvicesForCategories([ProbeCategory.activity]),
-      createdAt: now,
-      isMerged: false,
-    );
-  }
+  /// 下午：合并身体微体征与疲劳状态探查
+  ProbePayload createAfternoonBodyProbe(DateTime now) =>
+      _payloadFromTemplate(probes.questions['afternoon']!, now);
 
-  /// 下午：合并身体微体征与疲劳状态探查（反酸？头痛吃药？低血糖？）
-  ProbePayload createAfternoonBodyProbe(DateTime now) {
-    final questions = <ProbeQuestion>[
-      ProbeQuestion(
-        id: 'q_body_symptom',
-        category: ProbeCategory.body,
-        title: '今天身体感觉如何？有无以下微不适？',
-        subtitle: '提早识别身体微症状，避免错误用药或延误调理',
-        options: [
-          const ProbeOption(
-            key: 'fine',
-            label: '精力充沛，状态良好',
-            emoji: '✨',
-            description: '保持当前良好节奏，适时起身活动',
-            associatedAdviceIds: [],
-          ),
-          const ProbeOption(
-            key: 'acid_reflux',
-            label: '反酸烧心 / 胃部灼热痛',
-            emoji: '🔥',
-            description: '反酸烧心自买奥美拉唑需严控指征，避免掩盖器质性病变',
-            associatedAdviceIds: [44],
-          ),
-          const ProbeOption(
-            key: 'headache_pain',
-            label: '头痛颈肩痛 / 想吃止痛药',
-            emoji: '🤕',
-            description: '止痛药每月勿超 15 天，防药物过量性头痛与胃粘膜损伤',
-            associatedAdviceIds: [401],
-          ),
-          const ProbeOption(
-            key: 'dizzy_shaky',
-            label: '头晕心慌 / 疑似低血糖',
-            emoji: '🌀',
-            description: '立即坐下平卧，迅速补充 15~20g 糖分防摔倒跌伤',
-            associatedAdviceIds: [402],
-          ),
-          const ProbeOption(
-            key: 'eye_neck_tired',
-            label: '用眼干涩 / 颈椎僵硬',
-            emoji: '💻',
-            description: '远眺 20 秒，做颈部后仰等长收缩抗阻放松',
-            associatedAdviceIds: [],
-          ),
-        ],
-      ),
-    ];
-
-    return ProbePayload(
-      id: 'probe_afternoon_${now.millisecondsSinceEpoch}',
-      signalLevel: ProbeSignalLevel.routine,
-      categories: [ProbeCategory.body],
-      title: '午后身体与疲劳度探查',
-      description: '关照午后身体体征，守住健康安全底线',
-      questions: questions,
-      boundAdvices: _getAdvicesForCategories([ProbeCategory.body]),
-      createdAt: now,
-      isMerged: false,
-    );
-  }
-
-  /// 傍晚/晚间：合并探查（心情关照 + 角色追问 + 减重/体形咨询）
+  /// 傍晚/晚间：合并探查（心情关照 + 画像角色追问 + 减重/体形咨询）
   ProbePayload createEveningMoodAndActivityProbe(DateTime now) {
-    final profile = _currentProfile;
-    final isWorker = profile?.roles.contains('上班族') ?? true;
-    final isStudent = profile?.roles.contains('学生') ?? false;
+    final t = probes.questions['evening']!;
+    final roleQ = t.roleQuestion!;
+    final roleQuestion = roleQ.toQuestionSpec(roleQ.variantFor(_currentProfile));
+    return _payloadFromTemplate(t, now, roleQuestion: roleQuestion);
+  }
 
-    String roleQTitle = '今日工作生活感受怎么样？';
-    List<ProbeOption> roleOptions = [
-      const ProbeOption(key: 'smooth', label: '推进顺畅，充实从容', emoji: '😊'),
-      const ProbeOption(key: 'tired', label: '略显疲劳，有点透支', emoji: '🥱'),
-      const ProbeOption(
-        key: 'exhausted',
-        label: '加班心累，严重内耗',
-        emoji: '😫',
-        associatedAdviceIds: [568, 113],
-      ),
-      const ProbeOption(
-        key: 'depressed',
-        label: '情绪低落，提不起劲',
-        emoji: '🌧️',
-        associatedAdviceIds: [568, 113, 680],
-      ),
-    ];
-
-    if (isWorker) {
-      roleQTitle = '下班前盘点：今日上班感受与人际如何？';
-      roleOptions = [
-        const ProbeOption(key: 'w_good', label: '工作高效，同事融洽', emoji: '👍'),
-        const ProbeOption(key: 'w_tired', label: '会议琐碎，略有心累', emoji: '💼'),
-        const ProbeOption(
-          key: 'w_burnout',
-          label: '严重内耗/被刁难摩擦',
-          emoji: '🌧️',
-          associatedAdviceIds: [568, 680],
-        ),
-      ];
-    } else if (isStudent) {
-      roleQTitle = '晚修自习：今日学业压力与相处如何？';
-      roleOptions = [
-        const ProbeOption(key: 's_good', label: '学业适中，跟上节奏', emoji: '📖'),
-        const ProbeOption(
-          key: 's_stressed',
-          label: '备考吃力，焦虑紧绷',
-          emoji: '⚡',
-          associatedAdviceIds: [113],
-        ),
-        const ProbeOption(
-          key: 's_lonely',
-          label: '室友同学摩擦/略感孤单',
-          emoji: '🌧️',
-          associatedAdviceIds: [680],
-        ),
-      ];
-    }
-
+  ProbePayload _payloadFromTemplate(
+    ProbeSlotTemplate t,
+    DateTime now, {
+    ProbeQuestionSpec? roleQuestion,
+  }) {
     final questions = <ProbeQuestion>[
-      ProbeQuestion(
-        id: 'q_evening_mood',
-        category: ProbeCategory.mood,
-        title: roleQTitle,
-        subtitle: '倾听内心真实感受，及时给予针对性疏导',
-        options: roleOptions,
-      ),
-      ProbeQuestion(
-        id: 'q_evening_activity',
-        category: ProbeCategory.weight,
-        title: '今晚是否有锻炼减重或形体管理打算？',
-        subtitle: '科学看待热量消耗，避免过度量化焦虑',
-        options: [
-          const ProbeOption(
-            key: 'rest_tonight',
-            label: '今晚好好休息早点睡',
-            emoji: '🛌',
-            associatedAdviceIds: [113],
-          ),
-          const ProbeOption(
-            key: 'run_workout',
-            label: '去慢跑/健身减压',
-            emoji: '🏃',
-            description: '运动抗抑郁效应显著；别迷信手环卡路里虚高量化',
-            associatedAdviceIds: [568, 474],
-          ),
-          const ProbeOption(
-            key: 'weight_query',
-            label: '有减重困惑/咨询减肥药针剂',
-            emoji: '⚖️',
-            description: '严格画像门禁，避免非适应症使用处方药',
-            associatedAdviceIds: [333, 335, 474],
-          ),
-        ],
-      ),
+      if (roleQuestion != null) roleQuestion.toQuestion(),
+      for (final q in t.questions) q.toQuestion(),
     ];
-
     return ProbePayload(
-      id: 'probe_evening_${now.millisecondsSinceEpoch}',
-      signalLevel: ProbeSignalLevel.routine,
-      categories: [ProbeCategory.mood, ProbeCategory.weight],
-      title: '晚间状态与心理韧性探查 (合并)',
-      description: '合并关照今日心理负荷、人际感受与晚间生活安排',
+      id: 'probe_${t.key}_${now.millisecondsSinceEpoch}',
+      signalLevel: t.signalLevel,
+      categories: t.categories,
+      title: t.title,
+      description: t.description,
       questions: questions,
-      boundAdvices: _getAdvicesForCategories([
-        ProbeCategory.mood,
-        ProbeCategory.weight,
-      ]),
+      boundAdvices: _getAdvicesForCategories(t.categories),
       createdAt: now,
-      isMerged: true,
+      isMerged: t.isMerged,
     );
   }
 

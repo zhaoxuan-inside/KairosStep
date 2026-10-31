@@ -129,6 +129,29 @@
 
 > §4.9 Schema 精化记录：cron/prerequisites/style 为作者原始 1:1 字段，留在 advice 基表；advice_trigger 仅承载派生计划（mode/periods/times）——Phase 3 TriggerEngine 接管前，运行时仍走旧算法，本表只读不改行为。
 
+## 6a-bis. L2 交互样式与 L5 绑定（assets/data/styles/，Phase 4 外置）
+
+### styles/act_styles.json
+| 字段 | 说明 |
+|---|---|
+| style / name / iconKey | 13 形态注册表（iconKey 指向 catalog 图标映射） |
+| params | daily-streak：windowDays=14、alarmPresets 9 条（声明序匹配+fallback）、quickOptions 4 项；slider-calc：variants 3 条（酒/晒/遛狗）+ default；quick-checkin：longTitleThreshold=14；windowed-cadence：windowDays=14；wage-calc：defaults |
+> 判定读数公式（酒精代谢时长、日晒区间文案）属机制保留在交互器代码，按 variant key 分派。
+
+### styles/display_bindings.json
+| 字段 | 说明 |
+|---|---|
+| id → style/override/params | 聚光专项：1→cabin-seats（四座名/预锁 2）、7→blood-pressure（阈值 120/80、140/90、量程、默认 125/80）、136→wage-calc（默认 1500/80、量程 10-500 步长 5） |
+> BP/时薪/座位数值在此登记为数据口径；交互器内部消费接线随 Phase 4.5。
+
+### config/probes.json（Phase 4）
+| 段 | 内容 |
+|---|---|
+| bindings.explicit | 12 条显式建议绑定（44/401/402/474/333/335/568/113/680/422/423/424） |
+| bindings.urgentFallback / keywordRules 7 条 / lifestyleFallback | 绑定解析链（显式→emergency→关键词声明序→兜底），与原 if 链同序 |
+| questions | morning/afternoon/evening 三窗口题目模板（evening 含 worker/student/default 角色变体） |
+| dailySystemNotifications | 9101-9103 时刻/标题/文案（evening 角色变体文案） |
+
 ## 6b. L7 引擎配置（assets/data/config/，Phase 2 外置）
 
 ### config/engines.json — 运行参数（typed: lib/data/engine_config.dart）
