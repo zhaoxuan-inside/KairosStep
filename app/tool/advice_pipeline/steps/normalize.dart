@@ -1,5 +1,6 @@
 // 步骤 ② normalize：源归档 S → L0 规范化实体层（一个文件一个关系，见 REFACTOR_DESIGN §4.9）。
 // 源归档只读；本步骤是纯函数：输入决定输出，无全局状态。
+import 'dart:convert';
 import 'dart:io';
 
 import '../common.dart';
@@ -135,6 +136,11 @@ Normalized normalize({
   });
 
   // ── advice_relation 联结表（detail.rel → kind: related；保序） ──
+  // merge_candidate 种子（data-src/merge_candidates.json，人工确认后入库；Phase 7）
+  final mergeSeed = File('$srcDir/merge_candidates.json').existsSync()
+      ? (jsonDecode(File('$srcDir/merge_candidates.json').readAsStringSync()) as List)
+          .cast<Map<String, dynamic>>()
+      : const <Map<String, dynamic>>[];
   final relationRows = <Map<String, dynamic>>[];
   for (final entry in details.entries) {
     final fromId = int.parse(entry.key);
@@ -155,6 +161,22 @@ Normalized normalize({
   });
   // 已登记缺口的孤儿行保留但显式标记（运行时行为不变：rel 列表原样，UI 对缺失 id 空安全）；
   // 未登记的孤儿才是错误。
+  for (final s in mergeSeed) {
+    relationRows.add({
+      'fromId': (s['fromId'] as num).toInt(),
+      'toId': (s['toId'] as num).toInt(),
+      'kind': 'merge_candidate',
+      'ordinal': 0,
+      'weight': (s['weight'] as num).toDouble(),
+      'basis': 'authored',
+      'mergePolicy': {'when': s['when'], 'maxGroup': (s['maxGroup'] as num).toInt()},
+    });
+  }
+  relationRows.sort((a, b) {
+    final byFrom = (a['fromId'] as int).compareTo(b['fromId'] as int);
+    if (byFrom != 0) return byFrom;
+    return (a['ordinal'] as int).compareTo(b['ordinal'] as int);
+  });
   for (final r in relationRows) {
     if (!adviceIds.contains(r['toId'])) {
       final known = knownRelationOrphans[r['fromId']]?.contains(r['toId']) ?? false;

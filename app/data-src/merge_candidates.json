@@ -1,0 +1,23 @@
+[
+  {
+    "fromId": 210,
+    "toId": 483,
+    "weight": 0.8,
+    "when": "same_period",
+    "maxGroup": 3
+  },
+  {
+    "fromId": 210,
+    "toId": 484,
+    "weight": 0.7,
+    "when": "same_period",
+    "maxGroup": 3
+  },
+  {
+    "fromId": 483,
+    "toId": 484,
+    "weight": 0.9,
+    "when": "same_period",
+    "maxGroup": 3
+  }
+]
