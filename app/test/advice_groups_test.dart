@@ -1,0 +1,77 @@
+// 归并展示组验收（MERGE_DESIGN §4/§9，按真实数据口径）：
+// 210（反面清单章节）与 484（context-guard 形态）为静默储备——dormant 门禁使其永不进流；
+// 483 单独出现于年度页。分组机制以直传列表验证：同 cadence 键成组、dormant 不并。
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kairo_step/data/catalog.dart';
+import 'package:kairo_step/domain/checkin_engine.dart';
+import 'package:kairo_step/domain/gatekeeper_engine.dart';
+import 'package:kairo_step/domain/stream_engine.dart';
+import 'package:kairo_step/domain/trigger_engine.dart';
+import 'package:kairo_step/models/advice.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late Catalog catalog;
+
+  setUpAll(() async => catalog = await Catalog.load());
+
+  StreamEngine engineFor(UserProfile p) => StreamEngine(
+    catalog: catalog,
+    trigger: TriggerEngine(catalog, onPersist: () {}),
+    gatekeeper: GatekeeperEngine(catalog),
+    checkin: CheckinEngine(_NoopPersistence()),
+  );
+
+  StreamInputs inputs(UserProfile p) => StreamInputs(
+    excludedIds: const {},
+    topicAllowed: (_) => true,
+    formedHabitIds: const {},
+    profile: p,
+    userTodos: const [],
+  );
+
+  test('真实形态：三联均含 dormant 成员 → 无组（同场判定的数据侧印证）', () {
+    final p = const UserProfile(hasGout: true, age: 52).normalized();
+    final e = engineFor(p);
+    // 触发形态实录：210=反面清单章节（dormant 门禁优先于 tags）、
+    // 483=cadence-yearly、484=context-guard（dormant）
+    expect(
+      e.trigger.effectiveTriggerOf(catalog.adviceById(210)!).mode.name,
+      'dormant',
+      reason: '210 反面清单章节 → 静默储备',
+    );
+    expect(e.trigger.effectiveTriggerOf(catalog.adviceById(483)!).mode.name, 'cadence');
+    expect(e.trigger.effectiveTriggerOf(catalog.adviceById(484)!).mode.name, 'dormant');
+    final source = [210, 483, 484]
+        .map((id) => catalog.adviceById(id)!)
+        .toList();
+    expect(e.adviceGroupIds(inputs(p), source), isEmpty,
+        reason: '任一对都含 dormant 成员——同场判定正确地拒绝成组；'
+            '机制生效依赖非 dormant 候选对（内容工程待办）或'
+            '「相关建议」位（dormant 条目的查看场景）接线');
+  });
+
+  test('真实流走查：现行候选组在流内不成组（成员为静默储备——设计本意）', () {
+    final p = const UserProfile(hasGout: true, age: 52).normalized();
+    final e = engineFor(p);
+    final yearly = e.cycleAdvicesOf(inputs(p), PeriodScope.yearly);
+    expect(yearly.any((a) => a.id == 483), isTrue, reason: '483 出现在年度页');
+    expect(e.adviceGroupIds(inputs(p), yearly), isEmpty,
+        reason: '210/484 为静默储备不进流——组在流内自然不成立'
+            '（待非 dormant 候选对或「相关建议」位接线后生效）');
+  });
+}
+
+class _NoopPersistence implements CheckinPersistence {
+  @override
+  void persistScope(PeriodScope s, Map<int, CardState> c, String e) {}
+  @override
+  void clearScope(PeriodScope s, String e) {}
+  @override
+  void persistEpoch(PeriodScope s, String e) {}
+  @override
+  void persistStreak(int id, StreakState st) {}
+  @override
+  void persistWindowAnchor(int id, DateTime at) {}
+}

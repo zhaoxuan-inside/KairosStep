@@ -59,6 +59,7 @@ class Catalog {
     required this.displayBindings,
     required this.embeddingManifest,
     required this.onboarding,
+    required this.mergeCandidateWeights,
   });
 
   final List<Advice> adviceList;
@@ -85,6 +86,9 @@ class Catalog {
 
   /// L7 画像引导配置（onboarding.json，Phase 6）
   final OnboardingConfig onboarding;
+
+  /// 触发层归并关联（adviceId → {otherId: weight}，双向；Phase 7）
+  final Map<int, Map<int, double>> mergeCandidateWeights;
 
   late final Map<int, Advice> byId = {for (final a in adviceList) a.id: a};
 
@@ -141,7 +145,9 @@ class Catalog {
 
     void requireSchema(Map<String, dynamic> json, String name) {
       if (json['schemaVersion'] != 1) {
-        throw FormatException('$name schemaVersion 异常：${json['schemaVersion']}');
+        throw FormatException(
+          '$name schemaVersion 异常：${json['schemaVersion']}',
+        );
       }
     }
 
@@ -186,13 +192,20 @@ class Catalog {
     final relById = <int, List<int>>{};
     for (final row
         in (actionJson['list'] as List).cast<Map<String, dynamic>>()) {
-      partsById.putIfAbsent(row['id'] as int, () => []).add(row['text'] as String);
+      partsById
+          .putIfAbsent(row['id'] as int, () => [])
+          .add(row['text'] as String);
     }
     for (final row in (nodeJson['list'] as List).cast<Map<String, dynamic>>()) {
-      pathsById.putIfAbsent(row['id'] as int, () => []).add(row['path'] as String);
+      pathsById
+          .putIfAbsent(row['id'] as int, () => [])
+          .add(row['path'] as String);
     }
-    for (final row in (tagRowsJson['list'] as List).cast<Map<String, dynamic>>()) {
-      tagsById.putIfAbsent(row['id'] as int, () => []).add(row['tag'] as String);
+    for (final row
+        in (tagRowsJson['list'] as List).cast<Map<String, dynamic>>()) {
+      tagsById
+          .putIfAbsent(row['id'] as int, () => [])
+          .add(row['tag'] as String);
     }
     for (final row
         in (sourceJson['list'] as List).cast<Map<String, dynamic>>()) {
@@ -206,7 +219,19 @@ class Catalog {
     for (final row
         in (relationJson['list'] as List).cast<Map<String, dynamic>>()) {
       if (row['kind'] != 'related') continue;
-      relById.putIfAbsent(row['fromId'] as int, () => []).add(row['toId'] as int);
+      relById
+          .putIfAbsent(row['fromId'] as int, () => [])
+          .add(row['toId'] as int);
+    }
+    // kind=merge_candidate → 触发层归并关联（Phase 7；weight 双向）
+    final merges = <int, Map<int, double>>{};
+    for (final row
+        in (relationJson['list'] as List).cast<Map<String, dynamic>>()) {
+      if (row['kind'] != 'merge_candidate') continue;
+      merges.putIfAbsent(row['fromId'] as int, () => {})[(row['toId'] as int)] =
+          (row['weight'] as num).toDouble();
+      merges.putIfAbsent(row['toId'] as int, () => {})[(row['fromId'] as int)] =
+          (row['weight'] as num).toDouble();
     }
 
     // 维度树先行构建（空建议集不触发逐条校验），仅为面包屑重算；
@@ -244,6 +269,7 @@ class Catalog {
     }
 
     return Catalog._(
+      mergeCandidateWeights: merges,
       adviceList: adviceList,
       topics: TopicTree.fromJson(taxonomyJson, adviceList),
       engines: EngineConfig.fromJson(enginesJson),
@@ -251,8 +277,9 @@ class Catalog {
       probes: ProbeContent.fromJson(probesJson),
       actStyles: ActStylesConfig.fromJson(actStylesJson),
       displayBindings: DisplayBindingsConfig.fromJson(displayBindingsJson),
-      embeddingManifest: (modelsManifest['providers'] as Map<String, dynamic>)['embedding']
-          as Map<String, dynamic>,
+      embeddingManifest:
+          (modelsManifest['providers'] as Map<String, dynamic>)['embedding']
+              as Map<String, dynamic>,
       onboarding: OnboardingConfig.fromJson(onboardingJson),
       details: {
         for (final row

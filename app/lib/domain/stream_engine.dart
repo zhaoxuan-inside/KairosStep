@@ -100,7 +100,11 @@ class StreamEngine {
   }
 
   /// 真实动态周期流（层级严格包含：今天 ⊆ 本周 ⊆ 本月）
-  List<Advice> cycleAdvicesOf(StreamInputs i, PeriodScope scope, [DateTime? at]) {
+  List<Advice> cycleAdvicesOf(
+    StreamInputs i,
+    PeriodScope scope, [
+    DateTime? at,
+  ]) {
     if (scope == PeriodScope.today) {
       return todayAdvices(i, at);
     }
@@ -190,7 +194,9 @@ class StreamEngine {
     final windowStart = centerTime.subtract(
       Duration(minutes: streamCfg.windowMinutes),
     );
-    final windowEnd = centerTime.add(Duration(minutes: streamCfg.windowMinutes));
+    final windowEnd = centerTime.add(
+      Duration(minutes: streamCfg.windowMinutes),
+    );
     final winStartMin = windowStart.hour * 60 + windowStart.minute;
     final winEndMin = windowEnd.hour * 60 + windowEnd.minute;
 
@@ -376,5 +382,48 @@ class StreamEngine {
   /// 全量应急/急救/突发处置条目（供紧急面板或突发模式使用，如中暑、骨折、海姆立克等）
   List<Advice> emergencyAdvices() {
     return catalog.adviceList.where((a) => a.isEmergencyOrIncident).toList();
+  }
+
+  /// 归并展示组（Phase 7，MERGE_DESIGN §4）：互为 merge_candidate 且判定
+  /// "同场"（daily 同浮出时段；cadence 同周期键；其余不并）的建议合并展示。
+  /// 成员打卡/排除独立，任一门禁失效即解散。存量流保持平铺——分组是新增只读视图。
+  /// [source] 缺省为今日流；周期页传 cycleAdvicesOf(yearly) 等。
+  List<List<int>> adviceGroupIds(StreamInputs i, List<Advice>? source) {
+    final list = source ?? todayAdvices(i);
+    final consumed = <int>{};
+    final groups = <List<int>>[];
+
+    bool sameStage(Advice a, Advice b) {
+      final ta = trigger.effectiveTriggerOf(a);
+      final tb = trigger.effectiveTriggerOf(b);
+      if (ta.mode != tb.mode) return false;
+      switch (ta.mode) {
+        case TriggerMode.daily:
+          return ta.dailyPeriods.any(tb.dailyPeriods.contains);
+        case TriggerMode.cadence:
+          return ta.cadenceScopeKey == tb.cadenceScopeKey;
+        case TriggerMode.dormant:
+        case TriggerMode.windowed:
+          return false;
+      }
+    }
+
+    final sorted = list.toList()..sort((x, y) => x.id.compareTo(y.id));
+    for (final a in sorted) {
+      if (consumed.contains(a.id)) continue;
+      final neighbors = catalog.mergeCandidateWeights[a.id] ?? const {};
+      final group = <int>[a.id];
+      for (final b in sorted) {
+        if (b.id == a.id || consumed.contains(b.id)) continue;
+        if (!neighbors.containsKey(b.id)) continue;
+        if (!sameStage(a, b)) continue;
+        group.add(b.id);
+      }
+      if (group.length >= 2) {
+        groups.add(group);
+        consumed.addAll(group);
+      }
+    }
+    return groups;
   }
 }
