@@ -25,6 +25,11 @@ class AdviceDetailSheet extends StatelessWidget {
     final p = AppPalettes.of(context);
     final catalog = catalogOf(context);
     final advice = catalog.byId[adviceId];
+    // 归并关联查看位（Phase 7）：merge_candidate 邻接与 detail.rel 汇合去重
+    final mergeNeighbors = (catalog.mergeCandidateWeights[adviceId] ?? const <int, double>{})
+        .keys
+        .where((id) => catalog.byId.containsKey(id))
+        .toList();
     final d = catalog.detailOf(adviceId);
     if (advice == null || d == null) return const SizedBox(height: 120);
     final summary = d.humanized.isNotEmpty ? d.humanized : _lead(d.plain ?? '');
@@ -114,7 +119,7 @@ class AdviceDetailSheet extends StatelessWidget {
               _section(context, '备注与争议', d.notes, muted: true),
             ],
           ),
-          if (d.rel.isNotEmpty) ...[
+          if (d.rel.isNotEmpty || mergeNeighbors.isNotEmpty) ...[
             Padding(
               padding: pad,
               child: Text('关联建议', style: _labelStyle(p)),
@@ -125,7 +130,7 @@ class AdviceDetailSheet extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  for (final rid in d.rel)
+                  for (final rid in {...d.rel, ...mergeNeighbors})
                     if (catalog.byId[rid] != null)
                       relatedChip(context, catalog.byId[rid]!),
                 ],

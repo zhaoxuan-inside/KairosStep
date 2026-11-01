@@ -1,9 +1,6 @@
 // 语义混合检索引擎（REFACTOR_DESIGN §11.6）：词法（catalog.search）⊕ 向量（BGE+L8）RRF 融合。
 // Fail-safe：模型/向量层任一不可用即单通道；两者皆不可用 → 词法必达。
 // feature flag：engines.json semantic.enabled（Phase 5 独立验收）。
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-
 import '../data/catalog.dart';
 import '../models/advice.dart';
 import '../semantic/providers/bge_provider.dart';
@@ -106,14 +103,5 @@ class SemanticSearchEngine {
     if (_cache.length > 32) _cache.clear();
     _cache[cacheKey] = merged;
     return merged;
-  }
-}
-
-/// 模型清单（config/models.json）。
-class SemanticManifest {
-  static Future<Map<String, dynamic>> load() async {
-    final raw = await rootBundle.loadString('assets/data/config/models.json');
-    return ((jsonDecode(raw) as Map<String, dynamic>)['providers']
-        as Map<String, dynamic>)['embedding'] as Map<String, dynamic>;
   }
 }

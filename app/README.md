@@ -34,22 +34,41 @@
 
 ---
 
-## 数据管线
+## 数据管线与架构（Phase 1-4 重构后）
 
 ```
 docs/AdviceInteractiveDemo.html
         │  tools/flutter_app_extract/extract_data.py（JS 字面量 → JSON）
         ▼
-app/assets/data/{advice,detail,node_packages,pinyin}.json   （随包内置，离线可用）
-        │  lib/data/catalog.dart（加载 + 字母/章节/形态索引 + 搜索）
+app/data-src/{advice,detail,taxonomy_tree}.json            （源归档 S，出 APK，只增不改）
+        │  tool/advice_pipeline/build.dart（离线流水线：规范化拆分 + 派生层生成 + 校验）
         ▼
-lib/ui/cards/*（13 种 act_type 交互器） + lib/state/app_store.dart（打卡/连击/窗口期）
+app/assets/data/                                            （L0-L8 分层数据，随包发布）
+  ├─ entity/        建议基表 + 动作/明细/来源/关联/挂载 子表（关系化 Schema）
+  ├─ dimensions/    维度树 + 时机徽章字典
+  ├─ facets/        受控维度词表 + 保序标签联结表
+  ├─ views/         display_info（展示信息物化视图）
+  ├─ triggers/      触发计划（L6，默认推断离线回写）
+  ├─ styles/        交互样式注册表 + 聚光专项绑定（L2/L5）
+  ├─ config/        engines/gates/probes（L7 引擎配置）
+  └─ node_packages / pinyin（保留资产）
+        │  lib/data/catalog.dart（分层加载 + schemaVersion/参照完整性校验 + 索引/搜索）
+        ▼
+lib/domain/（六引擎：Trigger / Gatekeeper / Checkin / Stream / Reminder / Probe）
+lib/state/app_store.dart（门面：引擎装配 + 用户会话状态 + 持久化 Port）
+lib/ui/（五 Tab 壳 + 13 种交互样式卡片）
 ```
+
+架构详见 `docs/refactor/ARCHITECTURE.md`（目标架构 + ADR）与
+`docs/refactor/REFACTOR_DESIGN.md`（数据分层 Schema + 迁移映射），
+数据字段登记见 `docs/refactor/DATA_DICTIONARY.md`。
+架构依赖由 `dart run tool/arch_guard.dart` 守护（CI 可挂）。
 
 重新提取数据（Demo 更新后）：
 
 ```bash
-python3 tools/flutter_app_extract/extract_data.py
+python3 tools/flutter_app_extract/extract_data.py   # 输出至 data-src/
+dart run tool/advice_pipeline/build.dart            # 生成 assets/data 分层文件 + 校验
 ```
 
 ---
