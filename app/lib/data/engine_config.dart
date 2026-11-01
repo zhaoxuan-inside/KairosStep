@@ -8,17 +8,35 @@ import '../models/probe_model.dart';
 
 // ───────────────────────── engines.json ─────────────────────────
 
+class SemanticEngineConfig {
+  const SemanticEngineConfig({required this.enabled});
+
+  final bool enabled;
+
+  factory SemanticEngineConfig.fromJson(Map<String, dynamic> json) =>
+      SemanticEngineConfig(enabled: json['enabled'] as bool? ?? false);
+}
+
 class EngineConfig {
-  const EngineConfig({required this.reminder, required this.probe, required this.stream});
+  const EngineConfig({
+    required this.reminder,
+    required this.probe,
+    required this.stream,
+    required this.semantic,
+  });
 
   final ReminderEngineConfig reminder;
   final ProbeEngineConfig probe;
   final StreamEngineConfig stream;
+  final SemanticEngineConfig semantic;
 
   factory EngineConfig.fromJson(Map<String, dynamic> json) => EngineConfig(
     reminder: ReminderEngineConfig.fromJson(json['reminder'] as Map<String, dynamic>),
     probe: ProbeEngineConfig.fromJson(json['probe'] as Map<String, dynamic>),
     stream: StreamEngineConfig.fromJson(json['stream'] as Map<String, dynamic>),
+    semantic: SemanticEngineConfig.fromJson(
+      (json['semantic'] as Map<String, dynamic>?) ?? const {'enabled': false},
+    ),
   );
 }
 

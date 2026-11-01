@@ -56,6 +56,7 @@
       ]}
     ]
   },
+  "semantic": {"enabled": true, "_note": "Phase 5 独立 feature flag；模型不可用时自动词法兜底"},
   "defaults": {
     "leadDays": 15,
     "bmiOverweight": 24.0,

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/advice_identity.dart';
 import '../domain/checkin_engine.dart';
 import '../domain/gatekeeper_engine.dart';
+import '../domain/semantic_search_engine.dart';
 import '../domain/stream_engine.dart';
 import '../domain/trigger_engine.dart';
 import '../models/advice.dart';
@@ -50,6 +51,7 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   late final ProbeEngine probeScheduler = ProbeEngine(
     mobileNotificationService,
     catalog.engines.probe,
+    probes: catalog.probes,
   );
 
   /// 触发计算引擎：默认推断 + 自定义覆盖（持久化回调写 kCustomTriggers）
@@ -70,6 +72,12 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     trigger: triggerEngine,
     gatekeeper: gatekeeperEngine,
     checkin: checkinEngine,
+  );
+
+  /// 语义混合检索引擎（feature flag：engines.json semantic.enabled；不可用自动词法兜底）
+  late final SemanticSearchEngine semanticSearch = SemanticSearchEngine(
+    catalog,
+    catalog.embeddingManifest,
   );
 
   StreamInputs _streamInputs() => StreamInputs(

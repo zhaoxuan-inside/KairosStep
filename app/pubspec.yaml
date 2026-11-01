@@ -22,6 +22,7 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   flutter_timezone: ^4.1.1
   timezone: ^0.10.1
+  onnxruntime: ^1.4.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,10 @@ flutter:
     # L2 交互样式 / L5 展示↔样式绑定
     - assets/data/styles/act_styles.json
     - assets/data/styles/display_bindings.json
+    # L8 语义能力（模型随包 + 版本绑定）
+    - assets/data/config/models.json
+    - assets/models/bge-small-zh-int8.onnx
+    - assets/models/bge-vocab.txt
     # 保留资产
     - assets/data/node_packages.json
     - assets/data/pinyin.json

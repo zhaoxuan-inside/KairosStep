@@ -56,6 +56,7 @@ class Catalog {
     required this.probes,
     required this.actStyles,
     required this.displayBindings,
+    required this.embeddingManifest,
   });
 
   final List<Advice> adviceList;
@@ -76,6 +77,9 @@ class Catalog {
 
   /// L5 展示↔样式绑定（styles/display_bindings.json，Phase 4 外置）
   final DisplayBindingsConfig displayBindings;
+
+  /// 语义模型清单（config/models.json，Phase 5；sha256 为 modelVersion 源）
+  final Map<String, dynamic> embeddingManifest;
 
   late final Map<int, Advice> byId = {for (final a in adviceList) a.id: a};
 
@@ -162,6 +166,7 @@ class Catalog {
     requireSchema(actStylesJson, 'styles/act_styles');
     final displayBindingsJson = await loadJson('styles/display_bindings');
     requireSchema(displayBindingsJson, 'styles/display_bindings');
+    final modelsManifest = await loadJson('config/models');
     final nodePkgJson = await loadJson('node_packages');
     final pinyinJson = await loadJson('pinyin');
 
@@ -239,6 +244,8 @@ class Catalog {
       probes: ProbeContent.fromJson(probesJson),
       actStyles: ActStylesConfig.fromJson(actStylesJson),
       displayBindings: DisplayBindingsConfig.fromJson(displayBindingsJson),
+      embeddingManifest: (modelsManifest['providers'] as Map<String, dynamic>)['embedding']
+          as Map<String, dynamic>,
       details: {
         for (final row
             in (detailJson['list'] as List).cast<Map<String, dynamic>>())

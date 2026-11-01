@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "providers": {
+    "embedding": {
+      "id": "bge-small-zh-v1.5-int8",
+      "backend": "onnx",
+      "asset": "assets/models/bge-small-zh-int8.onnx",
+      "vocab": "assets/models/bge-vocab.txt",
+      "sha256": "15b717c382bcb518ba457b93ea6850ede7f4f1cd8937454aa06972366cd19bcc",
+      "sizeBytes": 24010842,
+      "dimensions": 512,
+      "maxTokens": 512,
+      "pooling": "cls",
+      "normalize": true,
+      "queryPrefix": "为这个句子生成表示以用于检索相关文章：",
+      "similarityFloor": 0.35
+    }
+  }
+}
