@@ -14,11 +14,16 @@ class ReminderAlert {
     required this.advice,
     required this.time,
     required this.formattedTime,
+    this.groupAdviceIds = const [],
   });
 
   final Advice advice;
   final DateTime time;
   final String formattedTime;
+
+  /// 通知合并（Phase 7）：同一时刻命中且互为 merge_candidate 的组员
+  /// （不含 leader 自身）；完成/稍后联动全组。
+  final List<int> groupAdviceIds;
 }
 
 /// 内部注册的时刻条目
@@ -154,6 +159,9 @@ class ReminderEngine extends ChangeNotifier {
     final alert = _currentAlert;
     if (alert == null) return;
     checkin.toggleDone(PeriodScope.today, alert.advice.id, true);
+    for (final id in alert.groupAdviceIds) {
+      checkin.toggleDone(PeriodScope.today, id, true);
+    }
     onStoreChange();
     _currentAlert = null;
     notifyListeners();
@@ -167,13 +175,15 @@ class ReminderEngine extends ChangeNotifier {
     final targetTime = DateTime.now().add(
       Duration(minutes: minutes ?? catalog.engines.reminder.snoozeMinutes),
     );
-    _registeredList.add(
-      _RegisteredReminder(
-        adviceId: alert.advice.id,
-        hour: targetTime.hour,
-        minute: targetTime.minute,
-      ),
-    );
+    for (final id in [alert.advice.id, ...alert.groupAdviceIds]) {
+      _registeredList.add(
+        _RegisteredReminder(
+          adviceId: id,
+          hour: targetTime.hour,
+          minute: targetTime.minute,
+        ),
+      );
+    }
 
     _currentAlert = null;
     notifyListeners();

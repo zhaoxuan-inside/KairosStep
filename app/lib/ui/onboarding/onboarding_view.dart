@@ -285,10 +285,22 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingLayer layer,
   ) {
     final byId = {for (final q in config.questions) q.id: q};
+    // 引擎动态出题（先粗后细在层内生效）：未答题按 max-yield 降序排前，
+    // 已答题保持原位在后（展示已选状态）。
+    final active = _engine.activeAdviceIds(_draft);
+    final ranked = _engine
+        .rankQuestions(_draft, active, _answered)
+        .map((y) => y.question.id)
+        .where(layer.questions.contains)
+        .toList();
+    final answeredInLayer = [
+      for (final qid in layer.questions)
+        if (!ranked.contains(qid)) qid,
+    ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
-        for (final qid in layer.questions)
+        for (final qid in [...ranked, ...answeredInLayer])
           if (byId[qid] case final q?) _questionCard(p, config, q),
       ],
     );

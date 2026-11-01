@@ -19,5 +19,12 @@
     "weight": 0.9,
     "when": "same_period",
     "maxGroup": 3
+  },
+  {
+    "fromId": 61,
+    "toId": 103,
+    "weight": 0.85,
+    "when": "same_period",
+    "maxGroup": 3
   }
 ]
