@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'engine_config.dart';
 import '../models/style.dart';
+import '../domain/profile_engine.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 
@@ -57,6 +58,7 @@ class Catalog {
     required this.actStyles,
     required this.displayBindings,
     required this.embeddingManifest,
+    required this.onboarding,
   });
 
   final List<Advice> adviceList;
@@ -80,6 +82,9 @@ class Catalog {
 
   /// 语义模型清单（config/models.json，Phase 5；sha256 为 modelVersion 源）
   final Map<String, dynamic> embeddingManifest;
+
+  /// L7 画像引导配置（onboarding.json，Phase 6）
+  final OnboardingConfig onboarding;
 
   late final Map<int, Advice> byId = {for (final a in adviceList) a.id: a};
 
@@ -167,6 +172,8 @@ class Catalog {
     final displayBindingsJson = await loadJson('styles/display_bindings');
     requireSchema(displayBindingsJson, 'styles/display_bindings');
     final modelsManifest = await loadJson('config/models');
+    final onboardingJson = await loadJson('config/onboarding');
+    requireSchema(onboardingJson, 'config/onboarding');
     final nodePkgJson = await loadJson('node_packages');
     final pinyinJson = await loadJson('pinyin');
 
@@ -246,6 +253,7 @@ class Catalog {
       displayBindings: DisplayBindingsConfig.fromJson(displayBindingsJson),
       embeddingManifest: (modelsManifest['providers'] as Map<String, dynamic>)['embedding']
           as Map<String, dynamic>,
+      onboarding: OnboardingConfig.fromJson(onboardingJson),
       details: {
         for (final row
             in (detailJson['list'] as List).cast<Map<String, dynamic>>())

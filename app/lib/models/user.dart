@@ -438,6 +438,8 @@ class UserProfile {
     this.childAgeStage = 'none', // 'none' | 'infant' (0~3岁) | 'school' (3~18岁)
     this.relationshipStatus = 'single', // 'single' | 'in_love' | 'married'
     this.formedHabits = const [],
+    this.medications = const [], // v2：长期用药标签（gates 0.8-0.15 消费）
+    this.livingAlone = false, // v2：独居软信息（场景判定）
   });
 
   final String gender;
@@ -477,6 +479,8 @@ class UserProfile {
   final String childAgeStage; // 孩子年龄阶段
   final String relationshipStatus; // 亲密关系状态
   final List<int> formedHabits; // 已养成并沉淀为生活防线的习惯条目 ID 列表
+  final List<String> medications; // v2：长期用药标签
+  final bool livingAlone; // v2：独居软信息
 
   /// 计算 BMI 指数
   double? get bmi => (heightCm != null && weightKg != null && heightCm! > 0)
@@ -546,6 +550,8 @@ class UserProfile {
   }
 
   UserProfile copyWith({
+    List<String>? medications,
+    bool? livingAlone,
     String? gender,
     int? age,
     List<String>? roles,
@@ -584,6 +590,8 @@ class UserProfile {
     String? relationshipStatus,
     List<int>? formedHabits,
   }) => UserProfile(
+    medications: medications ?? this.medications,
+    livingAlone: livingAlone ?? this.livingAlone,
     gender: gender ?? this.gender,
     age: age ?? this.age,
     roles: roles ?? this.roles,
@@ -666,6 +674,8 @@ class UserProfile {
     'childAgeStage': childAgeStage,
     'relationshipStatus': relationshipStatus,
     'formedHabits': formedHabits,
+    'medications': medications,
+    'livingAlone': livingAlone,
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
