@@ -30,3 +30,4 @@ app/android/app/build/
 # OS
 .DS_Store
 Thumbs.db
+hs-dev-skill/

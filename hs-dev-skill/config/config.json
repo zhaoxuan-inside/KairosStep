@@ -1,8 +1,0 @@
-{
-  "execution": {
-    "mode": "stage"
-  },
-  "index": {
-    "max_file_bytes": 200000
-  }
-}
