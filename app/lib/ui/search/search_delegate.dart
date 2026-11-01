@@ -40,7 +40,14 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
     final p = AppPalettes.of(context);
     final catalog = catalogOf(context);
     final store = storeOf(context);
+    // 双通道：词法即刻显示（initialData），语义融合就绪后替换（Fail-safe 词法必达）
     final results = catalog.search(
+      _q,
+      topicPath: _topicPath.isEmpty ? null : _topicPath,
+      include: _personalized ? (a) => store.matchPersona(a) : null,
+      hiddenTopics: _personalized ? store.excludedTopicPaths : const [],
+    );
+    Future<List<Advice>> hybrid() => store.semanticSearch.search(
       _q,
       topicPath: _topicPath.isEmpty ? null : _topicPath,
       include: _personalized ? (a) => store.matchPersona(a) : null,
@@ -150,7 +157,12 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
             Expanded(
               child: _q.trim().isEmpty && _topicPath.isEmpty
                   ? _suggestions(context)
-                  : _results(context, results),
+                  : FutureBuilder<List<Advice>>(
+                      future: hybrid(),
+                      initialData: results,
+                      builder: (context, snap) =>
+                          _results(context, snap.data ?? results),
+                    ),
             ),
           ],
         ),

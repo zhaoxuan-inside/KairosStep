@@ -18,6 +18,7 @@ class SemanticSearchEngine {
   BgeProvider? _provider;
   VectorStore? _store;
   bool _tried = false;
+  final _cache = <String, List<Advice>>{}; // 查询缓存（键入每次重建不重复推理）
 
   bool get enabled => _catalog.engines.semantic.enabled;
 
@@ -45,6 +46,9 @@ class SemanticSearchEngine {
     bool Function(Advice)? include,
     Iterable<String> hiddenTopics = const [],
   }) async {
+    final cacheKey = '$query|$topicPath|${include != null}|${hiddenTopics.join(',')}';
+    final cached = _cache[cacheKey];
+    if (cached != null) return cached;
     bool passScope(Advice a) =>
         (include == null || include(a)) &&
         (topicPath == null || _catalog
@@ -98,7 +102,10 @@ class SemanticSearchEngine {
       ..sort((a, b) => (scores[b]!.compareTo(scores[a]!)) != 0
           ? scores[b]!.compareTo(scores[a]!)
           : a.compareTo(b));
-    return [for (final id in ids) ?_catalog.adviceById(id)];
+    final merged = [for (final id in ids) ?_catalog.adviceById(id)];
+    if (_cache.length > 32) _cache.clear();
+    _cache[cacheKey] = merged;
+    return merged;
   }
 }
 
