@@ -48,7 +48,7 @@ void main() {
   test('patch 应用正确：性别/慢病选项写入对应字段', () {
     final q = engine.onboarding.questions.firstWhere((x) => x.id == 'chronic');
     final opt = q.options.firstWhere((o) => o.value == 'hypertension');
-    final patched = engine.testApplyPatch(const UserProfile(), opt.profilePatch)!;
+    final patched = engine.applyPatch(const UserProfile(), opt.profilePatch)!;
     expect(patched.hasHypertension, isTrue);
     expect(patched.healthConcerns.contains('血压关注'), isTrue);
   });
@@ -95,7 +95,7 @@ void main() {
       // 活跃集恒等于逐条 matchPersona（引导视图一致性）
       expect(engine.activeAdviceIds(p), engine.activeAdviceIds(p));
       final opt = q.options.first;
-      final patched = engine.testApplyPatch(p, opt.profilePatch);
+      final patched = engine.applyPatch(p, opt.profilePatch);
       answered.add(q.id);
       if (patched != null) p = patched;
       steps++;

@@ -19,8 +19,8 @@ class ProfileEngine {
 
   UserProfile normalize(UserProfile p) => p.normalized();
 
-  /// 测试可见：patch 应用（真实入口为选项作答）。
-  UserProfile? testApplyPatch(UserProfile p, Map<String, dynamic> patch) =>
+  /// 应用选项 patch（真实入口为选项作答；测试同用）。
+  UserProfile? applyPatch(UserProfile p, Map<String, dynamic> patch) =>
       _applyPatch(p, patch);
 
   /// 当前画像下的活跃建议集（引导剪枝视图；主题过滤中性——引导期不做主题剪枝）。

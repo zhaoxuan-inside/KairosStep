@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/advice_identity.dart';
 import '../domain/checkin_engine.dart';
 import '../domain/gatekeeper_engine.dart';
+import '../domain/profile_engine.dart';
 import '../domain/semantic_search_engine.dart';
 import '../domain/stream_engine.dart';
 import '../domain/trigger_engine.dart';
@@ -65,6 +66,13 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
 
   /// 打卡状态引擎（持久化经 CheckinPersistence Port，本类为实现方）
   late final CheckinEngine checkinEngine = CheckinEngine(this);
+
+  /// 画像引擎（引导即剪枝：max-yield 问题排序 + 聚焦统计，Phase 6）
+  late final ProfileEngine profileEngine = ProfileEngine(
+    catalog: catalog,
+    gatekeeper: gatekeeperEngine,
+    onboarding: catalog.onboarding,
+  );
 
   /// 建议流引擎（今日/周期/当下三流，用户态经 StreamInputs 快照注入）
   late final StreamEngine streamEngine = StreamEngine(
