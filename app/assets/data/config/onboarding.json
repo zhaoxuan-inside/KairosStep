@@ -1,121 +1,818 @@
 {
   "schemaVersion": 1,
-  "_comment": "L7 画像引导配置（Phase 6，ONBOARDING_DESIGN §5）：引导即剪枝，未答不剪（ADR-009）。profilePatch 键以 '+' 结尾=列表追加，否则 set；全部映射到现有 UserProfile 字段（零迁移）。",
-  "pruning": {"strategy": "max_yield", "minMarginalYield": 3, "maxQuestions": 24},
+  "_comment": "L7 画像引导配置（Phase 6，ONBOARDING_DESIGN §5）：引导即剪枝，先粗后细（tier-major：coarse 门禁题先行大剪枝，fine 场景题在小集合上精确收集），未答不剪（ADR-009）。profilePatch 键以 '+' 结尾=列表追加，否则 set；全部映射到现有 UserProfile 字段（零迁移）。",
+  "pruning": {
+    "strategy": "max_yield",
+    "minMarginalYield": 3,
+    "maxQuestions": 24
+  },
   "layers": [
-    {"key": "baseline", "title": "基本盘", "required": true, "questions": ["gender", "birth_year", "height_weight"]},
-    {"key": "family", "title": "家庭与责任", "questions": ["partner", "children", "aging_parents", "cohabit", "pets"]},
-    {"key": "asset", "title": "居住与资产", "questions": ["living_type", "piped_gas", "vehicle", "twowheeler"]},
-    {"key": "health", "title": "健康基线", "required": true, "questions": ["smoking", "chronic", "medications"]},
-    {"key": "career", "title": "职业与角色", "questions": ["work_status", "roles"]},
-    {"key": "scene", "title": "生活场景", "progressive": true, "questions": ["living_alone", "weight_goal", "gastro", "painkillers"]},
-    {"key": "interest", "title": "关注域", "progressive": true, "questions": ["focus_domains"]}
+    {
+      "key": "baseline",
+      "title": "基本盘",
+      "required": true,
+      "questions": [
+        "gender",
+        "birth_year",
+        "height_weight"
+      ],
+      "granularity": "coarse"
+    },
+    {
+      "key": "family",
+      "title": "家庭与责任",
+      "questions": [
+        "partner",
+        "children",
+        "aging_parents",
+        "cohabit",
+        "pets"
+      ],
+      "granularity": "coarse"
+    },
+    {
+      "key": "asset",
+      "title": "居住与资产",
+      "questions": [
+        "living_type",
+        "piped_gas",
+        "vehicle",
+        "twowheeler"
+      ],
+      "granularity": "coarse"
+    },
+    {
+      "key": "health",
+      "title": "健康基线",
+      "required": true,
+      "questions": [
+        "smoking",
+        "chronic",
+        "medications"
+      ],
+      "granularity": "coarse"
+    },
+    {
+      "key": "career",
+      "title": "职业与角色",
+      "questions": [
+        "work_status",
+        "roles"
+      ],
+      "granularity": "mid"
+    },
+    {
+      "key": "scene",
+      "title": "生活场景",
+      "progressive": true,
+      "questions": [
+        "living_alone",
+        "weight_goal",
+        "gastro",
+        "painkillers"
+      ],
+      "granularity": "fine"
+    },
+    {
+      "key": "interest",
+      "title": "关注域",
+      "progressive": true,
+      "questions": [
+        "focus_domains"
+      ],
+      "granularity": "fine"
+    }
   ],
   "questions": [
-    {"id": "gender", "layer": "baseline", "required": true, "kind": "single_choice", "prompt": "你的性别",
-     "options": [
-       {"value": "female", "label": "女", "profilePatch": {"gender": "女"}},
-       {"value": "male", "label": "男", "profilePatch": {"gender": "男"}}]},
-    {"id": "birth_year", "layer": "baseline", "required": true, "kind": "slider", "prompt": "出生年份",
-     "profilePatch": {"ageKey": "age"}, "slider": {"min": 14, "max": 90, "field": "age", "defaultAge": 28}},
-    {"id": "height_weight", "layer": "baseline", "required": true, "kind": "slider2", "prompt": "身高体重（用于 BMI 与健康建议口径）",
-     "profilePatch": {}, "slider2": {"heightField": "heightCm", "weightField": "weightKg", "defaultHeight": 170, "defaultWeight": 65}},
-    {"id": "partner", "layer": "family", "kind": "single_choice", "prompt": "亲密关系状态", "skipAllowed": true,
-     "options": [
-       {"value": "single", "label": "单身", "profilePatch": {"relationshipStatus": "single"}},
-       {"value": "in_love", "label": "恋爱中", "profilePatch": {"relationshipStatus": "in_love"}},
-       {"value": "married", "label": "已婚/有伴侣", "profilePatch": {"relationshipStatus": "married"}}]},
-    {"id": "children", "layer": "family", "kind": "single_choice", "prompt": "你需要照看的孩子年龄段", "skipAllowed": true,
-     "options": [
-       {"value": "none", "label": "没有孩子", "profilePatch": {"hasChildren": false}},
-       {"value": "infant", "label": "婴幼儿（0-3 岁）", "profilePatch": {"hasChildren": true, "childAgeStage": "infant", "roles+": ["家长"]}},
-       {"value": "school", "label": "学龄（3-18 岁）", "profilePatch": {"hasChildren": true, "childAgeStage": "school", "roles+": ["家长"]}},
-       {"value": "adult", "label": "已成年", "profilePatch": {"hasChildren": true, "childAgeStage": "adult", "roles+": ["家长"]}}]},
-    {"id": "aging_parents", "layer": "family", "kind": "single_choice", "prompt": "是否家有老人需关照", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "暂无", "profilePatch": {"hasAgingParents": false}},
-       {"value": "yes", "label": "有", "profilePatch": {"hasAgingParents": true, "livingConditions+": ["家有老人"]}}]},
-    {"id": "cohabit", "layer": "family", "kind": "multi_choice", "prompt": "与谁同住（可多选）", "skipAllowed": true,
-     "options": [
-       {"value": "alone", "label": "独居", "profilePatch": {"livingConditions+": ["独居"], "livingAlone": true}},
-       {"value": "family", "label": "与家人同住", "profilePatch": {}},
-       {"value": "roommate", "label": "与室友合租", "profilePatch": {"livingConditions+": ["合租"]}}]},
-    {"id": "pets", "layer": "family", "kind": "single_choice", "prompt": "是否养猫犬宠物", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "不养", "profilePatch": {"hasPets": false}},
-       {"value": "yes", "label": "养", "profilePatch": {"hasPets": true, "livingConditions+": ["养犬人"]}}]},
-    {"id": "living_type", "layer": "asset", "kind": "single_choice", "prompt": "居住类型", "skipAllowed": true,
-     "options": [
-       {"value": "own", "label": "自住（无贷）", "profilePatch": {"isTenant": false, "hasMortgage": false}},
-       {"value": "mortgage", "label": "自住（有房贷）", "profilePatch": {"isTenant": false, "hasMortgage": true, "livingConditions+": ["购房人"]}},
-       {"value": "rent", "label": "租房", "profilePatch": {"isTenant": true, "livingConditions+": ["租房人"]}}]},
-    {"id": "piped_gas", "layer": "asset", "kind": "single_choice", "prompt": "家中是否有管道燃气", "skipAllowed": true,
-     "options": [
-       {"value": "yes", "label": "有", "profilePatch": {"hasPipedGas": true}},
-       {"value": "no", "label": "无/用瓶装或电", "profilePatch": {"hasPipedGas": false}}]},
-    {"id": "vehicle", "layer": "asset", "kind": "single_choice", "prompt": "是否常开机动车", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "不常开", "profilePatch": {"hasCar": false}},
-       {"value": "yes", "label": "常开", "profilePatch": {"hasCar": true, "roles+": ["司机"]}}]},
-    {"id": "twowheeler", "layer": "asset", "kind": "single_choice", "prompt": "是否常骑电动车/摩托", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "不常骑", "profilePatch": {"hasTwowheeler": false}},
-       {"value": "yes", "label": "常骑", "profilePatch": {"hasTwowheeler": true}}]},
-    {"id": "smoking", "layer": "health", "required": true, "kind": "single_choice", "prompt": "是否吸烟（用于戒烟干预与相关门禁）",
-     "options": [
-       {"value": "no", "label": "不吸", "profilePatch": {"isSmoker": false}},
-       {"value": "yes", "label": "吸", "profilePatch": {"isSmoker": true, "healthConcerns+": ["吸烟者"]}}]},
-    {"id": "chronic", "layer": "health", "required": true, "kind": "multi_choice", "prompt": "长期健康状况（可多选/无）", "skipAllowed": true,
-     "options": [
-       {"value": "hypertension", "label": "高血压", "profilePatch": {"hasHypertension": true, "healthConcerns+": ["血压关注"]}},
-       {"value": "diabetes", "label": "糖尿病", "profilePatch": {"hasDiabetes": true, "healthConcerns+": ["血糖关注"]}},
-       {"value": "gout", "label": "痛风", "profilePatch": {"hasGout": true, "healthConcerns+": ["痛风"]}},
-       {"value": "high_uric_acid", "label": "尿酸偏高（未确诊痛风）", "profilePatch": {"healthConcerns+": ["尿酸高"]}},
-       {"value": "kidney_stone", "label": "肾结石", "profilePatch": {"hasKidneyStones": true, "healthConcerns+": ["肾结石"]}},
-       {"value": "depression", "label": "抑郁/焦虑史", "profilePatch": {"hasCrisisOrMentalStress": true, "healthConcerns+": ["心理减压"]},
-        "note": "相关干预只会在心情打卡时出现，日常不打扰"}]},
-    {"id": "medications", "layer": "health", "kind": "multi_choice", "prompt": "长期用药情况（可多选/无）", "skipAllowed": true,
-     "options": [
-       {"value": "weight_loss", "label": "减重药物/针剂", "profilePatch": {"hasWeightLossGoal": true, "healthConcerns+": ["减重管理"], "medications+": ["weight_loss"]}},
-       {"value": "analgesic", "label": "常备止痛药", "profilePatch": {"hasFrequentPainOrAnalgesic": true, "healthConcerns+": ["止痛用药"], "medications+": ["analgesic"]}},
-       {"value": "gastro", "label": "胃药/抑酸药", "profilePatch": {"hasGastroAcidOrStomach": true, "healthConcerns+": ["反酸胃炎"], "medications+": ["gastro"]}},
-       {"value": "none", "label": "无", "profilePatch": {}}]},
-    {"id": "work_status", "layer": "career", "kind": "single_choice", "prompt": "当前就业状态", "skipAllowed": true,
-     "options": [
-       {"value": "employed", "label": "在职上班", "profilePatch": {"roles+": ["上班族"]}},
-       {"value": "student", "label": "学生", "profilePatch": {"roles+": ["学生"]}},
-       {"value": "freelance", "label": "自由职业/灵活就业", "profilePatch": {"roles+": ["灵活就业者"]}},
-       {"value": "retired", "label": "退休", "profilePatch": {"roles+": ["退休"]}}]},
-    {"id": "roles", "layer": "career", "kind": "multi_choice", "prompt": "职业角色（可多选）", "skipAllowed": true,
-     "options": [
-       {"value": "programmer", "label": "程序员/技术人", "profilePatch": {"isProgrammer": true, "roles+": ["程序员"]}},
-       {"value": "entrepreneur", "label": "创业/合伙经营", "profilePatch": {"isEntrepreneur": true, "roles+": ["创业者"]}},
-       {"value": "abroad", "label": "出境/留学相关", "profilePatch": {"hasAbroadTravelOrStudy": true, "roles+": ["出境者"]}},
-       {"value": "none", "label": "以上都不是", "profilePatch": {}}]},
-    {"id": "living_alone", "layer": "scene", "kind": "single_choice", "prompt": "是否独居（安全兜底防线判定）", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "不是", "profilePatch": {"livingAlone": false}},
-       {"value": "yes", "label": "是", "profilePatch": {"livingAlone": true}}]},
-    {"id": "weight_goal", "layer": "scene", "kind": "single_choice", "prompt": "是否有减重/形体管理需求", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "无", "profilePatch": {"hasWeightLossGoal": false}},
-       {"value": "yes", "label": "有", "profilePatch": {"hasWeightLossGoal": true, "healthConcerns+": ["减重管理"]}}]},
-    {"id": "gastro", "layer": "scene", "kind": "single_choice", "prompt": "是否经常反酸烧心/慢性胃病", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "无", "profilePatch": {"hasGastroAcidOrStomach": false}},
-       {"value": "yes", "label": "有", "profilePatch": {"hasGastroAcidOrStomach": true, "healthConcerns+": ["反酸胃炎"]}}]},
-    {"id": "painkillers", "layer": "scene", "kind": "single_choice", "prompt": "是否经常头痛/慢性疼痛且常备止痛药", "skipAllowed": true,
-     "options": [
-       {"value": "no", "label": "否", "profilePatch": {"hasFrequentPainOrAnalgesic": false}},
-       {"value": "yes", "label": "是", "profilePatch": {"hasFrequentPainOrAnalgesic": true, "healthConcerns+": ["止痛用药"]}}]},
-    {"id": "focus_domains", "layer": "interest", "kind": "multi_choice", "prompt": "重点关注的人生领域（影响排序与默认视野，不剪枝）", "skipAllowed": true,
-     "softOnly": true,
-     "options": [
-       {"value": "health", "label": "健康", "profilePatch": {"focusDomains+": ["health"]}},
-       {"value": "family", "label": "家庭", "profilePatch": {"focusDomains+": ["family"]}},
-       {"value": "finance", "label": "财产", "profilePatch": {"focusDomains+": ["finance"]}},
-       {"value": "career", "label": "职场", "profilePatch": {"focusDomains+": ["career"]}},
-       {"value": "emergency", "label": "应急", "profilePatch": {"focusDomains+": ["emergency"]}},
-       {"value": "cadence", "label": "节律", "profilePatch": {"focusDomains+": ["cadence"]}}]}
+    {
+      "id": "gender",
+      "layer": "baseline",
+      "required": true,
+      "kind": "single_choice",
+      "prompt": "你的性别",
+      "options": [
+        {
+          "value": "female",
+          "label": "女",
+          "profilePatch": {
+            "gender": "女"
+          }
+        },
+        {
+          "value": "male",
+          "label": "男",
+          "profilePatch": {
+            "gender": "男"
+          }
+        }
+      ]
+    },
+    {
+      "id": "birth_year",
+      "layer": "baseline",
+      "required": true,
+      "kind": "slider",
+      "prompt": "出生年份",
+      "profilePatch": {
+        "ageKey": "age"
+      },
+      "slider": {
+        "min": 14,
+        "max": 90,
+        "field": "age",
+        "defaultAge": 28
+      }
+    },
+    {
+      "id": "height_weight",
+      "layer": "baseline",
+      "required": true,
+      "kind": "slider2",
+      "prompt": "身高体重（用于 BMI 与健康建议口径）",
+      "profilePatch": {},
+      "slider2": {
+        "heightField": "heightCm",
+        "weightField": "weightKg",
+        "defaultHeight": 170,
+        "defaultWeight": 65
+      }
+    },
+    {
+      "id": "partner",
+      "layer": "family",
+      "kind": "single_choice",
+      "prompt": "亲密关系状态",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "single",
+          "label": "单身",
+          "profilePatch": {
+            "relationshipStatus": "single"
+          }
+        },
+        {
+          "value": "in_love",
+          "label": "恋爱中",
+          "profilePatch": {
+            "relationshipStatus": "in_love"
+          }
+        },
+        {
+          "value": "married",
+          "label": "已婚/有伴侣",
+          "profilePatch": {
+            "relationshipStatus": "married"
+          }
+        }
+      ]
+    },
+    {
+      "id": "children",
+      "layer": "family",
+      "kind": "single_choice",
+      "prompt": "你需要照看的孩子年龄段",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "none",
+          "label": "没有孩子",
+          "profilePatch": {
+            "hasChildren": false
+          }
+        },
+        {
+          "value": "infant",
+          "label": "婴幼儿（0-3 岁）",
+          "profilePatch": {
+            "hasChildren": true,
+            "childAgeStage": "infant",
+            "roles+": [
+              "家长"
+            ]
+          }
+        },
+        {
+          "value": "school",
+          "label": "学龄（3-18 岁）",
+          "profilePatch": {
+            "hasChildren": true,
+            "childAgeStage": "school",
+            "roles+": [
+              "家长"
+            ]
+          }
+        },
+        {
+          "value": "adult",
+          "label": "已成年",
+          "profilePatch": {
+            "hasChildren": true,
+            "childAgeStage": "adult",
+            "roles+": [
+              "家长"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "aging_parents",
+      "layer": "family",
+      "kind": "single_choice",
+      "prompt": "是否家有老人需关照",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "暂无",
+          "profilePatch": {
+            "hasAgingParents": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "有",
+          "profilePatch": {
+            "hasAgingParents": true,
+            "livingConditions+": [
+              "家有老人"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cohabit",
+      "layer": "family",
+      "kind": "multi_choice",
+      "prompt": "与谁同住（可多选）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "alone",
+          "label": "独居",
+          "profilePatch": {
+            "livingConditions+": [
+              "独居"
+            ],
+            "livingAlone": true
+          }
+        },
+        {
+          "value": "family",
+          "label": "与家人同住",
+          "profilePatch": {}
+        },
+        {
+          "value": "roommate",
+          "label": "与室友合租",
+          "profilePatch": {
+            "livingConditions+": [
+              "合租"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pets",
+      "layer": "family",
+      "kind": "single_choice",
+      "prompt": "是否养猫犬宠物",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "不养",
+          "profilePatch": {
+            "hasPets": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "养",
+          "profilePatch": {
+            "hasPets": true,
+            "livingConditions+": [
+              "养犬人"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "living_type",
+      "layer": "asset",
+      "kind": "single_choice",
+      "prompt": "居住类型",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "own",
+          "label": "自住（无贷）",
+          "profilePatch": {
+            "isTenant": false,
+            "hasMortgage": false
+          }
+        },
+        {
+          "value": "mortgage",
+          "label": "自住（有房贷）",
+          "profilePatch": {
+            "isTenant": false,
+            "hasMortgage": true,
+            "livingConditions+": [
+              "购房人"
+            ]
+          }
+        },
+        {
+          "value": "rent",
+          "label": "租房",
+          "profilePatch": {
+            "isTenant": true,
+            "livingConditions+": [
+              "租房人"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "piped_gas",
+      "layer": "asset",
+      "kind": "single_choice",
+      "prompt": "家中是否有管道燃气",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "yes",
+          "label": "有",
+          "profilePatch": {
+            "hasPipedGas": true
+          }
+        },
+        {
+          "value": "no",
+          "label": "无/用瓶装或电",
+          "profilePatch": {
+            "hasPipedGas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "vehicle",
+      "layer": "asset",
+      "kind": "single_choice",
+      "prompt": "是否常开机动车",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "不常开",
+          "profilePatch": {
+            "hasCar": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "常开",
+          "profilePatch": {
+            "hasCar": true,
+            "roles+": [
+              "司机"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "twowheeler",
+      "layer": "asset",
+      "kind": "single_choice",
+      "prompt": "是否常骑电动车/摩托",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "不常骑",
+          "profilePatch": {
+            "hasTwowheeler": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "常骑",
+          "profilePatch": {
+            "hasTwowheeler": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "smoking",
+      "layer": "health",
+      "required": true,
+      "kind": "single_choice",
+      "prompt": "是否吸烟（用于戒烟干预与相关门禁）",
+      "options": [
+        {
+          "value": "no",
+          "label": "不吸",
+          "profilePatch": {
+            "isSmoker": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "吸",
+          "profilePatch": {
+            "isSmoker": true,
+            "healthConcerns+": [
+              "吸烟者"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "chronic",
+      "layer": "health",
+      "required": true,
+      "kind": "multi_choice",
+      "prompt": "长期健康状况（可多选/无）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "hypertension",
+          "label": "高血压",
+          "profilePatch": {
+            "hasHypertension": true,
+            "healthConcerns+": [
+              "血压关注"
+            ]
+          }
+        },
+        {
+          "value": "diabetes",
+          "label": "糖尿病",
+          "profilePatch": {
+            "hasDiabetes": true,
+            "healthConcerns+": [
+              "血糖关注"
+            ]
+          }
+        },
+        {
+          "value": "gout",
+          "label": "痛风",
+          "profilePatch": {
+            "hasGout": true,
+            "healthConcerns+": [
+              "痛风"
+            ]
+          }
+        },
+        {
+          "value": "high_uric_acid",
+          "label": "尿酸偏高（未确诊痛风）",
+          "profilePatch": {
+            "healthConcerns+": [
+              "尿酸高"
+            ]
+          }
+        },
+        {
+          "value": "kidney_stone",
+          "label": "肾结石",
+          "profilePatch": {
+            "hasKidneyStones": true,
+            "healthConcerns+": [
+              "肾结石"
+            ]
+          }
+        },
+        {
+          "value": "depression",
+          "label": "抑郁/焦虑史",
+          "profilePatch": {
+            "hasCrisisOrMentalStress": true,
+            "healthConcerns+": [
+              "心理减压"
+            ]
+          },
+          "note": "相关干预只会在心情打卡时出现，日常不打扰"
+        }
+      ]
+    },
+    {
+      "id": "medications",
+      "layer": "health",
+      "kind": "multi_choice",
+      "prompt": "长期用药情况（可多选/无）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "weight_loss",
+          "label": "减重药物/针剂",
+          "profilePatch": {
+            "hasWeightLossGoal": true,
+            "healthConcerns+": [
+              "减重管理"
+            ],
+            "medications+": [
+              "weight_loss"
+            ]
+          }
+        },
+        {
+          "value": "analgesic",
+          "label": "常备止痛药",
+          "profilePatch": {
+            "hasFrequentPainOrAnalgesic": true,
+            "healthConcerns+": [
+              "止痛用药"
+            ],
+            "medications+": [
+              "analgesic"
+            ]
+          }
+        },
+        {
+          "value": "gastro",
+          "label": "胃药/抑酸药",
+          "profilePatch": {
+            "hasGastroAcidOrStomach": true,
+            "healthConcerns+": [
+              "反酸胃炎"
+            ],
+            "medications+": [
+              "gastro"
+            ]
+          }
+        },
+        {
+          "value": "none",
+          "label": "无",
+          "profilePatch": {}
+        }
+      ]
+    },
+    {
+      "id": "work_status",
+      "layer": "career",
+      "kind": "single_choice",
+      "prompt": "当前就业状态",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "employed",
+          "label": "在职上班",
+          "profilePatch": {
+            "roles+": [
+              "上班族"
+            ]
+          }
+        },
+        {
+          "value": "student",
+          "label": "学生",
+          "profilePatch": {
+            "roles+": [
+              "学生"
+            ]
+          }
+        },
+        {
+          "value": "freelance",
+          "label": "自由职业/灵活就业",
+          "profilePatch": {
+            "roles+": [
+              "灵活就业者"
+            ]
+          }
+        },
+        {
+          "value": "retired",
+          "label": "退休",
+          "profilePatch": {
+            "roles+": [
+              "退休"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "roles",
+      "layer": "career",
+      "kind": "multi_choice",
+      "prompt": "职业角色（可多选）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "programmer",
+          "label": "程序员/技术人",
+          "profilePatch": {
+            "isProgrammer": true,
+            "roles+": [
+              "程序员"
+            ]
+          }
+        },
+        {
+          "value": "entrepreneur",
+          "label": "创业/合伙经营",
+          "profilePatch": {
+            "isEntrepreneur": true,
+            "roles+": [
+              "创业者"
+            ]
+          }
+        },
+        {
+          "value": "abroad",
+          "label": "出境/留学相关",
+          "profilePatch": {
+            "hasAbroadTravelOrStudy": true,
+            "roles+": [
+              "出境者"
+            ]
+          }
+        },
+        {
+          "value": "none",
+          "label": "以上都不是",
+          "profilePatch": {}
+        }
+      ]
+    },
+    {
+      "id": "living_alone",
+      "layer": "scene",
+      "kind": "single_choice",
+      "prompt": "是否独居（安全兜底防线判定）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "不是",
+          "profilePatch": {
+            "livingAlone": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "是",
+          "profilePatch": {
+            "livingAlone": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "weight_goal",
+      "layer": "scene",
+      "kind": "single_choice",
+      "prompt": "是否有减重/形体管理需求",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "无",
+          "profilePatch": {
+            "hasWeightLossGoal": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "有",
+          "profilePatch": {
+            "hasWeightLossGoal": true,
+            "healthConcerns+": [
+              "减重管理"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "gastro",
+      "layer": "scene",
+      "kind": "single_choice",
+      "prompt": "是否经常反酸烧心/慢性胃病",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "无",
+          "profilePatch": {
+            "hasGastroAcidOrStomach": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "有",
+          "profilePatch": {
+            "hasGastroAcidOrStomach": true,
+            "healthConcerns+": [
+              "反酸胃炎"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "painkillers",
+      "layer": "scene",
+      "kind": "single_choice",
+      "prompt": "是否经常头痛/慢性疼痛且常备止痛药",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "no",
+          "label": "否",
+          "profilePatch": {
+            "hasFrequentPainOrAnalgesic": false
+          }
+        },
+        {
+          "value": "yes",
+          "label": "是",
+          "profilePatch": {
+            "hasFrequentPainOrAnalgesic": true,
+            "healthConcerns+": [
+              "止痛用药"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "focus_domains",
+      "layer": "interest",
+      "kind": "multi_choice",
+      "prompt": "重点关注的人生领域（影响排序与默认视野，不剪枝）",
+      "skipAllowed": true,
+      "softOnly": true,
+      "options": [
+        {
+          "value": "health",
+          "label": "健康",
+          "profilePatch": {
+            "focusDomains+": [
+              "health"
+            ]
+          }
+        },
+        {
+          "value": "family",
+          "label": "家庭",
+          "profilePatch": {
+            "focusDomains+": [
+              "family"
+            ]
+          }
+        },
+        {
+          "value": "finance",
+          "label": "财产",
+          "profilePatch": {
+            "focusDomains+": [
+              "finance"
+            ]
+          }
+        },
+        {
+          "value": "career",
+          "label": "职场",
+          "profilePatch": {
+            "focusDomains+": [
+              "career"
+            ]
+          }
+        },
+        {
+          "value": "emergency",
+          "label": "应急",
+          "profilePatch": {
+            "focusDomains+": [
+              "emergency"
+            ]
+          }
+        },
+        {
+          "value": "cadence",
+          "label": "节律",
+          "profilePatch": {
+            "focusDomains+": [
+              "cadence"
+            ]
+          }
+        }
+      ]
+    }
   ]
 }

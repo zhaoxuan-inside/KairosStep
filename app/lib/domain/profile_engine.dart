@@ -54,11 +54,18 @@ class ProfileEngine {
         if (survive < minSurvive) minSurvive = survive;
       }
       final gain = activeSet.length - minSurvive;
-      if (gain >= onboarding.pruning.minMarginalYield) {
+      // 先粗后细：粗/中层收益达阈值才保留；细层（渐进收集）>0 即保留
+      // ——细题的价值在画像精确度，不在剪枝量。
+      final threshold = q.tier >= 2 ? 1 : onboarding.pruning.minMarginalYield;
+      if (gain >= threshold) {
         out.add(QuestionYield(question: q, yieldCount: gain));
       }
     }
-    out.sort((a, b) => b.yieldCount.compareTo(a.yieldCount));
+    // tier 主键（先粗后细），层内收益降序
+    out.sort((a, b) {
+      final byTier = a.question.tier.compareTo(b.question.tier);
+      return byTier != 0 ? byTier : b.yieldCount.compareTo(a.yieldCount);
+    });
     return out;
   }
 
@@ -200,9 +207,19 @@ class OnboardingConfig {
         .toList(),
   );
 
+  /// 解析后把分层的 granularity 下放为题目 tier。
+  OnboardingConfig withTierResolved() {
+    final tierOf = {for (final l in layers) l.key: l.tier};
+    return OnboardingConfig(
+      pruning: pruning,
+      layers: layers,
+      questions: [for (final q in questions) q.withTier(tierOf[q.layer] ?? 1)],
+    );
+  }
+
   static Future<OnboardingConfig> load() async {
     final raw = await rootBundle.loadString('assets/data/config/onboarding.json');
-    return OnboardingConfig.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    return OnboardingConfig.fromJson(jsonDecode(raw) as Map<String, dynamic>).withTierResolved();
   }
 }
 
@@ -224,6 +241,7 @@ class OnboardingLayer {
     required this.title,
     required this.required,
     required this.progressive,
+    required this.granularity,
     required this.questions,
   });
 
@@ -231,13 +249,17 @@ class OnboardingLayer {
   final String title;
   final bool required;
   final bool progressive;
+  final String granularity; // coarse | mid | fine（先粗后细）
   final List<String> questions;
+
+  int get tier => switch (granularity) {'coarse' => 0, 'mid' => 1, _ => 2};
 
   factory OnboardingLayer.fromJson(Map<String, dynamic> json) => OnboardingLayer(
     key: json['key'] as String,
     title: json['title'] as String,
     required: json['required'] as bool? ?? false,
     progressive: json['progressive'] as bool? ?? false,
+    granularity: json['granularity'] as String? ?? 'mid',
     questions: (json['questions'] as List).cast<String>(),
   );
 }
@@ -246,6 +268,7 @@ class OnboardingQuestion {
   const OnboardingQuestion({
     required this.id,
     required this.layer,
+    required this.tier,
     required this.required,
     required this.kind,
     required this.prompt,
@@ -256,6 +279,7 @@ class OnboardingQuestion {
 
   final String id;
   final String layer;
+  final int tier; // 0 粗 / 1 中 / 2 细（先粗后细排序主键）
   final bool required;
   final String kind;
   final String prompt;
@@ -266,6 +290,7 @@ class OnboardingQuestion {
   factory OnboardingQuestion.fromJson(Map<String, dynamic> json) => OnboardingQuestion(
     id: json['id'] as String,
     layer: json['layer'] as String,
+    tier: 1, // 解析后由 withTierResolved 按 granularity 下放
     required: json['required'] as bool? ?? false,
     kind: json['kind'] as String? ?? 'single_choice',
     prompt: json['prompt'] as String,
@@ -274,6 +299,11 @@ class OnboardingQuestion {
     options: (json['options'] as List? ?? const [])
         .map((e) => OnboardingOption.fromJson(e as Map<String, dynamic>))
         .toList(),
+  );
+
+  OnboardingQuestion withTier(int t) => OnboardingQuestion(
+    id: id, layer: layer, tier: t, required: required, kind: kind,
+    prompt: prompt, skipAllowed: skipAllowed, softOnly: softOnly, options: options,
   );
 }
 

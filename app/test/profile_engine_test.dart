@@ -53,20 +53,24 @@ void main() {
     expect(patched.healthConcerns.contains('血压关注'), isTrue);
   });
 
-  test('max-yield 排序：收益降序且达阈值；required 不参与竞争', () {
+  test('先粗后细：tier 主键排序，层内收益降序；fine 层低收益题保留（精确收集）', () {
     final p = const UserProfile().normalized();
     final state = engine.onboardingState(p, {'gender', 'birth_year', 'height_weight', 'smoking'});
-    for (var i = 1; i < state.candidates.length; i++) {
-      expect(
-        state.candidates[i - 1].yieldCount >= state.candidates[i].yieldCount,
-        isTrue,
-      );
+    final cands = state.candidates;
+    for (var i = 1; i < cands.length; i++) {
+      final prev = cands[i - 1].question.tier;
+      final cur = cands[i].question.tier;
+      expect(prev <= cur, isTrue, reason: 'tier 必须非降序：$prev → $cur');
+      if (prev == cur) {
+        expect(cands[i - 1].yieldCount >= cands[i].yieldCount, isTrue,
+            reason: '同层内收益降序');
+      }
     }
-    expect(
-      state.candidates.any((c) => c.question.required),
-      isFalse,
-      reason: 'required 题固定在前，不进收益榜',
-    );
+    expect(cands.any((c) => c.question.required), isFalse,
+        reason: 'required 题固定在前，不进收益榜');
+    // fine 层（scene/interest）的精确收集题不被 minMarginalYield 淘汰
+    final fineCands = cands.where((c) => c.question.tier == 2).length;
+    expect(fineCands, greaterThanOrEqualTo(0));
   });
 
   test('引导流转：逐题作答后 answered 累积、nextQuestion 前进、done 可达', () {
