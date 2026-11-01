@@ -306,38 +306,6 @@ class _NowViewState extends State<NowView> {
                   ),
                 ),
         ),
-
-        // 6. 当前时段其他待命建议
-        if (periodAdvices.length > 1) ...[
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Icon(Icons.checklist_rtl_outlined, size: 14, color: p.action),
-                const SizedBox(width: 6),
-                Text(
-                  '此 1.5 小时内其他待命行动（${periodAdvices.length - 1}）',
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          for (int i = 0; i < periodAdvices.length; i++)
-            if (i != (_heroOffset % periodAdvices.length))
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                child: AdviceCard(
-                  advice: periodAdvices[i],
-                  scope: PeriodScope.today,
-                  compact: true,
-                ),
-              ),
-        ],
       ],
     );
   }
