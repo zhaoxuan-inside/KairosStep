@@ -548,8 +548,11 @@ class MeView extends StatelessWidget {
                     HapticFeedback.selectionClick();
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) =>
-                            const OnboardingView(isReconfiguring: true),
+                        builder: (_) => OnboardingView(
+                          isReconfiguring: true,
+                          // 带入当前画像：选择态据此推断，重配置不再从空白起步
+                          initialProfile: storeOf(context).profile,
+                        ),
                       ),
                     );
                   },

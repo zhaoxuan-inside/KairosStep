@@ -17,11 +17,51 @@ class ProfileEngine {
   final GatekeeperEngine gatekeeper;
   final OnboardingConfig onboarding;
 
+  /// 引导重放基线（全新引导起步画像；「我的-画像」重配置则以当前画像为基线）。
+  ///
+  /// 与 UserProfile() 默认画像的唯一差异：focusDomains 空起步——默认全选会使
+  /// 「关注域」多选题永远无效（追加进全选集合仍是 6 项，不触发剪枝）；空集
+  /// 未答时同样不剪（matchPersona 仅在 0<|focusDomains|<6 时生效），未答不剪
+  /// （ADR-009）语义不变，作答后按选择收窄。其余默认标签（租房人/上班族等）
+  /// 保留以维持未答时的准入口径，由选项 patch 的 `key-` 移除语义负责清除。
+  static const UserProfile onboardingBaseline = UserProfile(
+    focusDomains: [],
+  );
+
   UserProfile normalize(UserProfile p) => p.normalized();
 
   /// 应用选项 patch（真实入口为选项作答；测试同用）。
+  ///
+  /// 键约定：`key+` = 列表追加（幂等去重）；`key-` = 列表移除（负面选择清除
+  /// 默认标签/撤回他项，如「自住（无贷）」清「租房人」）；裸 key = 字段覆盖。
   UserProfile? applyPatch(UserProfile p, Map<String, dynamic> patch) =>
       _applyPatch(p, patch);
+
+  /// 由选择态按题目顺序重放 patch 得出草稿画像（引导视图唯一草稿来源）。
+  ///
+  /// [selectedByQuestion]：题目 id → 已选选项 value 集（单选重答=整题替换、
+  /// 多选可取消，均由调用方维护）；[sliderPatches]：滑块题（birth_year/
+  /// height_weight）的合成 patch。重放保证重答无残留、空 patch 选项不产生
+  /// 幽灵状态；[base] 为起始画像（重配置入口传当前画像）。
+  UserProfile replayDraft(
+    Map<String, Set<String>> selectedByQuestion, {
+    UserProfile base = onboardingBaseline,
+    Map<String, Map<String, dynamic>> sliderPatches = const {},
+  }) {
+    var p = base;
+    for (final q in onboarding.questions) {
+      if (sliderPatches[q.id] case final patch?) {
+        if (_applyPatch(p, patch) case final patched?) p = patched;
+      }
+      final selected = selectedByQuestion[q.id];
+      if (selected == null || selected.isEmpty) continue;
+      for (final o in q.options) {
+        if (!selected.contains(o.value)) continue;
+        if (_applyPatch(p, o.profilePatch) case final patched?) p = patched;
+      }
+    }
+    return p;
+  }
 
   /// 当前画像下的活跃建议集（引导剪枝视图；主题过滤中性——引导期不做主题剪枝）。
   Set<int> activeAdviceIds(UserProfile p) {
@@ -30,6 +70,27 @@ class ProfileEngine {
         if (gatekeeper.matchPersona(a, profile: p, topicFilter: (_) => true)) a.id,
     };
   }
+
+  /// 单题剪枝收益（max-yield 贪心的原子量）：收益 = |active| − min_option 存活数。
+  /// 编译门禁下为纯字段判定（43 patch × 活跃集 ≈ 亚毫秒），供作答时低收益跳过判断。
+  int questionYield(OnboardingQuestion q, UserProfile p, Set<int> activeSet) {
+    var minSurvive = activeSet.length;
+    for (final o in q.options) {
+      final patched = _applyPatch(p, o.profilePatch);
+      final survive = patched == null
+          ? activeSet.length
+          : activeSet.where((id) {
+              final a = catalog.adviceById(id);
+              return a == null ||
+                  gatekeeper.matchPersona(a, profile: patched, topicFilter: (_) => true);
+            }).length;
+      if (survive < minSurvive) minSurvive = survive;
+    }
+    return activeSet.length - minSurvive;
+  }
+
+  int _yieldThreshold(OnboardingQuestion q) =>
+      q.tier >= 2 ? 1 : onboarding.pruning.minMarginalYield;
 
   /// 问题排序（max-yield 贪心）：收益 = |active| − min_option 存活数。
   /// required 不参与竞争；softOnly（关注域）不剪枝；低于 minMarginalYield 淘汰。
@@ -41,23 +102,10 @@ class ProfileEngine {
     final out = <QuestionYield>[];
     for (final q in onboarding.questions) {
       if (answeredIds.contains(q.id) || q.required || q.softOnly) continue;
-      var minSurvive = activeSet.length;
-      for (final o in q.options) {
-        final patched = _applyPatch(p, o.profilePatch);
-        final survive = patched == null
-            ? activeSet.length
-            : activeSet.where((id) {
-                final a = catalog.adviceById(id);
-                return a == null ||
-                    gatekeeper.matchPersona(a, profile: patched, topicFilter: (_) => true);
-              }).length;
-        if (survive < minSurvive) minSurvive = survive;
-      }
-      final gain = activeSet.length - minSurvive;
+      final gain = questionYield(q, p, activeSet);
       // 先粗后细：粗/中层收益达阈值才保留；细层（渐进收集）>0 即保留
       // ——细题的价值在画像精确度，不在剪枝量。
-      final threshold = q.tier >= 2 ? 1 : onboarding.pruning.minMarginalYield;
-      if (gain >= threshold) {
+      if (gain >= _yieldThreshold(q)) {
         out.add(QuestionYield(question: q, yieldCount: gain));
       }
     }
@@ -70,13 +118,36 @@ class ProfileEngine {
   }
 
   /// 引导状态：required 缺答优先，其次收益榜首；无题可问即完成。
-  OnboardingState onboardingState(UserProfile p, Set<String> answeredIds) {
+  ///
+  /// [frozenOrder] 冻结题序（引导页进入时由 rankQuestions 算一次定死，主干固定）：
+  /// 提供后候选严格按该序推进，仅低收益跳过判断（questionYield）逐答求值——
+  /// 不再逐答全量重排。
+  OnboardingState onboardingState(
+    UserProfile p,
+    Set<String> answeredIds, {
+    List<String>? frozenOrder,
+  }) {
     final active = activeAdviceIds(p);
     final missingRequired = [
       for (final q in onboarding.questions)
         if (q.required && !answeredIds.contains(q.id)) q,
     ];
-    final ranked = rankQuestions(p, active, answeredIds);
+    final List<QuestionYield> ranked;
+    if (frozenOrder == null) {
+      ranked = rankQuestions(p, active, answeredIds);
+    } else {
+      final byId = {for (final q in onboarding.questions) q.id: q};
+      ranked = <QuestionYield>[];
+      for (final id in frozenOrder) {
+        if (answeredIds.contains(id)) continue;
+        final q = byId[id];
+        if (q == null || q.required || q.softOnly) continue;
+        final gain = questionYield(q, p, active);
+        if (gain >= _yieldThreshold(q)) {
+          ranked.add(QuestionYield(question: q, yieldCount: gain));
+        }
+      }
+    }
     final next = missingRequired.isNotEmpty
         ? missingRequired.first
         : (ranked.isEmpty ? null : ranked.first.question);
@@ -90,67 +161,92 @@ class ProfileEngine {
     );
   }
 
-  /// 应用 profilePatch（'+' 结尾=列表追加；未知键安全忽略——未答不剪原则下宁可冗余）。
+  /// 应用 profilePatch（`+` 结尾=列表追加；`-` 结尾=列表移除；未知键安全忽略
+  /// ——未答不剪原则下宁可冗余）。
   UserProfile? _applyPatch(UserProfile p, Map<String, dynamic> patch) {
     if (patch.isEmpty) return null;
     var n = p;
     var changed = false;
     void touch() => changed = true;
 
+    List<String> listOf(Object? v) => (v as List).cast<String>();
+    List<String> without(List<String> list, List<String> gone) => [
+      for (final x in list)
+        if (!gone.contains(x)) x,
+    ];
+
     for (final e in patch.entries) {
-      final key = e.key.endsWith('+') ? e.key.substring(0, e.key.length - 1) : e.key;
       final isAppend = e.key.endsWith('+');
+      final isRemove = e.key.endsWith('-');
+      final key = isAppend || isRemove
+          ? e.key.substring(0, e.key.length - 1)
+          : e.key;
       switch (key) {
-        case 'gender' when !isAppend:
+        case 'gender' when !isAppend && !isRemove:
           n = n.copyWith(gender: e.value as String);
           touch();
-        case 'age' when !isAppend:
+        case 'age' when !isAppend && !isRemove:
           n = n.copyWith(age: (e.value as num).toInt());
           touch();
-        case 'heightCm' when !isAppend:
+        case 'heightCm' when !isAppend && !isRemove:
           n = n.copyWith(heightCm: (e.value as num).toDouble());
           touch();
-        case 'weightKg' when !isAppend:
+        case 'weightKg' when !isAppend && !isRemove:
           n = n.copyWith(weightKg: (e.value as num).toDouble());
           touch();
-        case 'relationshipStatus' when !isAppend:
+        case 'relationshipStatus' when !isAppend && !isRemove:
           n = n.copyWith(relationshipStatus: e.value as String);
           touch();
-        case 'childAgeStage' when !isAppend:
+        case 'childAgeStage' when !isAppend && !isRemove:
           n = n.copyWith(childAgeStage: e.value as String);
           touch();
         case 'roles' when isAppend:
-          n = n.copyWith(roles: {...n.roles, ...(e.value as List).cast<String>()}.toList());
+          n = n.copyWith(roles: {...n.roles, ...listOf(e.value)}.toList());
+          touch();
+        case 'roles' when isRemove:
+          n = n.copyWith(roles: without(n.roles, listOf(e.value)));
           touch();
         case 'livingConditions' when isAppend:
           n = n.copyWith(
-            livingConditions: {...n.livingConditions, ...(e.value as List).cast<String>()}.toList(),
+            livingConditions: {...n.livingConditions, ...listOf(e.value)}.toList(),
           );
+          touch();
+        case 'livingConditions' when isRemove:
+          n = n.copyWith(livingConditions: without(n.livingConditions, listOf(e.value)));
           touch();
         case 'healthConcerns' when isAppend:
           n = n.copyWith(
-            healthConcerns: {...n.healthConcerns, ...(e.value as List).cast<String>()}.toList(),
+            healthConcerns: {...n.healthConcerns, ...listOf(e.value)}.toList(),
           );
+          touch();
+        case 'healthConcerns' when isRemove:
+          n = n.copyWith(healthConcerns: without(n.healthConcerns, listOf(e.value)));
           touch();
         case 'focusDomains' when isAppend:
           n = n.copyWith(
-            focusDomains: {...n.focusDomains, ...(e.value as List).cast<String>()}.toList(),
+            focusDomains: {...n.focusDomains, ...listOf(e.value)}.toList(),
           );
+          touch();
+        case 'focusDomains' when isRemove:
+          n = n.copyWith(focusDomains: without(n.focusDomains, listOf(e.value)));
           touch();
         case 'medications' when isAppend:
           n = n.copyWith(medications: {
             ...n.medications,
-            ...(e.value as List).cast<String>().where((x) => !n.medications.contains(x)),
+            ...listOf(e.value).where((x) => !n.medications.contains(x)),
           }.toList());
           touch();
-        case 'medications' when !isAppend:
-          n = n.copyWith(medications: (e.value as List).cast<String>());
+        case 'medications' when isRemove:
+          n = n.copyWith(medications: without(n.medications, listOf(e.value)));
           touch();
-        case 'livingAlone' when !isAppend:
+        case 'medications' when !isAppend && !isRemove:
+          n = n.copyWith(medications: listOf(e.value));
+          touch();
+        case 'livingAlone' when !isAppend && !isRemove:
           n = n.copyWith(livingAlone: e.value as bool);
           touch();
         default:
-          if (!isAppend && e.value is bool) {
+          if (!isAppend && !isRemove && e.value is bool) {
             n = _applyBool(n, key, e.value as bool);
             touch();
           }

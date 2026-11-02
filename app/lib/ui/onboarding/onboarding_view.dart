@@ -1,6 +1,11 @@
 // 画像引导渲染器（Phase 6.5 数据驱动化）：题目/分层/剪枝反馈全部来自
 // L7 onboarding.json + ProfileEngine——本文件只负责渲染与答案收集。
 // 原则（ADR-009）：引导即剪枝、未答不剪、先粗后细；required 5 题不可跳过。
+//
+// 状态机制（Phase 8 重写）：答案只存「选择态」（题目 → 已选选项值 + 滑块合成
+// patch），草稿画像一律由选择态按题目顺序重放（replay）得出——重答/取消即改
+// 选择态，展示选中态直接读选择态。不再从画像反推选中态，杜绝重答残留与
+// 空 patch 选项（无/与家人同住/以上都不是）永久高亮的展示错位。
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,6 +21,7 @@ class OnboardingView extends StatefulWidget {
     super.key,
     this.onComplete,
     this.isReconfiguring = false,
+    this.initialProfile,
   });
 
   final VoidCallback? onComplete;
@@ -23,14 +29,30 @@ class OnboardingView extends StatefulWidget {
   /// 「我的-画像」补全入口：true 时完成即返回（而非替换首页路由）。
   final bool isReconfiguring;
 
+  /// 起始画像（重配置入口传当前画像，选择态由此推断；null = 全新引导从默认画像起步）。
+  final UserProfile? initialProfile;
+
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
   final _pageController = PageController();
-  UserProfile _draft = const UserProfile();
   final Set<String> _answered = {};
+
+  // ── 选择态（唯一事实源）：qid → 已选选项 value（保序）──
+  final Map<String, Set<String>> _selected = {};
+
+  // ── 滑块题合成 patch（birth_year/height_weight 无选项，滑块值落在这里）──
+  final Map<String, Map<String, dynamic>> _sliderPatches = {};
+
+  // ── 预编译缓存（build 路径零引擎调用）──
+  // _frozenOrder：进引导时 rankQuestions 算一次定死（主干固定）；
+  // _state：activeCount/candidates 等仅在离散作答时经 _recompute 重算。
+  OnboardingState? _state;
+  List<String>? _frozenOrder;
+
+  UserProfile _draft = const UserProfile();
   List<OnboardingLayer>? _layers;
   int _page = 0;
 
@@ -40,6 +62,10 @@ class _OnboardingViewState extends State<OnboardingView> {
   @override
   void initState() {
     super.initState();
+    _draft = widget.initialProfile ?? ProfileEngine.onboardingBaseline;
+    if (widget.initialProfile != null) {
+      _inferSelections(widget.initialProfile!);
+    }
     OnboardingConfig.load().then((c) {
       if (mounted) setState(() => _layers = [for (final l in c.layers) l]);
     });
@@ -51,32 +77,23 @@ class _OnboardingViewState extends State<OnboardingView> {
     super.dispose();
   }
 
-  int get _layerCount => _layers?.length ?? 0;
-  int get _lastIndex => _layerCount - 1;
-
-  void _applyOption(OnboardingQuestion q, OnboardingOption o) {
-    HapticFeedback.selectionClick();
-    setState(() {
-      _answered.add(q.id);
-      if (q.kind == 'single_choice') {
-        // 单选：先撤销该题此前选项的影响（重答场景），再应用新选项
-        for (final prev in q.options) {
-          if (prev.value == o.value) continue;
-          final reverted = _revert(_draft, prev.profilePatch);
-          if (reverted != null) _draft = reverted;
-        }
-      }
-      final patched = _engine.applyPatch(_draft, o.profilePatch);
-      if (patched != null) _draft = patched;
-    });
+  /// 由既有画像推断初始选择态（重配置入口）：选项 patch 的全部效果均已体现在
+  /// 画像中即视为已选；单选取首个命中，多选取全部命中。
+  void _inferSelections(UserProfile p) {
+    for (final q in _engine.onboarding.questions) {
+      final hits = [
+        for (final o in q.options)
+          if (o.profilePatch.isNotEmpty && _matchesProfile(p, o.profilePatch)) o.value,
+      ];
+      if (hits.isEmpty) continue;
+      _selected[q.id] = q.kind == 'multi_choice'
+          ? Set<String>.from(hits)
+          : {hits.first};
+    }
   }
 
-  bool _isOptionActive(OnboardingQuestion q, OnboardingOption o) {
-    // 以 patch 反推选中态：选项的全部字段效果均已体现在 draft
-    return _patchApplied(_draft, o.profilePatch);
-  }
-
-  bool _patchApplied(UserProfile p, Map<String, dynamic> patch) {
+  /// 选项 patch 是否已完整生效于画像（仅用于初始选择态推断）。
+  static bool _matchesProfile(UserProfile p, Map<String, dynamic> patch) {
     for (final e in patch.entries) {
       final key = e.key.endsWith('+') ? e.key.substring(0, e.key.length - 1) : e.key;
       switch (key) {
@@ -129,34 +146,63 @@ class _OnboardingViewState extends State<OnboardingView> {
     return true;
   }
 
-  /// 单选重答的反向撤销（null=无可撤销）。
-  UserProfile? _revert(UserProfile p, Map<String, dynamic> patch) {
-    var reverted = false;
-    var n = p;
-    for (final e in patch.entries) {
-      final key = e.key.endsWith('+') ? e.key.substring(0, e.key.length - 1) : e.key;
-      if (key == 'roles+' || key == 'livingConditions+' || key == 'healthConcerns+') {
-        final v = e.value as String;
-        if (key == 'roles+' && n.roles.contains(v)) {
-          n = n.copyWith(roles: n.roles.where((x) => x != v).toList());
-          reverted = true;
-        }
-        if (key == 'livingConditions+' && n.livingConditions.contains(v)) {
-          n = n.copyWith(
-            livingConditions: n.livingConditions.where((x) => x != v).toList(),
-          );
-          reverted = true;
-        }
-        if (key == 'healthConcerns+' && n.healthConcerns.contains(v)) {
-          n = n.copyWith(
-            healthConcerns: n.healthConcerns.where((x) => x != v).toList(),
-          );
-          reverted = true;
-        }
-      }
-    }
-    return reverted ? n : null;
+  /// 由选择态重放草稿画像（重答/取消即改选择态，无残留）。
+  UserProfile _computeDraft() => _engine.replayDraft(
+    _selected,
+    base: widget.initialProfile ?? ProfileEngine.onboardingBaseline,
+    sliderPatches: _sliderPatches,
+  );
+
+  /// 重算引导状态（离散作答时调用；build 内首次惰性触发）。
+  /// 编译门禁下全量重算为纯字段判定（亚毫秒级）。
+  void _recompute() {
+    _draft = _computeDraft();
+    _frozenOrder ??= [
+      for (final y in _engine
+          .rankQuestions(_draft, _engine.activeAdviceIds(_draft), _answered))
+        y.question.id,
+    ];
+    _state = _engine.onboardingState(_draft, _answered, frozenOrder: _frozenOrder);
   }
+
+  bool _emptyPatchOption(OnboardingQuestion q, String value) {
+    for (final o in q.options) {
+      if (o.value == value) return o.profilePatch.isEmpty;
+    }
+    return false;
+  }
+
+  void _applyOption(OnboardingQuestion q, OnboardingOption o) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      final selected = _selected.putIfAbsent(q.id, () => <String>{});
+      if (q.kind == 'multi_choice') {
+        if (selected.contains(o.value)) {
+          // 再点取消（「无」这类空 patch 独占项不参与取消）
+          if (o.profilePatch.isNotEmpty) selected.remove(o.value);
+        } else if (o.profilePatch.isEmpty) {
+          // 「无」独占：清除本题其他选择
+          selected
+            ..clear()
+            ..add(o.value);
+        } else {
+          selected
+            ..removeWhere((v) => _emptyPatchOption(q, v))
+            ..add(o.value);
+        }
+      } else {
+        // 单选：整题替换（重答即撤销旧选项全部影响，无残留）
+        selected
+          ..clear()
+          ..add(o.value);
+      }
+      _answered.add(q.id);
+      _recompute();
+    });
+  }
+
+  bool _isOptionActive(OnboardingQuestion q, OnboardingOption o) =>
+      _selected[q.id]?.contains(o.value) ?? false;
 
   bool get _allRequiredAnswered {
     for (final q in _engine.onboarding.questions) {
@@ -197,6 +243,9 @@ class _OnboardingViewState extends State<OnboardingView> {
     }
   }
 
+  int get _layerCount => _layers?.length ?? 0;
+  int get _lastIndex => _layerCount - 1;
+
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
@@ -207,6 +256,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       );
     }
     final config = _engine.onboarding;
+    if (_state == null) _recompute(); // 首帧：冻结题序 + 初次计算（此后仅离散作答重算）
     return Scaffold(
       backgroundColor: p.canvas,
       body: SafeArea(
@@ -232,7 +282,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   // ── 顶部：进度 + 实时聚焦反馈 ──
 
   Widget _header(AppPalettes p, OnboardingConfig config) {
-    final state = _engine.onboardingState(_draft, _answered);
+    final state = _state!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       child: Column(
@@ -285,14 +335,12 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingLayer layer,
   ) {
     final byId = {for (final q in config.questions) q.id: q};
-    // 引擎动态出题（先粗后细在层内生效）：未答题按 max-yield 降序排前，
-    // 已答题保持原位在后（展示已选状态）。
-    final active = _engine.activeAdviceIds(_draft);
-    final ranked = _engine
-        .rankQuestions(_draft, active, _answered)
-        .map((y) => y.question.id)
-        .where(layer.questions.contains)
-        .toList();
+    // 引擎动态出题读缓存（题序进引导时冻结，先粗后细在层内生效）：
+    // 未答题按冻结序排前，已答题保持原位在后（展示已选状态）。
+    final ranked = [
+      for (final y in _state!.candidates)
+        if (layer.questions.contains(y.question.id)) y.question.id,
+    ];
     final answeredInLayer = [
       for (final qid in layer.questions)
         if (!ranked.contains(qid)) qid,
@@ -416,12 +464,13 @@ class _OnboardingViewState extends State<OnboardingView> {
             divisions: 76,
             activeColor: p.action,
             label: '${_draft.age}',
-            onChanged: (v) {
-              setState(() {
-                _draft = _draft.copyWith(age: v.round());
-                _answered.add('birth_year');
-              });
-            },
+            // 拖动中只更新数值显示与合成 patch；松手才重算剪枝视图
+            onChanged: (v) => setState(() {
+              _sliderPatches['birth_year'] = {'age': v.round()};
+              _draft = _draft.copyWith(age: v.round());
+              _answered.add('birth_year');
+            }),
+            onChangeEnd: (v) => setState(_recompute),
           ),
         ),
       ],
@@ -431,7 +480,6 @@ class _OnboardingViewState extends State<OnboardingView> {
   Widget _heightWeightSliders(AppPalettes p) {
     final h = _draft.heightCm ?? 170;
     final w = _draft.weightKg ?? 65;
-    void write() => _answered.add('height_weight');
     return Column(
       children: [
         Row(
@@ -446,9 +494,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                 activeColor: p.action,
                 label: '${h.round()}',
                 onChanged: (v) => setState(() {
+                  _sliderPatches['height_weight'] = {
+                    'heightCm': v,
+                    'weightKg': _draft.weightKg ?? 65,
+                  };
                   _draft = _draft.copyWith(heightCm: v);
-                  write();
+                  _answered.add('height_weight');
                 }),
+                onChangeEnd: (v) => setState(_recompute),
               ),
             ),
           ],
@@ -465,9 +518,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                 activeColor: p.action,
                 label: '${w.round()}',
                 onChanged: (v) => setState(() {
+                  _sliderPatches['height_weight'] = {
+                    'heightCm': _draft.heightCm ?? 170,
+                    'weightKg': v,
+                  };
                   _draft = _draft.copyWith(weightKg: v);
-                  write();
+                  _answered.add('height_weight');
                 }),
+                onChangeEnd: (v) => setState(_recompute),
               ),
             ),
           ],

@@ -58,6 +58,8 @@ flutter:
     # L2 交互样式 / L5 展示↔样式绑定
     - assets/data/styles/act_styles.json
     - assets/data/styles/display_bindings.json
+    # 门禁谓词预编译（离线生成：GATE_TRAITS_UPDATE=1 flutter test test/build_gate_traits_test.dart）
+    - assets/data/config/gate_traits.json
     # L8 语义能力（模型随包 + 版本绑定）
     - assets/data/config/models.json
     - assets/models/bge-small-zh-int8.onnx

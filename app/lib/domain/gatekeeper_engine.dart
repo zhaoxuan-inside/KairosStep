@@ -2,19 +2,73 @@
 // 自 app_store.matchPersona（原 :1979-2292）与 evalNodeItem（原 :2294-2314）整体迁移，
 // 判定逻辑逐字保留；ID 集与名单数据化于 L7 gates.json（Phase 2），
 // 关键词谓词保留在代码（Phase 7 内容画像补全时随规则 schema 收编）。
-// 依赖规则：只依赖 data/ 与 models/；主题树过滤经回调注入（state 持有排除集合）。
+//
+// 预编译（Phase 8 性能重构）：matchPersona 的静态事实（关键词命中/章节归属/名单
+// 成员/prerequisites）由 lib/domain/gate_traits.dart 一次性提取为 GateTraits；
+// 随包 asset 缺失或与数据指纹错位时，用同一提取函数运行时兜底编译（毫秒级）。
+// 判定等价性由 test/gate_traits_equivalence_test.dart（matchPersonaReference
+// 对照）与 golden 快照双重守护。
+import 'package:flutter/foundation.dart' show visibleForTesting;
+
 import '../data/catalog.dart';
+import 'gate_traits.dart';
 import '../models/advice.dart';
 
 class GatekeeperEngine {
-  const GatekeeperEngine(this.catalog);
+  GatekeeperEngine(this.catalog);
 
   final Catalog catalog;
 
-  /// 画像门禁。
+  /// 编译判定记录（asset 优先，缺失/错位即运行时兜底编译）。
+  late final Map<int, GateTraits> _traits = _resolveTraits();
+
+  /// 当前是否走随包 asset 编译（false = 兜底运行时编译）。
+  bool get usesCompiledAsset => _usedAsset;
+  bool _usedAsset = false;
+
+  Map<int, GateTraits> _resolveTraits() {
+    final manifest = catalog.gateTraitsManifest;
+    if (manifest != null) {
+      final bundle = GateTraitsBundle.parse(manifest);
+      final hash = bundle?.sourceHash;
+      if (bundle != null &&
+          bundle.adviceCount == catalog.adviceList.length &&
+          hash == gateTraitsSourceFingerprint(
+            catalog.adviceList,
+            catalog.gates.ruleIdSets,
+          )) {
+        _usedAsset = true;
+        return bundle.traits;
+      }
+    }
+    // Fail-safe：asset 缺失/数据-资产错位 → 同一提取函数运行时编译（毫秒级）
+    return {
+      for (final a in catalog.adviceList)
+        a.id: GateTraits.fromAdvice(a, ruleSets: catalog.gates.ruleIdSets),
+    };
+  }
+
+  /// 画像门禁（编译路径：纯字段判定，无字符串操作）。
   /// [topicFilter] 注入主题树偏好过滤（store 的 matchesTopicPreferences），
   /// 保持原实现"includeTopicPreferences 时先查主题偏好"的语义与求值次数。
   bool matchPersona(
+    Advice a, {
+    required UserProfile profile,
+    required bool Function(Advice) topicFilter,
+    bool includeTopicPreferences = true,
+  }) {
+    if (includeTopicPreferences && !topicFilter(a)) return false;
+    return matchPersonaByTraits(
+      _traits[a.id]!,
+      profile,
+    );
+  }
+
+  /// 原实现（逐字保留，仅作等价性对照）：
+  /// test/gate_traits_equivalence_test.dart 以本方法为基准验证编译路径，
+  /// golden 快照基线亦由本实现的历史行为固化。
+  @visibleForTesting
+  bool matchPersonaReference(
     Advice a, {
     required UserProfile profile,
     required bool Function(Advice) topicFilter,
@@ -83,7 +137,7 @@ class GatekeeperEngine {
       }
     }
 
-    // 0.6 慢性病与特殊病理史强门禁 (Condition Strong Gating)
+    // 0.6 慢性病与特殊病理强门禁 (Condition Strong Gating)
     // 凡涉及特定确诊疾病、慢性病或特殊病理史的条目，一票否决「全民/通用」穿透特权
     final text = '${a.title} ${a.tags.join(" ")} ${a.chapter}';
     final hasChronic =
