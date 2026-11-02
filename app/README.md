@@ -88,7 +88,33 @@ flutter build apk --release --split-per-abi
 #   ↑ 按 ABI 拆包（现代手机装 app-arm64-v8a-release.apk 即可）
 # Android App Bundle（上架 Google Play）
 flutter build appbundle --release
+```
 
+### 一键打包（推荐）
+
+日常出包不要直接 `flutter build apk`，用仓库根目录的一键脚本：在本地磁盘增量构建，
+并把 `versionName+buildNumber+时间戳` 写进文件名，天然区分每一次包。
+
+```bash
+tools/build_apk_remote.sh               # 增量打包（默认）
+tools/build_apk_remote.sh --clean       # 全量重编（怀疑缓存问题时用）
+tools/build_apk_remote.sh --no-sync     # 只重跑打包，不同步源码
+tools/build_apk_remote.sh --minify      # 需要 R8 混淆/瘦身时开启
+```
+
+产物统一归档到 `output/mobile/`：
+
+```
+KairosStep-1.0.19+20-1102-230506-arm64-v8a.apk
+KairosStep-1.0.19+20-1102-230506-arm64-v8a.apk.sha256
+KairosStep-latest.txt                  # 记录最近一次构建的文件名
+BUILD_INFO.txt                          # 版本、commit、构建时间、sha256
+```
+
+发新版时改 `pubspec.yaml` 的 `version: x.y.z+build`（例如 `1.0.19+20`），
+脚本会自动读取并写入 APK 的 versionName / versionCode，无需改 `build.gradle.kts`。
+
+```bash
 # 其他平台（同一套代码）
 flutter build web --release          # Web
 flutter build ios --release          # iOS（需 macOS + Xcode）
@@ -104,7 +130,7 @@ flutter build linux --release        # Linux
 
 ### Android 说明
 
-- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 1.0.17
+- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 由 `pubspec.yaml` 的 `version` 决定（当前 `1.0.19+20`）
 - **release 构建不申请任何权限**（INTERNET 仅存在于 debug/profile 清单，用于开发工具；
   装机后系统里唯一可见的是应用自用的签名级 `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`，非敏感权限）
 - minSdk/targetSdk 由 Flutter 默认模板管理
