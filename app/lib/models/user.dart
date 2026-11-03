@@ -45,6 +45,13 @@ class UserTodoItem {
   final String frequency; // 触发周期
   final int triggerCount; // 触发次数
 
+  /// 生成待办 id：微秒时间戳 + 进程内自增序号。
+  /// 旧实现只用毫秒时间戳，同一毫秒内连续创建会生成重复 id，
+  /// 导致同一待办出现多个同 Key 行、勾选/删除误伤另一条。
+  static int _idSequence = 0;
+  static String newId() =>
+      'todo_${DateTime.now().microsecondsSinceEpoch}_${_idSequence++}';
+
   UserTodoItem copyWith({
     bool? isDone,
     String? title,

@@ -13,7 +13,9 @@ class CustomTodoDialog extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
+      // 键盘弹出时由内容区自行避让，避免路由动画期间 IME 与弹层同时改变约束
       builder: (_) => const CustomTodoDialog(),
     );
   }
@@ -115,7 +117,7 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
     final triggerTimeStr = _triggerTime != null ? _formatTime(_triggerTime!) : null;
 
     final item = UserTodoItem(
-      id: 'todo_${DateTime.now().millisecondsSinceEpoch}',
+      id: UserTodoItem.newId(),
       title: title,
       content: _contentController.text.trim(),
       triggerTime: triggerTimeStr,
@@ -179,15 +181,18 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                 children: [
                   Icon(Icons.add_task, color: p.action, size: 22),
                   const SizedBox(width: 8),
-                  Text(
-                    '新建自建待办 · 生活防线',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w800,
-                      color: p.ink,
+                  Expanded(
+                    child: Text(
+                      '新建自建待办 · 生活防线',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: p.ink,
+                      ),
                     ),
                   ),
-                  const Spacer(),
                   IconButton(
                     icon: Icon(Icons.close, size: 20, color: p.inkSub),
                     onPressed: () => Navigator.of(context).pop(),
@@ -201,7 +206,9 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
               const SizedBox(height: 6),
               TextField(
                 controller: _titleController,
-                autofocus: true,
+                // 不在弹层入场动画期间自动拉起输入法：部分 Android 设备/输入法
+                // 会在路由动画中同时改窗口 inset，导致弹层反复重建甚至闪退。
+                autofocus: false,
                 decoration: InputDecoration(
                   hintText: '如：早起空腹测血压、带头盔出发、复核劳动合同...',
                   hintStyle: TextStyle(fontSize: 13, color: p.inkMute),
@@ -351,7 +358,12 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('弹窗提醒时刻列表 (注册器免扫描)', style: _labelStyle(p)),
+                  Expanded(
+                    child: Text(
+                      '弹窗提醒时刻列表 (注册器免扫描)',
+                      style: _labelStyle(p),
+                    ),
+                  ),
                   TextButton.icon(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     icon: Icon(Icons.add_alarm, size: 14, color: p.action),

@@ -439,7 +439,7 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   }) {
     if (title.trim().isEmpty) return;
     final item = UserTodoItem(
-      id: 'todo_${DateTime.now().millisecondsSinceEpoch}',
+      id: UserTodoItem.newId(),
       title: title.trim(),
       adviceId: adviceId,
       createdAt: DateTime.now(),

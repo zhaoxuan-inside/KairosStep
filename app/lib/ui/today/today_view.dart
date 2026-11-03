@@ -131,9 +131,13 @@ class TodayView extends StatelessWidget {
                     children: [
                       Icon(Icons.spa_outlined, color: p.emerald, size: 13),
                       const SizedBox(width: 4),
-                      Text(
-                        '心情晴雨表',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
+                      Flexible(
+                        child: Text(
+                          '心情晴雨表',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink),
+                        ),
                       ),
                     ],
                   ),

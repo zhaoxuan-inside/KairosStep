@@ -130,7 +130,7 @@ flutter build linux --release        # Linux
 
 ### Android 说明
 
-- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 由 `pubspec.yaml` 的 `version` 决定（当前 `1.0.19+20`）
+- 应用名：`数字阶跃`（`AndroidManifest.xml`），包名 `dev.kairostep.kairo_step`，versionName 由 `pubspec.yaml` 的 `version` 决定（当前 `1.0.20+21`）
 - **release 构建不申请任何权限**（INTERNET 仅存在于 debug/profile 清单，用于开发工具；
   装机后系统里唯一可见的是应用自用的签名级 `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`，非敏感权限）
 - minSdk/targetSdk 由 Flutter 默认模板管理
