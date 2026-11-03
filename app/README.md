@@ -11,7 +11,7 @@
 
 | 模块 | 说明 |
 |---|---|
-| 五 Tab 壳 | 当下 / 今天 / 周期 / 库 / 我的 |
+| 五 Tab 壳 | 当下 / 今天 / 周期 / 指南 / 我的 |
 | 当下 | 按真实时段（晨/上午/午后/傍晚/夜间）切换问候与 Hero 卡；齿轮时间尺可拖动预演其他时段 |
 | 今天 | 今日聚光流（起床连击 97、安全带 1、血压 7、刷牙 58、燃气窗口 4）+ 完成量胶囊 |
 | 周期 | 每周 / 每月 / 每年 三分段聚光流，完成量随分段胶囊滚动 |
@@ -105,13 +105,13 @@ tools/build_apk_remote.sh --minify      # 需要 R8 混淆/瘦身时开启
 产物统一归档到 `output/mobile/`：
 
 ```
-KairosStep-1.0.19+20-1102-230506-arm64-v8a.apk
-KairosStep-1.0.19+20-1102-230506-arm64-v8a.apk.sha256
+KairosStep-1.0.20-arm64-v8a.apk
+KairosStep-1.0.20-arm64-v8a.apk.sha256
 KairosStep-latest.txt                  # 记录最近一次构建的文件名
 BUILD_INFO.txt                          # 版本、commit、构建时间、sha256
 ```
 
-发新版时改 `pubspec.yaml` 的 `version: x.y.z+build`（例如 `1.0.19+20`），
+发新版时改 `pubspec.yaml` 的 `version: x.y.z+build`（例如 `1.0.20+21`），
 脚本会自动读取并写入 APK 的 versionName / versionCode，无需改 `build.gradle.kts`。
 
 ```bash
@@ -123,10 +123,12 @@ flutter build windows --release      # Windows
 flutter build linux --release        # Linux
 ```
 
-依赖仅两个插件，均为官方全平台支持：
+主要依赖：
 
-- `shared_preferences`（本地持久化：Android/iOS/macOS/Windows/Linux/Web）
-- `share_plus`（系统分享：全平台，Web 自动降级）
+- `shared_preferences`（本地持久化：全平台）
+- `flutter_local_notifications` + `timezone`（本地提醒与定时）
+- `onnxruntime`（随包 BGE 语义检索模型）
+- `share_plus` / `url_launcher`（系统分享与外部跳转）
 
 ### Android 说明
 
