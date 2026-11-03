@@ -29,7 +29,7 @@ for arg in "$@"; do
     --clean) CLEAN=1 ;;
     --no-sync) DO_SYNC=0 ;;
     --minify) MINIFY=1 ;;
-    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     *) echo "未知参数：$arg（可用：--clean / --no-sync / --minify）" >&2; exit 2 ;;
   esac
 done
@@ -69,6 +69,13 @@ BUILD_NUMBER="${VERSION_RAW##*+}"
 STAMP=$(date +%m%d-%H%M%S)
 APK_NAME="KairosStep-${VERSION_NAME}+${BUILD_NUMBER}-${STAMP}-arm64-v8a.apk"
 COMMIT=$(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)
+if [ -n "$(git -C "$REPO_DIR" status --porcelain -- app/lib app/assets app/pubspec.yaml 2>/dev/null)" ]; then
+  WORKTREE="dirty"
+else
+  WORKTREE="clean"
+fi
+# 源码指纹：lib + assets + pubspec 的全量内容哈希，用于核对 APK 是否由当前工作区构建
+SRC_HASH=$(cd "$SRC_DIR" && find lib assets pubspec.yaml -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
 
 echo "构建版本：$VERSION_NAME (build $BUILD_NUMBER)  commit $COMMIT"
 echo "构建目录：$BUILD_DIR"
@@ -145,9 +152,9 @@ mv -f "$OUT_DIR/.$APK_NAME.tmp" "$OUT_DIR/$APK_NAME"
 # vmhgfs 共享盘不支持软链，改用一个纯文本指针文件标识最新包。
 printf '%s\n' "$APK_NAME" > "$OUT_DIR/KairosStep-latest.txt"
 
-# 可选的 R8 mapping（开启 minify 时才有）
+# 可选的 R8 mapping（仅 --minify 时生成）
 MAPPING_TXT="$BUILD_DIR/build/app/outputs/mapping/release/mapping.txt"
-if [ -f "$MAPPING_TXT" ]; then
+if [ "$MINIFY" = 1 ] && [ -f "$MAPPING_TXT" ]; then
   cp -f "$MAPPING_TXT" "$OUT_DIR/${APK_NAME%.apk}.mapping.txt"
 fi
 
@@ -156,6 +163,8 @@ cat > "$OUT_DIR/BUILD_INFO.txt" <<EOF
 versionName: $VERSION_NAME
 versionCode: $BUILD_NUMBER
 commit: $COMMIT
+worktree: $WORKTREE
+sourceSha256: $SRC_HASH
 builtAt: $(date '+%Y-%m-%d %H:%M:%S')
 apk: $APK_NAME
 sha256: $SHA256
