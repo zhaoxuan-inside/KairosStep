@@ -273,10 +273,14 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     );
     _excludedTopicPaths.add(path);
     _persistTopicPreferences();
+    notifyListeners();
   }
 
   void restoreTopic(String path) {
-    if (_excludedTopicPaths.remove(path)) _persistTopicPreferences();
+    if (_excludedTopicPaths.remove(path)) {
+      _persistTopicPreferences();
+      notifyListeners();
+    }
   }
 
   void restoreAllTopics() {
@@ -456,14 +460,16 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     _userTodos.insert(0, item);
     _persistUserTodos();
 
-    // 自动向提醒注册表注册待办时点提醒
+    // 自动向提醒注册表注册待办时点提醒（走引擎 set：同步失效推断缓存并持久化）
     if (item.reminderTimes.isNotEmpty) {
       final advice = item.toAdvice();
-      triggerEngine.customTriggers[advice.id] = CustomTriggerConfig(
-        mode: TriggerMode.daily,
-        reminderTimes: item.reminderTimes,
+      triggerEngine.set(
+        advice.id,
+        CustomTriggerConfig(
+          mode: TriggerMode.daily,
+          reminderTimes: item.reminderTimes,
+        ),
       );
-      _persistCustomTriggers();
       syncReminderRegistry();
     }
 
@@ -536,11 +542,30 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   // ---------- 建议流（StreamEngine 门面） ----------
 
   /// 真实动态今天待办流（严格准入，包含今日有效自建待办，当下 ⊆ 今天）
-  List<Advice> get todayAdvices => streamEngine.todayAdvices(_streamInputs());
+  List<Advice> get todayAdvices => _todayCacheRev == _streamRevision && _todayCache != null
+      ? _todayCache!
+      : _todayCache = streamEngine.todayAdvices(_streamInputs());
+
+  // ── 今日流按修订版缓存：一次 notifyListeners 内（一帧/一次同步链）所有读者
+  // 共享同一份计算结果；此前 TodayView 一次 build 经 todayAdvices + countersOf
+  // 全量重算两遍（737 × 门禁 + 触发推断 + 排序）。
+  int _streamRevision = 0;
+  List<Advice>? _todayCache;
+  int _todayCacheRev = -1;
+
+  @override
+  void notifyListeners() {
+    _streamRevision++;
+    super.notifyListeners();
+  }
 
   /// 真实动态周期流（层级严格包含：今天 ⊆ 本周 ⊆ 本月）
-  List<Advice> cycleAdvicesOf(PeriodScope scope) =>
-      streamEngine.cycleAdvicesOf(_streamInputs(), scope);
+  List<Advice> cycleAdvicesOf(PeriodScope scope) {
+    // today 复用今日流缓存（streamEngine.cycleAdvicesOf(today) 内部就是
+    // todayAdvices——走本 getter 避免同帧二次全量重算）
+    if (scope == PeriodScope.today) return todayAdvices;
+    return streamEngine.cycleAdvicesOf(_streamInputs(), scope);
+  }
 
   /// 根据聚焦视窗动态筛选属于该视窗的建议流（当下 ⊆ 今天；窗口与加权来自 L7）
   List<Advice> advicesForWindow(DateTime centerTime) =>
@@ -599,6 +624,14 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   @override
   void persistWindowAnchor(int id, DateTime at) =>
       prefs.setString('kWindow.$id', at.toIso8601String());
+
+  /// 释放引擎心跳定时器（测试收尾/宿主回收用；应用生命周期内通常不调用）。
+  @override
+  void dispose() {
+    reminderRegistry.dispose();
+    probeScheduler.dispose();
+    super.dispose();
+  }
 
   // ---------- 恢复 ----------
   Future<void> restore() async {

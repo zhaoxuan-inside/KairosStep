@@ -27,7 +27,13 @@ void main() {
     expect(letters.any((l) => l == '#'), isTrue);
     // 形态全覆盖
     final actTypes = catalog.adviceList.map((a) => a.actType).toSet();
-    expect(actTypes.length, 13);
+    // 在用形态 12 种（zen-timer 定义保留但暂无条目使用）；在用集必须是定义子集
+    expect(actTypes.length, 12);
+    expect(
+      actTypes.difference(actionTypes.map((d) => d.id).toSet()),
+      isEmpty,
+      reason: '在用形态必须都有交互形态定义',
+    );
     // 详情层存在
     expect(catalog.detailOf(7)!.grade, 'A');
     expect(catalog.nodePackages.length, 5);
@@ -82,79 +88,43 @@ void main() {
     }
   });
 
-  testWidgets('首次打开APP（无画像数据）：必须展示人性化优雅引导向导 Onboarding', (tester) async {
+  testWidgets('首次打开APP（无画像数据）：必须展示数据驱动的画像引导，可作答并直接开启', (tester) async {
     final store = AppStore(catalog, await _emptyPrefs());
     await store.restore();
 
     expect(store.hasProfile, isFalse, reason: '初始状态无画像');
 
     await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
+    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+    // 现行引导（Phase 6.5 数据驱动）：分层页 + 必答标记 + 实时聚焦反馈
+    expect(find.textContaining('画像引导 · '), findsOneWidget);
+    expect(find.text('画像引导 · 基本盘'), findsOneWidget);
+    expect(find.text('必答'), findsWidgets, reason: '基盘层含必答题（性别/年龄/身高体重）');
+    expect(find.text('你的性别'), findsOneWidget);
+    expect(find.textContaining('已为你聚焦'), findsOneWidget);
+
+    // 作答性别选项（选项 patch 即时生效于草稿画像）
+    await tester.tap(find.text('男'));
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    expect(tester.takeException(), isNull);
 
-    // 验证展示了人性化引导语与纯净交付承诺
-    expect(find.textContaining('数字阶跃'), findsWidgets);
-    expect(find.textContaining('生活不需要一次性记住 737 条建议'), findsOneWidget);
-    expect(find.text('真正交付用户的纯净承诺'), findsOneWidget);
-    expect(find.text('定制专属罗盘 ›'), findsOneWidget);
+    // 分层推进：基本盘 → 家庭与责任
+    await tester.tap(find.text('下一步'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 500));
+    expect(find.text('画像引导 · 家庭与责任'), findsOneWidget);
 
-    // 点击定制专属罗盘进入第 1 步：生命时钟
-    await tester.tap(find.text('定制专属罗盘 ›'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('年龄与生理节点'), findsOneWidget);
-    expect(find.textContaining('有些检查一辈子做一次就够'), findsOneWidget);
-
-    // 点击继续下一步进入第 2 步：职场形态
-    await tester.tap(find.text('继续下一步 ›'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('核心职业形态'), findsOneWidget);
-    expect(find.textContaining('别把自己搭进去'), findsOneWidget);
-
-    // 点击继续下一步进入第 3 步：家庭与责任
-    await tester.tap(find.text('继续下一步 ›'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('家庭与重要关系'), findsOneWidget);
-    expect(find.textContaining('守护家人的底气'), findsOneWidget);
-
-    // 点击继续下一步进入第 4 步：生活日常
-    await tester.tap(find.text('继续下一步 ›'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('居住与日常情境'), findsOneWidget);
-    expect(find.textContaining('日常最大的风险往往藏在最熟悉的习惯里'), findsOneWidget);
-
-    // 点击继续下一步进入第 5 步：全景六大支柱定制（100%覆盖737建议）
-    await tester.tap(find.text('继续下一步 ›'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('人生六大支柱完整定制'), findsOneWidget);
-    expect(find.textContaining('全书 737 条建议由六大支柱严密咬合'), findsOneWidget);
-    expect(find.textContaining('已点亮领域覆盖'), findsOneWidget);
-
-    // 点击继续下一步进入第 6 步：罗盘校准与生成
-    await tester.tap(find.text('继续下一步 ›'));
-    await tester.pump(const Duration(milliseconds: 400));
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('全息画像罗盘校准完成'), findsOneWidget);
-    expect(find.text('步入数字阶跃 ›'), findsOneWidget);
-
-    // 点击完成引导，步入真实生产交付界面
-    await tester.tap(find.text('步入数字阶跃 ›'));
-    await tester.pump(const Duration(milliseconds: 400));
+    // 「以此配置直接开启」随时可用（未答不剪，ADR-009）
+    tester.ensureVisible(find.text('以此配置直接开启'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    await tester.tap(find.text('以此配置直接开启'), warnIfMissed: false);
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
 
-    expect(store.hasProfile, isTrue, reason: '已成功建立画像');
-    expect(find.text('当下'), findsOneWidget);
-    expect(find.text('今天'), findsOneWidget);
-    expect(find.text('周期'), findsOneWidget);
-    expect(find.text('库'), findsOneWidget);
-    expect(find.text('我的'), findsOneWidget);
+    expect(store.hasProfile, isTrue, reason: '完成引导并持久化画像');
+    expect(find.text('今天'), findsWidgets, reason: '完成引导后进入主壳');
 
-    // 切到库 Tab，验证 737 全景引导入口
-    await tester.tap(find.text('库'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('737 全景引导'), findsOneWidget);
-    await tester.tap(find.text('737 全景引导'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('737 条建议全景引导罗盘'), findsOneWidget);
-    expect(find.textContaining('六大支柱完整覆盖'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    store.dispose();
   });
 
   testWidgets('真实交付数据流：零 Mock 数据，全量 737 建议动态求值与打卡闭环', (tester) async {
@@ -218,6 +188,8 @@ void main() {
     expect(store.userTodos.first.isDone, isTrue);
     store.removeUserTodo(store.userTodos.first.id);
     expect(store.userTodos.isEmpty, isTrue);
+    await tester.pumpWidget(const SizedBox.shrink());
+    store.dispose();
   });
 
   testWidgets('当下页时间尺：置顶展示、1.5小时视窗与推演回到此刻交互闭环', (tester) async {
@@ -257,6 +229,8 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     expect(find.text('回到此刻'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    store.dispose();
   });
 
   test('严格准入规则与 3D 翻转卡片自定义触发周期闭环', () async {
@@ -413,7 +387,7 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     // 验证搜索栏与紧急按钮在各页面常驻顶栏
-    for (final tab in ['当下', '今天', '周期', '库', '我的']) {
+    for (final tab in ['当下', '今天', '周期', '指南', '我的']) {
       await tester.tap(find.text(tab));
       await tester.pumpAndSettle(const Duration(milliseconds: 100));
       expect(
@@ -423,6 +397,8 @@ void main() {
       );
       expect(find.text('紧急'), findsOneWidget, reason: '$tab 页必须展示紧急按钮');
     }
+    await tester.pumpWidget(const SizedBox.shrink());
+    store.dispose();
   });
 
   test('突发与急救事件（如中暑处理、海姆立克、心肺复苏）严格静默储备，绝不进入当下时间尺聚焦视窗与今日流', () async {
@@ -520,7 +496,9 @@ void main() {
       expect(store.matchPersona(sa), isFalse, reason: '非吸烟者必须过滤戒烟干预条目');
     }
 
-    store.profile = const UserProfile(isSmoker: true);
+    // 60 岁吸烟者：is_smoker 条目普遍带 中年/老年 阶段标签（如老年 CT 筛查），
+    // 阶段交集门禁要求画像年龄落在区间内——默认 28 岁被正确拦截，非门禁缺陷。
+    store.profile = const UserProfile(isSmoker: true, age: 60);
     for (final sa in smokingAdvices) {
       expect(store.matchPersona(sa), isTrue, reason: '吸烟者画像顺利通过戒烟条目准入');
     }

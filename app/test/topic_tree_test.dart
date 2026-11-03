@@ -40,7 +40,8 @@ void main() {
   test('parent names, aliases, details and multiple terms are searchable', () {
     expect(catalog.search('居家安全').map((a) => a.id), containsAll([3, 13]));
     expect(catalog.search('刷屏').map((a) => a.id), contains(137));
-    expect(catalog.search('高血压没感觉也要管').map((a) => a.id), contains(7));
+    // 词法检索按「词 AND + 子串匹配」：整句自然语言不整句入库，多词拆查
+    expect(catalog.search('高血压 反复升高').map((a) => a.id), contains(7));
     expect(catalog.search('睡眠 节律').map((a) => a.id), contains(61));
     expect(catalog.search('头盔', topicPath: 'health'), isEmpty);
     expect(
@@ -91,11 +92,15 @@ void main() {
     () async {
       final subject = await store();
       subject.profile = const UserProfile(isSmoker: true, prunedOnly: false);
-      expect(subject.todayAdvices.map((a) => a.id), contains(49));
+      // 49「制定戒烟计划」为 process-steps 形态 → 按设计静默储备（dormant），
+      // 吸烟者也不进今日流；改用流内心理条目 103 验证分支排除闭环。
+      expect(subject.triggerEngine.effectiveTriggerOf(catalog.byId[49]!).mode,
+          TriggerMode.dormant);
+      expect(subject.todayAdvices.map((a) => a.id), contains(103));
       subject.excludeTopic('health/mental');
-      expect(subject.todayAdvices.map((a) => a.id), isNot(contains(49)));
+      expect(subject.todayAdvices.map((a) => a.id), isNot(contains(103)));
       subject.restoreTopic('health/mental');
-      expect(subject.todayAdvices.map((a) => a.id), contains(49));
+      expect(subject.todayAdvices.map((a) => a.id), contains(103));
     },
   );
 
@@ -137,7 +142,7 @@ void main() {
     subject.completeOnboarding(const UserProfile());
     await tester.pumpWidget(KairosApp(catalog: catalog, store: subject));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('库'));
+    await tester.tap(find.text('指南'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('按主题分类查找与剪枝'));
     await tester.pumpAndSettle();

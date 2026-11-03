@@ -88,7 +88,9 @@ class UserTodoItem {
 
   /// 转换为 Advice 模型以供统一卡片流与时间尺调度
   Advice toAdvice({int? syntheticId}) {
-    final synId = syntheticId ?? (id.hashCode.abs() % 80000 + 10000);
+    // 合成 id 必须跨进程稳定：id.hashCode 每次运行随机化，重启后打卡/提醒
+    // 记录会全部失联——改用 FNV-1a 对持久化 id 求稳定哈希（值域避开真实建议 1-737）。
+    final synId = syntheticId ?? stableSyntheticIdOf(id);
     final detail = content ?? note ?? title;
     return Advice(
       raw: RawAdvice(id: synId, chapter: '我的自建待办', title: title),
@@ -108,6 +110,16 @@ class UserTodoItem {
       treePath: 'custom/todo',
       treeDisplay: '我的生活防线 > 自建待办',
     );
+  }
+
+  /// 自建待办合成建议 id 的稳定哈希（FNV-1a 32 位；同一持久化 id 跨进程恒定，
+  /// 值域 [10000, 89999] 与真实建议 id 1-737 天然不冲突）。
+  static int stableSyntheticIdOf(String persistentId) {
+    var h = 0x811C9DC5;
+    for (final cu in persistentId.codeUnits) {
+      h = ((h ^ cu) * 0x01000193) & 0xFFFFFFFF;
+    }
+    return h % 80000 + 10000;
   }
 
   static String _frequencyLabel(String f) {

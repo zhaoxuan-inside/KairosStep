@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -219,7 +220,19 @@ class Catalog {
       pinyin: await raw('pinyin'),
     );
     if (kIsWeb) return _assemble(r);
+    // flutter test 的 testWidgets 在 FakeAsync 区运行，Isolate.run 的结果端口
+    // 永不投递（实测死锁）——测试环境退回主线程同步装配；设备/桌面走后台 isolate。
+    if (_isFlutterTest) return _assemble(r);
     return Isolate.run(() => _assemble(r));
+  }
+
+  /// FLUTTER_TEST 由 flutter test 注入（dart:io 仅限非 Web 路径可达）。
+  static bool get _isFlutterTest {
+    try {
+      return Platform.environment.containsKey('FLUTTER_TEST');
+    } catch (_) {
+      return false;
+    }
   }
 
   static Catalog _assemble(_RawAssets r) {

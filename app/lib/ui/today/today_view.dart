@@ -354,6 +354,7 @@ class TodayView extends StatelessWidget {
                 child: Row(
                   children: [
                     GestureDetector(
+                      key: ValueKey('todo-toggle-${todo.id}'),
                       onTap: () => store.toggleUserTodo(todo.id),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
@@ -384,6 +385,7 @@ class TodayView extends StatelessWidget {
                       ),
                     ),
                     IconButton(
+                      key: ValueKey('todo-remove-${todo.id}'),
                       icon: Icon(Icons.close, size: 14, color: p.inkMute),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),

@@ -126,13 +126,20 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
       createdAt: DateTime.now(),
     );
 
+    // 在 pop 之前取齐 messenger 与配色：pop 后 context 已失活，再 lookup 会抛
+    // 「deactivated widget's ancestor」框架异常（设备上表现为保存后无反馈/报错）。
+    final messenger = ScaffoldMessenger.of(context);
+    final snackbarColor = AppPalettes.of(context).action;
+    final snackbarText = '已添加待办「$title」'
+        '${_reminderTimes.isNotEmpty ? "，并注册 ${_reminderTimes.length} 个弹窗提醒" : ""}';
+
     store.addUserTodoItem(item);
     Navigator.of(context).pop();
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       SnackBar(
-        content: Text('已添加待办「$title」${_reminderTimes.isNotEmpty ? "，并注册 ${_reminderTimes.length} 个弹窗提醒" : ""}'),
-        backgroundColor: AppPalettes.of(context).action,
+        content: Text(snackbarText),
+        backgroundColor: snackbarColor,
       ),
     );
   }

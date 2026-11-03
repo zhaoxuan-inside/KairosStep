@@ -52,24 +52,17 @@ class _OnboardingViewState extends State<OnboardingView> {
   OnboardingState? _state;
   List<String>? _frozenOrder;
 
-  UserProfile _draft = const UserProfile();
-  List<OnboardingLayer>? _layers;
+  UserProfile _draft = ProfileEngine.onboardingBaseline;
   int _page = 0;
 
   AppStore get _store => storeOf(context);
   ProfileEngine get _engine => _store.profileEngine;
 
-  @override
-  void initState() {
-    super.initState();
-    _draft = widget.initialProfile ?? ProfileEngine.onboardingBaseline;
-    if (widget.initialProfile != null) {
-      _inferSelections(widget.initialProfile!);
-    }
-    OnboardingConfig.load().then((c) {
-      if (mounted) setState(() => _layers = [for (final l in c.layers) l]);
-    });
-  }
+  // 分层配置直接取自目录内已解析的 L7 onboarding（Catalog.load 装配时已就绪），
+  // 不再在 initState 二次 rootBundle 异步解析——启动少一次重复解码，
+  // 测试环境的 FakeAsync 区也无需等待异步资产。
+  OnboardingConfig get _config => _engine.onboarding;
+  List<OnboardingLayer> get _layers => _config.layers;
 
   @override
   void dispose() {
@@ -243,20 +236,21 @@ class _OnboardingViewState extends State<OnboardingView> {
     }
   }
 
-  int get _layerCount => _layers?.length ?? 0;
+  int get _layerCount => _layers.length;
   int get _lastIndex => _layerCount - 1;
 
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
-    if (_layers == null) {
-      return Scaffold(
-        backgroundColor: p.canvas,
-        body: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      );
+    final config = _config;
+    if (_state == null) {
+      // 首帧：重配置入口推断初始选择态 + 冻结题序 + 初次计算（此后仅离散作答重算）
+      if (widget.initialProfile != null) {
+        _inferSelections(widget.initialProfile!);
+        _draft = widget.initialProfile!;
+      }
+      _recompute();
     }
-    final config = _engine.onboarding;
-    if (_state == null) _recompute(); // 首帧：冻结题序 + 初次计算（此后仅离散作答重算）
     return Scaffold(
       backgroundColor: p.canvas,
       body: SafeArea(
@@ -269,7 +263,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 itemCount: _layerCount,
                 onPageChanged: (i) => setState(() => _page = i),
                 itemBuilder: (context, i) =>
-                    _layerPage(context, p, config, _layers![i]),
+                    _layerPage(context, p, config, _layers[i]),
               ),
             ),
             _footer(p, config),
@@ -291,7 +285,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           Row(
             children: [
               Text(
-                '画像引导 · ${_layers![_page].title}',
+                '画像引导 · ${_layers[_page].title}',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,

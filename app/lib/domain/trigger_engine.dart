@@ -28,20 +28,33 @@ class TriggerEngine {
     customTriggers
       ..clear()
       ..addAll(restored);
+    _effectiveCache.clear();
   }
 
   void set(int id, CustomTriggerConfig cfg) {
-    customTriggers[canonicalAdviceId(id)] = cfg;
+    final key = canonicalAdviceId(id);
+    customTriggers[key] = cfg;
+    _effectiveCache.remove(key);
     onPersist();
   }
 
   void reset(int id) {
-    customTriggers.remove(canonicalAdviceId(id));
+    final key = canonicalAdviceId(id);
+    customTriggers.remove(key);
+    _effectiveCache.remove(key);
     onPersist();
   }
 
-  /// 获取建议生效的触发配置（有自定义取自定义，否则推断原生默认）
-  CustomTriggerConfig effectiveTriggerOf(Advice a) {
+  /// 生效触发配置缓存：推断是纯函数（advice 静态字段 + 静态词表），仅在
+  /// 自定义覆盖增删时失效。全流每次求值 737 条 × 文本拼接 + 数十次关键词
+  /// 扫描，此前每次调用全量重算——今天页一次 build 调两遍，缓存后归零。
+  final Map<int, CustomTriggerConfig> _effectiveCache = {};
+
+  /// 获取建议生效的触发配置（有自定义取自定义，否则推断原生默认）。
+  CustomTriggerConfig effectiveTriggerOf(Advice a) =>
+      _effectiveCache[a.id] ??= _computeEffective(a);
+
+  CustomTriggerConfig _computeEffective(Advice a) {
     if (customTriggers.containsKey(a.id)) {
       return customTriggers[a.id]!;
     }
