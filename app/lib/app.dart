@@ -36,7 +36,16 @@ class KairosApp extends StatelessWidget {
           store: store,
           child: child ?? const SizedBox.shrink(),
         ),
-        home: store.hasProfile ? const AppShell() : const OnboardingView(),
+        // 引导完成 ↔ 主壳：交叉淡入，替代 hasProfile 翻转时的整页硬切
+        home: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 450),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeOut,
+          child: KeyedSubtree(
+            key: ValueKey(store.hasProfile),
+            child: store.hasProfile ? const AppShell() : const OnboardingView(),
+          ),
+        ),
       ),
     );
   }

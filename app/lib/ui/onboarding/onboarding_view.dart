@@ -1,6 +1,7 @@
 // 画像引导渲染器（Phase 6.5 数据驱动化）：题目/分层/剪枝反馈全部来自
 // L7 onboarding.json + ProfileEngine——本文件只负责渲染与答案收集。
-// 原则（ADR-009）：引导即剪枝、未答不剪、先粗后细；required 5 题不可跳过。
+// 原则（ADR-009）：引导即剪枝、未答不剪、先粗后细；required 题仅作重点引导，
+// 不拦截完成——任何时刻都能开启，绝不阻止用户使用（未答的题不参与剪枝）。
 //
 // 状态机制（Phase 8 重写）：答案只存「选择态」（题目 → 已选选项值 + 滑块合成
 // patch），草稿画像一律由选择态按题目顺序重放（replay）得出——重答/取消即改
@@ -54,6 +55,9 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   UserProfile _draft = ProfileEngine.onboardingBaseline;
   int _page = 0;
+
+  // 首次进入的隐私告知页（不联网 / 仅本地 / 卸载即除）；重配置入口不再展示。
+  bool _privacyIntroDone = false;
 
   AppStore get _store => storeOf(context);
   ProfileEngine get _engine => _store.profileEngine;
@@ -197,13 +201,6 @@ class _OnboardingViewState extends State<OnboardingView> {
   bool _isOptionActive(OnboardingQuestion q, OnboardingOption o) =>
       _selected[q.id]?.contains(o.value) ?? false;
 
-  bool get _allRequiredAnswered {
-    for (final q in _engine.onboarding.questions) {
-      if (q.required && !_answered.contains(q.id)) return false;
-    }
-    return true;
-  }
-
   void _complete() {
     HapticFeedback.heavyImpact();
     _store.completeOnboarding(_draft);
@@ -221,7 +218,9 @@ class _OnboardingViewState extends State<OnboardingView> {
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
       );
-    } else if (_allRequiredAnswered) {
+    } else {
+      // 任何时刻都允许完成：未答的题目不参与剪枝（未答不剪，ADR-009），
+      // 必答校验只会把用户挡在门外，与「不阻止使用」原则冲突。
       _complete();
     }
   }
@@ -251,6 +250,32 @@ class _OnboardingViewState extends State<OnboardingView> {
       }
       _recompute();
     }
+    // 隐私告知 ↔ 引导主体：淡入 + 轻微上移过渡，替代生硬的整页跳切
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 380),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeOut,
+      transitionBuilder: (child, anim) => FadeTransition(
+        opacity: anim,
+        child: SlideTransition(
+          position: Tween(begin: const Offset(0, 0.02), end: Offset.zero)
+              .animate(anim),
+          child: child,
+        ),
+      ),
+      child: !widget.isReconfiguring && !_privacyIntroDone
+          ? KeyedSubtree(
+              key: const ValueKey('privacy-intro'),
+              child: _privacyIntro(p),
+            )
+          : KeyedSubtree(
+              key: const ValueKey('onboarding-body'),
+              child: _onboardingScaffold(p, config),
+            ),
+    );
+  }
+
+  Widget _onboardingScaffold(AppPalettes p, OnboardingConfig config) {
     return Scaffold(
       backgroundColor: p.canvas,
       body: SafeArea(
@@ -262,14 +287,134 @@ class _OnboardingViewState extends State<OnboardingView> {
                 controller: _pageController,
                 itemCount: _layerCount,
                 onPageChanged: (i) => setState(() => _page = i),
-                itemBuilder: (context, i) =>
-                    _layerPage(context, p, config, _layers[i]),
+                itemBuilder: (context, i) => AnimatedBuilder(
+                  animation: _pageController,
+                  builder: (context, _) {
+                    // 视差 + 边缘渐隐：页内容随滑动错位滑行并淡入淡出，
+                    // 弱化默认逐像素硬平移的机械感
+                    final page = _pageController.hasClients
+                        ? (_pageController.page ?? _page.toDouble())
+                        : _page.toDouble();
+                    final delta = (page - i).clamp(-1.0, 1.0).toDouble();
+                    return Opacity(
+                      opacity: (1.0 - delta.abs() * 0.4).clamp(0.0, 1.0),
+                      child: Transform.translate(
+                        offset: Offset(delta * 32, 0),
+                        child: _layerPage(context, p, config, _layers[i]),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             _footer(p, config),
           ],
         ),
       ),
+    );
+  }
+
+  // ── 首次进入前的隐私告知：不联网 / 仅本地 / 卸载即除 ──
+
+  Widget _privacyIntro(AppPalettes p) {
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: p.action.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.verified_user_rounded, size: 30, color: p.action),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                '在开始之前',
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                  color: p.ink,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                '你的时光，只属于你。\n'
+                '从这里开始的一切——画像、待办与每一次打卡，\n'
+                '都不会走向云端。\n'
+                '这是一座不联网的岛屿：没有上传，没有同步，也没有旁观者；\n'
+                '所有数据只安放于这台设备的方寸之间，与你朝夕相处。\n'
+                '哪怕某天卸载而去，它们也会与应用一同悄然离席——\n'
+                '不留痕迹，不必告别。',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, height: 1.9, color: p.inkSub),
+              ),
+              const SizedBox(height: 22),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                decoration: BoxDecoration(
+                  color: p.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: p.hairline),
+                ),
+                child: Column(
+                  children: [
+                    _promiseRow(p, Icons.wifi_off_rounded, '永不联网', '无任何网络请求与云端同步'),
+                    const SizedBox(height: 10),
+                    _promiseRow(p, Icons.phone_iphone_rounded, '仅存本地', '数据不出这台设备'),
+                    const SizedBox(height: 10),
+                    _promiseRow(p, Icons.auto_delete_rounded, '卸载即除', '随应用删除，不留痕迹'),
+                  ],
+                ),
+              ),
+              const Spacer(flex: 3),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: p.action,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    setState(() => _privacyIntroDone = true);
+                  },
+                  child: const Text(
+                    '安心开启',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _promiseRow(AppPalettes p, IconData icon, String title, String subtitle) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: p.emerald),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: p.ink),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(subtitle, style: TextStyle(fontSize: 11.5, color: p.inkMute)),
+        ),
+      ],
     );
   }
 
@@ -300,19 +445,55 @@ class _OnboardingViewState extends State<OnboardingView> {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            '已为你聚焦 ${state.activeCount}/${state.totalCount} 条建议'
-            '（随时可跳过，未答不影响推荐）',
-            style: TextStyle(fontSize: 11.5, color: p.action),
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                '已为你聚焦 ',
+                style: TextStyle(fontSize: 11.5, color: p.action),
+              ),
+              // 聚焦计数变化时淡入上滑，避免数字跳变
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 280),
+                switchInCurve: Curves.easeOut,
+                transitionBuilder: (child, anim) => FadeTransition(
+                  opacity: anim,
+                  child: SlideTransition(
+                    position: Tween(begin: const Offset(0, 0.4), end: Offset.zero)
+                        .animate(anim),
+                    child: child,
+                  ),
+                ),
+                child: Text(
+                  '${state.activeCount}/${state.totalCount}',
+                  key: ValueKey('${state.activeCount}/${state.totalCount}'),
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: p.action,
+                  ),
+                ),
+              ),
+              Text(
+                ' 条建议（随时可跳过，未答不影响推荐）',
+                style: TextStyle(fontSize: 11.5, color: p.action),
+              ),
+            ],
           ),
           const SizedBox(height: 6),
           ClipRRect(
             borderRadius: BorderRadius.circular(9999),
-            child: LinearProgressIndicator(
-              value: (_page + 1) / _layerCount,
-              minHeight: 3,
-              backgroundColor: p.pillBg,
-              valueColor: AlwaysStoppedAnimation(p.action),
+            // 进度变化时平滑生长，而非跳到新位置
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(end: (_page + 1) / _layerCount),
+              duration: const Duration(milliseconds: 420),
+              curve: Curves.easeOutCubic,
+              builder: (_, value, _) => LinearProgressIndicator(
+                value: value,
+                minHeight: 3,
+                backgroundColor: p.pillBg,
+                valueColor: AlwaysStoppedAnimation(p.action),
+              ),
             ),
           ),
         ],
@@ -377,7 +558,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 ),
               ),
               if (q.required)
-                Text('必答', style: TextStyle(fontSize: 10, color: p.rose))
+                Text('建议作答', style: TextStyle(fontSize: 10, color: p.amber))
               else
                 Text('可跳过', style: TextStyle(fontSize: 10, color: p.inkMute)),
             ],
@@ -402,13 +583,21 @@ class _OnboardingViewState extends State<OnboardingView> {
             _heightWeightSliders(p),
           ],
           for (final o in q.options)
-            if (o.note != null && _isOptionActive(q, o))
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  o.note!,
-                  style: TextStyle(fontSize: 10.5, color: p.inkMute),
-                ),
+            if (o.note != null)
+              // 选中注释平滑展开/收起，而非突然出现或消失
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                alignment: Alignment.topLeft,
+                child: _isOptionActive(q, o)
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          o.note!,
+                          style: TextStyle(fontSize: 10.5, color: p.inkMute),
+                        ),
+                      )
+                    : const SizedBox(width: double.infinity),
               ),
         ],
       ),
@@ -424,7 +613,10 @@ class _OnboardingViewState extends State<OnboardingView> {
     return InkWell(
       borderRadius: BorderRadius.circular(9999),
       onTap: () => _applyOption(q, o),
-      child: Container(
+      // 选中态底色/描边 200ms 过渡，避免瞬时变色
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: active ? p.action : p.pillBg,
@@ -532,7 +724,6 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   Widget _footer(AppPalettes p, OnboardingConfig config) {
     final isLast = _page == _lastIndex;
-    final canFinish = _allRequiredAnswered;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: Row(
@@ -553,19 +744,19 @@ class _OnboardingViewState extends State<OnboardingView> {
           const SizedBox(width: 8),
           InkWell(
             borderRadius: BorderRadius.circular(9999),
-            onTap: isLast && !canFinish ? null : _nextPage,
+            onTap: _nextPage,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: isLast && !canFinish ? p.pillBg : p.action,
+                color: p.action,
                 borderRadius: BorderRadius.circular(9999),
               ),
               child: Text(
-                isLast ? (canFinish ? '完成并开启' : '完成必答题后开启') : '下一步',
+                isLast ? '完成并开启' : '下一步',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: isLast && !canFinish ? p.inkMute : p.canvas,
+                  color: p.canvas,
                 ),
               ),
             ),

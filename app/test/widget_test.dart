@@ -97,10 +97,18 @@ void main() {
     await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
     await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-    // 现行引导（Phase 6.5 数据驱动）：分层页 + 必答标记 + 实时聚焦反馈
+    // 首次进入先见隐私告知：不联网 / 仅本地 / 卸载即除
+    expect(find.text('在开始之前'), findsOneWidget);
+    expect(find.text('永不联网'), findsOneWidget);
+    expect(find.text('仅存本地'), findsOneWidget);
+    expect(find.text('卸载即除'), findsOneWidget);
+    await tester.tap(find.text('安心开启'));
+    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+    // 现行引导（Phase 6.5 数据驱动）：分层页 + 建议作答标记 + 实时聚焦反馈
     expect(find.textContaining('画像引导 · '), findsOneWidget);
     expect(find.text('画像引导 · 基本盘'), findsOneWidget);
-    expect(find.text('必答'), findsWidgets, reason: '基盘层含必答题（性别/年龄/身高体重）');
+    expect(find.text('建议作答'), findsWidgets, reason: '基盘层含重点题（性别/年龄/身高体重）');
     expect(find.text('你的性别'), findsOneWidget);
     expect(find.textContaining('已为你聚焦'), findsOneWidget);
 
