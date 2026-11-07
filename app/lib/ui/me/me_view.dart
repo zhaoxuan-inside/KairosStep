@@ -355,7 +355,7 @@ class MeView extends StatelessWidget {
         const SizedBox(height: 12),
         Center(
           child: Text(
-            '数字阶跃 KairosStep v1.0.20 · Flutter 跨平台构建',
+            '数字阶跃 KairosStep v1.0.21 · Flutter 跨平台构建',
             style: TextStyle(fontSize: 10, color: p.inkMute),
           ),
         ),
