@@ -236,15 +236,20 @@ class _NowViewState extends State<NowView> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Row(
               children: [
-                Text(
-                  '1.5小时核心行动 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: p.inkMute,
+                // 窄屏(320px)下裸 Text 不折行会向右溢出，标题可截断
+                Expanded(
+                  child: Text(
+                    '1.5小时核心行动 · 第 ${(_heroOffset % periodAdvices.length) + 1} / ${periodAdvices.length} 项',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: p.inkMute,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();

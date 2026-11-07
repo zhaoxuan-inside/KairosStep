@@ -11,6 +11,10 @@ Future<void> showGlobalSearch(BuildContext context) {
   return showGeneralDialog(
     context: context,
     barrierDismissible: true,
+    // barrierDismissible=true 时必须提供 barrierLabel，否则触发
+    // routes.dart '!barrierDismissible || barrierLabel != null' 断言，
+    // debug 包点搜索栏会静默失败（弹层拉不起来）。
+    barrierLabel: '关闭搜索',
     transitionDuration: const Duration(milliseconds: 220),
     pageBuilder: (_, _, _) => const GlobalSearchPage(),
   );

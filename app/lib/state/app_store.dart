@@ -98,6 +98,10 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
 
   /// 同步当前活跃防线至提醒注册器与主动探测调度器（零全盘扫描开销，仅注册剪枝后的活跃条目）
   void syncReminderRegistry() {
+    // 先失效今日流缓存：本方法总在画像/待办/触发变更后、notifyListeners 之前
+    // 被调用，若直接读 todayAdvices 会拿到旧流——新建待办的时点提醒会漏注册，
+    // 直到下一次状态变更才补上（模拟器 E2E 实测缺陷：registered=29 < todayLen=30）。
+    notifyListeners();
     final active = todayAdvices;
     reminderRegistry.registerActiveReminders(active);
     probeScheduler.registerAdvices(active, profile);
@@ -542,9 +546,14 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   // ---------- 建议流（StreamEngine 门面） ----------
 
   /// 真实动态今天待办流（严格准入，包含今日有效自建待办，当下 ⊆ 今天）
-  List<Advice> get todayAdvices => _todayCacheRev == _streamRevision && _todayCache != null
-      ? _todayCache!
-      : _todayCache = streamEngine.todayAdvices(_streamInputs());
+  List<Advice> get todayAdvices {
+    if (_todayCacheRev == _streamRevision && _todayCache != null) {
+      return _todayCache!;
+    }
+    // 记录命中版本：填充缓存时必须同步登记修订号，否则缓存永不命中。
+    _todayCacheRev = _streamRevision;
+    return _todayCache = streamEngine.todayAdvices(_streamInputs());
+  }
 
   // ── 今日流按修订版缓存：一次 notifyListeners 内（一帧/一次同步链）所有读者
   // 共享同一份计算结果；此前 TodayView 一次 build 经 todayAdvices + countersOf

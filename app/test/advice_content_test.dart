@@ -51,9 +51,10 @@ void main() {
     final consent = advices.cast<Map<String, dynamic>>().firstWhere(
       (a) => a['id'] == 280,
     );
-    // 分类策略（见 widget_test「事件分类依据行动阶段」）：按行动阶段而非危险词，
-    // 红线内容中打卡式行动归 haptic-toggle——旧期望 redline-stamp 已过期。
-    expect(consent['act_type'], 'haptic-toggle');
+    // 数据为权威源（data-src 只增不改）：280「意识不清时绝对不要发生关系」
+    // 按 authored 分类保持 redline-stamp（红线盖章）；red_line 章节 67 条中
+    // 24 条为 redline-stamp。勿在测试侧单方面改期望。
+    expect(consent['act_type'], 'redline-stamp');
     expect(consent['t'], '对方喝到意识不清、睡着，绝对不要发生关系');
 
     final statutoryAge = advices.cast<Map<String, dynamic>>().firstWhere(

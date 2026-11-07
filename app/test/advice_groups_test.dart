@@ -52,14 +52,22 @@ void main() {
             '「相关建议」位（dormant 条目的查看场景）接线');
   });
 
-  test('真实流走查：现行候选组在流内不成组（成员为静默储备——设计本意）', () {
+  test('真实流走查：61↔103 authored 候选组成立，静默储备对不成组', () {
     final p = const UserProfile(hasGout: true, age: 52).normalized();
     final e = engineFor(p);
     final yearly = e.cycleAdvicesOf(inputs(p), PeriodScope.yearly);
     expect(yearly.any((a) => a.id == 483), isTrue, reason: '483 出现在年度页');
-    expect(e.adviceGroupIds(inputs(p), yearly), isEmpty,
-        reason: '210/484 为静默储备不进流——组在流内自然不成立'
-            '（待非 dormant 候选对或「相关建议」位接线后生效）');
+    final groups = e.adviceGroupIds(inputs(p), yearly);
+    // advice_relation 新增 authored merge_candidate：61↔103（weight .85，
+    // mergePolicy same_period）。二者均 daily-night 活跃于今日流，年度页
+    // 包含今日流 → 该组正确成立；dormant 成员对（210/484）仍拒绝成组。
+    expect(groups, contains(equals([61, 103])),
+        reason: '61↔103 为 authored 候选且同场（daily 同 night 时段）');
+    expect(
+      groups.any((g) => g.contains(210) || g.contains(484)),
+      isFalse,
+      reason: '210/484 静默储备永不入流，组自然不成立',
+    );
   });
 }
 

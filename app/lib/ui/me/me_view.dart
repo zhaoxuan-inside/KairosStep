@@ -777,16 +777,21 @@ class MeView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.account_tree_outlined, color: p.action),
-                title: const Text('主题分类与剪枝'),
-                subtitle: Text(
-                  '已隐藏 ${store.excludedTopicPaths.length} 个分支 · 可展开与恢复',
+              // ListTile 需自有 Material 承载墨水，避免被外层带背景色的
+              // 卡片容器遮挡并触发框架断言
+              Material(
+                type: MaterialType.transparency,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.account_tree_outlined, color: p.action),
+                  title: const Text('主题分类与剪枝'),
+                  subtitle: Text(
+                    '已隐藏 ${store.excludedTopicPaths.length} 个分支 · 可展开与恢复',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () =>
+                      showTopicTree(context, manage: true, personalized: true),
                 ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    showTopicTree(context, manage: true, personalized: true),
               ),
               InkWell(
                 borderRadius: BorderRadius.circular(10),

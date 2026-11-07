@@ -93,13 +93,18 @@ void main() {
       final subject = await store();
       subject.profile = const UserProfile(isSmoker: true, prunedOnly: false);
       // 49「制定戒烟计划」为 process-steps 形态 → 按设计静默储备（dormant），
-      // 吸烟者也不进今日流；改用流内心理条目 103 验证分支排除闭环。
+      // 吸烟者也不进今日流；改用流内条目 103 验证分支排除闭环。
+      // 注意 103 属双分支 {health/prevention/sleep, daily/digital/screen_time}，
+      // 剪枝语义「任一分支可见即不剪」，两分支都隐藏才从今日流消失。
       expect(subject.triggerEngine.effectiveTriggerOf(catalog.byId[49]!).mode,
           TriggerMode.dormant);
       expect(subject.todayAdvices.map((a) => a.id), contains(103));
-      subject.excludeTopic('health/mental');
+      subject.excludeTopic('health/prevention/sleep');
+      expect(subject.todayAdvices.map((a) => a.id), contains(103),
+          reason: '另一分支 daily/digital/screen_time 仍可见');
+      subject.excludeTopic('daily/digital/screen_time');
       expect(subject.todayAdvices.map((a) => a.id), isNot(contains(103)));
-      subject.restoreTopic('health/mental');
+      subject.restoreTopic('health/prevention/sleep');
       expect(subject.todayAdvices.map((a) => a.id), contains(103));
     },
   );
@@ -158,6 +163,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('日常与起居'), findsOneWidget);
     expect(tester.takeException(), isNull);
+    // 先卸载组件树并停掉引擎 ticker，避免测试收尾时遗留 FakeTimer
     await tester.pumpWidget(const SizedBox.shrink());
+    subject.dispose();
   });
 }

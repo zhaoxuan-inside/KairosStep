@@ -210,10 +210,18 @@ void main() {
     expect(find.text('1.5h 视窗'), findsNothing);
     expect(find.text('-45分 ‹ 此刻 › +45分'), findsNothing);
 
-    // 验证时间尺处于拟人化提示语下方，核心行动卡上方
+    // 验证时间尺处于拟人化提示语下方，核心行动卡上方。
+    // 1.5h 视窗随真实挂钟时间变化（夜间/清晨可能为空）——
+    // 有 Hero 卡时断言层级；为空时断言空态文案。
     final rulerTop = tester.getTopLeft(find.byType(GearRuler)).dy;
-    final cardTop = tester.getTopLeft(find.byType(AdviceCard).first).dy;
-    expect(rulerTop, lessThan(cardTop));
+    final heroCards = find.byType(AdviceCard);
+    if (heroCards.evaluate().isNotEmpty) {
+      final cardTop = tester.getTopLeft(heroCards.first).dy;
+      expect(rulerTop, lessThan(cardTop));
+    } else {
+      expect(find.text('此 1.5 小时视窗内暂无计划行动'), findsOneWidget,
+          reason: '当前时段无窗口行动时应显示空态');
+    }
 
     // 模拟在时间尺上轻触进行时间推演
     await tester.tapAt(

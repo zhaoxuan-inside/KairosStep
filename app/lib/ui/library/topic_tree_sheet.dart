@@ -96,28 +96,33 @@ class _TopicTreeSheetState extends State<TopicTreeSheet> {
                             ),
                     ),
                     Expanded(
-                      child: ListTile(
-                        key: ValueKey('topic-select-${node.path}'),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                        ),
-                        dense: true,
-                        selected: widget.selectedPath == node.path,
-                        title: Text(
-                          node.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: _manage && hiddenBy != null
-                                ? p.inkMute
-                                : p.ink,
+                      // ListTile 需自有 Material 承载墨水涟漪，否则被外层
+                      // DecoratedBox 背景遮挡并触发框架断言
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: ListTile(
+                          key: ValueKey('topic-select-${node.path}'),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 4,
                           ),
+                          dense: true,
+                          selected: widget.selectedPath == node.path,
+                          title: Text(
+                            node.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: _manage && hiddenBy != null
+                                  ? p.inkMute
+                                  : p.ink,
+                            ),
+                          ),
+                          subtitle: Text(
+                            _manage && hiddenBy != null
+                                ? '已隐藏 · 可恢复'
+                                : '$count 条建议',
+                          ),
+                          onTap: () => Navigator.pop(context, node.path),
                         ),
-                        subtitle: Text(
-                          _manage && hiddenBy != null
-                              ? '已隐藏 · 可恢复'
-                              : '$count 条建议',
-                        ),
-                        onTap: () => Navigator.pop(context, node.path),
                       ),
                     ),
                     if (_manage)

@@ -28,6 +28,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # 模拟器/真机 E2E 业务测试（docs/test/业务测试用例-E2E.md）
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true

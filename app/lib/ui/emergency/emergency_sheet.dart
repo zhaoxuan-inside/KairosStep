@@ -611,65 +611,70 @@ class _EmergencySheetState extends State<EmergencySheet> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFF383533)),
                         ),
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 2,
-                          ),
-                          title: Text(
-                            a.title,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                        // ListTile 需自有 Material 承载墨水涟漪，否则被外层
+                        // 带背景色的 Container 遮挡并触发框架断言
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: ListTile(
+                            dense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 2,
                             ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 1.5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFE33A22).withValues(alpha: 0.18),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    a.timingBadge.isNotEmpty ? a.timingBadge : '突发应急',
-                                    style: const TextStyle(
-                                      fontSize: 9.5,
-                                      color: Color(0xFFE33A22),
-                                      fontWeight: FontWeight.w600,
+                            title: Text(
+                              a.title,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 1.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE33A22).withValues(alpha: 0.18),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      a.timingBadge.isNotEmpty ? a.timingBadge : '突发应急',
+                                      style: const TextStyle(
+                                        fontSize: 9.5,
+                                        color: Color(0xFFE33A22),
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    a.chapter,
-                                    style: TextStyle(
-                                      fontSize: 10.5,
-                                      color: Colors.white.withValues(alpha: 0.4),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      a.chapter,
+                                      style: TextStyle(
+                                        fontSize: 10.5,
+                                        color: Colors.white.withValues(alpha: 0.4),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
+                            trailing: const Icon(
+                              Icons.chevron_right,
+                              size: 16,
+                              color: Color(0xFF838280),
+                            ),
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              showAdviceDetail(context, a.id);
+                            },
                           ),
-                          trailing: const Icon(
-                            Icons.chevron_right,
-                            size: 16,
-                            color: Color(0xFF838280),
-                          ),
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            showAdviceDetail(context, a.id);
-                          },
                         ),
                       ),
                   ],

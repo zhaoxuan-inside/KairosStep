@@ -29,12 +29,17 @@ class ReminderAlert {
 /// 内部注册的时刻条目
 class _RegisteredReminder {
   const _RegisteredReminder({
-    required this.adviceId,
+    required this.advice,
     required this.hour,
     required this.minute,
   });
 
-  final int adviceId;
+  /// 注册时直接持有建议引用：自建待办的合成建议（FNV 稳定 id ≥10000）
+  /// 不在 catalog.byId 中，到点后按 id 反查会得到 null 并被静默跳过，
+  /// 导致待办时点提醒永不触发（E2E 实测发现的缺陷）。
+  final Advice advice;
+
+  int get adviceId => advice.id;
   final int hour;
   final int minute;
 }
@@ -98,7 +103,7 @@ class ReminderEngine extends ChangeNotifier {
         final m = int.tryParse(parts[1]);
         if (h != null && m != null && h >= 0 && h <= 23 && m >= 0 && m <= 59) {
           _registeredList.add(
-            _RegisteredReminder(adviceId: a.id, hour: h, minute: m),
+            _RegisteredReminder(advice: a, hour: h, minute: m),
           );
         }
       }
@@ -137,19 +142,16 @@ class ReminderEngine extends ChangeNotifier {
           continue;
         }
 
-        final advice = catalog.adviceById(r.adviceId);
-        if (advice != null) {
-          _suppressedKeys.add(alertKey);
-          final formattedTime =
-              '${r.hour.toString().padLeft(2, '0')}:${r.minute.toString().padLeft(2, '0')}';
-          _currentAlert = ReminderAlert(
-            advice: advice,
-            time: now,
-            formattedTime: formattedTime,
-          );
-          notifyListeners();
-          break;
-        }
+        _suppressedKeys.add(alertKey);
+        final formattedTime =
+            '${r.hour.toString().padLeft(2, '0')}:${r.minute.toString().padLeft(2, '0')}';
+        _currentAlert = ReminderAlert(
+          advice: r.advice,
+          time: now,
+          formattedTime: formattedTime,
+        );
+        notifyListeners();
+        break;
       }
     }
   }
@@ -175,10 +177,21 @@ class ReminderEngine extends ChangeNotifier {
     final targetTime = DateTime.now().add(
       Duration(minutes: minutes ?? catalog.engines.reminder.snoozeMinutes),
     );
-    for (final id in [alert.advice.id, ...alert.groupAdviceIds]) {
+    // leader 直接持引用（含合成待办建议）；组员不在 catalog 时本就无法
+    // 呈现提醒，跳过即可（与旧行为等价——旧行为注册后到点也会静默跳过）
+    _registeredList.add(
+      _RegisteredReminder(
+        advice: alert.advice,
+        hour: targetTime.hour,
+        minute: targetTime.minute,
+      ),
+    );
+    for (final id in alert.groupAdviceIds) {
+      final member = catalog.adviceById(id);
+      if (member == null) continue;
       _registeredList.add(
         _RegisteredReminder(
-          adviceId: id,
+          advice: member,
           hour: targetTime.hour,
           minute: targetTime.minute,
         ),

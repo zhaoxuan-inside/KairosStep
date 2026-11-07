@@ -22,7 +22,10 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        // 只保留现代手机所需的 arm64，避免打包时合并另外两套原生库（ONNX/Flutter 引擎）。
+        // 只保留现代手机所需的 arm64。必须在 defaultConfig 限定：flutter 插件会向
+        // defaultConfig 注入自己的 abiFilters，写在 buildTypes 里过滤会被合并冲掉
+        // （实测 v8 限定失效、产物混入三套 ABI）。
+        // 避免打包时合并另外两套原生库（ONNX/Flutter 引擎）。
         ndk {
             abiFilters.clear()
             abiFilters.add("arm64-v8a")
@@ -36,6 +39,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            // 生产目标仍是 arm64 真机；debug 追加 x86_64 以便在 x86_64 模拟器上
+            // 跑 integration_test E2E（arm64-only 包在该类模拟器上 dlopen libflutter.so 失败）。
+            ndk {
+                abiFilters.add("x86_64")
+            }
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
@@ -46,6 +56,10 @@ android {
             isMinifyEnabled = wantMinify
             isShrinkResources = wantMinify
             ndk {
+                // 模拟器冒烟可用 -Pabi-extra=x86_64 追加（产物仅用于本地验证）。
+                val extraAbis = (project.findProperty("abi-extra") as String?)
+                    ?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+                abiFilters.addAll(extraAbis)
                 // 内部出包不需要提取原生调试符号，省掉符号表相关任务。
                 debugSymbolLevel = "none"
             }

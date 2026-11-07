@@ -468,30 +468,35 @@ class _ChecklistGenPanelState extends State<_ChecklistGenPanel> {
             child: Column(
               children: [
                 for (final item in group.items)
-                  CheckboxListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: p.emerald,
-                    value: _checks[item] ?? false,
-                    title: Text(
-                      item,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: (_checks[item] ?? false) ? p.inkMute : p.ink,
-                        decoration: (_checks[item] ?? false) ? TextDecoration.lineThrough : null,
+                  // CheckboxListTile 需自有 Material 承载墨水，避免被外层
+                  // 带背景色的 Container 遮挡并触发框架断言
+                  Material(
+                    type: MaterialType.transparency,
+                    child: CheckboxListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      activeColor: p.emerald,
+                      value: _checks[item] ?? false,
+                      title: Text(
+                        item,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: (_checks[item] ?? false) ? p.inkMute : p.ink,
+                          decoration: (_checks[item] ?? false) ? TextDecoration.lineThrough : null,
+                        ),
                       ),
-                    ),
-                    onChanged: (v) => setState(() => _checks[item] = v ?? false),
-                    secondary: IconButton(
-                      icon: Icon(Icons.add_task, size: 16, color: p.action),
-                      tooltip: '加入自建待办',
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        store.addUserTodo('【${group.category}】$item', note: '来自决策清单生成器');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('已将“$item”加入专属待办'), duration: const Duration(seconds: 2)),
-                        );
-                      },
+                      onChanged: (v) => setState(() => _checks[item] = v ?? false),
+                      secondary: IconButton(
+                        icon: Icon(Icons.add_task, size: 16, color: p.action),
+                        tooltip: '加入自建待办',
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          store.addUserTodo('【${group.category}】$item', note: '来自决策清单生成器');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('已将“$item”加入专属待办'), duration: const Duration(seconds: 2)),
+                          );
+                        },
+                      ),
                     ),
                   ),
               ],

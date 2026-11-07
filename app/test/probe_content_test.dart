@@ -106,7 +106,10 @@ void main() {
       return;
     }
     expect(f.existsSync(), isTrue, reason: '缺少基线 $_goldenFile');
-    if (f.readAsStringSync() != rendered) {
+    // Windows 下 git autocrlf 会把仓库内 LF 基线检出为 CRLF，
+    // 内容快照按行尾归一后比较（语义一致即通过）。
+    final onDisk = f.readAsStringSync().replaceAll('\r\n', '\n');
+    if (onDisk != rendered) {
       fail('探查内容与基线不一致（probes.json 外置不得改变题目/选项/绑定判定）');
     }
   });

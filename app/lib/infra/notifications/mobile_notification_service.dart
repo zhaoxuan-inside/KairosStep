@@ -31,7 +31,7 @@ class MobileNotificationService implements NotificationSink {
   }) async {
     if (!_isMobile) return;
 
-    const androidSettings = AndroidInitializationSettings('ic_launcher');
+    const androidSettings = AndroidInitializationSettings('ic_notification');
     const iosSettings = DarwinInitializationSettings();
     const settings = InitializationSettings(
       android: androidSettings,
@@ -45,6 +45,8 @@ class MobileNotificationService implements NotificationSink {
           onTap(response.payload);
         },
       );
+      // 初始化链路留痕（debug 可见）：通道静默失效无从排查
+      debugPrint('[notify-init] plugin.initialize=$initialized');
       if (initialized != true) return;
 
       final androidPermission = await _plugin
@@ -52,6 +54,8 @@ class MobileNotificationService implements NotificationSink {
             AndroidFlutterLocalNotificationsPlugin
           >()
           ?.requestNotificationsPermission();
+      debugPrint('[notify-init] requestNotificationsPermission='
+          '$androidPermission');
       final iosPermission = await _plugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
@@ -68,8 +72,10 @@ class MobileNotificationService implements NotificationSink {
         }
         _timezoneInitialized = true;
       }
-    } catch (_) {
+    } catch (e, s) {
       // 通知权限被拒绝或平台不支持时，调度器会回退到应用内弹窗。
+      // 但初始化异常需要留痕（debug 下可见），否则通道静默失效无从排查。
+      debugPrint('[KairosCrash][notify-init] $e\n$s');
     }
   }
 

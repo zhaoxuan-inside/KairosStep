@@ -29,6 +29,8 @@ class ActiveProbeDialog extends StatefulWidget {
     return showDialog(
       context: context,
       barrierDismissible: !payload.isMandatory,
+      // 与 barrierDismissible 同步提供标签，避免 routes.dart 的空标签断言
+      barrierLabel: payload.isMandatory ? null : '关闭探查',
       builder: (_) => PopScope(
         canPop: !payload.isMandatory,
         child: ActiveProbeDialog(payload: payload, scheduler: scheduler),
