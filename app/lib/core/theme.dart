@@ -117,7 +117,11 @@ class AppTheme {
         'Microsoft YaHei',
         'sans-serif',
       ],
-      textTheme: Typography.blackRedwoodCity.copyWith(
+      // blackRedwoodCity 是黑色文字体系,暗色模式下未显式覆盖的样式(如输入框默认的
+      // bodyLarge)会继承黑色文字。先按明暗模式整族套用主文字色,再让下方覆盖项生效。
+      textTheme: Typography.blackRedwoodCity
+          .apply(bodyColor: p.ink, displayColor: p.ink)
+          .copyWith(
         displaySmall: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../app.dart';
 import '../../core/theme.dart';
+import '../../core/time_quotes.dart';
 import '../../state/app_store.dart';
 
 /// 顶部搜索栏左侧的同心四层圆环进度框
@@ -114,6 +115,8 @@ class ConcentricProgressRingWidget extends StatelessWidget {
     required ({int done, int total, Color color}) week,
     required ({int done, int total, Color color}) month,
   }) {
+    // 每次打开弹窗随机抽一句时间名言,弹窗存续期间保持不变。
+    final quote = pickTimeQuote();
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -156,7 +159,7 @@ class ConcentricProgressRingWidget extends StatelessWidget {
               const SizedBox(height: 16),
               _buildProgressRow(
                 p,
-                ringLabel: '内环 · 当下 (±45分钟)',
+                ringLabel: '当下',
                 done: now.done,
                 total: now.total,
                 color: now.color,
@@ -164,7 +167,7 @@ class ConcentricProgressRingWidget extends StatelessWidget {
               const SizedBox(height: 12),
               _buildProgressRow(
                 p,
-                ringLabel: '二环 · 今天 (日间日程)',
+                ringLabel: '今天',
                 done: today.done,
                 total: today.total,
                 color: today.color,
@@ -172,7 +175,7 @@ class ConcentricProgressRingWidget extends StatelessWidget {
               const SizedBox(height: 12),
               _buildProgressRow(
                 p,
-                ringLabel: '三环 · 本周 (周常循环)',
+                ringLabel: '本周',
                 done: week.done,
                 total: week.total,
                 color: week.color,
@@ -180,7 +183,7 @@ class ConcentricProgressRingWidget extends StatelessWidget {
               const SizedBox(height: 12),
               _buildProgressRow(
                 p,
-                ringLabel: '外环 · 本月 (月度底线)',
+                ringLabel: '本月',
                 done: month.done,
                 total: month.total,
                 color: month.color,
@@ -196,14 +199,14 @@ class ConcentricProgressRingWidget extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.shield_outlined, size: 14, color: p.emerald),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '层级包含范式：当下 ⊆ 今天 ⊆ 本周 ⊆ 本月。从每一个微小当下出发，织密人生防御网。',
-                        style: TextStyle(fontSize: 11, color: p.inkSub, height: 1.4),
-                      ),
-                    ),
+                        Icon(Icons.format_quote_rounded, size: 14, color: p.emerald),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            quote,
+                            style: TextStyle(fontSize: 11, color: p.inkSub, height: 1.4),
+                          ),
+                        ),
                   ],
                 ),
               ),
@@ -223,41 +226,45 @@ class ConcentricProgressRingWidget extends StatelessWidget {
   }) {
     final unDone = math.max(0, total - done);
     final ratio = total > 0 ? (done / total).clamp(0.0, 1.0) : 0.0;
-    final percent = (ratio * 100).toStringAsFixed(0);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // 最左:彩色圆点 + 层级标签
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 6),
-                Text(ringLabel, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: p.ink)),
-              ],
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
-            Text(
-              '已完成 $done · 未完成 $unDone · 总数 $total ($percent%)',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
-            ),
+            const SizedBox(width: 6),
+            Text(ringLabel, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: p.ink)),
           ],
         ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(9999),
-          child: SizedBox(
-            height: 6,
-            child: LinearProgressIndicator(
-              value: ratio,
-              backgroundColor: color.withValues(alpha: 0.18),
-              valueColor: AlwaysStoppedAnimation(color),
-            ),
+        const SizedBox(width: 12),
+        // 右侧:进度数据在上,进度条在下
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '已完成 $done · 未完成 $unDone · 总数 $total',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+              ),
+              const SizedBox(height: 4),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9999),
+                child: SizedBox(
+                  height: 6,
+                  child: LinearProgressIndicator(
+                    value: ratio,
+                    backgroundColor: color.withValues(alpha: 0.18),
+                    valueColor: AlwaysStoppedAnimation(color),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
