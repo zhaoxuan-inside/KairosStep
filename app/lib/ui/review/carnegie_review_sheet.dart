@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../app.dart';
 import '../../core/icons.dart';
 import '../../core/theme.dart';
+import 'carnegie_history_view.dart';
 
 /// 卡内基式 4 步周复盘全屏沉浸向导
 ///
@@ -112,6 +113,13 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: '复盘历史',
+            icon: Icon(Icons.history_rounded, size: 20, color: p.inkSub),
+            onPressed: () => CarnegieHistoryView.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -178,8 +186,8 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
                   const Spacer(),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: p.ink,
-                      foregroundColor: p.surface,
+                      backgroundColor: p.action,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
@@ -232,24 +240,31 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
         const SizedBox(height: 6),
         Text('客观还原发生了什么，不要带有情绪评价。', style: TextStyle(fontSize: 12, color: p.inkSub)),
         const SizedBox(height: 14),
+        // 场景标签：与全局胶囊样式一致；runSpacing 保证换行后两行不贴合
         Wrap(
-          spacing: 6,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             for (final t in const ['职场沟通', '伴侣分歧', '消费谈判', '长辈沟通', '朋友借钱'])
               GestureDetector(
                 onTap: () => setState(() => _tag = t),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _tag == t ? p.ink : p.surfaceGrey,
+                    color: _tag == t ? p.action.withValues(alpha: 0.14) : p.pillBg,
                     borderRadius: BorderRadius.circular(9999),
+                    border: Border.all(
+                      color: _tag == t
+                          ? p.action.withValues(alpha: 0.5)
+                          : Colors.transparent,
+                    ),
                   ),
                   child: Text(
                     t,
                     style: TextStyle(
-                      fontSize: 11,
-                      color: _tag == t ? p.surface : p.ink,
-                      fontWeight: _tag == t ? FontWeight.w700 : FontWeight.w400,
+                      fontSize: 11.5,
+                      color: _tag == t ? p.action : p.inkSub,
+                      fontWeight: _tag == t ? FontWeight.w700 : FontWeight.w500,
                     ),
                   ),
                 ),
@@ -381,8 +396,7 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
               maxLines: null,
               expands: true,
               style: TextStyle(
-                fontFamily: 'Georgia',
-                fontSize: 15,
+                fontSize: 14.5,
                 fontWeight: FontWeight.w700,
                 color: p.ink,
                 height: 1.5,
@@ -415,7 +429,6 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
           child: Text(
             '已省察',
             style: TextStyle(
-              fontFamily: 'Georgia',
               fontSize: 13,
               fontWeight: FontWeight.w800,
               color: p.done,

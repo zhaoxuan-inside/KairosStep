@@ -87,19 +87,19 @@ void main() {
     final newHabitId = store.formedHabits.last;
     expect(store.isHabitFormed(newHabitId), isTrue, reason: '写入 kFormedHabits');
 
-    // 我的页：生活防线「已筑牢 N 项本能」计数 +1
+    // 我的页 → 生活防线二级页：「已筑牢 N 项本能」计数 +1
     await tester.tap(navTab('我的').first, warnIfMissed: false);
     await tester.pumpAndSettle(const Duration(seconds: 1));
-    final profileAnchor = find.textContaining('当前画像专属匹配');
-    final defense = find.textContaining('已筑牢 ${formedBefore + 1} 项本能');
-    for (var i = 0;
-        i < 12 &&
-            defense.evaluate().isEmpty &&
-            profileAnchor.evaluate().isNotEmpty;
-        i++) {
-      await dragViewportUp(tester, profileAnchor, times: 1);
+    final defenseEntry = find.text('我的生活防线');
+    for (var i = 0; i < 8 && defenseEntry.evaluate().isEmpty; i++) {
+      await dragViewportUp(tester, find.text('本地安全画像中枢'), times: 1);
     }
-    expect(defense, findsWidgets, reason: '生活防线计数 +1');
+    await tester.ensureVisible(defenseEntry.first);
+    await tester.pumpAndSettle();
+    await tester.tap(defenseEntry.first, warnIfMissed: false);
+    await tester.pumpAndSettle(const Duration(seconds: 1));
+    final defense = find.textContaining('已筑牢 ${formedBefore + 1} 项本能');
+    expect(defense, findsWidgets, reason: '生活防线二级页计数 +1');
 
     // 重新练习（可逆）：移回今日待办流（以 store 真值为准，SnackBar 3s 即逝不作为断言）
     final relearn = find.text('重新练习');

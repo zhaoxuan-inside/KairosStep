@@ -7,6 +7,7 @@ import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
 import '../custom_todo/custom_todo_dialog.dart';
 import '../mood/mood_checkin_dialog.dart';
+import '../review/carnegie_history_view.dart';
 import '../review/carnegie_review_sheet.dart';
 import '../tools/decision_tree_sheet.dart';
 import '../tools/tools_sheet.dart';
@@ -254,6 +255,16 @@ class TodayView extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: p.hairline),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                ),
+                onPressed: () => CarnegieHistoryView.show(context),
+                child: const Text('历史', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(width: 6),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: p.hairline),

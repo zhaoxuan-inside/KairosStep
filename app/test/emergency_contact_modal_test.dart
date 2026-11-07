@@ -43,7 +43,8 @@ void main() {
     expect(find.text('添加本地紧急联系人'), findsOneWidget, reason: '联系表单弹层应出现');
 
     // 点姓名输入框 —— 对应线上「点输入框闪退」场景
-    await tester.tap(find.text('姓名（如：张三）'));
+    expect(find.text('从通讯录选择'), findsOneWidget, reason: '应提供系统通讯录选择入口');
+    await tester.tap(find.text('姓名'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
     tester.testTextInput.enterText('张三');
     await tester.pump();

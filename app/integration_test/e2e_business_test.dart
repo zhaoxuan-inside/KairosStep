@@ -135,19 +135,26 @@ void main() {
 
   // ══════════════════ 模块 A · 启动与画像引导 ══════════════════
 
-  testWidgets('A1-A3 全新安装 → 画像引导作答必答题 → 完成进入主壳', (tester) async {
+  testWidgets('A1-A3 全新安装 → 画像引导作答重点题 → 完成进入主壳', (tester) async {
     await pumpFreshApp(tester);
 
-    // A1：无画像 → 引导页（基本盘 1/7，必答标记与聚焦反馈可见）
+    // A0：隐私告知（不联网 / 仅本地 / 卸载即除）→ 安心开启
+    expect(find.text('在开始之前'), findsOneWidget);
+    expect(find.text('永不联网'), findsOneWidget);
+    expect(find.text('仅存本地'), findsOneWidget);
+    expect(find.text('卸载即除'), findsOneWidget);
+    await tapVisible(tester, find.text('安心开启'), reason: '隐私告知确认');
+
+    // A1：无画像 → 引导页（基本盘 1/7，建议作答标记与聚焦反馈可见）
     expect(find.textContaining('画像引导 · '), findsOneWidget);
     expect(find.text('画像引导 · 基本盘'), findsOneWidget);
     expect(find.text('1/7'), findsOneWidget);
-    expect(find.text('必答'), findsWidgets);
+    expect(find.text('建议作答'), findsWidgets);
     expect(find.textContaining('已为你聚焦'), findsOneWidget);
 
     // A2：性别（单选）
     await tapVisible(tester, find.text('男'), reason: '性别选项可见');
-    // 年龄/身高/体重三个滑块（必答）：各拖动一次即作答
+    // 年龄/身高/体重三个滑块（建议作答）：各拖动一次即作答
     final sliders = find.byType(Slider);
     expect(sliders.evaluate().length, 3, reason: '基本盘层有 年龄/身高/体重 三个滑块');
     for (var i = 0; i < 3; i++) {
@@ -171,7 +178,7 @@ void main() {
     for (var i = 0; i < 3; i++) {
       await tapVisible(tester, find.text('下一步'), reason: '引导推进');
     }
-    await tapVisible(tester, find.text('完成并开启'), reason: '必答齐后主按钮可用');
+    await tapVisible(tester, find.text('完成并开启'), reason: '主按钮随时可用（不阻止完成）');
     expect(store.hasProfile, isTrue);
     expect(prefs.getBool('kHasCompletedOnboarding'), isTrue);
     expect(prefs.getString('kProfile'), isNotNull);
@@ -276,16 +283,14 @@ void main() {
     await pumpApp(tester);
     await tapVisible(tester, navTab('今天'), reason: 'Tab 今天');
 
-    // C1：今天页「新建待办」入口 → 空标题提交被拦截
+    // C1：今天页「新建待办」入口 → 空标题提交被标红拦截
     await tapVisible(tester, find.text('新建待办'), reason: '待办区新建入口');
-    expect(find.text('新建自建待办 · 生活防线'), findsOneWidget);
+    expect(find.text('新建待办事项'), findsOneWidget);
     final saveBtn = find.text('保存并注入生活防线');
     await tester.ensureVisible(saveBtn);
     await tester.tap(saveBtn, warnIfMissed: false);
     await tester.pumpAndSettle(const Duration(milliseconds: 600));
-    expect(find.text('请输入待办标题'), findsOneWidget, reason: '空标题应有 SnackBar 拦截');
-    // 等真实 SnackBar 消失，避免浮层挡住保存按钮
-    await Future<void>.delayed(const Duration(seconds: 5));
+    expect(find.text('请填写待办标题'), findsOneWidget, reason: '空标题应在标题框标红拦截');
     await tester.pumpAndSettle();
 
     // C2：填写标题并保存（以 store 状态为权威断言，SnackBar 为辅助）
@@ -502,7 +507,9 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 1));
     expect(prefs.getString('kThemeMode'), 'dark');
 
-    // H2：年龄滑块调整 → 画像更新（滑块在画像卡内，先滚回顶部区域）
+    // H2：年龄滑块调整 → 画像更新（滑块下沉到 L2 画像详情页）
+    await tapVisible(tester, find.text('我的画像'), reason: '身份卡进入画像详情');
+    await tester.pumpAndSettle(const Duration(seconds: 1));
     final ageSlider = find.byType(Slider).first;
     if (ageSlider.evaluate().isNotEmpty) {
       await scrollFinderToBand(tester, ageSlider);
@@ -511,6 +518,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(store.profile.age, isNot(equals(beforeAge)), reason: '拖动滑块更新画像年龄');
     }
+    await tapVisible(tester, find.byTooltip('返回'), reason: '返回我的页');
+    await tester.pumpAndSettle(const Duration(seconds: 1));
 
     // 生活防线区
     await scrollListToText(tester, profileAnchor, '我的生活防线');

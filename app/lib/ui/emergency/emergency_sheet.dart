@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app.dart';
 import '../../core/icons.dart';
+import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import '../detail/advice_detail_sheet.dart';
@@ -844,80 +845,276 @@ class _EmergencySheetState extends State<EmergencySheet> {
   }
 
   void _showAddContactModal(BuildContext context, AppStore store) {
-    final nameCtl = TextEditingController();
-    final phoneCtl = TextEditingController();
-    final relCtl = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1F1E1D),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.transparent,
+      // 键盘弹出时由内容区自行避让，避免路由动画期间 IME 与弹层同时改变约束
+      builder: (_) => _AddContactSheet(store: store),
+    );
+  }
+}
+
+/// 添加紧急联系人弹层：与全局弹层视觉一致（surface 底 + 圆角 24 + 胶囊字段）。
+///
+/// 两条录入路径：系统通讯录选择器（用户主动挑选单个联系人，无需通讯录权限）
+/// 与手动填写；姓名与电话为必填，缺失时就地标红提示。
+class _AddContactSheet extends StatefulWidget {
+  const _AddContactSheet({required this.store});
+
+  final AppStore store;
+
+  @override
+  State<_AddContactSheet> createState() => _AddContactSheetState();
+}
+
+class _AddContactSheetState extends State<_AddContactSheet> {
+  static const _contactsChannel = MethodChannel('kairostep/contacts');
+
+  final _nameCtl = TextEditingController();
+  final _relCtl = TextEditingController();
+  final _phoneCtl = TextEditingController();
+
+  bool _nameError = false;
+  bool _phoneError = false;
+
+  @override
+  void dispose() {
+    _nameCtl.dispose();
+    _relCtl.dispose();
+    _phoneCtl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickFromContacts() async {
+    HapticFeedback.selectionClick();
+    try {
+      // 系统联系人选择器：仅返回用户主动选中的那一条，无需 READ_CONTACTS 权限
+      final picked =
+          await _contactsChannel.invokeMapMethod<String, dynamic>(
+        'pickContact',
+      );
+      if (!mounted || picked == null) return;
+      final name = (picked['name'] as String? ?? '').trim();
+      final phone = (picked['phone'] as String? ?? '').trim();
+      setState(() {
+        if (name.isNotEmpty) {
+          _nameCtl.text = name;
+          _nameError = false;
+        }
+        if (phone.isNotEmpty) {
+          _phoneCtl.text = phone;
+          _phoneError = false;
+        }
+      });
+    } on MissingPluginException {
+      _fallbackNoContacts();
+    } on PlatformException {
+      _fallbackNoContacts();
+    } catch (_) {
+      _fallbackNoContacts();
+    }
+  }
+
+  void _fallbackNoContacts() {
+    // 桌面端/模拟器无通讯录应用：降级为手动填写
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('当前设备无法打开通讯录，请手动填写')),
+    );
+  }
+
+  void _submit() {
+    final name = _nameCtl.text.trim();
+    final phone = _phoneCtl.text.trim();
+    if (name.isEmpty || phone.isEmpty) {
+      HapticFeedback.heavyImpact();
+      setState(() {
+        _nameError = name.isEmpty;
+        _phoneError = phone.isEmpty;
+      });
+      return;
+    }
+    HapticFeedback.mediumImpact();
+    widget.store.addEmergencyContact(
+      name,
+      phone,
+      _relCtl.text.trim().isEmpty ? '亲属' : _relCtl.text.trim(),
+    );
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = AppPalettes.of(context);
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Container(
+      margin: EdgeInsets.only(top: 60, bottom: bottomInset),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(16, 20, 16, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '添加本地紧急联系人',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: nameCtl,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: const InputDecoration(
-                hintText: '姓名（如：张三）',
-                hintStyle: TextStyle(color: Color(0xFF838280), fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: relCtl,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: const InputDecoration(
-                hintText: '关系（如：配偶 / 父亲 / 女儿）',
-                hintStyle: TextStyle(color: Color(0xFF838280), fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: phoneCtl,
-              keyboardType: TextInputType.phone,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: const InputDecoration(
-                hintText: '电话号码',
-                hintStyle: TextStyle(color: Color(0xFF838280), fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2A72DE),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 拖动手柄与标题
+              Center(
+                child: Container(
+                  width: 38,
+                  height: 4.5,
+                  decoration: BoxDecoration(
+                    color: p.inkMute.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(9999),
+                  ),
                 ),
-                onPressed: () {
-                  if (nameCtl.text.trim().isNotEmpty && phoneCtl.text.trim().isNotEmpty) {
-                    store.addEmergencyContact(
-                      nameCtl.text.trim(),
-                      phoneCtl.text.trim(),
-                      relCtl.text.trim().isEmpty ? '亲属' : relCtl.text.trim(),
-                    );
-                    Navigator.of(ctx).pop();
-                  }
-                },
-                child: const Text('保存到本机', style: TextStyle(fontWeight: FontWeight.w700)),
               ),
-            ),
-          ],
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Icon(Icons.person_add_alt_1_rounded, color: p.rose, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '添加本地紧急联系人',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: p.ink,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: p.action.withValues(alpha: 0.5)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9999),
+                  ),
+                  minimumSize: const Size(double.infinity, 42),
+                ),
+                onPressed: _pickFromContacts,
+                icon: Icon(Icons.contacts_rounded, size: 16, color: p.action),
+                label: Text(
+                  '从通讯录选择',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: p.action,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '仅读取你主动选中的那一条，数据不出本机',
+                style: TextStyle(fontSize: 10.5, color: p.inkMute),
+              ),
+              const SizedBox(height: 14),
+              _field(
+                p,
+                controller: _nameCtl,
+                hint: '姓名',
+                error: _nameError,
+                errorText: '请填写姓名',
+                onChanged: () {
+                  if (_nameError) setState(() => _nameError = false);
+                },
+              ),
+              const SizedBox(height: 12),
+              _field(p, controller: _relCtl, hint: '关系'),
+              const SizedBox(height: 12),
+              _field(
+                p,
+                controller: _phoneCtl,
+                hint: '电话号码',
+                keyboardType: TextInputType.phone,
+                error: _phoneError,
+                errorText: '请填写电话号码',
+                onChanged: () {
+                  if (_phoneError) setState(() => _phoneError = false);
+                },
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: p.action,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: _submit,
+                  child: const Text(
+                    '保存到本机',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _field(
+    AppPalettes p, {
+    required TextEditingController controller,
+    required String hint,
+    TextInputType? keyboardType,
+    bool error = false,
+    String? errorText,
+    VoidCallback? onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          onChanged: (_) => onChanged?.call(),
+          style: TextStyle(fontSize: 13.5, color: p.ink),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(fontSize: 13, color: p.inkMute),
+            filled: true,
+            fillColor: p.pillBg,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: error ? p.rose : p.hairline),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: error ? p.rose : p.hairline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: error ? p.rose : p.action),
+            ),
+          ),
+        ),
+        if (error && errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              errorText,
+              style: TextStyle(fontSize: 11.5, color: p.rose),
+            ),
+          ),
+      ],
     );
   }
 }
