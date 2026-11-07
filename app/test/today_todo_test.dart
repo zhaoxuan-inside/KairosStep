@@ -47,7 +47,7 @@ void main() {
     // 打开新建弹窗
     await tester.tap(find.text('新建待办'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
-    expect(find.text('新建自建待办 · 生活防线'), findsOneWidget);
+    expect(find.text('新建待办事项'), findsOneWidget);
 
     // 填写标题与内容
     await tester.enterText(find.byType(TextField).first, '喝水');
@@ -61,7 +61,7 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
 
     // 弹窗关闭 + 待办入库（默认携带 08:30 提醒时点）
-    expect(find.text('新建自建待办 · 生活防线'), findsNothing);
+    expect(find.text('新建待办事项'), findsNothing);
     expect(store.userTodos.length, 1);
     expect(store.userTodos.first.title, '喝水');
     expect(store.userTodos.first.reminderTimes, ['08:30']);

@@ -5,7 +5,8 @@ import '../../app.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
 
-/// 完整自建待办创建弹窗：支持标题、内容、触发时间、时段范围、多提醒时点、提前提醒与频次
+/// 完整自建待办创建弹窗：支持标题、内容、触发频次、自定义生活时段
+/// （提醒时点 = 时段开始时间）与多选提前提醒
 class CustomTodoDialog extends StatefulWidget {
   const CustomTodoDialog({super.key});
 
@@ -28,20 +29,12 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 
-  TimeOfDay? _triggerTime = const TimeOfDay(hour: 8, minute: 30);
-  String _timePeriod = 'all_day';
-  final List<String> _reminderTimes = ['08:30'];
-  int _leadMinutes = 0; // 0, 5, 15, 30
+  // 所属生活时段（自定义起止）：提醒时点 = 时段开始时间
+  TimeOfDay _periodStart = const TimeOfDay(hour: 8, minute: 30);
+  TimeOfDay _periodEnd = const TimeOfDay(hour: 20, minute: 0);
+  List<int> _leadMinutes = const [0]; // 0(准时), 5, 15, 30，可多选且至少保留一项
   String _frequency = 'daily'; // 'daily', 'workday', 'weekend', 'weekly', 'monthly', 'once'
-
-  static const _periodOptions = [
-    ('all_day', '全天守护'),
-    ('morning', '晨间 (05:00-09:30)'),
-    ('focus', '上午专注 (09:30-12:00)'),
-    ('afternoon', '午后 (12:00-18:00)'),
-    ('evening', '傍晚 (18:00-22:00)'),
-    ('night', '夜间 (22:00-05:00)'),
-  ];
+  bool _titleError = false; // 空标题提交时在标题框标红
 
   static const _freqOptions = [
     ('daily', '每天'),
@@ -57,6 +50,10 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
     (5, '提前 5 分钟'),
     (15, '提前 15 分钟'),
     (30, '提前 30 分钟'),
+    (1440, '提前 1 天'),
+    (4320, '提前 3 天'),
+    (7200, '提前 5 天'),
+    (10080, '提前 7 天'),
   ];
 
   @override
@@ -69,60 +66,45 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
   String _formatTime(TimeOfDay t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
-  Future<void> _pickTriggerTime() async {
+  Future<void> _pickPeriodTime({required bool isStart}) async {
     HapticFeedback.selectionClick();
     final picked = await showTimePicker(
       context: context,
-      initialTime: _triggerTime ?? const TimeOfDay(hour: 8, minute: 30),
+      initialTime: isStart ? _periodStart : _periodEnd,
     );
     if (picked != null) {
       setState(() {
-        _triggerTime = picked;
-        final timeStr = _formatTime(picked);
-        if (!_reminderTimes.contains(timeStr)) {
-          _reminderTimes.insert(0, timeStr);
+        if (isStart) {
+          _periodStart = picked;
+        } else {
+          _periodEnd = picked;
         }
       });
-    }
-  }
-
-  Future<void> _addReminderTime() async {
-    HapticFeedback.selectionClick();
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      final str = _formatTime(picked);
-      if (!_reminderTimes.contains(str)) {
-        setState(() {
-          _reminderTimes.add(str);
-          _reminderTimes.sort();
-        });
-      }
     }
   }
 
   void _submit() {
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入待办标题')),
-      );
+      // 空标题不再用 SnackBar 拦截，而是直接在标题框标红提示。
+      HapticFeedback.heavyImpact();
+      setState(() => _titleError = true);
       return;
     }
 
     HapticFeedback.mediumImpact();
     final store = storeOf(context);
-    final triggerTimeStr = _triggerTime != null ? _formatTime(_triggerTime!) : null;
+    final startStr = _formatTime(_periodStart);
 
     final item = UserTodoItem(
       id: UserTodoItem.newId(),
       title: title,
       content: _contentController.text.trim(),
-      triggerTime: triggerTimeStr,
-      timePeriod: _timePeriod,
-      reminderTimes: _reminderTimes,
+      triggerTime: startStr, // 触发时点 = 时段开始
+      periodStart: startStr,
+      periodEnd: _formatTime(_periodEnd),
+      timePeriod: 'all_day', // 遗留字段：旧版预设键，自定义时段不再使用
+      reminderTimes: [startStr], // 提醒时点 = 时段开始时间
       leadMinutes: _leadMinutes,
       frequency: _frequency,
       createdAt: DateTime.now(),
@@ -132,8 +114,7 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
     // 「deactivated widget's ancestor」框架异常（设备上表现为保存后无反馈/报错）。
     final messenger = ScaffoldMessenger.of(context);
     final snackbarColor = AppPalettes.of(context).action;
-    final snackbarText = '已添加待办「$title」'
-        '${_reminderTimes.isNotEmpty ? "，并注册 ${_reminderTimes.length} 个弹窗提醒" : ""}';
+    final snackbarText = '已添加待办「$title」，提醒将于 $startStr 触发';
 
     store.addUserTodoItem(item);
     Navigator.of(context).pop();
@@ -183,7 +164,7 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '新建自建待办 · 生活防线',
+                      '新建待办事项',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -193,22 +174,22 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.close, size: 20, color: p.inkSub),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
 
               // 1. 待办标题
-              Text('待办标题 (必填)', style: _labelStyle(p)),
+              Text('待办标题', style: _labelStyle(p)),
               const SizedBox(height: 6),
               TextField(
                 controller: _titleController,
                 // 不在弹层入场动画期间自动拉起输入法：部分 Android 设备/输入法
                 // 会在路由动画中同时改窗口 inset，导致弹层反复重建甚至闪退。
                 autofocus: false,
+                onChanged: (_) {
+                  // 开始输入即撤销标红，避免成功作答后红框残留。
+                  if (_titleError) setState(() => _titleError = false);
+                },
                 decoration: InputDecoration(
                   hintText: '如：早起空腹测血压、带头盔出发、复核劳动合同...',
                   hintStyle: TextStyle(fontSize: 13, color: p.inkMute),
@@ -217,18 +198,30 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: p.hairline),
+                    borderSide: BorderSide(color: _titleError ? p.rose : p.hairline),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: p.hairline),
+                    borderSide: BorderSide(color: _titleError ? p.rose : p.hairline),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: _titleError ? p.rose : p.action),
                   ),
                 ),
               ),
+              if (_titleError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    '请填写待办标题',
+                    style: TextStyle(fontSize: 11.5, color: p.rose),
+                  ),
+                ),
               const SizedBox(height: 16),
 
               // 2. 详细内容/执行要点
-              Text('操作指引与补充内容 (选填)', style: _labelStyle(p)),
+              Text('操作指引与补充内容', style: _labelStyle(p)),
               const SizedBox(height: 6),
               TextField(
                 controller: _contentController,
@@ -251,86 +244,11 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
               ),
               const SizedBox(height: 18),
 
-              // 3. 触发时间与触发频次
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('具体触发时间点', style: _labelStyle(p)),
-                        const SizedBox(height: 6),
-                        InkWell(
-                          onTap: _pickTriggerTime,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                            decoration: BoxDecoration(
-                              color: p.pillBg,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: p.hairline),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.access_time, size: 16, color: p.action),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _triggerTime != null ? _formatTime(_triggerTime!) : '未指定',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: p.ink,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('触发频次/周期', style: _labelStyle(p)),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: p.pillBg,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: p.hairline),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _frequency,
-                              isExpanded: true,
-                              items: _freqOptions.map((f) {
-                                return DropdownMenuItem(
-                                  value: f.$1,
-                                  child: Text(f.$2, style: const TextStyle(fontSize: 13)),
-                                );
-                              }).toList(),
-                              onChanged: (val) {
-                                if (val != null) setState(() => _frequency = val);
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-
-              // 4. 时段范围 (对应当下与日常时间流)
-              Text('所属生活时段 (用于时间尺与视窗过滤)', style: _labelStyle(p)),
+              // 3. 触发频次
+              Text('触发频次', style: _labelStyle(p)),
               const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: p.pillBg,
                   borderRadius: BorderRadius.circular(12),
@@ -338,77 +256,66 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: _timePeriod,
+                    value: _frequency,
                     isExpanded: true,
-                    items: _periodOptions.map((po) {
+                    borderRadius: BorderRadius.circular(12),
+                    dropdownColor: p.surface,
+                    elevation: 3,
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    icon: Icon(Icons.expand_more_rounded, size: 18, color: p.inkSub),
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: p.ink,
+                    ),
+                    items: _freqOptions.map((f) {
+                      final selected = f.$1 == _frequency;
                       return DropdownMenuItem(
-                        value: po.$1,
-                        child: Text(po.$2, style: const TextStyle(fontSize: 13)),
+                        value: f.$1,
+                        child: Row(
+                          children: [
+                            Expanded(child: Text(f.$2)),
+                            if (selected)
+                              Icon(Icons.check_rounded, size: 16, color: p.action),
+                          ],
+                        ),
                       );
                     }).toList(),
                     onChanged: (val) {
-                      if (val != null) setState(() => _timePeriod = val);
+                      if (val != null) setState(() => _frequency = val);
                     },
                   ),
                 ),
               ),
               const SizedBox(height: 18),
 
-              // 5. 提醒时间列表与提前提醒
+              // 4. 所属生活时段（自定义起止；提醒时点 = 开始时间）
+              Text('所属生活时段', style: _labelStyle(p)),
+              const SizedBox(height: 6),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Text(
-                      '弹窗提醒时刻列表 (注册器免扫描)',
-                      style: _labelStyle(p),
-                    ),
+                  Expanded(child: _periodBox(p, isStart: true)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text('至', style: TextStyle(fontSize: 12, color: p.inkMute)),
                   ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    icon: Icon(Icons.add_alarm, size: 14, color: p.action),
-                    label: Text('加时点', style: TextStyle(fontSize: 12, color: p.action)),
-                    onPressed: _addReminderTime,
-                  ),
+                  Expanded(child: _periodBox(p, isStart: false)),
                 ],
               ),
               const SizedBox(height: 4),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final t in _reminderTimes)
-                    Chip(
-                      backgroundColor: p.action.withValues(alpha: 0.1),
-                      label: Text(
-                        t,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: p.action,
-                        ),
-                      ),
-                      deleteIcon: Icon(Icons.close, size: 14, color: p.action),
-                      onDeleted: () {
-                        setState(() => _reminderTimes.remove(t));
-                      },
-                    ),
-                  if (_reminderTimes.isEmpty)
-                    Text(
-                      '未添加弹窗提醒时点（仅在对应待办流中呈现）',
-                      style: TextStyle(fontSize: 12, color: p.inkMute),
-                    ),
-                ],
+              Text(
+                '提醒将在时段开始时间触发',
+                style: TextStyle(fontSize: 11, color: p.inkMute),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 18),
 
-              // 6. 提前提醒范围
+              // 5. 提前提醒范围（可多选）
               Text('提前提醒范围', style: _labelStyle(p)),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 8,
                 children: _leadOptions.map((opt) {
-                  final sel = _leadMinutes == opt.$1;
+                  final sel = _leadMinutes.contains(opt.$1);
                   return ChoiceChip(
                     label: Text(opt.$2),
                     selected: sel,
@@ -419,7 +326,15 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
                       fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
                     ),
                     onSelected: (v) {
-                      if (v) setState(() => _leadMinutes = opt.$1);
+                      setState(() {
+                        if (v) {
+                          _leadMinutes = [..._leadMinutes, opt.$1]..sort();
+                        } else if (_leadMinutes.length > 1) {
+                          _leadMinutes =
+                              _leadMinutes.where((m) => m != opt.$1).toList();
+                        }
+                        // 仅剩最后一项时取消不生效：至少保留一个提醒基准。
+                      });
                     },
                   );
                 }).toList(),
@@ -444,6 +359,37 @@ class _CustomTodoDialogState extends State<CustomTodoDialog> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// 所属生活时段起止选择框（点击弹系统时间选择器）
+  Widget _periodBox(AppPalettes p, {required bool isStart}) {
+    final t = isStart ? _periodStart : _periodEnd;
+    return InkWell(
+      onTap: () => _pickPeriodTime(isStart: isStart),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+        decoration: BoxDecoration(
+          color: p.pillBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: p.hairline),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.access_time, size: 16, color: p.action),
+            const SizedBox(width: 8),
+            Text(
+              _formatTime(t),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: p.ink,
+              ),
+            ),
+          ],
         ),
       ),
     );

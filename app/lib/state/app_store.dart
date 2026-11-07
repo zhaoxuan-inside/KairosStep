@@ -437,7 +437,7 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     String? triggerTime,
     String timePeriod = 'all_day',
     List<String> reminderTimes = const [],
-    int leadMinutes = 0,
+    List<int> leadMinutes = const [0],
     String frequency = 'daily',
     String? targetDate,
   }) {

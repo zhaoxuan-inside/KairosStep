@@ -55,7 +55,7 @@ void main() {
     // ignore: avoid_print
     print('[$name] exception=$ex');
     expect(ex, isNull, reason: '$name 打开弹窗+键盘时不应有框架异常');
-    expect(find.text('新建自建待办 · 生活防线'), findsOneWidget);
+    expect(find.text('新建待办事项'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     store.dispose();

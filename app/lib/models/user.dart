@@ -22,9 +22,11 @@ class UserTodoItem {
     this.note,
     this.content,
     this.triggerTime, // 触发时间如 "08:30"
+    this.periodStart, // 所属生活时段开始 "HH:mm"（即提醒时点）；旧数据为 null
+    this.periodEnd, // 所属生活时段结束 "HH:mm"；旧数据为 null
     this.timePeriod = 'all_day', // 'morning', 'focus', 'afternoon', 'evening', 'night', 'all_day'
     this.reminderTimes = const [], // 提醒时间列表如 ["08:30", "12:00"]
-    this.leadMinutes = 0, // 提前提醒：0 (准时), 5, 15, 30
+    this.leadMinutes = const [0], // 提前提醒分钟数列表：0 (准时), 5, 15, 30，可多选
     this.frequency =
         'daily', // 'daily', 'workday', 'weekend', 'weekly', 'monthly', 'once'
     this.triggerCount = 1,
@@ -39,9 +41,11 @@ class UserTodoItem {
   final String? note;
   final String? content; // 详细内容/执行操作要点
   final String? triggerTime; // 触发时间点 (HH:mm)
+  final String? periodStart; // 所属生活时段开始（HH:mm，即提醒时点）；旧数据为 null
+  final String? periodEnd; // 所属生活时段结束（HH:mm）；旧数据为 null
   final String timePeriod; // 时间范围/时段
   final List<String> reminderTimes; // 提醒时间列表
-  final int leadMinutes; // 提前提醒分钟数
+  final List<int> leadMinutes; // 提前提醒分钟数列表（可多选）
   final String frequency; // 触发周期
   final int triggerCount; // 触发次数
 
@@ -61,7 +65,7 @@ class UserTodoItem {
     String? triggerTime,
     String? timePeriod,
     List<String>? reminderTimes,
-    int? leadMinutes,
+    List<int>? leadMinutes,
     String? frequency,
     int? triggerCount,
   }) => UserTodoItem(
@@ -156,6 +160,8 @@ class UserTodoItem {
     'note': note,
     'content': content,
     'triggerTime': triggerTime,
+    'periodStart': periodStart,
+    'periodEnd': periodEnd,
     'timePeriod': timePeriod,
     'reminderTimes': reminderTimes,
     'leadMinutes': leadMinutes,
@@ -174,9 +180,16 @@ class UserTodoItem {
     note: json['note'] as String?,
     content: json['content'] as String?,
     triggerTime: json['triggerTime'] as String?,
+    periodStart: json['periodStart'] as String?,
+    periodEnd: json['periodEnd'] as String?,
     timePeriod: json['timePeriod'] as String? ?? 'all_day',
     reminderTimes: (json['reminderTimes'] as List?)?.cast<String>() ?? const [],
-    leadMinutes: json['leadMinutes'] as int? ?? 0,
+    // 旧版为单选整数（0/5/15/30），读取时无损迁移为列表。
+    leadMinutes: switch (json['leadMinutes']) {
+      final List l => l.cast<int>().toList(),
+      final int n => [n],
+      _ => const [0],
+    },
     frequency: json['frequency'] as String? ?? 'daily',
     triggerCount: json['triggerCount'] as int? ?? 1,
   );
