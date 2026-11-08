@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,20 +17,87 @@ import '../../state/app_store.dart';
 /// - Ring 4 (最外层): 本月
 ///
 /// 每层专属独立颜色；已完成高亮饱满，未完成暗色底轨。
+/// 进度变化时弧线以 easeOutCubic 平滑生长，而非跳变。
 /// 点击弹出四层粒度详细进度弹窗卡。
-class ConcentricProgressRingWidget extends StatelessWidget {
+class ConcentricProgressRingWidget extends StatefulWidget {
   const ConcentricProgressRingWidget({super.key});
+
+  @override
+  State<ConcentricProgressRingWidget> createState() =>
+      _ConcentricProgressRingWidgetState();
+}
+
+class _ConcentricProgressRingWidgetState
+    extends State<ConcentricProgressRingWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 600),
+  )..value = 1;
+
+  // 四环插值状态：[月, 周, 天, 当下]（从外到里，与绘制顺序一致）
+  List<double> _from = const [0, 0, 0, 0];
+  List<double> _to = const [0, 0, 0, 0];
+
+  (int, int) _now = (0, 0);
+  (int, int) _today = (0, 0);
+  (int, int) _week = (0, 0);
+  (int, int) _month = (0, 0);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncTargets();
+  }
+
+  @override
+  void didUpdateWidget(covariant ConcentricProgressRingWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncTargets();
+  }
+
+  void _syncTargets() {
+    final store = storeOf(context);
+    final now = _getNowCounters(store);
+    final today = store.countersOf(PeriodScope.today);
+    final week = store.countersOf(PeriodScope.weekly);
+    final month = store.countersOf(PeriodScope.monthly);
+    double ratio(int done, int total) =>
+        total > 0 ? (done / total).clamp(0.0, 1.0) : 0.0;
+    final next = [
+      ratio(month.$1, month.$2),
+      ratio(week.$1, week.$2),
+      ratio(today.$1, today.$2),
+      ratio(now.$1, now.$2),
+    ];
+    _now = now;
+    _today = today;
+    _week = week;
+    _month = month;
+    if (listEquals(next, _to)) return;
+    setState(() {
+      _from = _displayed();
+      _to = next;
+    });
+    _ctl.forward(from: 0);
+  }
+
+  List<double> _displayed() {
+    final t = CurvedAnimation(parent: _ctl, curve: Curves.easeOutCubic).value;
+    return [
+      for (var i = 0; i < 4; i++) _from[i] + (_to[i] - _from[i]) * t,
+    ];
+  }
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
-    final store = storeOf(context);
-
-    // 计算各层级的统计数据
-    final (nowDone, nowTotal) = _getNowCounters(store);
-    final (todayDone, todayTotal) = store.countersOf(PeriodScope.today);
-    final (weekDone, weekTotal) = store.countersOf(PeriodScope.weekly);
-    final (monthDone, monthTotal) = store.countersOf(PeriodScope.monthly);
 
     // 专属颜色
     final colorNow = p.amber; // 最内层：当下 (琥珀黄)
@@ -44,10 +112,10 @@ class ConcentricProgressRingWidget extends StatelessWidget {
         _showDetailsDialog(
           context,
           p,
-          now: (done: nowDone, total: nowTotal, color: colorNow),
-          today: (done: todayDone, total: todayTotal, color: colorToday),
-          week: (done: weekDone, total: weekTotal, color: colorWeek),
-          month: (done: monthDone, total: monthTotal, color: colorMonth),
+          now: (done: _now.$1, total: _now.$2, color: colorNow),
+          today: (done: _today.$1, total: _today.$2, color: colorToday),
+          week: (done: _week.$1, total: _week.$2, color: colorWeek),
+          month: (done: _month.$1, total: _month.$2, color: colorMonth),
         );
       },
       child: Container(
@@ -59,37 +127,43 @@ class ConcentricProgressRingWidget extends StatelessWidget {
           border: Border.all(color: p.hairline),
         ),
         padding: const EdgeInsets.all(3),
-        child: CustomPaint(
-          size: const Size(32, 32),
-          painter: _ConcentricRingsPainter(
-            rings: [
-              // 从外到里绘制：先外环，最后内环
-              _RingData(
-                radius: 14.2,
-                strokeWidth: 1.8,
-                color: colorMonth,
-                progress: monthTotal > 0 ? (monthDone / monthTotal) : 0.0,
+        child: AnimatedBuilder(
+          animation: _ctl,
+          builder: (context, _) {
+            final displayed = _displayed();
+            return CustomPaint(
+              size: const Size(32, 32),
+              painter: _ConcentricRingsPainter(
+                rings: [
+                  // 从外到里绘制：先外环，最后内环
+                  _RingData(
+                    radius: 14.2,
+                    strokeWidth: 1.8,
+                    color: colorMonth,
+                    progress: displayed[0],
+                  ),
+                  _RingData(
+                    radius: 10.8,
+                    strokeWidth: 1.8,
+                    color: colorWeek,
+                    progress: displayed[1],
+                  ),
+                  _RingData(
+                    radius: 7.4,
+                    strokeWidth: 1.8,
+                    color: colorToday,
+                    progress: displayed[2],
+                  ),
+                  _RingData(
+                    radius: 4.0,
+                    strokeWidth: 1.8,
+                    color: colorNow,
+                    progress: displayed[3],
+                  ),
+                ],
               ),
-              _RingData(
-                radius: 10.8,
-                strokeWidth: 1.8,
-                color: colorWeek,
-                progress: weekTotal > 0 ? (weekDone / weekTotal) : 0.0,
-              ),
-              _RingData(
-                radius: 7.4,
-                strokeWidth: 1.8,
-                color: colorToday,
-                progress: todayTotal > 0 ? (todayDone / todayTotal) : 0.0,
-              ),
-              _RingData(
-                radius: 4.0,
-                strokeWidth: 1.8,
-                color: colorNow,
-                progress: nowTotal > 0 ? (nowDone / nowTotal) : 0.0,
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -199,14 +273,14 @@ class ConcentricProgressRingWidget extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                        Icon(Icons.format_quote_rounded, size: 14, color: p.emerald),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            quote,
-                            style: TextStyle(fontSize: 11, color: p.inkSub, height: 1.4),
-                          ),
-                        ),
+                    Icon(Icons.format_quote_rounded, size: 14, color: p.emerald),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        quote,
+                        style: TextStyle(fontSize: 11, color: p.inkSub, height: 1.4),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 
 import '../../app.dart';
 import '../../core/icons.dart';
+import '../../core/sound.dart';
 import '../../core/theme.dart';
+import '../widgets/confetti_burst.dart';
 import 'carnegie_history_view.dart';
 
 /// 卡内基式 4 步周复盘全屏沉浸向导
@@ -38,6 +40,7 @@ class CarnegieReviewSheet extends StatefulWidget {
 
 class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
   int _step = 0; // 0, 1, 2, 3
+  int _dir = 1; // 步进方向：1 前进（内容自右入），-1 后退（内容自左入）
   String _tag = '职场沟通';
 
   final _factCtl = TextEditingController();
@@ -59,7 +62,10 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
   void _next() {
     HapticFeedback.lightImpact();
     if (_step < 3) {
-      setState(() => _step++);
+      setState(() {
+        _dir = 1;
+        _step++;
+      });
     } else {
       _finish();
     }
@@ -68,13 +74,19 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
   void _prev() {
     HapticFeedback.lightImpact();
     if (_step > 0) {
-      setState(() => _step--);
+      setState(() {
+        _dir = -1;
+        _step--;
+      });
     }
   }
 
   void _finish() {
     HapticFeedback.heavyImpact();
     setState(() => _isStamped = true);
+    // 落印完成：低频印章音 + 礼花庆祝
+    SoundFx.play(Sfx.stamp);
+    ConfettiBurst.show(context);
 
     final store = storeOf(context);
     store.addCarnegieReview(
@@ -158,7 +170,41 @@ class _CarnegieReviewSheetState extends State<CarnegieReviewSheet> {
                   ),
                   child: Stack(
                     children: [
-                      _buildCurrentStep(context, p),
+                      // 4 步方向感切换：前进自右滑入，后退自左滑入，伴随淡入淡出
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeIn,
+                        transitionBuilder: (child, anim) {
+                          final incoming = child.key == ValueKey(_step);
+                          return ClipRect(
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(
+                                  _dir * (incoming ? 0.08 : -0.08),
+                                  0,
+                                ),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: anim,
+                                  curve: incoming
+                                      ? Curves.easeOutCubic
+                                      : Curves.easeIn,
+                                ),
+                              ),
+                              child: FadeTransition(
+                                opacity: anim,
+                                child: child,
+                              ),
+                            ),
+                          );
+                        },
+                        child: KeyedSubtree(
+                          key: ValueKey(_step),
+                          child: _buildCurrentStep(context, p),
+                        ),
+                      ),
                       if (_isStamped)
                         Positioned(
                           top: 10,

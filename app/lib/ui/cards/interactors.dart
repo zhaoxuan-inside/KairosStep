@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../app.dart';
+import '../../core/sound.dart';
 import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../../models/style.dart';
 import '../../state/app_store.dart';
+import '../widgets/confetti_burst.dart';
 import 'spotlight_interactors.dart';
 import '../now/breathing_practice.dart';
 
@@ -213,20 +215,29 @@ class PrimaryAction extends StatelessWidget {
             borderRadius: BorderRadius.circular(9999),
             border: Border.all(color: on ? c : c.withValues(alpha: 0.45)),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 15, color: on ? Colors.white : c),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: on ? Colors.white : c,
+          child: TweenAnimationBuilder<double>(
+            // 打卡状态翻转时内容做一次弹性 pop（on: 自 0.8 放大 / off: 自 1.15 收敛）
+            key: ValueKey(on),
+            tween: Tween(begin: on ? 0.8 : 1.15, end: 1),
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutBack,
+            builder: (context, s, child) =>
+                Transform.scale(scale: s, child: child),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 15, color: on ? Colors.white : c),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: on ? Colors.white : c,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -295,15 +306,34 @@ class QuickCheckinInteractor extends StatelessWidget {
       on: done,
       icon: done ? Icons.task_alt : Icons.check,
       onTap: () {
+        final store = storeOf(context);
         if (done) {
           ctl.setRatio(0);
-          storeOf(context)
-              .updateCard(scope, advice.id, (s) => s.doneParts.clear());
+          store.updateCard(scope, advice.id, (s) => s.doneParts.clear());
+          _syncTodoDone(store, done: false);
         } else {
           ctl.mark('__checkin__', true, ratio: 1);
+          _syncTodoDone(store, done: true);
+          // 完成建议（含自建待办卡）：上行双音 + 全屏礼花
+          SoundFx.play(Sfx.success);
+          ConfettiBurst.show(context);
         }
       },
     );
+  }
+
+  /// 自建待办卡的完成态与 UserTodoItem.isDone 保持一致
+  /// （独立专区已移除，勾选走普通建议卡打卡路径，持久化数据仍需对齐）。
+  void _syncTodoDone(AppStore store, {required bool done}) {
+    if (advice.chapter != '我的自建待办') return;
+    final todoId = store.todoIdBySyntheticAdvice(advice.id);
+    if (todoId == null) return;
+    for (final t in store.userTodos) {
+      if (t.id == todoId) {
+        if (t.isDone != done) store.toggleUserTodo(todoId);
+        return;
+      }
+    }
   }
 }
 
@@ -522,6 +552,9 @@ class DailyStreakInteractor extends StatelessWidget {
                   .updateCard(scope, advice.id, (s) => s.doneParts.clear());
             } else {
               ctl.checkinStreak();
+              // 完成建议：上行双音 + 全屏礼花
+              SoundFx.play(Sfx.success);
+              ConfettiBurst.show(context);
             }
           },
         ),

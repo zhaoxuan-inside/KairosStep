@@ -22,6 +22,8 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   flutter_timezone: ^4.1.1
   timezone: ^0.10.1
+  # 应用内音效（assets/sounds/ 本地合成音，不依赖网络）
+  audioplayers: ^6.4.0
   onnxruntime: ^1.4.1
 
 dev_dependencies:
@@ -70,3 +72,7 @@ flutter:
     # 保留资产
     - assets/data/node_packages.json
     - assets/data/pinyin.json
+    # 应用内音效（tools/gen_sfx.dart 本地合成，勿手改二进制）
+    - assets/sounds/check.wav
+    - assets/sounds/success.wav
+    - assets/sounds/stamp.wav

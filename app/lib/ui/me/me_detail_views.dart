@@ -7,6 +7,7 @@ import '../../core/theme.dart';
 import '../../models/advice.dart';
 import '../detail/advice_detail_sheet.dart';
 import '../onboarding/onboarding_view.dart';
+import '../widgets/stagger_in.dart';
 
 /// 「我的」二级页集合：画像详情 / 生活防线 / 健康节点筛查包。
 ///
@@ -53,15 +54,17 @@ class _DetailScaffold extends StatelessWidget {
 }
 
 Widget _detailCard(AppPalettes p, Widget child) {
-  return Container(
-    margin: const EdgeInsets.only(bottom: 12),
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: p.surface,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: p.hairline),
+  return StaggerIn(
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: p.hairline),
+      ),
+      child: child,
     ),
-    child: child,
   );
 }
 

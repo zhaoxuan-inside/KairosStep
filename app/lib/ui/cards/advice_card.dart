@@ -79,6 +79,24 @@ class _AdviceCardState extends State<AdviceCard>
     setState(() => _isCollapsed = true);
 
     final id = widget.advice.id;
+    // 自建待办卡：叉号即删除待办本身（而非画像排除）
+    final todoId = store.todoIdBySyntheticAdvice(id);
+    if (todoId != null) {
+      store.removeUserTodo(todoId);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF19191C),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+          content: const Text(
+            '待办已删除',
+            style: TextStyle(fontSize: 12.5, color: Colors.white),
+          ),
+        ),
+      );
+      return;
+    }
     store.excludeAdvice(id);
 
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -87,7 +105,7 @@ class _AdviceCardState extends State<AdviceCard>
         backgroundColor: const Color(0xFF19191C),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 10),
         content: const Text(
           '已从日常视图移除 · 画像已更新',
           style: TextStyle(fontSize: 12.5, color: Colors.white),
@@ -120,7 +138,7 @@ class _AdviceCardState extends State<AdviceCard>
           borderRadius: BorderRadius.circular(9999),
           side: const BorderSide(color: Color(0xFF2E7D47), width: 1),
         ),
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 10),
         content: const Row(
           children: [
             Icon(Icons.shield, color: Color(0xFF48BB78), size: 16),
@@ -154,6 +172,7 @@ class _AdviceCardState extends State<AdviceCard>
     final p = AppPalettes.of(context);
     final store = storeOf(context);
     final isExcluded = store.isExcluded(widget.advice.id);
+    final isTodoCard = store.todoIdBySyntheticAdvice(widget.advice.id) != null;
     final st = store.cardState(widget.scope, widget.advice.id);
     final done = st.isDone;
 
@@ -177,7 +196,15 @@ class _AdviceCardState extends State<AdviceCard>
                     alignment: Alignment.center,
                     child: _buildBackPanel(context, p, store),
                   )
-                : _buildFrontPanel(context, p, store, st, done, isExcluded),
+                : _buildFrontPanel(
+                    context,
+                    p,
+                    store,
+                    st,
+                    done,
+                    isExcluded,
+                    isTodoCard,
+                  ),
           );
         },
       ),
@@ -195,6 +222,7 @@ class _AdviceCardState extends State<AdviceCard>
     CardState st,
     bool done,
     bool isExcluded,
+    bool isTodoCard,
   ) {
     final detail = catalogOf(context).detailOf(widget.advice.id);
     final trig = store.effectiveTriggerOf(widget.advice);
@@ -228,7 +256,15 @@ class _AdviceCardState extends State<AdviceCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _header(context, p, store, timing, detail != null, isExcluded),
+                _header(
+                  context,
+                  p,
+                  store,
+                  timing,
+                  detail != null,
+                  isExcluded,
+                  isTodoCard,
+                ),
                 SizedBox(height: widget.compact ? 6 : 8),
                 Text(
                   widget.advice.title,
@@ -305,6 +341,7 @@ class _AdviceCardState extends State<AdviceCard>
     ({String badge, Color color}) timing,
     bool hasDetail,
     bool isExcluded,
+    bool isTodoCard,
   ) {
     final isHabitFormed = store.isHabitFormed(widget.advice.id);
 
@@ -408,7 +445,9 @@ class _AdviceCardState extends State<AdviceCard>
           onTap: _toggleFlip,
         ),
         _hairlineBtn(
-          tip: isExcluded ? '已排除' : '不适合我 / 移出日常',
+          tip: isTodoCard
+              ? '删除待办'
+              : (isExcluded ? '已排除' : '不适合我 / 移出日常'),
           icon: AppHairlineIcons.cross(
             color: isExcluded ? p.emerald : p.inkMute,
             size: 14,

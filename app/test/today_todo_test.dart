@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kairo_step/app.dart';
 import 'package:kairo_step/data/catalog.dart';
 import 'package:kairo_step/state/app_store.dart';
+import 'package:kairo_step/ui/cards/advice_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -71,14 +72,18 @@ void main() {
     final a2 = store.userTodos.first.toAdvice().id;
     expect(a1, a2);
 
-    // 注入今日流（自建待办出现在今天列表）
-    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+    // 注入今日流：待办以普通建议卡混入（流内懒加载，滚动直到卡片被构建）
+    await tester.scrollUntilVisible(
+      find.text('喝水'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('喝水'), findsWidgets);
 
     await releaseStore(tester, store);
   });
 
-  testWidgets('今天页：待办行内勾选完成与删除', (tester) async {
+  testWidgets('今天页：自建待办以普通建议卡进流，叉号即删除', (tester) async {
     final store = await makeStore();
 
     await tester.pumpWidget(KairosApp(catalog: catalog, store: store));
@@ -86,26 +91,52 @@ void main() {
     await tester.tap(find.text('今天'));
     await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-    // 创建 UI 路径已由上一用例锁定；此处聚焦行内交互
+    // 创建 UI 路径已由上一用例锁定；此处聚焦卡片形态的展示与交互
     store.addUserTodo('任务甲');
     store.addUserTodo('任务乙');
-    await tester.pumpAndSettle(const Duration(milliseconds: 200));
-    expect(find.text('任务甲'), findsOneWidget);
-    expect(find.text('任务乙'), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-    // 勾选完成：行首圆形勾选钮（控件带稳定 ValueKey）
+    // 独立专区已移除：待办以普通建议卡出现在今日流（懒加载，滚动至卡片构建）
+    expect(find.text('我的自建待办'), findsNothing, reason: '不再单设自建待办专区');
+    await tester.scrollUntilVisible(
+      find.text('任务甲'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('任务甲'), findsWidgets);
+
+    // 完成态：卡片走普通打卡路径，并同步 UserTodoItem.isDone
     final idA = store.userTodos.firstWhere((t) => t.title == '任务甲').id;
-    await tester.tap(find.byKey(ValueKey('todo-toggle-$idA')));
-    await tester.pumpAndSettle(const Duration(milliseconds: 200));
+    final cardA = find.ancestor(
+      of: find.text('任务甲'),
+      matching: find.byType(AdviceCard),
+    ).first;
+    final doneBtn = find.descendant(
+      of: cardA,
+      matching: find.textContaining('完成'),
+    );
+    await tester.ensureVisible(doneBtn.first);
+    await tester.pumpAndSettle();
+    await tester.tap(doneBtn.first, warnIfMissed: false);
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
     expect(
-      store.userTodos.firstWhere((t) => t.title == '任务甲').isDone,
+      store.userTodos.firstWhere((t) => t.id == idA).isDone,
       isTrue,
+      reason: '卡片打卡应同步待办完成态',
     );
 
-    // 删除：行尾 IconButton
-    final idB = store.userTodos.firstWhere((t) => t.title == '任务乙').id;
-    await tester.tap(find.byKey(ValueKey('todo-remove-$idB')));
-    await tester.pumpAndSettle(const Duration(milliseconds: 300));
+    // 删除：卡片叉号（tooltip 已语义化为「删除待办」）
+    final crossB = find.descendant(
+      of: find.ancestor(
+        of: find.text('任务乙'),
+        matching: find.byType(AdviceCard),
+      ),
+      matching: find.byTooltip('删除待办'),
+    );
+    await tester.ensureVisible(crossB.first);
+    await tester.pumpAndSettle();
+    await tester.tap(crossB.first, warnIfMissed: false);
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
     expect(store.userTodos.length, 1);
     expect(store.userTodos.first.title, '任务甲');
 

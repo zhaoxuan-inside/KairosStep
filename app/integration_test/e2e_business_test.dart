@@ -22,6 +22,7 @@ import 'package:kairo_step/app.dart';
 import 'package:kairo_step/data/catalog.dart';
 import 'package:kairo_step/models/advice.dart';
 import 'package:kairo_step/state/app_store.dart';
+import 'package:kairo_step/ui/cards/advice_card.dart';
 import 'package:kairo_step/ui/cards/interactors.dart';
 import 'package:kairo_step/ui/now/gear_ruler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -196,10 +197,10 @@ void main() {
     // A4：不再出现画像引导
     expect(find.textContaining('画像引导 · '), findsNothing);
 
-    // B1：今天页结构
+    // B1：今天页结构（自建待办专区已移除，入口在今日流标题行）
     await tapVisible(tester, navTab('今天'), reason: 'Tab 今天');
     expect(find.textContaining('按画像动态匹配'), findsWidgets);
-    expect(find.text('我的自建待办'), findsOneWidget);
+    expect(find.text('新建待办'), findsOneWidget);
 
     // B2：打卡第一张 quick-checkin 卡（无则退回第一张可交互卡）
     final today = List<Advice>.of(store.todayAdvices);
@@ -210,7 +211,7 @@ void main() {
     );
     // 列表懒加载：以视口中心拖拽滚动直到目标卡标题被构建
     final titleFinder = byTitlePrefix(target.title);
-    await scrollListToText(tester, find.text('我的自建待办'), target.title);
+    await scrollListToText(tester, find.text('新建待办'), target.title);
     expect(titleFinder, findsWidgets, reason: '目标卡 #${target.id} 滚动后可见');
 
     final before = store.countersOf(PeriodScope.today).$1;
@@ -303,13 +304,23 @@ void main() {
         reason: '待办写入 kUserTodos');
     expect(find.textContaining('已添加待办「睡前测血压」'), findsOneWidget);
 
-    // C3：勾选完成
+    // C3：自建待办以普通建议卡进入今日流（独立专区已移除），卡片打卡同步完成态
+    await Future<void>.delayed(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
     final todo = store.userTodos.firstWhere((t) => t.title == '睡前测血压');
-    final toggle = find.byKey(ValueKey('todo-toggle-${todo.id}'));
-    await tester.ensureVisible(toggle);
-    await tester.tap(toggle, warnIfMissed: false);
+    final doneBtn = find.descendant(
+      of: find.ancestor(
+        of: find.text('睡前测血压'),
+        matching: find.byType(AdviceCard),
+      ),
+      matching: find.textContaining('完成'),
+    );
+    await tester.ensureVisible(doneBtn.first);
+    await tester.pumpAndSettle();
+    await tester.tap(doneBtn.first, warnIfMissed: false);
     await tester.pumpAndSettle(const Duration(milliseconds: 600));
-    expect(store.userTodos.firstWhere((t) => t.id == todo.id).isDone, isTrue);
+    expect(store.userTodos.firstWhere((t) => t.id == todo.id).isDone, isTrue,
+        reason: '卡片打卡同步待办完成态');
 
     // C4：再建一个「仅一次」待办并删除（先等上一条 SnackBar 消失）
     await Future<void>.delayed(const Duration(seconds: 5));
@@ -328,11 +339,18 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 1));
     final todo2 = store.userTodos.firstWhere((t) => t.title == '复核劳动合同');
     expect(todo2.frequency, 'once');
-    final remove = find.byKey(ValueKey('todo-remove-${todo2.id}'));
-    await tester.ensureVisible(remove);
-    await tester.tap(remove, warnIfMissed: false);
+    final cross2 = find.descendant(
+      of: find.ancestor(
+        of: find.text('复核劳动合同'),
+        matching: find.byType(AdviceCard),
+      ),
+      matching: find.byTooltip('删除待办'),
+    );
+    await tester.ensureVisible(cross2.first);
+    await tester.pumpAndSettle();
+    await tester.tap(cross2.first, warnIfMissed: false);
     await tester.pumpAndSettle(const Duration(milliseconds: 600));
-    expect(store.userTodos.any((t) => t.id == todo2.id), isFalse, reason: '删除后行消失');
+    expect(store.userTodos.any((t) => t.id == todo2.id), isFalse, reason: '叉号删除待办');
 
     // C5（持久化）：重启后「睡前测血压」仍存在且完成态保持
     await restartApp(tester);

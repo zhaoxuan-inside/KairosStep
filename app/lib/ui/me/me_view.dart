@@ -7,6 +7,7 @@ import '../library/topic_tree_sheet.dart';
 import '../onboarding/onboarding_view.dart';
 import '../tools/decision_tree_sheet.dart';
 import '../tools/tools_sheet.dart';
+import '../widgets/stagger_in.dart';
 import 'excluded_advices_view.dart';
 import 'me_detail_views.dart';
 
@@ -38,7 +39,8 @@ class MeView extends StatelessWidget {
         const SizedBox(height: 16),
 
         // ---- 身份卡（点击进入画像详情二级页） ----
-        InkWell(
+        StaggerIn(
+          child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
             HapticFeedback.selectionClick();
@@ -145,10 +147,13 @@ class MeView extends StatelessWidget {
             ),
           ),
         ),
+        ),
         const SizedBox(height: 12),
 
         // ---- 二级页入口行 ----
-        _card(
+        StaggerIn(
+          delay: const Duration(milliseconds: 50),
+          child: _card(
           context,
           child: Column(
             children: [
@@ -178,10 +183,13 @@ class MeView extends StatelessWidget {
             ],
           ),
         ),
+        ),
         const SizedBox(height: 12),
 
         // ---- 设置与工具箱 ----
-        _card(
+        StaggerIn(
+          delay: const Duration(milliseconds: 100),
+          child: _card(
           context,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,6 +223,19 @@ class MeView extends StatelessWidget {
                     '跟随系统',
                     on: store.themeMode == ThemeMode.system,
                     onTap: () => store.themeMode = ThemeMode.system,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.volume_up_rounded, size: 15, color: p.indigo),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text('音效', style: _cardTitle(context))),
+                  Switch(
+                    value: store.soundEffects,
+                    activeThumbColor: p.action,
+                    onChanged: (v) => store.soundEffects = v,
                   ),
                 ],
               ),
@@ -351,6 +372,7 @@ class MeView extends StatelessWidget {
               const _PrivacyDisclosure(),
             ],
           ),
+        ),
         ),
         const SizedBox(height: 12),
         Center(

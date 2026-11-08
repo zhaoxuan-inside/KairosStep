@@ -24,7 +24,6 @@ class TodayView extends StatelessWidget {
     final store = storeOf(context);
     final todayList = store.todayAdvices;
     final (done, total) = store.countersOf(PeriodScope.today);
-    final userTodos = store.userTodos;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -174,11 +173,7 @@ class TodayView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // ---- 4. 用户行为数据层：用户自建待办清单 (TodoList) ----
-        _buildUserTodoSection(context, p, store, userTodos),
-        const SizedBox(height: 18),
-
-        // ---- 5. 今日实证建议流 ----
+        // ---- 4. 今日实证建议流（自建待办以普通建议卡混入，不再单设专区） ----
         Row(
           children: [
             Icon(Icons.bolt_outlined, size: 14, color: p.action),
@@ -186,6 +181,28 @@ class TodayView extends StatelessWidget {
             Text(
               '今日专属实证节律（$total 项）',
               style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: () => CustomTodoDialog.show(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: p.action.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(9999),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, size: 12, color: p.action),
+                    const SizedBox(width: 3),
+                    Text(
+                      '新建待办',
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.action),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -292,127 +309,4 @@ class TodayView extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildUserTodoSection(
-    BuildContext context,
-    AppPalettes p,
-    AppStore store,
-    List<dynamic> todos,
-  ) {
-    final doneCount = todos.where((t) => t.isDone).length;
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: p.hairline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.checklist, size: 15, color: p.indigo),
-              const SizedBox(width: 6),
-              Text(
-                '我的自建待办',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: p.pillBg,
-                  borderRadius: BorderRadius.circular(9999),
-                ),
-                child: Text(
-                  '$doneCount/${todos.length}',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: p.inkSub),
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => CustomTodoDialog.show(context),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: p.action.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, size: 12, color: p.action),
-                      const SizedBox(width: 3),
-                      Text(
-                        '新建待办',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.action),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (todos.isEmpty) ...[
-            const SizedBox(height: 10),
-            Text(
-              '点击「新建待办」自建日常任务，或在建议详情中「一键加入待办」',
-              style: TextStyle(fontSize: 11.5, color: p.inkMute),
-            ),
-          ] else ...[
-            const SizedBox(height: 8),
-            for (final todo in List.of(todos)..sort((a, b) => (a.isDone ? 1 : 0).compareTo(b.isDone ? 1 : 0)))
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      key: ValueKey('todo-toggle-${todo.id}'),
-                      onTap: () => store.toggleUserTodo(todo.id),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 180),
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: todo.isDone ? p.emerald : Colors.transparent,
-                          border: Border.all(
-                            color: todo.isDone ? p.emerald : p.inkMute,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: todo.isDone
-                            ? const Icon(Icons.check, size: 12, color: Colors.white)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        todo.title,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: todo.isDone ? p.inkMute : p.ink,
-                          decoration: todo.isDone ? TextDecoration.lineThrough : null,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      key: ValueKey('todo-remove-${todo.id}'),
-                      icon: Icon(Icons.close, size: 14, color: p.inkMute),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => store.removeUserTodo(todo.id),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ],
-      ),
-    );
-  }
-
 }

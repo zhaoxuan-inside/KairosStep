@@ -10,6 +10,7 @@ import '../domain/profile_engine.dart';
 import '../domain/semantic_search_engine.dart';
 import '../domain/stream_engine.dart';
 import '../domain/trigger_engine.dart';
+import '../core/sound.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import '../data/catalog.dart';
@@ -113,6 +114,15 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   set themeMode(ThemeMode v) {
     _themeMode = v;
     prefs.setString('kThemeMode', v.name);
+    notifyListeners();
+  }
+
+  bool _soundEffects = true;
+  bool get soundEffects => _soundEffects;
+  set soundEffects(bool v) {
+    _soundEffects = v;
+    prefs.setBool('kSoundEffects', v);
+    SoundFx.enabled = v;
     notifyListeners();
   }
 
@@ -499,6 +509,14 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     notifyListeners();
   }
 
+  /// 由合成建议 id 反查自建待办持久化 id（卡片叉号删除待办 / 完成态同步用）。
+  String? todoIdBySyntheticAdvice(int adviceId) {
+    for (final t in _userTodos) {
+      if (UserTodoItem.stableSyntheticIdOf(t.id) == adviceId) return t.id;
+    }
+    return null;
+  }
+
   void _persistUserTodos() {
     final list = _userTodos.map((t) => t.toJson()).toList();
     prefs.setString('kUserTodos', jsonEncode(list));
@@ -651,6 +669,8 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
         orElse: () => ThemeMode.system,
       );
     }
+    _soundEffects = prefs.getBool('kSoundEffects') ?? true;
+    SoundFx.enabled = _soundEffects;
     final completed = prefs.getBool('kHasCompletedOnboarding') ?? false;
     final p = prefs.getString('kProfile');
     if (p != null) {

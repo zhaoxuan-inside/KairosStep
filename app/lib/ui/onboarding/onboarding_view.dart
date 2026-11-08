@@ -347,11 +347,14 @@ class _OnboardingViewState extends State<OnboardingView> {
               const SizedBox(height: 14),
               Text(
                 '你的时光，只属于你。\n'
-                '从这里开始的一切——画像、待办与每一次打卡，\n'
+                '从这里开始的一切——\n'
+                '画像、待办与每一次打卡，\n'
                 '都不会走向云端。\n'
-                '这是一座不联网的岛屿：没有上传，没有同步，也没有旁观者；\n'
-                '所有数据只安放于这台设备的方寸之间，与你朝夕相处。\n'
-                '哪怕某天卸载而去，它们也会与应用一同悄然离席——\n'
+                '这是一座不联网的岛屿：\n'
+                '没有上传，没有同步，也没有旁观者；\n'
+                '所有数据只安放于这台设备，\n'
+                '与你朝夕相处。\n'
+                '哪怕某天卸载而去，它们也悄然离席——\n'
                 '不留痕迹，不必告别。',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, height: 1.9, color: p.inkSub),

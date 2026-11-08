@@ -66,7 +66,7 @@ void main() {
 
     // 滚动今日流直到任一未养成卡的盾牌被构建（懒加载）
     for (var i = 0; i < 10 && shield.evaluate().isEmpty; i++) {
-      await dragViewportUp(tester, find.text('我的自建待办'), times: 1);
+      await dragViewportUp(tester, find.text('新建待办'), times: 1);
     }
     expect(shield, findsWidgets, reason: '今日流卡片的盾牌按钮可见');
 
