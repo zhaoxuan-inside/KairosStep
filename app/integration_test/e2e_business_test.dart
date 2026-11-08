@@ -146,6 +146,25 @@ void main() {
     expect(find.text('卸载即除'), findsOneWidget);
     await tapVisible(tester, find.text('安心开启'), reason: '隐私告知确认');
 
+    // A0b：卡牌流问答（借鉴《八十亿分之一》逐张揭示）→ 成形摘要 → 开启
+    expect(find.text('第 1/20 题'), findsOneWidget, reason: '卡牌流首题（关注域不进卡流）');
+    expect(find.text('你的性别'), findsOneWidget);
+    expect(find.textContaining('已为你聚焦'), findsOneWidget);
+    await tapVisible(tester, find.text('男'), reason: '作答性别（单选自动前进）');
+    // 其余各题逐题跳过（未答不剪），直到成形摘要
+    for (var i = 0; i < 25; i++) {
+      if (find.text('画像已成形').evaluate().isNotEmpty) break;
+      final skip = find.text('跳过此题');
+      if (skip.evaluate().isNotEmpty) {
+        await tester.tap(skip.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      } else {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+    expect(find.text('画像已成形'), findsWidgets, reason: '成形摘要出现');
+    await tapVisible(tester, find.text('以此配置直接开启'), reason: '以卡牌流配置直接开启');
+
     // A1：无画像 → 引导页（基本盘 1/7，建议作答标记与聚焦反馈可见）
     expect(find.textContaining('画像引导 · '), findsOneWidget);
     expect(find.text('画像引导 · 基本盘'), findsOneWidget);
@@ -365,13 +384,13 @@ void main() {
     await pumpApp(tester);
     await tapVisible(tester, navTab('当下'), reason: 'Tab 当下');
 
-    // D1：时段徽标（5 时段之一）+ 呼吸练习
+    // D1：时段徽标（5 时段之一，只展示具体时间范围）+ 呼吸练习
     const badges = [
-      '早晨 · 05:00-09:30',
-      '上午 · 09:30-12:00',
-      '午后 · 12:00-18:00',
-      '傍晚 · 18:00-22:00',
-      '夜深 · 22:00-05:00',
+      '05:00-09:30',
+      '09:30-12:00',
+      '12:00-18:00',
+      '18:00-22:00',
+      '22:00-05:00',
     ];
     final badgeHit = badges.any((b) => find.text(b).evaluate().isNotEmpty);
     expect(badgeHit, isTrue, reason: '应出现 5 时段徽标之一');

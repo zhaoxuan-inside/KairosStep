@@ -1,0 +1,287 @@
+<meta charset="utf-8">
+<section id="window-card-demo" class="vis-section-stack">
+  <p class="vis-sr-only">窗口期卡片三个交互设计方向的对比演示：拖动天数滑块并在各方向内确认防线项，观察阶段状态、里程碑与极简形态的差异。</p>
+
+  <div class="wc-scrub">
+    <div class="wc-scrub-head">
+      <span class="wc-strong">场景：劳动仲裁申请，14 天时效窗口</span>
+      <span class="wc-readout" id="wc-readout">第 5 / 14 天 · 剩余 9 天</span>
+    </div>
+    <input id="wc-day" type="range" min="1" max="14" step="1" value="5" aria-label="拖动查看第几天" />
+  </div>
+
+  <article class="wc-panel">
+    <h3 class="wc-dir-name">方向 A · 阶段化窗口卡（推荐）</h3>
+    <p class="wc-dir-note">卡片随阶段变脸：启动期引导确认 → 进行期极简 → 冲刺期朱红升级 → 全部确认后真正解除提醒并沉底。</p>
+    <div class="wc-card" id="wcA-card">
+      <div class="wc-card-head">
+        <span class="wc-badge" id="wcA-badge">窗口期 · 第 5/14 天</span>
+        <span class="wc-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="wc-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="wc-phase" id="wcA-phase">进行期 · 先确认防线项，全部闭合即提前解除提醒</div>
+      <div class="wc-strip" id="wcA-strip" aria-hidden="true"></div>
+      <div class="wc-row">
+        <span class="wc-strong" id="wcA-count">安全防线 2/4</span>
+        <span class="wc-due" id="wcA-due">截止 10-21</span>
+      </div>
+      <div class="wc-chips" id="wcA-chips"></div>
+    </div>
+    <div class="wc-confetti-layer" id="wcA-confetti" aria-hidden="true"></div>
+  </article>
+
+  <article class="wc-panel">
+    <h3 class="wc-dir-name">方向 B · 里程碑时间线</h3>
+    <p class="wc-dir-note">14 天竖向节点清单：每个防线项绑定建议办理日，逾期未确认转红，时间与行动合一。</p>
+    <div class="wc-card">
+      <div class="wc-card-head">
+        <span class="wc-badge">窗口期 · 10-08 → 10-21</span>
+        <span class="wc-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="wc-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="wc-timeline" id="wcB-timeline"></div>
+    </div>
+  </article>
+
+  <article class="wc-panel">
+    <h3 class="wc-dir-name">方向 C · 极简徽章式</h3>
+    <p class="wc-dir-note">卡面只剩状态徽章与确认计数，防线清单收进卡片背面——今日流里最轻的存在感。</p>
+    <div class="wc-card">
+      <div class="wc-card-head">
+        <span class="wc-badge" id="wcC-badge">窗口期 · 剩 9 天</span>
+        <span class="wc-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="wc-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="wc-row">
+        <span class="wc-strong" id="wcC-count">安全防线 2/4</span>
+        <span class="wc-due">清单在卡片背面 · 点击⚙查看</span>
+      </div>
+    </div>
+  </article>
+</section>
+
+<style>
+#window-card-demo { --wc-canvas:#F9F8F5; --wc-surface:#FFFFFF; --wc-ink:#1E293B; --wc-sub:#475569; --wc-mute:#94A3B8; --wc-action:#2563EB; --wc-done:#059669; --wc-amber:#D97706; --wc-rose:#E11D48; --wc-hair:rgba(30,41,59,.10); font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; color:var(--wc-ink); }
+#window-card-demo .wc-scrub { display:flex; flex-direction:column; gap:8px; padding:14px 16px; border:1px solid var(--wc-hair); border-radius:16px; background:var(--wc-canvas); }
+#window-card-demo .wc-scrub-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+#window-card-demo .wc-strong { font-weight:600; }
+#window-card-demo .wc-readout { color:var(--wc-sub); font-size:13px; }
+#window-card-demo input[type="range"] { width:100%; accent-color:var(--wc-action); }
+#window-card-demo .wc-panel { display:flex; flex-direction:column; gap:10px; }
+#window-card-demo .wc-dir-name { margin:0; font-size:15px; }
+#window-card-demo .wc-dir-note { margin:0; color:var(--wc-sub); font-size:13px; }
+#window-card-demo .wc-card { position:relative; overflow:hidden; background:var(--wc-surface); border:1px solid var(--wc-hair); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px; max-width:480px; transition:border-color .3s; }
+#window-card-demo .wc-card.is-closed { border-color:var(--wc-done); }
+#window-card-demo .wc-card.is-sprint { border-color:var(--wc-rose); }
+#window-card-demo .wc-card-head { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+#window-card-demo .wc-badge { padding:3px 9px; border-radius:9999px; font-size:11px; font-weight:700; background:rgba(37,99,235,.12); color:var(--wc-action); }
+#window-card-demo .wc-badge.is-closed { background:rgba(5,150,105,.14); color:var(--wc-done); }
+#window-card-demo .wc-badge.is-sprint { background:rgba(225,29,72,.10); color:var(--wc-rose); }
+#window-card-demo .wc-head-actions { color:var(--wc-mute); font-size:12px; white-space:nowrap; }
+#window-card-demo .wc-title { font-size:14px; font-weight:600; }
+#window-card-demo .wc-phase { font-size:12px; color:var(--wc-sub); }
+#window-card-demo .wc-phase.is-rose { color:var(--wc-rose); font-weight:600; }
+#window-card-demo .wc-phase.is-done { color:var(--wc-done); font-weight:600; }
+#window-card-demo .wc-strip { display:flex; gap:3px; }
+#window-card-demo .wc-strip i { flex:1; height:6px; border-radius:2px; background:var(--wc-canvas); border:1.2px solid rgba(148,163,184,.5); transition:background .3s, border-color .3s; }
+#window-card-demo .wc-strip i.past { background:var(--wc-amber); border-color:var(--wc-amber); }
+#window-card-demo .wc-strip i.past.is-late { background:var(--wc-rose); border-color:var(--wc-rose); }
+#window-card-demo .wc-strip i.today { background:transparent; border-color:var(--wc-amber); }
+#window-card-demo .wc-strip i.today.is-late { border-color:var(--wc-rose); }
+#window-card-demo .wc-row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+#window-card-demo .wc-due { color:var(--wc-mute); font-size:12px; }
+#window-card-demo .wc-chips { display:flex; flex-wrap:wrap; gap:8px; }
+#window-card-demo .wc-chip { padding:6px 12px; border-radius:9999px; font-size:12px; border:1.2px solid var(--wc-hair); background:var(--wc-surface); color:var(--wc-sub); cursor:pointer; transition:all .2s; }
+#window-card-demo .wc-chip.on { background:rgba(5,150,105,.12); border-color:var(--wc-done); color:var(--wc-done); font-weight:600; }
+#window-card-demo .wc-timeline { display:flex; flex-direction:column; }
+#window-card-demo .wc-node { display:flex; gap:12px; align-items:flex-start; padding:6px 0; }
+#window-card-demo .wc-node-rail { display:flex; flex-direction:column; align-items:center; width:18px; }
+#window-card-demo .wc-dot { width:14px; height:14px; border-radius:9999px; border:2px solid var(--wc-mute); background:var(--wc-surface); flex:none; }
+#window-card-demo .wc-dot.done { border-color:var(--wc-done); background:var(--wc-done); }
+#window-card-demo .wc-dot.overdue { border-color:var(--wc-rose); }
+#window-card-demo .wc-dot.today { border-color:var(--wc-action); box-shadow:inset 0 0 0 3px var(--wc-surface), inset 0 0 0 6px var(--wc-action); }
+#window-card-demo .wc-node-line { width:2px; flex:1; min-height:14px; background:var(--wc-hair); }
+#window-card-demo .wc-node-body { flex:1; display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap; }
+#window-card-demo .wc-node-label { font-size:13px; }
+#window-card-demo .wc-node-label.is-overdue { color:var(--wc-rose); font-weight:600; }
+#window-card-demo .wc-node-label.is-done { color:var(--wc-done); text-decoration:line-through; }
+#window-card-demo .wc-node-day { font-size:12px; color:var(--wc-mute); white-space:nowrap; }
+#window-card-demo .wc-node-day.is-today { color:var(--wc-action); font-weight:600; }
+#window-card-demo .wc-confetti-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+#window-card-demo .wc-piece { position:absolute; width:7px; height:10px; border-radius:1px; transition:transform .9s cubic-bezier(.15,.6,.4,1), opacity .9s; }
+@media (prefers-reduced-motion: reduce) { #window-card-demo .wc-piece { display:none; } #window-card-demo .wc-chip, #window-card-demo .wc-strip i, #window-card-demo .wc-card { transition:none; } }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('window-card-demo');
+  var dayInput = root.querySelector('#wc-day');
+  var readout = root.querySelector('#wc-readout');
+  var CHIPS = ['仲裁时效自知情日起算', '工资流水与考勤已备份', '书面催告已留存', '企业注册信息已调取'];
+  var stateA = { day: 5, chips: [true, true, false, false] };
+  var stateB = { chips: [false, false, false] };
+  var B_NODES = [
+    { d: 1, label: '启动窗口 · 时效起算', kind: 'milestone' },
+    { d: 3, label: '确认防线一：备份工资流水', kind: 'chip' },
+    { d: 7, label: '确认防线二：书面催告留存', kind: 'chip' },
+    { d: 10, label: '确认防线三：调取企业信息', kind: 'chip' },
+    { d: 14, label: '截止 · 全部闭合即提前解除', kind: 'end' }
+  ];
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dueDate(day) { return '10-' + pad(7 + day); }
+
+  var stripA = root.querySelector('#wcA-strip');
+  for (var i = 0; i < 14; i++) { stripA.appendChild(document.createElement('i')); }
+
+  var chipsBox = root.querySelector('#wcA-chips');
+  CHIPS.forEach(function (label, idx) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'wc-chip';
+    b.textContent = label;
+    b.addEventListener('click', function () {
+      var wasClosed = stateA.chips.every(Boolean);
+      stateA.chips[idx] = !stateA.chips[idx];
+      var nowClosed = stateA.chips.every(Boolean);
+      render();
+      if (nowClosed && !wasClosed) burst();
+    });
+    chipsBox.appendChild(b);
+  });
+
+  function burst() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var layer = root.querySelector('#wcA-confetti');
+    var card = root.querySelector('#wcA-card');
+    var colors = ['#2563EB', '#059669', '#D97706', '#E11D48', '#4F46E5'];
+    var cx = card.clientWidth / 2, cy = card.clientHeight * 0.35;
+    for (var i = 0; i < 26; i++) {
+      var p = document.createElement('i');
+      p.className = 'wc-piece';
+      var ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.8;
+      var v = 90 + Math.random() * 110;
+      var dx = Math.sin(ang) * v * 1.6;
+      var dy = -(Math.cos(ang) * v) + 60;
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.background = colors[i % colors.length];
+      layer.appendChild(p);
+      (function (el, dx, dy, rot) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
+            el.style.opacity = '0';
+          });
+        });
+      })(p, dx, dy, (Math.random() - 0.5) * 720);
+    }
+    setTimeout(function () { layer.innerHTML = ''; }, 1000);
+  }
+
+  function renderB() {
+    var box = root.querySelector('#wcB-timeline');
+    box.innerHTML = '';
+    B_NODES.forEach(function (node, idx) {
+      var confirmed = node.kind === 'chip' && stateB.chips[confirmIndex(node)];
+      var isPast = node.d < stateA.day;
+      var isToday = node.d === stateA.day;
+      var overdue = isPast && !confirmed && node.kind === 'chip';
+      var row = document.createElement('div');
+      row.className = 'wc-node';
+      var rail = document.createElement('div');
+      rail.className = 'wc-node-rail';
+      var dot = document.createElement('span');
+      dot.className = 'wc-dot' + (confirmed ? ' done' : overdue ? ' overdue' : isToday ? ' today' : '');
+      rail.appendChild(dot);
+      if (idx < B_NODES.length - 1) {
+        var line = document.createElement('span');
+        line.className = 'wc-node-line';
+        rail.appendChild(line);
+      }
+      var body = document.createElement('div');
+      body.className = 'wc-node-body';
+      var label = document.createElement('span');
+      label.className = 'wc-node-label' + (overdue ? ' is-overdue' : confirmed ? ' is-done' : '');
+      label.textContent = node.label + (overdue ? ' · 逾期' : '');
+      var dayTag = document.createElement('span');
+      dayTag.className = 'wc-node-day' + (isToday ? ' is-today' : '');
+      dayTag.textContent = 'D' + node.d + (isToday ? ' · 今天' : isPast ? ' · 已过' : '');
+      body.appendChild(label);
+      body.appendChild(dayTag);
+      row.appendChild(rail);
+      row.appendChild(body);
+      if (node.kind === 'chip') {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function () {
+          stateB.chips[confirmIndex(node)] = !stateB.chips[confirmIndex(node)];
+          render();
+        });
+      }
+      box.appendChild(row);
+    });
+  }
+
+  function confirmIndex(node) {
+    return B_NODES.filter(function (n) { return n.kind === 'chip'; }).indexOf(node);
+  }
+
+  function render() {
+    var day = stateA.day;
+    var remain = 14 - day;
+    readout.textContent = '第 ' + day + ' / 14 天 · 剩余 ' + remain + ' 天';
+
+    var closed = stateA.chips.every(Boolean);
+    var onCount = stateA.chips.filter(Boolean).length;
+    var late = day >= 13;
+    var phase = closed ? 'closed' : day <= 2 ? 'boot' : day <= 11 ? 'run' : 'sprint';
+
+    var card = root.querySelector('#wcA-card');
+    var badge = root.querySelector('#wcA-badge');
+    var phaseEl = root.querySelector('#wcA-phase');
+    card.className = 'wc-card' + (closed ? ' is-closed' : phase === 'sprint' ? ' is-sprint' : '');
+    badge.className = 'wc-badge' + (closed ? ' is-closed' : phase === 'sprint' ? ' is-sprint' : '');
+    if (closed) {
+      badge.textContent = '窗口期 · 已闭合';
+      phaseEl.className = 'wc-phase is-done';
+      phaseEl.textContent = '防线已闭合 · 提醒已解除，卡随全局规则沉底';
+    } else if (phase === 'boot') {
+      badge.textContent = '窗口期 · 第 ' + day + '/14 天';
+      phaseEl.className = 'wc-phase';
+      phaseEl.textContent = '启动期 · 先逐条确认防线项，全部闭合即提前解除提醒';
+    } else if (phase === 'run') {
+      badge.textContent = '窗口期 · 第 ' + day + '/14 天';
+      phaseEl.className = 'wc-phase';
+      phaseEl.textContent = '进行期 · 安全防线 ' + onCount + '/4，剩余 ' + remain + ' 天';
+    } else {
+      badge.textContent = '冲刺期 · 剩 ' + remain + ' 天';
+      phaseEl.className = 'wc-phase is-rose';
+      phaseEl.textContent = '最后 ' + remain + ' 天，还差 ' + (4 - onCount) + ' 项未确认，提醒已加密';
+    }
+
+    Array.prototype.forEach.call(stripA.children, function (seg, i) {
+      seg.className = i < day - 1 ? 'past' + (late ? ' is-late' : '') : i === day - 1 ? 'today' + (late ? ' is-late' : '') : '';
+    });
+
+    var chipBtns = chipsBox.children;
+    CHIPS.forEach(function (label, idx) {
+      chipBtns[idx].className = 'wc-chip' + (stateA.chips[idx] ? ' on' : '');
+    });
+    root.querySelector('#wcA-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + onCount + '/4';
+    root.querySelector('#wcA-due').textContent = closed ? '原截止 ' + dueDate(14) : '截止 ' + dueDate(14);
+
+    renderB();
+
+    var badgeC = root.querySelector('#wcC-badge');
+    badgeC.textContent = closed ? '已闭合 · 提醒已解除' : '窗口期 · 剩 ' + remain + ' 天';
+    badgeC.className = 'wc-badge' + (closed ? ' is-closed' : '');
+    root.querySelector('#wcC-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + onCount + '/4';
+  }
+
+  dayInput.addEventListener('input', function () {
+    stateA.day = parseInt(dayInput.value, 10);
+    render();
+  });
+  render();
+})();
+</script>

@@ -37,6 +37,9 @@ class OnboardingView extends StatefulWidget {
   State<OnboardingView> createState() => _OnboardingViewState();
 }
 
+/// 引导三段：隐私告知 → 卡牌流问答（一次一屏一题）→ 成形完成。
+enum _OnbStage { privacy, cards, deep }
+
 class _OnboardingViewState extends State<OnboardingView> {
   final _pageController = PageController();
   final Set<String> _answered = {};
@@ -57,7 +60,16 @@ class _OnboardingViewState extends State<OnboardingView> {
   int _page = 0;
 
   // 首次进入的隐私告知页（不联网 / 仅本地 / 卸载即除）；重配置入口不再展示。
-  bool _privacyIntroDone = false;
+  // 隐私告知 ↔ 卡牌流问答（一次一屏一题）↔ 成形完成：三段状态机。
+  _OnbStage _stage = _OnbStage.privacy;
+  int _cardIdx = 0; // 卡牌流当前题下标（== 题目数时为成形摘要）
+  int _cardDir = 1; // 切换方向：1 前进 / -1 后退
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isReconfiguring) _stage = _OnbStage.deep;
+  }
 
   AppStore get _store => storeOf(context);
   ProfileEngine get _engine => _store.profileEngine;
@@ -263,15 +275,20 @@ class _OnboardingViewState extends State<OnboardingView> {
           child: child,
         ),
       ),
-      child: !widget.isReconfiguring && !_privacyIntroDone
-          ? KeyedSubtree(
-              key: const ValueKey('privacy-intro'),
-              child: _privacyIntro(p),
-            )
-          : KeyedSubtree(
-              key: const ValueKey('onboarding-body'),
-              child: _onboardingScaffold(p, config),
-            ),
+      child: switch (_stage) {
+        _OnbStage.privacy when !widget.isReconfiguring => KeyedSubtree(
+            key: const ValueKey('privacy-intro'),
+            child: _privacyIntro(p),
+          ),
+        _OnbStage.cards => KeyedSubtree(
+            key: const ValueKey('question-cards'),
+            child: _cardFlowScreen(p, config),
+          ),
+        _ => KeyedSubtree(
+            key: const ValueKey('onboarding-body'),
+            child: _onboardingScaffold(p, config),
+          ),
+      },
     );
   }
 
@@ -388,7 +405,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   ),
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    setState(() => _privacyIntroDone = true);
+                    setState(() => _stage = _OnbStage.cards);
                   },
                   child: const Text(
                     '安心开启',
@@ -421,6 +438,296 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 
+  // ── 卡牌流：借鉴《八十亿分之一》的逐张揭示——一次一屏一题，
+  // 大字排版 + 方向感切换 + 实时聚焦反馈；跳过即未答不剪。──
+
+  List<OnboardingQuestion> _flowQuestions(OnboardingConfig config) =>
+      [for (final q in config.questions) if (q.id != 'focus_domains') q];
+
+  void _advanceCard(int from) {
+    if (!mounted || _stage != _OnbStage.cards || _cardIdx != from) return;
+    setState(() {
+      _cardDir = 1;
+      _cardIdx += 1;
+    });
+  }
+
+  Widget _cardFlowScreen(AppPalettes p, OnboardingConfig config) {
+    final questions = _flowQuestions(config);
+    final done = _cardIdx >= questions.length;
+    final q = done ? null : questions[_cardIdx];
+    final answered = q != null && _answered.contains(q.id);
+    final layerTitle = done
+        ? ''
+        : config.layers
+              .firstWhere(
+                (l) => l.key == q!.layer,
+                orElse: () => config.layers.first,
+              )
+              .title;
+    final single = q != null && q.kind != 'multi_choice';
+
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        done ? '画像已成形' : '第 ${_cardIdx + 1}/${questions.length} 题',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: done ? p.done : p.inkMute,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      if (!done)
+                        Text(layerTitle, style: TextStyle(fontSize: 11, color: p.amber)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(9999),
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(end: _cardIdx / questions.length),
+                      duration: const Duration(milliseconds: 360),
+                      curve: Curves.easeOutCubic,
+                      builder: (_, value, _) => LinearProgressIndicator(
+                        value: value,
+                        minHeight: 3,
+                        backgroundColor: p.pillBg,
+                        valueColor: AlwaysStoppedAnimation(p.action),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(Icons.bolt, size: 13, color: p.action),
+                      const SizedBox(width: 5),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 280),
+                        child: Text(
+                          '已为你聚焦 ${_state!.activeCount}/${_state!.totalCount} 条建议'
+                          '（随时可跳过，未答不影响推荐）',
+                          key: ValueKey(_state!.activeCount),
+                          style: TextStyle(fontSize: 11.5, color: p.action),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 320),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (child, anim) {
+                  final incoming = child.key == ValueKey(_cardIdx);
+                  return ClipRect(
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: Offset(_cardDir * (incoming ? 0.08 : -0.08), 0),
+                        end: Offset.zero,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: anim,
+                          curve: incoming ? Curves.easeOutCubic : Curves.easeIn,
+                        ),
+                      ),
+                      child: FadeTransition(opacity: anim, child: child),
+                    ),
+                  );
+                },
+                child: KeyedSubtree(
+                  key: ValueKey(_cardIdx),
+                  child: done
+                      ? SingleChildScrollView(child: _cardSummary(p, config))
+                      : SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                            child: _questionStage(p, q!, single),
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
+                child: Row(
+                  children: [
+                    if (_cardIdx > 0)
+                      TextButton(
+                        onPressed: () => setState(() {
+                          _cardDir = -1;
+                          _cardIdx -= 1;
+                        }),
+                        child: Text('上一步', style: TextStyle(fontSize: 13, color: p.inkMute)),
+                      ),
+                    const Spacer(),
+                    if (!done && !answered)
+                      TextButton(
+                        onPressed: () => setState(() {
+                          _cardDir = 1;
+                          _cardIdx += 1;
+                        }),
+                        child: Text('跳过此题', style: TextStyle(fontSize: 12.5, color: p.inkMute)),
+                      ),
+                    if (!done && !single)
+                      SizedBox(
+                        height: 40,
+                        child: FilledButton(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: p.action,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+                            padding: const EdgeInsets.symmetric(horizontal: 22),
+                          ),
+                          onPressed: () => setState(() {
+                            _cardDir = 1;
+                            _cardIdx += 1;
+                          }),
+                          child: const Text('下一题', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _questionStage(AppPalettes p, OnboardingQuestion q, bool single) {
+    final idx = _cardIdx;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          q.prompt,
+          style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, height: 1.3, color: p.ink),
+        ),
+        const SizedBox(height: 22),
+        if (q.options.isNotEmpty)
+          for (final o in q.options)
+            _bigOption(p, q, o, selected: _isOptionActive(q, o), single: single, idx: idx)
+        else if (q.id == 'birth_year')
+          _ageSlider(p)
+        else if (q.id == 'height_weight')
+          _heightWeightSliders(p),
+        if (q.id == 'birth_year' || q.id == 'height_weight')
+          Padding(
+            padding: const EdgeInsets.only(top: 18),
+            child: SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: p.action,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () => setState(() {
+                  _cardDir = 1;
+                  _cardIdx += 1;
+                }),
+                child: const Text('下一题', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _bigOption(
+    AppPalettes p,
+    OnboardingQuestion q,
+    OnboardingOption o, {
+    required bool selected,
+    required bool single,
+    required int idx,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        _applyOption(q, o);
+        if (single) {
+          Future.delayed(const Duration(milliseconds: 420), () => _advanceCard(idx));
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          color: selected ? p.action.withValues(alpha: 0.1) : p.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? p.action : p.hairline,
+            width: selected ? 1.6 : 1.2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                o.label,
+                style: TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? p.action : p.ink,
+                ),
+              ),
+            ),
+            if (selected) Icon(Icons.check_rounded, size: 18, color: p.action),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _cardSummary(AppPalettes p, OnboardingConfig config) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(Icons.verified_rounded, size: 44, color: p.done),
+        const SizedBox(height: 14),
+        Text('画像已成形', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: p.ink)),
+        const SizedBox(height: 10),
+        Text(
+          '已确认 ${_answered.length}/${_flowQuestions(config).length} 项 · '
+          '未答项不参与剪枝（未答不剪），随时可回看修改',
+          style: TextStyle(fontSize: 12.5, height: 1.5, color: p.inkSub),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: p.action,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              _complete();
+            },
+            child: const Text('以此配置直接开启', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+          ),
+        ),
+      ],
+    );
+  }
   // ── 顶部：进度 + 实时聚焦反馈 ──
 
   Widget _header(AppPalettes p, OnboardingConfig config) {
@@ -513,20 +820,12 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingLayer layer,
   ) {
     final byId = {for (final q in config.questions) q.id: q};
-    // 引擎动态出题读缓存（题序进引导时冻结，先粗后细在层内生效）：
-    // 未答题按冻结序排前，已答题保持原位在后（展示已选状态）。
-    final ranked = [
-      for (final y in _state!.candidates)
-        if (layer.questions.contains(y.question.id)) y.question.id,
-    ];
-    final answeredInLayer = [
-      for (final qid in layer.questions)
-        if (!ranked.contains(qid)) qid,
-    ];
+    // 题序严格按配置的层内固定顺序渲染：作答不改变位次（引擎只负责聚焦
+    // 计数与下一题建议，不再驱动卡片重排——作答后内容跳位被用户否决）。
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
-        for (final qid in [...ranked, ...answeredInLayer])
+        for (final qid in layer.questions)
           if (byId[qid] case final q?) _questionCard(p, config, q),
       ],
     );
@@ -560,10 +859,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                   ),
                 ),
               ),
+              // 仅保留「建议作答」提醒；「可跳过」角标按产品要求删除
               if (q.required)
-                Text('建议作答', style: TextStyle(fontSize: 10, color: p.amber))
-              else
-                Text('可跳过', style: TextStyle(fontSize: 10, color: p.inkMute)),
+                Text('建议作答', style: TextStyle(fontSize: 10, color: p.amber)),
             ],
           ),
           if (q.options.isNotEmpty) ...[

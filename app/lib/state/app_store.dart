@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -95,7 +97,19 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     formedHabitIds: Set<int>.from(_formedHabits),
     profile: _profile,
     userTodos: List<UserTodoItem>.from(_userTodos),
+    justDoneIds: Set<int>.of(_justDoneAt.keys),
   );
+
+  /// 完成豁免期（2.6s）：刚打卡的卡先按未完成参与排序、原地停留，
+  /// 让用户看到完成态与礼花；豁免结束移除并通知，卡片再温和沉底。
+  /// 否则打卡瞬间列表重排，卡片从眼前瞬移到底部，非常突兀。
+  final Map<int, DateTime> _justDoneAt = {};
+  void _markJustDone(int id) {
+    _justDoneAt[id] = DateTime.now();
+    Timer(const Duration(milliseconds: 2600), () {
+      if (_justDoneAt.remove(id) != null) notifyListeners();
+    });
+  }
 
   /// 同步当前活跃防线至提醒注册器与主动探测调度器（零全盘扫描开销，仅注册剪枝后的活跃条目）
   void syncReminderRegistry() {
@@ -497,6 +511,9 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
       _userTodos[idx] = _userTodos[idx].copyWith(
         isDone: !_userTodos[idx].isDone,
       );
+      if (_userTodos[idx].isDone) {
+        _markJustDone(UserTodoItem.stableSyntheticIdOf(id));
+      }
       _persistUserTodos();
       notifyListeners();
     }
@@ -533,7 +550,11 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
 
   /// 卡片部件变更入口：交互器调用，统一持久化 + 广播。
   void updateCard(PeriodScope s, int id, void Function(CardState st) mutator) {
+    final wasDone = checkinEngine.cardState(s, id).isDone;
     checkinEngine.updateCard(s, id, mutator);
+    if (!wasDone && checkinEngine.cardState(s, id).isDone) {
+      _markJustDone(id);
+    }
     notifyListeners();
   }
 

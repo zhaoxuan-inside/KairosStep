@@ -177,7 +177,7 @@ class ProbeEngine extends ChangeNotifier {
     final role = _currentProfile?.roles ?? const <String>[];
     final body = switch (kind) {
       'probe_morning' => '现在是 ${_formatHour(now)}，告诉我你正在工作、学习、运动还是通勤。',
-      'probe_afternoon' => '午后状态探查：今天身体和用眼感觉怎么样？',
+      'probe_afternoon' => '状态探查：今天身体和用眼感觉怎么样？',
       'probe_evening' when role.contains('上班族') || role.contains('程序员') =>
         '下班后了，用几十秒告诉我今天的工作感受。',
       'probe_evening' when role.contains('学生') => '晚间了，用几十秒告诉我今天的学习压力。',

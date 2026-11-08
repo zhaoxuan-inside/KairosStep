@@ -11,13 +11,27 @@ import '../../core/theme.dart';
 class ConfettiBurst {
   ConfettiBurst._();
 
-  static void show(BuildContext context, {AppPalettes? palette}) {
+  /// 计算某组件中心点的全局坐标（用作礼花迸发原点）；不可用时返回 null。
+  static Offset? originOf(BuildContext context) {
+    final box = context.findRenderObject();
+    if (box is RenderBox && box.hasSize) {
+      return box.localToGlobal(box.size.center(Offset.zero));
+    }
+    return null;
+  }
+
+  /// [origin] 为迸发原点（全局坐标）；null 时默认自屏幕中上方迸发。
+  static void show(BuildContext context, {AppPalettes? palette, Offset? origin}) {
     final p = palette ?? AppPalettes.of(context);
     final overlay = Overlay.of(context, rootOverlay: true);
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => IgnorePointer(
-        child: _ConfettiPaint(palette: p, onComplete: () => entry.remove()),
+        child: _ConfettiPaint(
+          palette: p,
+          origin: origin,
+          onComplete: () => entry.remove(),
+        ),
       ),
     );
     overlay.insert(entry);
@@ -25,10 +39,15 @@ class ConfettiBurst {
 }
 
 class _ConfettiPaint extends StatefulWidget {
-  const _ConfettiPaint({required this.palette, required this.onComplete});
+  const _ConfettiPaint({
+    required this.palette,
+    required this.onComplete,
+    this.origin,
+  });
 
   final AppPalettes palette;
   final VoidCallback onComplete;
+  final Offset? origin;
 
   @override
   State<_ConfettiPaint> createState() => _ConfettiPaintState();
@@ -63,7 +82,8 @@ class _ConfettiPaintState extends State<_ConfettiPaint>
       widget.palette.rose,
       widget.palette.indigo,
     ];
-    final origin = Offset(_screen.width * 0.5, _screen.height * 0.26);
+    final origin =
+        widget.origin ?? Offset(_screen.width * 0.5, _screen.height * 0.26);
     _particles = [
       for (var i = 0; i < 64; i++)
         _Particle(

@@ -88,7 +88,7 @@ void main() {
     }
   });
 
-  testWidgets('首次打开APP（无画像数据）：必须展示数据驱动的画像引导，可作答并直接开启', (tester) async {
+  testWidgets('首次打开APP（无画像数据）：隐私告知 → 卡牌流问答 → 成形 → 直接开启', (tester) async {
     final store = AppStore(catalog, await _emptyPrefs());
     await store.restore();
 
@@ -105,27 +105,32 @@ void main() {
     await tester.tap(find.text('安心开启'));
     await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-    // 现行引导（Phase 6.5 数据驱动）：分层页 + 建议作答标记 + 实时聚焦反馈
-    expect(find.textContaining('画像引导 · '), findsOneWidget);
-    expect(find.text('画像引导 · 基本盘'), findsOneWidget);
-    expect(find.text('建议作答'), findsWidgets, reason: '基盘层含重点题（性别/年龄/身高体重）');
+    // 卡牌流问答（借鉴《八十亿分之一》逐张揭示）：一次一屏一题
+    expect(find.text('第 1/20 题'), findsOneWidget, reason: '卡牌流首题（关注域不进卡流）');
     expect(find.text('你的性别'), findsOneWidget);
     expect(find.textContaining('已为你聚焦'), findsOneWidget);
 
-    // 作答性别选项（选项 patch 即时生效于草稿画像）
+    // 作答性别（单选自动前进到下一题）
     await tester.tap(find.text('男'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle(const Duration(milliseconds: 600));
+    expect(find.text('你的年龄'), findsOneWidget, reason: '单选作答后自动前进');
     expect(tester.takeException(), isNull);
 
-    // 分层推进：基本盘 → 家庭与责任
-    await tester.tap(find.text('下一步'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 500));
-    expect(find.text('画像引导 · 家庭与责任'), findsOneWidget);
+    // 其余各题逐题跳过（未答不剪，ADR-009），直到成形摘要
+    for (var i = 0; i < 25; i++) {
+      if (find.text('画像已成形').evaluate().isNotEmpty) break;
+      final skip = find.text('跳过此题');
+      if (skip.evaluate().isNotEmpty) {
+        await tester.tap(skip.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      } else {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+    expect(find.text('画像已成形'), findsWidgets, reason: '过渡期新旧摘要共存');
 
-    // 「以此配置直接开启」随时可用（未答不剪，ADR-009）
-    tester.ensureVisible(find.text('以此配置直接开启'));
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
-    await tester.tap(find.text('以此配置直接开启'), warnIfMissed: false);
+    // 「以此配置直接开启」（未答不剪，ADR-009）
+    await tester.tap(find.text('以此配置直接开启'));
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
 
     expect(store.hasProfile, isTrue, reason: '完成引导并持久化画像');
@@ -196,6 +201,8 @@ void main() {
     expect(store.userTodos.first.isDone, isTrue);
     store.removeUserTodo(store.userTodos.first.id);
     expect(store.userTodos.isEmpty, isTrue);
+    // 完成豁免期 Timer（2.6s）在 FakeAsync 区必须显式推进触发，避免挂起
+    await tester.pump(const Duration(seconds: 3));
     await tester.pumpWidget(const SizedBox.shrink());
     store.dispose();
   });

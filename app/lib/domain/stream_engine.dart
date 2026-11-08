@@ -16,6 +16,7 @@ class StreamInputs {
     required this.formedHabitIds,
     required this.profile,
     required this.userTodos,
+    this.justDoneIds = const <int>{},
   });
 
   final Set<int> excludedIds;
@@ -23,6 +24,10 @@ class StreamInputs {
   final Set<int> formedHabitIds;
   final UserProfile profile;
   final List<UserTodoItem> userTodos;
+
+  /// 完成豁免期内的建议 id：刚打卡的卡按未完成排序（原地停留展示结果与礼花），
+  /// 豁免期结束后由 AppStore 通知重排沉底。
+  final Set<int> justDoneIds;
 }
 
 class StreamEngine {
@@ -89,12 +94,16 @@ class StreamEngine {
       }
     }
 
-    // 已经打卡完成的排在下面（未完成优先置顶，已完成沉底）
-    list.sort((a, b) {
-      final aDone = checkin.cardState(PeriodScope.today, a.id).isDone ? 1 : 0;
-      final bDone = checkin.cardState(PeriodScope.today, b.id).isDone ? 1 : 0;
-      return aDone.compareTo(bDone);
-    });
+    // 已经打卡完成的排在下面（未完成优先置顶，已完成沉底）。
+    // 完成豁免期内的卡按未完成参与排序：刚打卡时原地停留 2.6s，
+    // 让用户看到完成态与礼花，豁免结束再由 AppStore 通知沉底。
+    final justDone = i.justDoneIds;
+    int doneRank(Advice a) {
+      final done = checkin.cardState(PeriodScope.today, a.id).isDone;
+      return (done && !justDone.contains(a.id)) ? 1 : 0;
+    }
+
+    list.sort((a, b) => doneRank(a).compareTo(doneRank(b)));
 
     return list;
   }

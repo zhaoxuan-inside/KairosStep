@@ -1,0 +1,347 @@
+<meta charset="utf-8">
+<section id="wc-models" class="vis-section-stack">
+  <p class="vis-sr-only">窗口期四种交互模型的可操作流程演示：单步承诺、检查点响应、倒排计划、布防状态机。每个模型都可实际走完流程。</p>
+
+  <div class="wcms-note">四种模型的差异不在外观，而在交互规则本身——同一时间承诺几件事、完成由谁触发、错过怎么办。</div>
+
+  <article class="wcms-panel">
+    <h3 class="wcms-dir">模型 1 · 单步承诺（同屏只有一个活动任务）</h3>
+    <p class="wcms-note">系统每次只提议一步；你接受后才成为活动任务，完成即自动递补下一项。认知负担恒定为一。</p>
+    <div class="wcms-card">
+      <div class="wcms-head">活动任务 <span class="wcms-count" id="m1-count">0/4</span></div>
+      <div id="m1-body"></div>
+      <div class="wcms-done-row" id="m1-done"></div>
+    </div>
+  </article>
+
+  <article class="wcms-panel">
+    <h3 class="wcms-dir">模型 2 · 检查点响应（到点必须应答，漏检升级）</h3>
+    <p class="wcms-note">D3/D7/D10 三个检查点到点弹出应答；未响应记漏检一次、提醒加密——交互是“应答”而不是“浏览清单”。</p>
+    <div class="wcms-card">
+      <div class="wcms-head">模拟时钟 <span class="wcms-count" id="m2-day">D3</span>
+        <button type="button" class="wcms-mini" id="m2-advance">推进到下一检查点</button>
+      </div>
+      <div id="m2-body"></div>
+      <div class="wcms-miss" id="m2-miss">漏检 0 次 · 提醒常规</div>
+    </div>
+  </article>
+
+  <article class="wcms-panel">
+    <h3 class="wcms-dir">模型 3 · 倒排计划（从真实截止日反推三个阶段）</h3>
+    <p class="wcms-note">你只输入一个真实截止日，系统倒排出三段计划；落后时提示自动收紧——交互是“约定计划并追平”。</p>
+    <div class="wcms-card">
+      <div class="wcms-head">
+        真实截止日
+        <select id="m3-deadline" aria-label="选择真实截止日">
+          <option value="7">10-14（7 天）</option>
+          <option value="14" selected>10-21（14 天）</option>
+          <option value="21">10-28（21 天）</option>
+        </select>
+        <span class="wcms-count">模拟今天：<span id="m3-today">D5</span></span>
+      </div>
+      <div id="m3-body"></div>
+    </div>
+  </article>
+
+  <article class="wcms-panel">
+    <h3 class="wcms-dir">模型 4 · 布防状态机（布防 / 暂停 / 收网 / 解除）</h3>
+    <p class="wcms-note">整张卡是一个安防面板：四种布防状态由你显式切换，提醒节奏与卡面随状态整体变化。</p>
+    <div class="wcms-card">
+      <div class="wcms-states">
+        <button type="button" class="wcms-state-btn is-on" data-st="armed">布防中</button>
+        <button type="button" class="wcms-state-btn" data-st="paused">暂停</button>
+        <button type="button" class="wcms-state-btn" data-st="final">收网</button>
+        <button type="button" class="wcms-state-btn" data-st="off">解除</button>
+      </div>
+      <div id="m6-body"></div>
+    </div>
+  </article>
+</section>
+
+<style>
+#wc-models { font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; color:#1E293B; }
+#wc-models .wcms-note { color:#475569; font-size:13px; }
+#wc-models .wcms-panel { display:flex; flex-direction:column; gap:10px; }
+#wc-models .wcms-dir { margin:0; font-size:15px; }
+#wc-models .wcms-card { background:#FFFFFF; border:1px solid rgba(30,41,59,.10); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px; max-width:480px; }
+#wc-models .wcms-head { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:600; flex-wrap:wrap; }
+#wc-models .wcms-count { color:#2563EB; font-weight:700; }
+#wc-models .wcms-active { background:rgba(37,99,235,.08); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+#wc-models .wcms-active-label { font-size:11px; color:#2563EB; font-weight:700; }
+#window-card-demo3 .wc-strong, #wc-models .wcms-task { font-size:14px; font-weight:600; }
+#wc-models .wcms-btn { border-radius:9999px; font-size:12.5px; font-weight:600; padding:7px 14px; cursor:pointer; }
+#wc-models .wcms-btn.primary { background:#2563EB; color:#fff; border:none; }
+#wc-models .wcms-btn.ghost { background:#fff; color:#475569; border:1px solid rgba(30,41,59,.14); }
+#wc-models .wcms-btn.done { background:#059669; color:#fff; border:none; }
+#wc-models .wcms-done-row { display:flex; flex-wrap:wrap; gap:6px; }
+#wc-models .wcms-done-chip { font-size:11.5px; color:#059669; background:rgba(5,150,105,.1); border-radius:9999px; padding:3px 10px; text-decoration:line-through; }
+#wc-models .wcms-cp { border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; background:rgba(37,99,235,.06); }
+#wc-models .wcms-cp.is-late { background:rgba(225,29,72,.06); }
+#wc-models .wcms-cp-title { font-size:13px; font-weight:600; }
+#wc-models .wcms-grace { height:4px; border-radius:2px; background:rgba(148,163,184,.3); overflow:hidden; }
+#wc-models .wcms-grace i { display:block; height:100%; background:#2563EB; }
+#wc-models .wcms-cp.is-late .wcms-grace i { background:#E11D48; }
+#wc-models .wcms-mini { border:1px solid rgba(30,41,59,.14); background:#F9F8F5; border-radius:8px; font-size:12px; padding:4px 10px; cursor:pointer; }
+#wc-models .wcms-miss { font-size:12px; color:#475569; }
+#wc-models .wcms-miss.is-late { color:#E11D48; font-weight:600; }
+#wc-models select { border:1px solid rgba(30,41,59,.14); border-radius:8px; padding:4px 8px; font-size:12.5px; background:#fff; }
+#wc-models .wcms-stage { display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; border:1px solid rgba(30,41,59,.1); flex-wrap:wrap; }
+#wc-models .wcms-stage.is-late { border-color:#E11D48; background:rgba(225,29,72,.05); }
+#wc-models .wcms-stage.is-done { border-color:#059669; background:rgba(5,150,105,.05); }
+#wc-models .wcms-stage-name { font-size:13px; font-weight:600; width:88px; }
+#wc-models .wcms-stage-range { font-size:12px; color:#475569; flex:1; }
+#wc-models .wcms-stage-state { font-size:11px; font-weight:700; }
+#wc-models .wcms-stage-state.ok { color:#059669; }
+#wc-models .wcms-stage-state.late { color:#E11D48; }
+#wc-models .wcms-states { display:flex; gap:6px; flex-wrap:wrap; }
+#wc-models .wcms-state-btn { border:1px solid rgba(30,41,59,.14); background:#fff; border-radius:9999px; font-size:12.5px; padding:6px 14px; cursor:pointer; color:#475569; }
+#wc-models .wcms-state-btn.is-on { background:#1E293B; color:#fff; border-color:#1E293B; font-weight:600; }
+#wc-models .wcms-state-btn.is-on.rose { background:#E11D48; border-color:#E11D48; }
+#wc-models .wcms-state-btn.is-on.green { background:#059669; border-color:#059669; }
+#wc-models .wcms-state-body { font-size:13px; color:#1E293B; background:#F9F8F5; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px; }
+#wc-models .wcms-state-body.is-rose { background:rgba(225,29,72,.06); }
+#wc-models .wcms-state-body.is-green { background:rgba(5,150,105,.08); }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('wc-models');
+  var ITEMS = ['仲裁时效自知情日起算', '备份工资流水与考勤', '发出书面催告并留存', '调取企业注册信息'];
+
+  // ── 模型 1 · 单步承诺 ──
+  var m1 = { active: null, done: [false, false, false, false], suggest: 0 };
+  function m1Render() {
+    var body = root.querySelector('#m1-body');
+    body.innerHTML = '';
+    var doneCount = m1.done.filter(Boolean).length;
+    root.querySelector('#m1-count').textContent = doneCount + '/4';
+    if (m1.active === null) {
+      var box = document.createElement('div');
+      box.className = 'wcms-active';
+      var lab = document.createElement('span');
+      lab.className = 'wcms-active-label';
+      lab.textContent = '系统建议的下一步';
+      var task = document.createElement('div');
+      task.className = 'wcms-task';
+      task.textContent = ITEMS[m1.suggest];
+      var row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      var accept = document.createElement('button');
+      accept.type = 'button';
+      accept.className = 'wcms-btn primary';
+      accept.textContent = '接受并开始';
+      accept.addEventListener('click', function () { m1.active = m1.suggest; m1Render(); });
+      var swap = document.createElement('button');
+      swap.type = 'button';
+      swap.className = 'wcms-btn ghost';
+      swap.textContent = '换一项';
+      swap.addEventListener('click', function () {
+        var next = m1.suggest;
+        for (var i = 1; i <= 4; i++) {
+          var c = (m1.suggest + i) % 4;
+          if (!m1.done[c]) { next = c; break; }
+        }
+        m1.suggest = next;
+        m1Render();
+      });
+      row.appendChild(accept);
+      row.appendChild(swap);
+      box.appendChild(lab);
+      box.appendChild(task);
+      box.appendChild(row);
+      body.appendChild(box);
+    } else {
+      var box2 = document.createElement('div');
+      box2.className = 'wcms-active';
+      var lab2 = document.createElement('span');
+      lab2.className = 'wcms-active-label';
+      lab2.textContent = '当前唯一活动任务 · 完成后自动递补';
+      var task2 = document.createElement('div');
+      task2.className = 'wcms-task';
+      task2.textContent = ITEMS[m1.active];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'wcms-btn done';
+      btn.textContent = '标记完成';
+      btn.addEventListener('click', function () {
+        m1.done[m1.active] = true;
+        m1.active = null;
+        for (var i = 0; i < 4; i++) { if (!m1.done[i]) { m1.suggest = i; break; } }
+        m1Render();
+      });
+      box2.appendChild(lab2);
+      box2.appendChild(task2);
+      box2.appendChild(btn);
+      body.appendChild(box2);
+    }
+    var doneRow = root.querySelector('#m1-done');
+    doneRow.innerHTML = '';
+    m1.done.forEach(function (d, i) {
+      if (!d) return;
+      var chip = document.createElement('span');
+      chip.className = 'wcms-done-chip';
+      chip.textContent = ITEMS[i];
+      doneRow.appendChild(chip);
+    });
+  }
+
+  // ── 模型 2 · 检查点响应 ──
+  var m2 = { cpIdx: 0, day: 3, missed: 0 };
+  var CPS = [{ d: 3, item: '备份工资流水与考勤' }, { d: 7, item: '发出书面催告并留存' }, { d: 10, item: '调取企业注册信息' }];
+  function m2Render() {
+    root.querySelector('#m2-day').textContent = 'D' + m2.day;
+    var body = root.querySelector('#m2-body');
+    body.innerHTML = '';
+    var missEl = root.querySelector('#m2-miss');
+    missEl.textContent = '漏检 ' + m2.missed + ' 次 · 提醒' + (m2.missed > 0 ? '已加密' : '常规');
+    missEl.className = 'wcms-miss' + (m2.missed > 0 ? ' is-late' : '');
+    if (m2.cpIdx >= CPS.length) {
+      var fin = document.createElement('div');
+      fin.className = 'wcms-cp';
+      fin.style.background = 'rgba(5,150,105,.08)';
+      fin.textContent = '全部检查点已应答 · 窗口收尾';
+      body.appendChild(fin);
+      return;
+    }
+    var cp = CPS[m2.cpIdx];
+    var late = m2.missed > 0;
+    var box = document.createElement('div');
+    box.className = 'wcms-cp' + (late ? ' is-late' : '');
+    var title = document.createElement('div');
+    title.className = 'wcms-cp-title';
+    title.textContent = '检查点 D' + cp.d + ' 已到达：「' + cp.item + '」办妥了吗？';
+    var grace = document.createElement('div');
+    grace.className = 'wcms-grace';
+    var fill = document.createElement('i');
+    fill.style.width = (100 - m2.missed * 30) + '%';
+    grace.appendChild(fill);
+    var note = document.createElement('span');
+    note.style.fontSize = '11px';
+    note.style.color = '#475569';
+    note.textContent = late ? '漏检已记录：提醒加密，24 小时内仍需应答' : '24 小时内应答即可，超时记漏检';
+    var row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '8px';
+    var ok = document.createElement('button');
+    ok.type = 'button';
+    ok.className = 'wcms-btn done';
+    ok.textContent = '已办妥';
+    ok.addEventListener('click', function () { m2.cpIdx++; m2Render(); });
+    var lateBtn = document.createElement('button');
+    lateBtn.type = 'button';
+    lateBtn.className = 'wcms-btn ghost';
+    lateBtn.textContent = '还没办（记漏检）';
+    lateBtn.addEventListener('click', function () {
+      m2.missed++;
+      m2.cpIdx++;
+      m2.day = CPS[Math.min(m2.cpIdx, CPS.length - 1)].d;
+      m2Render();
+    });
+    row.appendChild(ok);
+    row.appendChild(lateBtn);
+    box.appendChild(title);
+    box.appendChild(grace);
+    box.appendChild(note);
+    box.appendChild(row);
+    body.appendChild(box);
+  }
+  root.querySelector('#m2-advance').addEventListener('click', function () {
+    m2.cpIdx = Math.min(m2.cpIdx + 1, CPS.length);
+    m2.day = CPS[Math.min(m2.cpIdx, CPS.length - 1)].d;
+    m2Render();
+  });
+
+  // ── 模型 3 · 倒排计划 ──
+  var m3 = { deadline: 14, done: [false, false, false], today: 5 };
+  var STAGE_NAMES = ['材料准备', '提交申请', '跟进结果'];
+  var FRACTIONS = [0.4, 0.4, 0.2];
+  function m3Stages() {
+    var total = m3.deadline;
+    var ranges = [];
+    var cursor = 0;
+    for (var i = 0; i < 3; i++) {
+      var w = Math.max(1, Math.round(total * FRACTIONS[i]));
+      var s = cursor + 1;
+      var e = Math.min(total, cursor + w);
+      ranges.push({ s: s, e: e });
+      cursor = e;
+    }
+    ranges[2].e = total;
+    return ranges;
+  }
+  function m3Render() {
+    root.querySelector('#m3-today').textContent = 'D' + m3.today;
+    var body = root.querySelector('#m3-body');
+    body.innerHTML = '';
+    var ranges = m3Stages();
+    var anyLate = false;
+    ranges.forEach(function (r, i) {
+      var isDone = m3.done[i];
+      var isLate = !isDone && m3.today > r.e;
+      if (isLate) anyLate = true;
+      var active = !isDone && m3.today >= r.s && m3.today <= r.e;
+      var row = document.createElement('div');
+      row.className = 'wcms-stage' + (isLate ? ' is-late' : isDone ? ' is-done' : '');
+      var name = document.createElement('span');
+      name.className = 'wcms-stage-name';
+      name.textContent = STAGE_NAMES[i];
+      var range = document.createElement('span');
+      range.className = 'wcms-stage-range';
+      range.textContent = 'D' + r.s + ' - D' + r.e + (isLate ? ' · 已落后 ' + (m3.today - r.e) + ' 天，后续阶段自动收紧' : active ? ' · 进行中' : '');
+      var stateEl = document.createElement('span');
+      stateEl.className = 'wcms-stage-state' + (isDone ? ' ok' : isLate ? ' late' : '');
+      stateEl.textContent = isDone ? '已完成' : isLate ? '落后' : active ? '进行中' : '待开始';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'wcms-btn' + (isDone ? ' ghost' : ' primary');
+      btn.textContent = isDone ? '撤销' : '完成';
+      btn.addEventListener('click', function () { m3.done[i] = !m3.done[i]; m3Render(); });
+      row.appendChild(name);
+      row.appendChild(range);
+      row.appendChild(stateEl);
+      row.appendChild(btn);
+      body.appendChild(row);
+    });
+    if (anyLate) {
+      var warn = document.createElement('div');
+      warn.style.cssText = 'font-size:12px;color:#E11D48;';
+      warn.textContent = '存在落后阶段：今日流中该卡将置顶并以朱红提示，提醒自动加密';
+      body.appendChild(warn);
+    }
+  }
+  root.querySelector('#m3-deadline').addEventListener('change', function (e) {
+    m3.deadline = parseInt(e.target.value, 10);
+    m3Render();
+  });
+
+  // ── 模型 4 · 布防状态机 ──
+  var m6 = 'armed';
+  var m6Copy = {
+    armed: { cls: '', text: '布防中 · 每日提醒常规节奏；防线清单 4 项待逐条确认。' },
+    paused: { cls: '', text: '已暂停 · 所有提醒挂起（出差/假期适用）；回来后点「布防中」恢复，漏掉的检查点会补问。' },
+    final: { cls: 'is-rose', text: '收网模式 · 剩余天数与未确认项置顶朱红展示，提醒加密为每日两条。' },
+    off: { cls: 'is-green', text: '已解除 · 该窗口记入档案，今日流中沉底；可在「周期」页随时回看。' }
+  };
+  function m6Render() {
+    Array.prototype.forEach.call(root.querySelectorAll('.wcms-state-btn'), function (b) {
+      b.className = 'wcms-state-btn' + (b.dataset.st === m6 ? ' is-on' : '') +
+        (b.dataset.st === m6 && (m6 === 'final' || m6 === 'off') ? (m6 === 'final' ? ' rose' : ' green') : '');
+    });
+    var body = root.querySelector('#m6-body');
+    body.innerHTML = '';
+    var box = document.createElement('div');
+    box.className = 'wcms-state-body' + (m6 === 'final' ? ' is-rose' : m6 === 'off' ? ' is-green' : '');
+    box.textContent = m6Copy[m6].text;
+    body.appendChild(box);
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.wcms-state-btn'), function (b) {
+    b.addEventListener('click', function () { m6 = b.dataset.st; m6Render(); });
+  });
+
+  m1Render();
+  m2Render();
+  m3Render();
+  m6Render();
+})();
+</script>

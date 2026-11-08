@@ -178,6 +178,15 @@ class ActionChip extends StatelessWidget {
   }
 }
 
+/// 动态部件列表（安全防线 chips / 办事分步 / 红线规则 / 守护名单 / 占位格）
+/// 的统一完成度口径：已确认部件 / 全部部件——与普通建议的 isDone 判定一致，
+/// 驱动今日流「完成后沉底」排序，排序不再区分建议类型。
+double _dynamicRatio(List<String> parts, String toggled, CardCtl ctl) {
+  if (parts.isEmpty) return 0;
+  final on = parts.where((x) => x == toggled ? !ctl.has(x) : ctl.has(x)).length;
+  return on / parts.length;
+}
+
 /// 主行动按钮（打卡 / 铭记 / 确认）。
 class PrimaryAction extends StatelessWidget {
   const PrimaryAction({
@@ -314,9 +323,9 @@ class QuickCheckinInteractor extends StatelessWidget {
         } else {
           ctl.mark('__checkin__', true, ratio: 1);
           _syncTodoDone(store, done: true);
-          // 完成建议（含自建待办卡）：上行双音 + 全屏礼花
+          // 完成建议：上行双音 + 自被打卡卡片位置迸发礼花
           SoundFx.play(Sfx.success);
-          ConfettiBurst.show(context);
+          ConfettiBurst.show(context, origin: ConfettiBurst.originOf(context));
         }
       },
     );
@@ -552,9 +561,9 @@ class DailyStreakInteractor extends StatelessWidget {
                   .updateCard(scope, advice.id, (s) => s.doneParts.clear());
             } else {
               ctl.checkinStreak();
-              // 完成建议：上行双音 + 全屏礼花
+              // 完成建议：上行双音 + 自被打卡卡片位置迸发礼花
               SoundFx.play(Sfx.success);
-              ConfettiBurst.show(context);
+              ConfettiBurst.show(context, origin: ConfettiBurst.originOf(context));
             }
           },
         ),
@@ -675,10 +684,10 @@ class WindowCadenceInteractor extends StatelessWidget {
         Row(
           children: [
             Text(
-              '窗口期进行中：第 $day/$windowDays 天',
+              '窗口期 · 第 $day/$windowDays 天',
               style: TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: day >= windowDays - 2 ? p.rose : p.amber,
               ),
             ),
@@ -689,38 +698,44 @@ class WindowCadenceInteractor extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(3),
-          child: LinearProgressIndicator(
-            value: day / windowDays,
-            minHeight: 5,
-            backgroundColor: p.pillBg,
-            valueColor: AlwaysStoppedAnimation(
-              day >= windowDays - 2 ? p.rose : p.amber,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
+        // 逐日刻度带：已过天数实心填充、当日高亮描边（你在这里）、
+        // 剩余天数空心——比一条进度线更直读「进度 + 当下位置 + 还剩多少」。
         Row(
           children: [
-            Text(
-              '安全防线 $chipsOn/${chips.length}',
-              style: TextStyle(
-                fontSize: 10.5,
-                color: p.inkSub,
-                fontWeight: FontWeight.w600,
+            for (var i = 0; i < windowDays; i++) ...[
+              if (i > 0) const SizedBox(width: 3),
+              Expanded(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 260),
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: i < day - 1
+                        ? (day >= windowDays - 2 ? p.rose : p.amber)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(
+                      width: 1.2,
+                      color: i == day - 1
+                          ? (day >= windowDays - 2 ? p.rose : p.amber)
+                          : (i < day - 1
+                                ? Colors.transparent
+                                : p.inkMute.withValues(alpha: 0.35)),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const Spacer(),
-            Text(
-              chipsOn == chips.length ? '全部确认 · 提醒解除' : '逐条确认防线',
-              style: TextStyle(
-                fontSize: 10,
-                color: chipsOn == chips.length ? p.emerald : p.inkMute,
-              ),
-            ),
+            ],
           ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          '安全防线 $chipsOn/${chips.length}',
+          style: TextStyle(
+            fontSize: 10.5,
+            color: p.inkSub,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -733,8 +748,12 @@ class WindowCadenceInteractor extends StatelessWidget {
                 on: ctl.has(chip),
                 accent: p.amber,
                 icon: Icons.shield_outlined,
-                onTap: () {
-                  ctl.mark(chip, !ctl.has(chip));
+            onTap: () {
+                  ctl.mark(
+                    chip,
+                    !ctl.has(chip),
+                    ratio: _dynamicRatio(chips, chip, ctl),
+                  );
                   if (chips.every(ctl.has)) {
                     HapticFeedback.heavyImpact();
                   }
@@ -778,7 +797,11 @@ class ProcessStepsInteractor extends StatelessWidget {
               on: ctl.has(steps[i]),
               onTap: () {
                 HapticFeedback.selectionClick();
-                ctl.mark(steps[i], !ctl.has(steps[i]));
+                ctl.mark(
+                  steps[i],
+                  !ctl.has(steps[i]),
+                  ratio: _dynamicRatio(steps, steps[i], ctl),
+                );
               },
             ),
           ),
@@ -905,7 +928,11 @@ class DecisionCheckInteractor extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               onTap: () {
                 HapticFeedback.selectionClick();
-                ctl.mark(rule, !ctl.has(rule));
+                ctl.mark(
+                  rule,
+                  !ctl.has(rule),
+                  ratio: _dynamicRatio(rules, rule, ctl),
+                );
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -1031,7 +1058,11 @@ class ContextGuardInteractor extends StatelessWidget {
                 icon: Icons.front_hand_outlined,
                 onTap: () {
                   HapticFeedback.mediumImpact();
-                  ctl.mark(g, !ctl.has(g));
+                  ctl.mark(
+                    g,
+                    !ctl.has(g),
+                    ratio: _dynamicRatio(guards, g, ctl),
+                  );
                 },
               ),
           ],
@@ -1201,7 +1232,11 @@ class EvidenceChecklistInteractor extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             onTap: () {
               HapticFeedback.mediumImpact();
-              ctl.mark(slot, !ctl.has(slot));
+              ctl.mark(
+                slot,
+                !ctl.has(slot),
+                ratio: _dynamicRatio(slots, slot, ctl),
+              );
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),

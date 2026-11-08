@@ -206,7 +206,8 @@ class PeriodDefinition {
 
   static String formatPeriodTag(String periodKey) {
     final def = byKey(periodKey);
-    if (def != null) return '${def.name} (${def.timeRangeLabel})';
+    // 产品口径：时段一律只展示具体时间范围，不再出现早晨/上午等模糊称谓
+    if (def != null) return def.timeRangeLabel;
     final custom = parseCustomPeriod(periodKey);
     if (custom != null) return '自定义 (${custom.$3})';
     return periodKey;

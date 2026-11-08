@@ -1,11 +1,8 @@
 // 画像引擎（REFACTOR_DESIGN §5.8 / ONBOARDING_DESIGN §4）：引导即剪枝，未答不剪（ADR-009）。
 // 判定复用 GatekeeperEngine（不写第二套门禁）；剪枝索引来自 L0 prerequisites + L3 标签 + L7 gates。
 // 所有 profilePatch 映射到现有 UserProfile 字段（零迁移、零兼容风险）。
-import 'dart:convert';
-
-import 'package:flutter/services.dart' show rootBundle;
-
 import '../data/catalog.dart';
+import '../data/engine_configs.dart' show readOnboardingDoc;
 import '../models/advice.dart';
 import '../models/user.dart';
 import 'gatekeeper_engine.dart';
@@ -314,8 +311,8 @@ class OnboardingConfig {
   }
 
   static Future<OnboardingConfig> load() async {
-    final raw = await rootBundle.loadString('assets/data/config/onboarding.json');
-    return OnboardingConfig.fromJson(jsonDecode(raw) as Map<String, dynamic>).withTierResolved();
+    final json = await readOnboardingDoc();
+    return OnboardingConfig.fromJson(json).withTierResolved();
   }
 }
 

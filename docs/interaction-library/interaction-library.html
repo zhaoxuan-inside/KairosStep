@@ -1,0 +1,789 @@
+<meta charset="utf-8">
+<meta charset="utf-8">
+<section id="il" class="il-stack">
+  <p class="il-sr">交互库总集：窗口期六个方向、四个交互模型、以及从现有代码提取的八类应用交互，全部可交互操作。</p>
+
+  <div class="il-chapters">
+    <span class="il-chip-nav">一 · 窗口期方向 A-F</span>
+    <span class="il-chip-nav">二 · 窗口期交互模型 1-4</span>
+    <span class="il-chip-nav">三 · 现有应用交互提取</span>
+    <span class="il-chip-nav">四 · 工程落法</span>
+  </div>
+
+  <div class="il-scrub">
+    <div class="il-scrub-head">
+      <span class="il-strong">窗口期共享场景：劳动仲裁申请，14 天时效（方向 A-F 共用）</span>
+      <span class="il-readout" id="ilw-readout">第 5 / 14 天 · 剩余 9 天</span>
+    </div>
+    <input id="ilw-day" type="range" min="1" max="14" step="1" value="5" aria-label="拖动查看窗口期第几天" />
+  </div>
+
+  <h2 class="il-chapter">一 · 窗口期卡片方向 A-F</h2>
+
+  <article class="il-panel">
+    <h3 class="il-dir">A · 阶段化窗口卡（推荐主线）</h3>
+    <div class="il-card" id="ilA-card">
+      <div class="il-card-head">
+        <span class="il-badge" id="ilA-badge">窗口期 · 第 5/14 天</span>
+        <span class="il-actions">盾 ⓘ 分享 ⚙ ✕</span>
+      </div>
+      <div class="il-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="il-phase" id="ilA-phase">进行期 · 先确认防线项，全部闭合即提前解除提醒</div>
+      <div class="il-strip" id="ilA-strip"></div>
+      <div class="il-row"><span class="il-strong" id="ilA-count">安全防线 2/4</span><span class="il-due">截止 10-21</span></div>
+      <div class="il-chips" id="ilA-chips"></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">B · 里程碑时间线（与 A 共享确认状态）</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-badge">窗口期 · 10-08 → 10-21</span><span class="il-actions">盾 ⓘ 分享 ⚙ ✕</span></div>
+      <div class="il-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="il-timeline" id="ilB-timeline"></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">C · 极简徽章式</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-badge" id="ilC-badge">窗口期 · 剩 9 天</span><span class="il-actions">盾 ⓘ 分享 ⚙ ✕</span></div>
+      <div class="il-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="il-row"><span class="il-strong" id="ilC-count">安全防线 2/4</span><span class="il-due">清单在卡片背面</span></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">D · 双周历格（点击防线日即确认）</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-badge" id="ilD-badge">窗口期 · 第 5/14 天</span><span class="il-actions">盾 ⓘ 分享 ⚙ ✕</span></div>
+      <div class="il-grid" id="ilD-grid"></div>
+      <div class="il-row"><span class="il-strong" id="ilD-count">安全防线 2/4</span><span class="il-due">截止 10-21</span></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">E · 倒计时主视觉</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-badge" id="ilE-badge">窗口期 · 第 5/14 天</span><span class="il-actions">盾 ⓘ 分享 ⚙ ✕</span></div>
+      <div class="il-count-row">
+        <svg viewBox="0 0 96 96" width="84" height="84" role="img" aria-label="剩余天数环形进度">
+          <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(148,163,184,.3)" stroke-width="8" />
+          <circle id="ilE-ring" cx="48" cy="48" r="40" fill="none" stroke="#D97706" stroke-width="8" stroke-linecap="round" transform="rotate(-90 48 48)" stroke-dasharray="251.3" />
+          <text id="ilE-num" x="48" y="56" text-anchor="middle" font-size="26" font-weight="700" fill="#1E293B">9</text>
+        </svg>
+        <div class="il-count-body">
+          <div class="il-title">劳动仲裁申请：确认材料清单</div>
+          <div class="il-sub" id="ilE-sub">已过 5 天 · 剩余 9 天</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">F · 翻转复合卡（A 正面 + B 背面）</h3>
+    <div class="il-flip-zone">
+      <div class="il-flip-inner" id="ilF-inner">
+        <div class="il-card il-face il-front">
+          <div class="il-card-head">
+            <span class="il-badge" id="ilF-badge">窗口期 · 第 5/14 天</span>
+            <span class="il-actions"><button type="button" class="il-mini" id="ilF-flip">⚙ 翻面</button><span>盾 ⓘ 分享 ✕</span></span>
+          </div>
+          <div class="il-title">劳动仲裁申请：确认材料清单</div>
+          <div class="il-strip" id="ilF-strip"></div>
+          <div class="il-row"><span class="il-strong" id="ilF-count">安全防线 2/4</span><span class="il-due">截止 10-21</span></div>
+        </div>
+        <div class="il-card il-face il-back">
+          <div class="il-card-head"><span class="il-badge">里程碑时间线</span><span class="il-actions"><button type="button" class="il-mini" id="ilF-back">⚙ 翻回</button><span>盾 ⓘ 分享 ✕</span></span></div>
+          <div class="il-timeline" id="ilF-timeline"></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <h2 class="il-chapter">二 · 窗口期交互模型 1-4</h2>
+
+  <article class="il-panel">
+    <h3 class="il-dir">模型 1 · 单步承诺（同屏只有一个活动任务）</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-strong">活动任务</span><span class="il-count" id="ilm1-count">0/4</span></div>
+      <div id="ilm1-body"></div>
+      <div class="il-done-row" id="ilm1-done"></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">模型 2 · 检查点响应（到点应答，漏检升级）</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-strong">模拟时钟 <span id="ilm2-day">D3</span></span><button type="button" class="il-mini" id="ilm2-adv">推进到下一检查点</button></div>
+      <div id="ilm2-body"></div>
+      <div class="il-sub" id="ilm2-miss">漏检 0 次 · 提醒常规</div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">模型 3 · 倒排计划（真实截止日反推三阶段）</h3>
+    <div class="il-card">
+      <div class="il-card-head"><span class="il-strong">真实截止日</span>
+        <select id="ilm3-dl" aria-label="选择真实截止日"><option value="7">10-14（7 天）</option><option value="14" selected>10-21（14 天）</option><option value="21">10-28（21 天）</option></select>
+      </div>
+      <div id="ilm3-body"></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">模型 4 · 布防状态机（布防/暂停/收网/解除）</h3>
+    <div class="il-card">
+      <div class="il-states">
+        <button type="button" class="il-state-btn is-on" data-st="armed">布防中</button>
+        <button type="button" class="il-state-btn" data-st="paused">暂停</button>
+        <button type="button" class="il-state-btn" data-st="final">收网</button>
+        <button type="button" class="il-state-btn" data-st="off">解除</button>
+      </div>
+      <div class="il-state-body" id="ilm4-body">布防中 · 每日提醒常规节奏；防线清单 4 项待逐条确认。</div>
+    </div>
+  </article>
+
+  <h2 class="il-chapter">三 · 现有应用交互提取</h2>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 1 · 连击打卡（PrimaryAction 弹性 pop + 连击数）</h3>
+    <div class="il-card">
+      <div class="il-title">认真刷牙，每天清一次牙缝</div>
+      <div class="il-row"><span class="il-streak" id="ilx1-streak">连击 0 天</span></div>
+      <button type="button" class="il-primary" id="ilx1-btn"><span id="ilx1-icon">✓</span><span id="ilx1-label">今日打卡</span></button>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 2 · 快速打卡 + 完成豁免期沉底（2.6s 原地停留）</h3>
+    <div class="il-card">
+      <div class="il-mini-list" id="ilx2-list"></div>
+      <div class="il-sub">点击「完成」：卡片原位变绿 + 礼花，2.6 秒后再沉底——消除瞬移突兀感。</div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 3 · 红线铭记盖章（弹性印章）</h3>
+    <div class="il-card">
+      <div class="il-title">酒后不开车，任何代驾理由都成立</div>
+      <div class="il-stamp-row">
+        <button type="button" class="il-stamp" id="ilx3-stamp">铭记</button>
+        <span class="il-sub" id="ilx3-note">点击盖章确认红线</span>
+      </div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 4 · 安全防线确认 chips</h3>
+    <div class="il-card">
+      <div class="il-row"><span class="il-strong" id="ilx4-count">安全防线 0/4</span></div>
+      <div class="il-chips" id="ilx4-chips"></div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 5 · 办事分步（全步完成出验证态）</h3>
+    <div class="il-card">
+      <div class="il-steps" id="ilx5-steps"></div>
+      <div class="il-sub" id="ilx5-note">按顺序点击完成各步骤</div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 6 · 卡内基 4 步周复盘（方向感切换 + 落印）</h3>
+    <div class="il-card">
+      <div class="il-carnegie" id="ilx6-body"></div>
+      <div class="il-row">
+        <button type="button" class="il-mini" id="ilx6-prev">上一步</button>
+        <span style="flex:1"></span>
+        <button type="button" class="il-primary il-primary-compact" id="ilx6-next">下一步</button>
+      </div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 7 · 齿轮时间尺推演（1.5 小时视窗）</h3>
+    <div class="il-card">
+      <div class="il-ruler" id="ilx7-ruler"><div class="il-ruler-marker" id="ilx7-marker"></div></div>
+      <div class="il-sub" id="ilx7-note">拖动滑块推演时刻：视窗内容随之变化</div>
+      <input id="ilx7-scrub" type="range" min="0" max="96" step="1" value="40" aria-label="推演时刻" />
+      <div class="il-window" id="ilx7-window">此 1.5 小时视窗内暂无计划行动</div>
+    </div>
+  </article>
+
+  <article class="il-panel">
+    <h3 class="il-dir">提取 8 · 卡片 3D 翻转（正面信息 / 背面配置）</h3>
+    <div class="il-flip-zone il-flip-sm">
+      <div class="il-flip-inner" id="ilx8-inner">
+        <div class="il-card il-face il-front">
+          <div class="il-title">带头盔出发</div>
+          <div class="il-sub">正面：概要与打卡</div>
+          <button type="button" class="il-mini" id="ilx8-flip">⚙ 配置触发与周期</button>
+        </div>
+        <div class="il-card il-face il-back">
+          <div class="il-title">触发配置</div>
+          <div class="il-sub">背面：时段/频次/提醒（示意）</div>
+          <button type="button" class="il-mini" id="ilx8-back">⚙ 返回正面</button>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <h2 class="il-chapter">四 · 工程落法</h2>
+  <div class="il-card">
+    <div class="il-sub">Flutter 侧定义统一的 WindowCardData（锚点日 / 窗口天数 / 防线项与建议日 / 确认集）与 WindowCardStyle 枚举；本章 A-F 与模型 1-4 各是一个纯渲染器注册进 InteractionStyleRegistry，卡片长按或设置页切换样式，全部渲染器共享确认集、完成豁免期与提醒解除状态——新增方向即新增一个渲染器，零侵入。本章第三节的八类提取交互对应现有代码：cards/interactors.dart（连击/快速打卡/红线/防线/分步）、cards/advice_card.dart（豁免沉底/翻转）、review/carnegie_review_sheet.dart（4 步向导）、now/now_view.dart（时间尺）。</div>
+  </div>
+</section>
+
+<style>
+#il { --il-canvas:#F9F8F5; --il-surface:#FFFFFF; --il-ink:#1E293B; --il-sub:#475569; --il-mute:#94A3B8; --il-action:#2563EB; --il-done:#059669; --il-amber:#D97706; --il-rose:#E11D48; --il-hair:rgba(30,41,59,.10); font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; color:var(--il-ink); }
+#il .il-stack { display:flex; flex-direction:column; gap:24px; }
+#il .il-chapter { margin:8px 0 0; font-size:17px; }
+#il .il-chapters { display:flex; gap:8px; flex-wrap:wrap; }
+#il .il-chip-nav { font-size:12px; color:var(--il-sub); background:var(--il-canvas); border:1px solid var(--il-hair); border-radius:9999px; padding:4px 12px; }
+#il .il-scrub { display:flex; flex-direction:column; gap:8px; padding:14px 16px; border:1px solid var(--il-hair); border-radius:16px; background:var(--il-canvas); }
+#il .il-scrub-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+#il .il-strong { font-weight:600; }
+#il .il-readout { color:var(--il-sub); font-size:13px; }
+#il input[type="range"] { width:100%; accent-color:var(--il-action); }
+#il .il-panel { display:flex; flex-direction:column; gap:8px; }
+#il .il-dir { margin:0; font-size:14.5px; }
+#il .il-card { background:var(--il-surface); border:1px solid var(--il-hair); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px; max-width:480px; }
+#il .il-card.is-closed { border-color:var(--il-done); }
+#il .il-card.is-sprint { border-color:var(--il-rose); }
+#il .il-card-head { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+#il .il-badge { padding:3px 9px; border-radius:9999px; font-size:11px; font-weight:700; background:rgba(37,99,235,.12); color:var(--il-action); }
+#il .il-badge.is-closed { background:rgba(5,150,105,.14); color:var(--il-done); }
+#il .il-badge.is-sprint { background:rgba(225,29,72,.1); color:var(--il-rose); }
+#il .il-actions { color:var(--il-mute); font-size:12px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+#il .il-title { font-size:14px; font-weight:600; }
+#il .il-sub { font-size:12px; color:var(--il-sub); }
+#il .il-phase { font-size:12px; color:var(--il-sub); }
+#il .il-phase.is-rose { color:var(--il-rose); font-weight:600; }
+#il .il-phase.is-done { color:var(--il-done); font-weight:600; }
+#il .il-strip { display:flex; gap:3px; }
+#il .il-strip i { flex:1; height:6px; border-radius:2px; background:var(--il-canvas); border:1.2px solid rgba(148,163,184,.5); }
+#il .il-strip i.past { background:var(--il-amber); border-color:var(--il-amber); }
+#il .il-strip i.past.is-late { background:var(--il-rose); border-color:var(--il-rose); }
+#il .il-strip i.today { background:transparent; border-color:var(--il-amber); }
+#il .il-strip i.today.is-late { border-color:var(--il-rose); }
+#il .il-row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+#il .il-due { color:var(--il-mute); font-size:12px; }
+#il .il-chips { display:flex; flex-wrap:wrap; gap:8px; }
+#il .il-chip { padding:6px 12px; border-radius:9999px; font-size:12px; border:1.2px solid var(--il-hair); background:var(--il-surface); color:var(--il-sub); cursor:pointer; }
+#il .il-chip.on { background:rgba(5,150,105,.12); border-color:var(--il-done); color:var(--il-done); font-weight:600; }
+#il .il-timeline { display:flex; flex-direction:column; }
+#il .il-node { display:flex; gap:12px; align-items:flex-start; padding:6px 0; }
+#il .il-node-rail { display:flex; flex-direction:column; align-items:center; width:18px; }
+#il .il-dot { width:14px; height:14px; border-radius:9999px; border:2px solid var(--il-mute); background:var(--il-surface); flex:none; }
+#il .il-dot.done { border-color:var(--il-done); background:var(--il-done); }
+#il .il-dot.overdue { border-color:var(--il-rose); }
+#il .il-dot.today { border-color:var(--il-action); box-shadow:inset 0 0 0 3px var(--il-surface), inset 0 0 0 6px var(--il-action); }
+#il .il-node-line { width:2px; flex:1; min-height:14px; background:var(--il-hair); }
+#il .il-node-body { flex:1; display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap; }
+#il .il-node-label { font-size:13px; }
+#il .il-node-label.is-overdue { color:var(--il-rose); font-weight:600; }
+#il .il-node-label.is-done { color:var(--il-done); text-decoration:line-through; }
+#il .il-node-day { font-size:12px; color:var(--il-mute); white-space:nowrap; }
+#il .il-node-day.is-today { color:var(--il-action); font-weight:600; }
+#il .il-grid { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; }
+#il .il-cell { aspect-ratio:1; border-radius:10px; border:1.2px solid var(--il-hair); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-size:11px; color:var(--il-sub); }
+#il .il-cell.is-past { background:rgba(217,119,6,.08); }
+#il .il-cell.is-today { border-color:var(--il-action); border-width:1.6px; color:var(--il-action); font-weight:700; }
+#il .il-cell.is-deadline { border-color:var(--il-rose); }
+#il .il-cell.has-chip { cursor:pointer; }
+#il .il-cell.has-chip:hover { border-color:var(--il-action); }
+#il .il-cell .il-cell-dot { width:6px; height:6px; border-radius:9999px; background:var(--il-mute); }
+#il .il-cell .il-cell-dot.confirmed { background:var(--il-done); }
+#il .il-cell.confirmed { background:rgba(5,150,105,.1); border-color:var(--il-done); }
+#il .il-count-row { display:flex; gap:14px; align-items:center; }
+#il .il-count-body { flex:1; display:flex; flex-direction:column; gap:8px; min-width:0; }
+#il .il-flip-zone { perspective:1200px; max-width:480px; }
+#il .il-flip-sm { max-width:320px; }
+#il .il-flip-inner { position:relative; transition:transform .45s cubic-bezier(.3,.7,.3,1); transform-style:preserve-3d; min-height:120px; }
+#il .il-flip-inner.is-flipped { transform:rotateY(180deg); }
+#il .il-face { backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#il .il-face.il-front { position:relative; }
+#il .il-face.il-back { position:absolute; inset:0; transform:rotateY(180deg); }
+#il .il-mini { border:1px solid var(--il-hair); background:var(--il-canvas); border-radius:8px; font-size:12px; padding:3px 8px; cursor:pointer; color:var(--il-sub); }
+#il .il-primary { border:none; background:var(--il-done); color:#fff; border-radius:9999px; padding:10px 0; width:100%; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+#il .il-primary.is-on { background:rgba(5,150,105,.14); color:var(--il-done); }
+#il .il-primary-compact { width:auto; padding:8px 18px; border-radius:9999px; background:var(--il-action); }
+#il .il-streak { font-size:11px; color:var(--il-done); font-weight:700; }
+#il .il-stamp-row { display:flex; align-items:center; gap:14px; }
+#il .il-stamp { width:64px; height:64px; border-radius:9999px; border:2.5px solid var(--il-done); color:var(--il-done); background:transparent; font-size:14px; font-weight:800; cursor:pointer; letter-spacing:2px; }
+#il .il-stamp.on { background:var(--il-done); color:#fff; }
+#il .il-stamp.is-pop { animation:il-pop .42s cubic-bezier(.2,1.6,.4,1); }
+@keyframes il-pop { 0% { transform:scale(.6); } 60% { transform:scale(1.18); } 100% { transform:scale(1); } }
+#il .il-mini-list { display:flex; flex-direction:column; gap:8px; }
+#il .il-mini-item { border:1px solid var(--il-hair); border-radius:12px; padding:10px 12px; display:flex; align-items:center; gap:10px; position:relative; overflow:hidden; background:var(--il-surface); transition:opacity .3s, border-color .3s; }
+#il .il-mini-item.is-done { border-color:var(--il-done); }
+#il .il-mini-item .il-check { width:18px; height:18px; border-radius:9999px; border:1.5px solid var(--il-mute); flex:none; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; }
+#il .il-mini-item.is-done .il-check { background:var(--il-done); border-color:var(--il-done); }
+#il .il-mini-item .il-done-btn { margin-left:auto; border:none; background:rgba(5,150,105,.14); color:var(--il-done); border-radius:9999px; font-size:11.5px; font-weight:700; padding:5px 12px; cursor:pointer; }
+#il .il-steps { display:flex; flex-direction:column; gap:8px; }
+#il .il-step { display:flex; align-items:center; gap:10px; border:1px solid var(--il-hair); border-radius:10px; padding:8px 10px; cursor:pointer; font-size:12.5px; }
+#il .il-step .il-step-dot { width:16px; height:16px; border-radius:9999px; border:1.5px solid var(--il-mute); flex:none; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; }
+#il .il-step.is-done { border-color:var(--il-done); }
+#il .il-step.is-done .il-step-dot { background:var(--il-done); border-color:var(--il-done); }
+#il .il-carnegie { min-height:120px; border:1px solid var(--il-hair); border-radius:12px; padding:12px; position:relative; overflow:hidden; }
+#il .il-carnegie .il-cp-title { font-size:14px; font-weight:700; margin-bottom:6px; }
+#il .il-carnegie .il-cp-sub { font-size:12px; color:var(--il-sub); }
+#il .il-carnegie .il-stamp-mark { position:absolute; top:8px; right:8px; border:2px solid var(--il-done); color:var(--il-done); border-radius:6px; padding:2px 8px; font-weight:800; font-size:12px; letter-spacing:2px; }
+#il .il-ruler { position:relative; height:26px; border-radius:8px; background:linear-gradient(90deg, rgba(37,99,235,.1), rgba(5,150,105,.1)); border:1px solid var(--il-hair); overflow:hidden; }
+#il .il-ruler-marker { position:absolute; top:0; bottom:0; width:3px; background:var(--il-rose); left:40%; transition:left .2s; }
+#il .il-window { font-size:12.5px; color:var(--il-sub); background:var(--il-canvas); border-radius:10px; padding:10px 12px; }
+#il .il-states { display:flex; gap:6px; flex-wrap:wrap; }
+#il .il-state-btn { border:1px solid var(--il-hair); background:#fff; border-radius:9999px; font-size:12.5px; padding:6px 14px; cursor:pointer; color:var(--il-sub); }
+#il .il-state-btn.is-on { background:#1E293B; color:#fff; border-color:#1E293B; font-weight:600; }
+#il .il-state-btn.is-on.rose { background:var(--il-rose); border-color:var(--il-rose); }
+#il .il-state-btn.is-on.green { background:var(--il-done); border-color:var(--il-done); }
+#il .il-state-body { font-size:13px; background:var(--il-canvas); border-radius:12px; padding:12px; }
+#il .il-state-body.is-rose { background:rgba(225,29,72,.06); }
+#il .il-state-body.is-green { background:rgba(5,150,105,.08); }
+#il .il-done-row { display:flex; flex-wrap:wrap; gap:6px; }
+#il .il-done-chip { font-size:11.5px; color:var(--il-done); background:rgba(5,150,105,.1); border-radius:9999px; padding:3px 10px; text-decoration:line-through; }
+#il .il-count { color:var(--il-action); font-weight:700; }
+#il .il-active { background:rgba(37,99,235,.08); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+#il .il-active-label { font-size:11px; color:var(--il-action); font-weight:700; }
+#il .il-task { font-size:14px; font-weight:600; }
+#il .il-btnrow { display:flex; gap:8px; flex-wrap:wrap; }
+#il .il-btn { border-radius:9999px; font-size:12.5px; font-weight:600; padding:7px 14px; cursor:pointer; }
+#il .il-btn.primary { background:var(--il-action); color:#fff; border:none; }
+#il .il-btn.ghost { background:var(--il-surface); color:var(--il-sub); border:1px solid var(--il-hair); }
+#il .il-btn.done { background:var(--il-done); color:#fff; border:none; }
+#il .il-cp { border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; background:rgba(37,99,235,.06); }
+#il .il-cp.is-late { background:rgba(225,29,72,.06); }
+#il .il-cp-title { font-size:13px; font-weight:600; }
+#il .il-grace { height:4px; border-radius:2px; background:rgba(148,163,184,.3); overflow:hidden; }
+#il .il-grace i { display:block; height:100%; background:var(--il-action); }
+#il .il-stage { display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; border:1px solid var(--il-hair); flex-wrap:wrap; }
+#il .il-stage.is-late { border-color:var(--il-rose); background:rgba(225,29,72,.05); }
+#il .il-stage.is-done { border-color:var(--il-done); background:rgba(5,150,105,.05); }
+#il .il-stage-name { font-size:13px; font-weight:600; width:88px; }
+#il .il-stage-range { font-size:12px; color:var(--il-sub); flex:1; }
+#il .il-stage-state { font-size:11px; font-weight:700; }
+#il .il-stage-state.ok { color:var(--il-done); }
+#il .il-stage-state.late { color:var(--il-rose); }
+#il .il-confetti-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+#il .il-piece { position:absolute; width:7px; height:10px; border-radius:1px; transition:transform .9s cubic-bezier(.15,.6,.4,1), opacity .9s; }
+@media (prefers-reduced-motion: reduce) { #il .il-piece { display:none; } #il .il-flip-inner, #il .il-chip, #il .il-strip i, #il .il-mini-item { transition:none; } }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('il');
+  var ITEMS = [];
+  var CHIPS = ['仲裁时效自知情日起算', '工资流水与考勤已备份', '书面催告已留存', '企业注册信息已调取'];
+  var MILESTONE_DAYS = [3, 7, 10];
+  var ITEMS = CHIPS.slice();
+  var state = { day: 5, chips: [true, true, false, false] };
+  var COLORS = ['#2563EB', '#059669', '#D97706', '#E11D48', '#4F46E5'];
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dueDate(day) { return '10-' + pad(7 + day); }
+  function stripFill(el, day, late) {
+    if (el.children.length === 0) { for (var i = 0; i < 14; i++) el.appendChild(document.createElement('i')); }
+    Array.prototype.forEach.call(el.children, function (seg, i) {
+      seg.className = i < day - 1 ? 'past' + (late ? ' is-late' : '') : i === day - 1 ? 'today' + (late ? ' is-late' : '') : '';
+    });
+  }
+  function burst(layerId) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var layer = root.querySelector(layerId);
+    if (!layer) return;
+    var card = layer.parentElement;
+    var colors = COLORS;
+    var cx = card.clientWidth / 2, cy = card.clientHeight * 0.35;
+    for (var i = 0; i < 24; i++) {
+      var p = document.createElement('i');
+      p.className = 'il-piece';
+      var ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.8;
+      var v = 80 + Math.random() * 100;
+      var dx = Math.sin(ang) * v * 1.6;
+      var dy = -(Math.cos(ang) * v) + 55;
+      p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.background = colors[i % colors.length];
+      layer.appendChild(p);
+      (function (el, dx, dy, rot) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
+          el.style.opacity = '0';
+        }); });
+      })(p, dx, dy, (Math.random() - 0.5) * 720);
+    }
+    setTimeout(function () { layer.innerHTML = ''; }, 1000);
+  }
+
+  // ── 一 · 窗口期方向 ──
+  var dayInput = root.querySelector('#ilw-day');
+  function renderW() {
+    var day = state.day, remain = 14 - day, late = day >= 13;
+    var on = state.chips.filter(Boolean).length;
+    var closed = on === 4;
+    root.querySelector('#ilw-readout').textContent = '第 ' + day + ' / 14 天 · 剩余 ' + remain + ' 天';
+    var phase = closed ? 'closed' : day <= 2 ? 'boot' : day <= 11 ? 'run' : 'sprint';
+    var badgeA = root.querySelector('#ilA-badge'), phaseA = root.querySelector('#ilA-phase');
+    root.querySelector('#ilA-card').className = 'il-card' + (closed ? ' is-closed' : phase === 'sprint' ? ' is-sprint' : '');
+    badgeA.className = 'il-badge' + (closed ? ' is-closed' : phase === 'sprint' ? ' is-sprint' : '');
+    if (closed) { badgeA.textContent = '窗口期 · 已闭合'; phaseA.className = 'il-phase is-done'; phaseA.textContent = '防线已闭合 · 提醒已解除，卡随全局规则沉底'; }
+    else if (phase === 'boot') { badgeA.textContent = '窗口期 · 第 ' + day + '/14 天'; phaseA.className = 'il-phase'; phaseA.textContent = '启动期 · 先逐条确认防线项，全部闭合即提前解除提醒'; }
+    else if (phase === 'run') { badgeA.textContent = '窗口期 · 第 ' + day + '/14 天'; phaseA.className = 'il-phase'; phaseA.textContent = '进行期 · 安全防线 ' + on + '/4，剩余 ' + remain + ' 天'; }
+    else { badgeA.textContent = '冲刺期 · 剩 ' + remain + ' 天'; phaseA.className = 'il-phase is-rose'; phaseA.textContent = '最后 ' + remain + ' 天，还差 ' + (4 - on) + ' 项未确认，提醒已加密'; }
+    stripFill(root.querySelector('#ilA-strip'), day, late);
+    var chipsA = root.querySelector('#ilA-chips');
+    if (chipsA.children.length === 0) {
+      CHIPS.forEach(function (label, idx) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'il-chip'; b.textContent = label;
+        b.addEventListener('click', function () { var was = state.chips.every(Boolean); state.chips[idx] = !state.chips[idx]; renderW(); if (!was && state.chips.every(Boolean)) burst('#ilA-card .il-confetti-layer'); });
+        chipsA.appendChild(b);
+      });
+      var cl = document.createElement('div'); cl.className = 'il-confetti-layer'; cl.id = 'ilA-confetti'; root.querySelector('#ilA-card').appendChild(cl);
+    }
+    Array.prototype.forEach.call(chipsA.children, function (b, idx) { b.className = 'il-chip' + (state.chips[idx] ? ' on' : ''); });
+    root.querySelector('#ilA-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + on + '/4';
+
+    root.querySelector('#ilC-badge').textContent = closed ? '已闭合 · 提醒已解除' : '窗口期 · 剩 ' + remain + ' 天';
+    root.querySelector('#ilC-badge').className = 'il-badge' + (closed ? ' is-closed' : '');
+    root.querySelector('#ilC-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + on + '/4';
+
+    root.querySelector('#ilD-badge').textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + day + '/14 天';
+    root.querySelector('#ilD-badge').className = 'il-badge' + (closed ? ' is-closed' : '');
+    var grid = root.querySelector('#ilD-grid');
+    if (grid.children.length === 0) {
+      for (var d = 1; d <= 14; d++) {
+        var cell = document.createElement('div');
+        cell.className = 'il-cell' + (d === 14 ? ' is-deadline' : '');
+        var num = document.createElement('span');
+        var dd = 7 + d; num.textContent = pad(dd <= 31 ? dd : dd - 31);
+        cell.appendChild(num);
+        var mi = MILESTONE_DAYS.indexOf(d);
+        if (mi !== -1) {
+          cell.classList.add('has-chip');
+          var dot = document.createElement('span'); dot.className = 'il-cell-dot';
+          cell.appendChild(dot);
+          (function (mi2, dot2, cell2) {
+            cell2.addEventListener('click', function () {
+              state.chips[mi2] = !state.chips[mi2]; renderW();
+              dot2.className = 'il-cell-dot' + (state.chips[mi2] ? ' confirmed' : '');
+              cell2.classList.toggle('confirmed', state.chips[mi2]);
+            });
+          })(mi, dot, cell);
+        }
+        grid.appendChild(cell);
+      }
+    }
+    Array.prototype.forEach.call(grid.children, function (cell, d0) {
+      var d = d0 + 1, mi = MILESTONE_DAYS.indexOf(d);
+      if (mi !== -1) {
+        var dot = cell.querySelector('.il-cell-dot');
+        dot.className = 'il-cell-dot' + (state.chips[mi] ? ' confirmed' : '');
+        cell.classList.toggle('confirmed', state.chips[mi]);
+      }
+    });
+    root.querySelector('#ilD-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + on + '/4';
+
+    var ring = root.querySelector('#ilE-ring');
+    ring.setAttribute('stroke-dashoffset', (251.3 * (day / 14)).toFixed(1));
+    ring.setAttribute('stroke', late ? '#E11D48' : '#D97706');
+    root.querySelector('#ilE-num').textContent = String(remain);
+    var badgeE = root.querySelector('#ilE-badge');
+    badgeE.textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + day + '/14 天';
+    badgeE.className = 'il-badge' + (closed ? ' is-closed' : late ? ' is-sprint' : '');
+    root.querySelector('#ilE-sub').textContent = closed ? '全部确认 · 提醒已解除' : '已过 ' + day + ' 天 · 剩余 ' + remain + ' 天';
+
+    stripFill(root.querySelector('#ilF-strip'), day, late);
+    var badgeF = root.querySelector('#ilF-badge');
+    badgeF.textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + day + '/14 天';
+    badgeF.className = 'il-badge' + (closed ? ' is-closed' : late ? ' is-sprint' : '');
+    root.querySelector('#ilF-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + on + '/4';
+
+    renderBTimeline();
+  }
+  function renderBTimeline() {
+    var NODES = [
+      { d: 1, label: '启动窗口 · 时效起算', kind: 'm' },
+      { d: 3, label: '确认防线一：备份工资流水', kind: 'c', ci: 0 },
+      { d: 7, label: '确认防线二：书面催告留存', kind: 'c', ci: 1 },
+      { d: 10, label: '确认防线三：调取企业信息', kind: 'c', ci: 2 },
+      { d: 14, label: '截止 · 全部闭合即提前解除', kind: 'm' }
+    ];
+    [['#ilB-timeline', false], ['#ilF-timeline', true]].forEach(function (pair) {
+      var box = root.querySelector(pair[0]);
+      if (box.children.length > 0 && box.dataset.built === '1') { refreshTimeline(box, NODES, pair[1]); return; }
+      box.innerHTML = ''; box.dataset.built = '1';
+      NODES.forEach(function (node, idx) {
+        var row = document.createElement('div'); row.className = 'il-node';
+        var rail = document.createElement('div'); rail.className = 'il-node-rail';
+        var dot = document.createElement('span'); dot.className = 'il-dot'; dot.dataset.d = node.d; dot.dataset.ci = node.kind === 'c' ? node.ci : '';
+        rail.appendChild(dot);
+        if (idx < NODES.length - 1) { var line = document.createElement('span'); line.className = 'il-node-line'; rail.appendChild(line); }
+        var body = document.createElement('div'); body.className = 'il-node-body';
+        var label = document.createElement('span'); label.className = 'il-node-label'; label.textContent = node.label; label.dataset.d = node.d; label.dataset.ci = node.kind === 'c' ? node.ci : '';
+        var dayTag = document.createElement('span'); dayTag.className = 'il-node-day'; dayTag.textContent = 'D' + node.d;
+        body.appendChild(label); body.appendChild(dayTag);
+        row.appendChild(rail); row.appendChild(body);
+        if (node.kind === 'c') {
+          row.style.cursor = 'pointer';
+          row.addEventListener('click', function () { state.chips[node.ci] = !state.chips[node.ci]; renderW(); });
+        }
+        box.appendChild(row);
+      });
+      refreshTimeline(box, NODES, pair[1]);
+    });
+  }
+  function refreshTimeline(box, NODES, withToday) {
+    Array.prototype.forEach.call(box.querySelectorAll('.il-node'), function (row, idx) {
+      var node = NODES[idx];
+      var confirmed = node.kind === 'c' && state.chips[node.ci];
+      var isPast = node.d < state.day;
+      var isToday = withToday && node.d === state.day;
+      var overdue = isPast && !confirmed && node.kind === 'c';
+      var dot = row.querySelector('.il-dot');
+      dot.className = 'il-dot' + (confirmed ? ' done' : overdue ? ' overdue' : isToday ? ' today' : '');
+      var label = row.querySelector('.il-node-label');
+      label.className = 'il-node-label' + (overdue ? ' is-overdue' : confirmed ? ' is-done' : '');
+      label.textContent = node.label + (overdue ? ' · 逾期' : '');
+      var dayTag = row.querySelector('.il-node-day');
+      dayTag.className = 'il-node-day' + (isToday ? ' is-today' : '');
+      dayTag.textContent = 'D' + node.d + (withToday && isToday ? ' · 今天' : withToday && isPast ? ' · 已过' : '');
+    });
+  }
+  dayInput.addEventListener('input', function () { state.day = parseInt(dayInput.value, 10); renderW(); });
+  root.querySelector('#ilF-flip').addEventListener('click', function () { root.querySelector('#ilF-inner').classList.add('is-flipped'); });
+  root.querySelector('#ilF-back').addEventListener('click', function () { root.querySelector('#ilF-inner').classList.remove('is-flipped'); });
+
+  // ── 二 · 模型 ──
+  var m1 = { active: null, done: [false, false, false, false], suggest: 0 };
+  function m1Render() {
+    var body = root.querySelector('#ilm1-body');
+    body.innerHTML = '';
+    var doneCount = m1.done.filter(Boolean).length;
+    root.querySelector('#ilm1-count').textContent = doneCount + '/4';
+    if (m1.active === null) {
+      var box = document.createElement('div'); box.className = 'il-active';
+      var lab = document.createElement('span'); lab.className = 'il-active-label'; lab.textContent = '系统建议的下一步';
+      var task = document.createElement('div'); task.className = 'il-task'; task.textContent = ITEMS[m1.suggest];
+      var row = document.createElement('div'); row.className = 'il-btnrow';
+      var accept = document.createElement('button'); accept.type = 'button'; accept.className = 'il-btn primary'; accept.textContent = '接受并开始';
+      accept.addEventListener('click', function () { m1.active = m1.suggest; m1Render(); });
+      var swap = document.createElement('button'); swap.type = 'button'; swap.className = 'il-btn ghost'; swap.textContent = '换一项';
+      swap.addEventListener('click', function () { for (var i = 1; i <= 4; i++) { var c = (m1.suggest + i) % 4; if (!m1.done[c]) { m1.suggest = c; break; } } m1Render(); });
+      row.appendChild(accept); row.appendChild(swap);
+      box.appendChild(lab); box.appendChild(task); box.appendChild(row); body.appendChild(box);
+    } else {
+      var box2 = document.createElement('div'); box2.className = 'il-active';
+      var lab2 = document.createElement('span'); lab2.className = 'il-active-label'; lab2.textContent = '当前唯一活动任务 · 完成后自动递补';
+      var task2 = document.createElement('div'); task2.className = 'il-task'; task2.textContent = ITEMS[m1.active];
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'il-btn done'; btn.textContent = '标记完成';
+      btn.addEventListener('click', function () { m1.done[m1.active] = true; m1.active = null; for (var i = 0; i < 4; i++) { if (!m1.done[i]) { m1.suggest = i; break; } } m1Render(); });
+      box2.appendChild(lab2); box2.appendChild(task2); box2.appendChild(btn); body.appendChild(box2);
+    }
+    var doneRow = root.querySelector('#ilm1-done');
+    doneRow.innerHTML = '';
+    m1.done.forEach(function (d, i) { if (!d) return; var chip = document.createElement('span'); chip.className = 'il-done-chip'; chip.textContent = ITEMS[i]; doneRow.appendChild(chip); });
+  }
+  var m2 = { cpIdx: 0, missed: 0 };
+  var CPS = [{ d: 3, item: '备份工资流水与考勤' }, { d: 7, item: '发出书面催告并留存' }, { d: 10, item: '调取企业注册信息' }];
+  function m2Render() {
+    root.querySelector('#ilm2-day').textContent = 'D' + CPS[Math.min(m2.cpIdx, 2)].d;
+    var missEl = root.querySelector('#ilm2-miss');
+    missEl.textContent = '漏检 ' + m2.missed + ' 次 · 提醒' + (m2.missed > 0 ? '已加密' : '常规');
+    missEl.className = 'il-sub' + (m2.missed > 0 ? ' is-rose' : '');
+    missEl.style.color = m2.missed > 0 ? 'var(--il-rose)' : '';
+    var body = root.querySelector('#ilm2-body');
+    body.innerHTML = '';
+    if (m2.cpIdx >= CPS.length) {
+      var fin = document.createElement('div'); fin.className = 'il-cp'; fin.style.background = 'rgba(5,150,105,.08)';
+      fin.textContent = '全部检查点已应答 · 窗口收尾'; body.appendChild(fin); return;
+    }
+    var cp = CPS[m2.cpIdx];
+    var late = m2.missed > 0;
+    var box = document.createElement('div'); box.className = 'il-cp' + (late ? ' is-late' : '');
+    var title = document.createElement('div'); title.className = 'il-cp-title';
+    title.textContent = '检查点 D' + cp.d + ' 已到达：「' + cp.item + '」办妥了吗？';
+    var grace = document.createElement('div'); grace.className = 'il-grace';
+    var fill = document.createElement('i'); fill.style.width = (100 - m2.missed * 30) + '%'; grace.appendChild(fill);
+    var row = document.createElement('div'); row.className = 'il-btnrow';
+    var ok = document.createElement('button'); ok.type = 'button'; ok.className = 'il-btn done'; ok.textContent = '已办妥';
+    ok.addEventListener('click', function () { m2.cpIdx++; m2Render(); });
+    var lateBtn = document.createElement('button'); lateBtn.type = 'button'; lateBtn.className = 'il-btn ghost'; lateBtn.textContent = '还没办（记漏检）';
+    lateBtn.addEventListener('click', function () { m2.missed++; m2.cpIdx++; m2Render(); });
+    row.appendChild(ok); row.appendChild(lateBtn);
+    box.appendChild(title); box.appendChild(grace); box.appendChild(row);
+    body.appendChild(box);
+  }
+  root.querySelector('#ilm2-adv').addEventListener('click', function () { m2.cpIdx = Math.min(m2.cpIdx + 1, CPS.length); m2Render(); });
+  var m3 = { deadline: 14, done: [false, false, false] };
+  var STAGE_NAMES = ['材料准备', '提交申请', '跟进结果'];
+  function m3Render() {
+    var body = root.querySelector('#ilm3-body');
+    body.innerHTML = '';
+    var total = m3.deadline;
+    var ranges = []; var cursor = 0;
+    [0.4, 0.4, 0.2].forEach(function (f, i) {
+      var w = Math.max(1, Math.round(total * f));
+      var s = cursor + 1; var e = Math.min(total, cursor + w);
+      ranges.push({ s: s, e: e }); cursor = e;
+    });
+    ranges[2].e = total;
+    ranges.forEach(function (r, i) {
+      var isDone = m3.done[i];
+      var isLate = !isDone && 5 > r.e;
+      var row = document.createElement('div'); row.className = 'il-stage' + (isLate ? ' is-late' : isDone ? ' is-done' : '');
+      var name = document.createElement('span'); name.className = 'il-stage-name'; name.textContent = STAGE_NAMES[i];
+      var range = document.createElement('span'); range.className = 'il-stage-range';
+      range.textContent = 'D' + r.s + ' - D' + r.e + (isLate ? ' · 已落后，后续阶段自动收紧' : 5 >= r.s && 5 <= r.e ? ' · 进行中' : '');
+      var stateEl = document.createElement('span'); stateEl.className = 'il-stage-state' + (isDone ? ' ok' : isLate ? ' late' : '');
+      stateEl.textContent = isDone ? '已完成' : isLate ? '落后' : 5 >= r.s && 5 <= r.e ? '进行中' : '待开始';
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'il-btn' + (isDone ? ' ghost' : ' primary'); btn.textContent = isDone ? '撤销' : '完成';
+      btn.addEventListener('click', function () { m3.done[i] = !m3.done[i]; m3Render(); });
+      row.appendChild(name); row.appendChild(range); row.appendChild(stateEl); row.appendChild(btn);
+      body.appendChild(row);
+    });
+  }
+  root.querySelector('#ilm3-dl').addEventListener('change', function (e) { m3.deadline = parseInt(e.target.value, 10); m3Render(); });
+  var m6 = 'armed';
+  var m6Copy = {
+    armed: { cls: '', text: '布防中 · 每日提醒常规节奏；防线清单 4 项待逐条确认。' },
+    paused: { cls: '', text: '已暂停 · 所有提醒挂起（出差/假期适用）；回来后点「布防中」恢复，漏掉的检查点会补问。' },
+    final: { cls: 'is-rose', text: '收网模式 · 剩余天数与未确认项置顶朱红展示，提醒加密为每日两条。' },
+    off: { cls: 'is-green', text: '已解除 · 该窗口记入档案，今日流中沉底；可在「周期」页随时回看。' }
+  };
+  function m6Render() {
+    Array.prototype.forEach.call(root.querySelectorAll('#wc-models .il-state-btn, .il-state-btn'), function (b) {
+      if (!root.contains(b)) return;
+      b.className = 'il-state-btn' + (b.dataset.st === m6 ? ' is-on' : '') + (b.dataset.st === m6 && m6 === 'final' ? ' rose' : b.dataset.st === m6 && m6 === 'off' ? ' green' : '');
+    });
+    root.querySelector('#ilm4-body').textContent = m6Copy[m6].text;
+    root.querySelector('#ilm4-body').className = 'il-state-body' + (m6 === 'final' ? ' is-rose' : m6 === 'off' ? ' is-green' : '');
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.il-state-btn'), function (b) {
+    b.addEventListener('click', function () { m6 = b.dataset.st; m6Render(); });
+  });
+
+  // ── 三 · 应用交互提取 ──
+  var streak = 0;
+  var x1btn = root.querySelector('#ilx1-btn');
+  x1btn.addEventListener('click', function () {
+    streak = streak > 0 ? 0 : streak + 1;
+    root.querySelector('#ilx1-streak').textContent = '连击 ' + streak + ' 天';
+    root.querySelector('#ilx1-icon').textContent = streak > 0 ? '🔥' : '✓';
+    root.querySelector('#ilx1-label').textContent = streak > 0 ? '今日已打卡 · ' + streak + ' 连击' : '今日打卡';
+    x1btn.className = 'il-primary' + (streak > 0 ? ' is-on' : '');
+    var icon = root.querySelector('#ilx1-icon');
+    icon.style.display = 'inline-block';
+    icon.style.animation = 'none';
+    void icon.offsetWidth;
+    icon.style.animation = 'il-pop .42s cubic-bezier(.2,1.6,.4,1)';
+  });
+  var x2Items = [{ t: '朗读一遍今日目标' }, { t: '整理桌面与水杯' }, { t: '给家人发一条问候' }];
+  var x2List = root.querySelector('#ilx2-list');
+  x2Items.forEach(function (it, idx) {
+    var row = document.createElement('div');
+    row.className = 'il-mini-item';
+    row.dataset.idx = idx;
+    var check = document.createElement('span'); check.className = 'il-check';
+    var label = document.createElement('span'); label.textContent = it.t;
+    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'il-done-btn'; btn.textContent = '完成';
+    btn.addEventListener('click', function () {
+      if (row.classList.contains('is-done')) return;
+      row.classList.add('is-done');
+      check.textContent = '✓';
+      btn.textContent = '已闭环';
+      burst('#ilx2-list');
+      setTimeout(function () {
+        x2List.appendChild(row);
+        var remaining = Array.prototype.filter.call(x2List.children, function (c) { return !c.classList.contains('is-done'); }).length;
+        if (remaining === 0) {
+          Array.prototype.forEach.call(x2List.children, function (c) { x2List.appendChild(c); });
+        }
+      }, 2600);
+    });
+    row.appendChild(check); row.appendChild(label); row.appendChild(btn);
+    x2List.appendChild(row);
+  });
+  var x3 = root.querySelector('#ilx3-stamp');
+  x3.addEventListener('click', function () {
+    var on = x3.classList.toggle('on');
+    x3.classList.remove('is-pop'); void x3.offsetWidth; x3.classList.add('is-pop');
+    root.querySelector('#ilx3-note').textContent = on ? '已铭记 · 该红线进入每日提醒' : '已撤销 · 点击重新盖章';
+  });
+  var x4 = root.querySelector('#ilx4-chips');
+  CHIPS.forEach(function (label) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'il-chip'; b.textContent = label;
+    b.addEventListener('click', function () {
+      b.classList.toggle('on');
+      var on = x4.querySelectorAll('.on').length;
+      root.querySelector('#ilx4-count').textContent = on === 4 ? '安全防线 4/4 · 已闭合' : '安全防线 ' + on + '/4';
+    });
+    x4.appendChild(b);
+  });
+  var x5Steps = ['收集证据材料', '填写申请表格', '递交仲裁委'];
+  var x5 = root.querySelector('#ilx5-steps');
+  x5Steps.forEach(function (label, i) {
+    var row = document.createElement('div');
+    row.className = 'il-step';
+    var dot = document.createElement('span'); dot.className = 'il-step-dot'; dot.textContent = i + 1;
+    var txt = document.createElement('span'); txt.textContent = label;
+    row.appendChild(dot); row.appendChild(txt);
+    row.addEventListener('click', function () {
+      row.classList.toggle('is-done');
+      dot.textContent = row.classList.contains('is-done') ? '✓' : String(i + 1);
+      var all = x5.querySelectorAll('.il-step.is-done').length === 3;
+      root.querySelector('#ilx5-note').textContent = all ? '全部完成 · 提醒解除' : '按顺序点击完成各步骤';
+    });
+    x5.appendChild(row);
+  });
+  var CARN = [
+    { t: '本周发生过哪次关键摩擦或决策？', s: '客观还原发生了什么，不要带有情绪评价。' },
+    { t: '你当时做了什么？说了哪句话？', s: '还原你第一时间的言行，无论是否冲动。' },
+    { t: '对方的反应如何？付出了什么代价？', s: '冲突升级了吗？是否造成内耗？' },
+    { t: '下次再遇到，你只改口说哪一句话？', s: '把情绪内耗收敛为一句平静、有边界的行动。' }
+  ];
+  var x6 = { step: 0, dir: 1, stamped: false };
+  function x6Render() {
+    var body = root.querySelector('#ilx6-body');
+    body.innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.style.position = 'relative';
+    var inner = document.createElement('div');
+    inner.className = 'il-carnegie';
+    var badge = document.createElement('span');
+    badge.className = 'il-badge';
+    badge.textContent = '步骤 ' + (x6.step + 1) + '/4';
+    inner.appendChild(badge);
+    if (x6.stamped) { var mark = document.createElement('span'); mark.className = 'il-stamp-mark'; mark.textContent = '已省察'; inner.appendChild(mark); }
+    var t = document.createElement('div'); t.className = 'il-cp-title'; t.textContent = CARN[x6.step].t;
+    var s = document.createElement('div'); s.className = 'il-cp-sub'; s.textContent = CARN[x6.step].s;
+    inner.appendChild(t); inner.appendChild(s);
+    wrap.appendChild(inner);
+    body.appendChild(wrap);
+  }
+  root.querySelector('#ilx6-next').addEventListener('click', function () {
+    if (x6.step < 3) { x6.dir = 1; x6.step++; x6Render(); }
+    else if (!x6.stamped) { x6.stamped = true; SoundLike(); x6Render(); }
+    else { x6.stamped = false; x6.step = 0; x6Render(); }
+  });
+  root.querySelector('#ilx6-prev').addEventListener('click', function () {
+    if (x6.step > 0) { x6.dir = -1; x6.step--; x6Render(); }
+  });
+  function SoundLike() { burst('#ilx6-body'); }
+  var x7 = root.querySelector('#ilx7-scrub');
+  x7.addEventListener('input', function () {
+    var v = parseInt(x7.value, 10);
+    root.querySelector('#ilx7-marker').style.left = (v / 96 * 100) + '%';
+    var minutes = 22 * 60 + v * 1.875;
+    var h = Math.floor(minutes / 60) % 24, m = Math.floor(minutes % 60);
+    var label = pad(h) + ':' + pad(m);
+    var has = v > 30 && v < 70;
+    root.querySelector('#ilx7-window').textContent = has
+      ? label + ' 视窗 · 「睡前拉伸 5 分钟」进行中（推演模式）'
+      : label + ' 视窗 · 暂无计划行动（推演模式）';
+  });
+  root.querySelector('#ilx8-flip').addEventListener('click', function () { root.querySelector('#ilx8-inner').classList.add('is-flipped'); });
+  root.querySelector('#ilx8-back').addEventListener('click', function () { root.querySelector('#ilx8-inner').classList.remove('is-flipped'); });
+
+  m1Render(); m2Render(); m3Render(); m6Render(); renderW();
+})();
+</script>

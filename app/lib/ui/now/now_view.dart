@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../app.dart';
 import '../../core/theme.dart';
+import '../../models/advice.dart';
 import '../../state/app_store.dart';
 import '../cards/advice_card.dart';
 import 'breathing_practice.dart';
@@ -27,39 +28,39 @@ class NowPeriod {
     if (m >= 300 && m < 570) {
       return const NowPeriod(
         'morning',
-        '早晨 · 05:00-09:30',
-        '早晨好，我已为你备好今日出发动作',
-        '正在为你守护晨间出行安全与身体唤醒',
+        '05:00-09:30',
+        '新的一天已就绪，今日出发动作都在这里',
+        '出行安全与身体唤醒守护中',
       );
     }
     if (m >= 570 && m < 720) {
       return const NowPeriod(
         'focus',
-        '上午 · 09:30-12:00',
-        '上午好，专注当下，保持高效节奏',
+        '09:30-12:00',
+        '专注当下，保持高效节奏',
         '工位健康自检与深度工作守护中',
       );
     }
     if (m >= 720 && m < 1080) {
       return const NowPeriod(
         'afternoon',
-        '午后 · 12:00-18:00',
-        '午后好，久坐别忘舒展身心与远眺',
-        '午后健康微防线持续守护中',
+        '12:00-18:00',
+        '久坐别忘舒展身心与远眺',
+        '健康微防线持续守护中',
       );
     }
     if (m >= 1080 && m < 1320) {
       return const NowPeriod(
         'evening',
-        '傍晚 · 18:00-22:00',
-        '傍晚好，卸下疲惫，留存一日平和生活',
-        '晚间归途与家庭安全守护中',
+        '18:00-22:00',
+        '卸下疲惫，留存一日平和生活',
+        '归途与家庭安全守护中',
       );
     }
     return const NowPeriod(
       'night',
-      '夜深 · 22:00-05:00',
-      '夜深了，放下发光屏幕，让身心安稳入眠',
+      '22:00-05:00',
+      '放下发光屏幕，让身心安稳入眠',
       '褪黑素节律守护中 · 远离发光屏幕',
     );
   }
@@ -85,16 +86,47 @@ class _NowViewState extends State<NowView> {
   @override
   void initState() {
     super.initState();
-    // 每秒驱动实时呼吸与时钟更新
+    // 每秒心跳仅用于对齐分钟边界：页面无秒级显示（时钟/时间尺/时段均为分钟
+    // 粒度），分钟内不 setState——把每秒一次的全页重建降为每分钟一次。
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _scrub != null) return;
       final now = DateTime.now();
       final periodChanged = NowPeriod.of(now).key != NowPeriod.of(_now).key;
+      final minuteChanged =
+          now.minute != _now.minute || now.hour != _now.hour;
+      if (!periodChanged && !minuteChanged) return;
       setState(() {
         _now = now;
         if (periodChanged) _heroOffset = 0;
       });
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // store 通知(打卡/画像/触发变更)会使视窗缓存失效
+    _windowDirty = true;
+  }
+
+  // 1.5 小时视窗缓存：advicesForWindow 含逐条触发推断（737 条），
+  // 此前每秒重算；现在仅在「分钟变化 / 推演拖动 / store 通知」三者之一发生时重算。
+  bool _windowComputed = false;
+  String _windowKey = '';
+  List<Advice> _windowCache = const [];
+  bool _windowDirty = true;
+
+  List<Advice> _windowAdvices(AppStore store, DateTime effectiveNow) {
+    final minute = effectiveNow.hour * 60 + effectiveNow.minute;
+    final key = '$minute|${_scrub?.toIso8601String() ?? ''}';
+    if (_windowComputed && !_windowDirty && key == _windowKey) {
+      return _windowCache;
+    }
+    _windowCache = store.advicesForWindow(effectiveNow);
+    _windowKey = key;
+    _windowComputed = true;
+    _windowDirty = false;
+    return _windowCache;
   }
 
   @override
@@ -108,7 +140,7 @@ class _NowViewState extends State<NowView> {
     final p = AppPalettes.of(context);
     final store = storeOf(context);
     final period = NowPeriod.of(effectiveNow);
-    final periodAdvices = store.advicesForWindow(effectiveNow);
+    final periodAdvices = _windowAdvices(store, effectiveNow);
 
     final hero = periodAdvices.isNotEmpty
         ? periodAdvices[_heroOffset % periodAdvices.length]
@@ -181,7 +213,7 @@ class _NowViewState extends State<NowView> {
         ),
         const SizedBox(height: 12),
 
-        // 2. 拟人化时段问候与守护提示语（如 "夜深了，放下发光屏幕..."）
+        // 2. 时段问候与守护提示语（如 "放下发光屏幕，让身心安稳入眠..."）
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(

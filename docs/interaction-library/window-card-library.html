@@ -1,0 +1,331 @@
+<meta charset="utf-8">
+<section id="window-card-lib" class="vis-section-stack">
+  <p class="vis-sr-only">窗口期卡片交互库新增三方向：逐日拖拽仪式、城墙防御图、每日一问对话式。拖动天数滑块并交互观察各方向行为，所有方向共享同一窗口数据。</p>
+
+  <div class="w4-scrub">
+    <div class="w4-scrub-head">
+      <span class="w4-strong">场景：劳动仲裁申请，14 天时效窗口（与方向 A-F 同一数据）</span>
+      <span class="w4-readout" id="w4-readout">第 5 / 14 天 · 剩余 9 天</span>
+    </div>
+    <input id="w4-day" type="range" min="1" max="14" step="1" value="5" aria-label="拖动查看第几天" />
+  </div>
+
+  <article class="w4-panel">
+    <h3 class="w4-dir-name">方向 G · 逐日拖拽仪式</h3>
+    <p class="w4-dir-note">用户每天亲手把进度钮向前拖一格——时间推进成为一种确认仪式；拖过未确认的防线日会立即拦截提醒补确认。</p>
+    <div class="w4-card">
+      <div class="w4-card-head">
+        <span class="w4-badge" id="w4G-badge">第 5 / 14 天</span>
+        <span class="w4-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="w4-track-wrap">
+        <div class="w4-track">
+          <div class="w4-track-fill" id="w4G-fill"></div>
+          <div class="w4-ticks" id="w4G-ticks"></div>
+          <div class="w4-knob" id="w4G-knob"><span id="w4G-knob-num">5</span></div>
+        </div>
+        <div class="w4-track-labels"><span>D1</span><span>D7</span><span>D14</span></div>
+      </div>
+      <div class="w4-ritual-box" id="w4G-box">拖动进度钮推进到今天</div>
+    </div>
+  </article>
+
+  <article class="w4-panel">
+    <h3 class="w4-dir-name">方向 H · 城墙防御图</h3>
+    <p class="w4-dir-note">防线项画成城垛：确认一座点亮一座；围攻计时条在下方推进——与 App「防线/守卫」的产品语言同源。</p>
+    <div class="w4-card">
+      <div class="w4-card-head">
+        <span class="w4-badge" id="w4H-badge">围攻第 5 天 · 剩余 9 天</span>
+        <span class="w4-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="w4-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <svg id="w4H-wall" viewBox="0 0 320 132" width="100%" height="132" role="img" aria-label="城墙防御图：四座城垛对应四个防线项，点击确认点亮">
+        <line x1="6" y1="118" x2="314" y2="118" stroke="rgba(30,41,59,.18)" stroke-width="2" />
+        <rect x="6" y="86" width="308" height="32" rx="4" fill="rgba(30,41,59,.06)" stroke="rgba(30,41,59,.14)" />
+        <g id="w4H-battlements"></g>
+        <g id="w4H-siege"></g>
+      </svg>
+      <div class="w4-row">
+        <span class="w4-strong" id="w4H-count">防线 2/4</span>
+        <span class="w4-due" id="w4H-due">时效截止 10-21</span>
+      </div>
+    </div>
+  </article>
+
+  <article class="w4-panel">
+    <h3 class="w4-dir-name">方向 K · 每日一问（对话式）</h3>
+    <p class="w4-dir-note">一次只问一件事：当天该确认什么就以气泡提问，确认/推迟各一个按钮，历史回答沉淀为上方小气泡——与主动探查卡的语气同构。</p>
+    <div class="w4-card">
+      <div class="w4-card-head">
+        <span class="w4-badge" id="w4K-badge">第 5 / 14 天</span>
+        <span class="w4-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="w4-chat" id="w4K-chat"></div>
+    </div>
+  </article>
+</section>
+
+<style>
+#window-card-lib { --w4-canvas:#F9F8F5; --w4-surface:#FFFFFF; --w4-ink:#1E293B; --w4-sub:#475569; --w4-mute:#94A3B8; --w4-action:#2563EB; --w4-done:#059669; --w4-amber:#D97706; --w4-rose:#E11D48; --w4-hair:rgba(30,41,59,.10); font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; color:var(--w4-ink); }
+#window-card-lib .w4-scrub { display:flex; flex-direction:column; gap:8px; padding:14px 16px; border:1px solid var(--w4-hair); border-radius:16px; background:var(--w4-canvas); }
+#window-card-lib .w4-scrub-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+#window-card-lib .w4-strong { font-weight:600; }
+#window-card-lib .w4-readout { color:var(--w4-sub); font-size:13px; }
+#window-card-lib input[type="range"] { width:100%; accent-color:var(--w4-action); }
+#window-card-lib .w4-panel { display:flex; flex-direction:column; gap:10px; }
+#window-card-lib .w4-dir-name { margin:0; font-size:15px; }
+#window-card-lib .w4-dir-note { margin:0; color:var(--w4-sub); font-size:13px; }
+#window-card-lib .w4-card { background:var(--w4-surface); border:1px solid var(--w4-hair); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px; max-width:480px; }
+#window-card-lib .w4-card-head { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+#window-card-lib .w4-badge { padding:3px 9px; border-radius:9999px; font-size:11px; font-weight:700; background:rgba(37,99,235,.12); color:var(--w4-action); }
+#window-card-lib .w4-badge.is-late { background:rgba(225,29,72,.10); color:var(--w4-rose); }
+#window-card-lib .w4-badge.is-done { background:rgba(5,150,105,.14); color:var(--w4-done); }
+#window-card-lib .w4-head-actions { color:var(--w4-mute); font-size:12px; white-space:nowrap; }
+#window-card-lib .w4-title { font-size:14px; font-weight:600; }
+#window-card-lib .w4-row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+#window-card-lib .w4-due { color:var(--w4-mute); font-size:12px; }
+#window-card-lib .w4-track-wrap { display:flex; flex-direction:column; gap:6px; }
+#window-card-lib .w4-track { position:relative; height:44px; background:var(--w4-canvas); border-radius:12px; border:1px solid var(--w4-hair); }
+#window-card-lib .w4-track-fill { position:absolute; left:0; top:0; bottom:0; background:rgba(217,119,6,.16); border-radius:12px 0 0 12px; transition:width .25s; }
+#window-card-lib .w4-ticks { position:absolute; inset:0; display:flex; }
+#window-card-lib .w4-ticks i { flex:1; border-right:1px dashed rgba(148,163,184,.4); }
+#window-card-lib .w4-ticks i:last-child { border-right:none; }
+#window-card-lib .w4-knob { position:absolute; top:50%; transform:translate(-50%,-50%); width:34px; height:34px; border-radius:9999px; background:var(--w4-action); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; box-shadow:0 2px 8px rgba(37,99,235,.4); transition:left .25s; }
+#window-card-lib .w4-knob.is-late { background:var(--w4-rose); box-shadow:0 2px 8px rgba(225,29,72,.4); }
+#window-card-lib .w4-track-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--w4-mute); }
+#window-card-lib .w4-ritual-box { font-size:12.5px; color:var(--w4-sub); background:var(--w4-canvas); border-radius:10px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+#window-card-lib .w4-ritual-box.is-warn { color:var(--w4-rose); background:rgba(225,29,72,.06); }
+#window-card-lib .w4-mini-btn { border:1px solid var(--w4-done); color:var(--w4-done); background:var(--w4-surface); border-radius:9999px; font-size:12px; padding:4px 12px; cursor:pointer; font-weight:600; }
+#window-card-lib .w4-mini-btn.is-warn { border-color:var(--w4-rose); color:var(--w4-rose); }
+#window-card-lib .w4-battlement { cursor:pointer; }
+#window-card-lib .w4-battlement rect { transition:fill .25s, stroke .25s; }
+#window-card-lib .w4-bubble { max-width:78%; padding:8px 12px; border-radius:14px; font-size:12.5px; margin-bottom:8px; }
+#window-card-lib .w4-bubble.sys { background:var(--w4-canvas); color:var(--w4-sub); border-top-left-radius:4px; }
+#window-card-lib .w4-bubble.ask { background:rgba(37,99,235,.08); color:var(--w4-ink); border-top-right-radius:4px; margin-left:auto; }
+#window-card-lib .w4-bubble.ok { background:rgba(5,150,105,.10); color:var(--w4-done); border-top-left-radius:4px; }
+#window-card-lib .w4-bubble.late { background:rgba(225,29,72,.07); color:var(--w4-rose); border-top-left-radius:4px; }
+#window-card-lib .w4-chat-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+#window-card-lib .w4-mini-btn.ghost { border-color:var(--w4-hair); color:var(--w4-sub); }
+@media (prefers-reduced-motion: reduce) { #window-card-lib .w4-knob, #window-card-lib .w4-track-fill, #window-card-lib .w4-battlement rect { transition:none; } }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('window-card-lib');
+  var dayInput = root.querySelector('#w4-day');
+  var readout = root.querySelector('#w4-readout');
+  var ITEMS = [
+    { due: 3, label: '备份工资流水与考勤' },
+    { due: 7, label: '发出书面催告并留存' },
+    { due: 10, label: '调取企业注册信息' }
+  ];
+  var state = { day: 5, confirmed: [true, false, false] };
+
+  function isConfirmed(item) { return state.confirmed[ITEMS.indexOf(item)]; }
+  function allDone() { return state.confirmed.every(Boolean); }
+
+  function render() {
+    var day = state.day;
+    var remain = 14 - day;
+    var late = day >= 13;
+    readout.textContent = '第 ' + day + ' / 14 天 · 剩余 ' + remain + ' 天';
+    renderG(day, late);
+    renderH(day, late);
+    renderK(day, late);
+  }
+
+  function renderG(day, late) {
+    var badge = root.querySelector('#w4G-badge');
+    badge.textContent = '第 ' + day + ' / 14 天';
+    badge.className = 'w4-badge' + (late ? ' is-late' : '');
+    var pct = ((day - 1) / 13) * 100;
+    root.querySelector('#w4G-fill').style.width = pct + '%';
+    var knob = root.querySelector('#w4G-knob');
+    knob.style.left = 'calc(' + pct + '% + ' + (17 - pct * 0.34) + 'px)';
+    knob.className = 'w4-knob' + (late ? ' is-late' : '');
+    root.querySelector('#w4G-knob-num').textContent = String(day);
+    var ticks = root.querySelector('#w4G-ticks');
+    if (ticks.children.length === 0) {
+      for (var i = 0; i < 14; i++) ticks.appendChild(document.createElement('i'));
+    }
+    var box = root.querySelector('#w4G-box');
+    var missed = null;
+    for (var m = 0; m < ITEMS.length; m++) {
+      if (ITEMS[m].due <= day && !state.confirmed[m]) { missed = ITEMS[m]; break; }
+    }
+    box.className = 'w4-ritual-box' + (missed ? ' is-warn' : '');
+    if (missed) {
+      box.innerHTML = '';
+      var warn = document.createElement('span');
+      warn.textContent = '你已拖过第 ' + missed.due + ' 天的防线项「' + missed.label + '」仍未确认';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'w4-mini-btn is-warn';
+      btn.textContent = '立即补确认';
+      btn.addEventListener('click', function () {
+        state.confirmed[ITEMS.indexOf(missed)] = true;
+        render();
+      });
+      box.appendChild(warn);
+      box.appendChild(btn);
+    } else if (allDone()) {
+      box.className = 'w4-ritual-box';
+      box.textContent = '防线全部闭合 · 提醒已解除，继续推进至窗口结束';
+    } else {
+      var next = null;
+      for (var n = 0; n < ITEMS.length; n++) {
+        if (!state.confirmed[n]) { next = ITEMS[n]; break; }
+      }
+      box.textContent = next
+        ? '防线静默守护中 · 下一项「' + next.label + '」建议在第 ' + next.due + ' 天前确认'
+        : '防线静默守护中';
+    }
+  }
+
+  function renderH(day, late) {
+    var badge = root.querySelector('#w4H-badge');
+    badge.textContent = (allDone() ? '防线已闭合' : '围攻第 ' + day + ' 天') + ' · 剩余 ' + (14 - day) + ' 天';
+    badge.className = 'w4-badge' + (allDone() ? ' is-done' : late ? ' is-late' : '');
+    var group = root.querySelector('#w4H-battlements');
+    group.innerHTML = '';
+    var slots = [
+      { x: 26, item: ITEMS[0] },
+      { x: 100, item: ITEMS[1] },
+      { x: 174, item: ITEMS[2] },
+      { x: 248, item: null, final: true }
+    ];
+    slots.forEach(function (s) {
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', 'w4-battlement');
+      var confirmed = s.item ? isConfirmed(s.item) : allDone();
+      var mainFill = confirmed ? 'rgba(5,150,105,.85)' : 'rgba(30,41,59,.08)';
+      var mainStroke = confirmed ? '#059669' : 'rgba(30,41,59,.3)';
+      var bx = s.x, by = 46, bw = 46, bh = 40;
+      var batt = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      var step = bw / 4;
+      var d = 'M' + bx + ' ' + (by + bh) + ' L' + bx + ' ' + (by + 10) +
+        ' L' + (bx + step) + ' ' + (by + 10) + ' L' + (bx + step) + ' ' + by +
+        ' L' + (bx + step * 2) + ' ' + by + ' L' + (bx + step * 2) + ' ' + (by + 10) +
+        ' L' + (bx + step * 3) + ' ' + (by + 10) + ' L' + (bx + step * 3) + ' ' + by +
+        ' L' + (bx + bw) + ' ' + by + ' L' + (bx + bw) + ' ' + (by + 10) +
+        ' L' + (bx + bw) + ' ' + (by + 10) + ' L' + (bx + bw) + ' ' + (by + bh) + ' Z';
+      batt.setAttribute('d', d);
+      batt.setAttribute('fill', mainFill);
+      batt.setAttribute('stroke', mainStroke);
+      batt.setAttribute('stroke-width', '1.5');
+      g.appendChild(batt);
+      var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', bx + bw / 2);
+      label.setAttribute('y', by + bh - 10);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('font-size', '10');
+      label.setAttribute('fill', confirmed ? '#FFFFFF' : 'var(--w4-sub, #475569)');
+      label.setAttribute('font-weight', '600');
+      label.textContent = s.final ? '截止' : 'D' + s.item.due;
+      g.appendChild(label);
+      var sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      sub.setAttribute('x', bx + bw / 2);
+      sub.setAttribute('y', 130);
+      sub.setAttribute('text-anchor', 'middle');
+      sub.setAttribute('font-size', '9');
+      sub.setAttribute('fill', confirmed ? '#059669' : '#94A3B8');
+      sub.textContent = s.final ? '闭合' : confirmed ? '已确认' : '待确认';
+      g.appendChild(sub);
+      if (confirmed && s.final) {
+        var flag = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        flag.setAttribute('d', 'M' + (bx + bw / 2) + ' ' + by + ' V' + (by - 16) + ' L' + (bx + bw / 2 + 14) + ' ' + (by - 11) + ' L' + (bx + bw / 2) + ' ' + (by - 6) + ' Z');
+        flag.setAttribute('fill', '#059669');
+        g.appendChild(flag);
+      }
+      if (s.item) {
+        g.addEventListener('click', function () {
+          var i = ITEMS.indexOf(s.item);
+          state.confirmed[i] = !state.confirmed[i];
+          render();
+        });
+        g.style.cursor = 'pointer';
+      }
+      group.appendChild(g);
+    });
+    var siege = root.querySelector('#w4H-siege');
+    siege.innerHTML = '';
+    var barBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    barBg.setAttribute('x', 6); barBg.setAttribute('y', 30); barBg.setAttribute('width', 308); barBg.setAttribute('height', 5); barBg.setAttribute('rx', 2.5);
+    barBg.setAttribute('fill', 'rgba(148,163,184,.3)');
+    siege.appendChild(barBg);
+    var barFg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    barFg.setAttribute('x', 6); barFg.setAttribute('y', 30); barFg.setAttribute('width', Math.max(4, 308 * (day / 14))); barFg.setAttribute('height', 5); barFg.setAttribute('rx', 2.5);
+    barFg.setAttribute('fill', late ? '#E11D48' : '#D97706');
+    siege.appendChild(barFg);
+    root.querySelector('#w4H-count').textContent = '防线 ' + state.confirmed.filter(Boolean).length + '/4';
+    root.querySelector('#w4H-due').textContent = allDone() ? '已闭合 · 提醒解除' : '时效截止 10-21';
+  }
+
+  function renderK(day, late) {
+    var badge = root.querySelector('#w4K-badge');
+    badge.textContent = '第 ' + day + ' / 14 天';
+    badge.className = 'w4-badge' + (late ? ' is-late' : '');
+    var chat = root.querySelector('#w4K-chat');
+    chat.innerHTML = '';
+    var intro = document.createElement('div');
+    intro.className = 'w4-bubble sys';
+    intro.textContent = '窗口期开始（10-08）· 14 天内逐条确认防线项';
+    chat.appendChild(intro);
+    for (var i = 0; i < ITEMS.length; i++) {
+      var item = ITEMS[i];
+      if (item.due >= day) continue;
+      var past = document.createElement('div');
+      past.className = 'w4-bubble ' + (state.confirmed[i] ? 'ok' : 'late');
+      past.textContent = 'D' + item.due + '「' + item.label + '」' + (state.confirmed[i] ? '已确认' : '已过 · 仍未确认');
+      chat.appendChild(past);
+    }
+    var todayItem = null;
+    for (var j = 0; j < ITEMS.length; j++) {
+      if (ITEMS[j].due === day) { todayItem = ITEMS[j]; break; }
+    }
+    var ask = document.createElement('div');
+    ask.className = 'w4-bubble ask';
+    if (todayItem && !state.confirmed[ITEMS.indexOf(todayItem)]) {
+      ask.textContent = '第 ' + day + ' 天 · 今天到确认期了：「' + todayItem.label + '」完成了吗？';
+      chat.appendChild(ask);
+      var actions = document.createElement('div');
+      actions.className = 'w4-chat-actions';
+      var ok = document.createElement('button');
+      ok.type = 'button';
+      ok.className = 'w4-mini-btn';
+      ok.textContent = '已确认';
+      ok.addEventListener('click', function () {
+        state.confirmed[ITEMS.indexOf(todayItem)] = true;
+        render();
+      });
+      var later = document.createElement('button');
+      later.type = 'button';
+      later.className = 'w4-mini-btn ghost';
+      later.textContent = '再等等';
+      later.addEventListener('click', function () {
+        var box2 = root.querySelector('#w4K-chat');
+        var note = document.createElement('div');
+        note.className = 'w4-bubble sys';
+        note.textContent = '已推迟 · 明天会再问一次，截止前必须确认';
+        box2.appendChild(note);
+      });
+      actions.appendChild(ok);
+      actions.appendChild(later);
+      chat.appendChild(actions);
+    } else if (allDone()) {
+      ask.className = 'w4-bubble ok';
+      ask.textContent = '防线全部闭合 · 提醒已解除';
+      chat.appendChild(ask);
+    } else {
+      ask.textContent = '第 ' + day + ' 天 · 今天没有需要确认的防线项，静默守护中';
+      chat.appendChild(ask);
+    }
+  }
+
+  dayInput.addEventListener('input', function () {
+    state.day = parseInt(dayInput.value, 10);
+    render();
+  });
+  render();
+})();
+</script>

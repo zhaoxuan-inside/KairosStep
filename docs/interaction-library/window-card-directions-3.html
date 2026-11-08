@@ -1,0 +1,347 @@
+<meta charset="utf-8">
+<section id="window-card-demo3" class="vis-section-stack">
+  <p class="vis-sr-only">窗口期卡片另外三个交互设计方向的对比演示：双周历格、倒计时主视觉、翻转复合卡。拖动天数滑块并点击防线项观察各方向行为。</p>
+
+  <div class="w3-scrub">
+    <div class="w3-scrub-head">
+      <span class="w3-strong">场景：劳动仲裁申请，14 天时效窗口（与方向 A/B 同一场景）</span>
+      <span class="w3-readout" id="w3-readout">第 5 / 14 天 · 剩余 9 天</span>
+    </div>
+    <input id="w3-day" type="range" min="1" max="14" step="1" value="5" aria-label="拖动查看第几天" />
+  </div>
+
+  <article class="w3-panel">
+    <h3 class="w3-dir-name">方向 D · 双周历格</h3>
+    <p class="w3-dir-note">2 行 × 7 天的迷你日历：已过实心、当日描边、防线日带盾点、截止日朱红圈；点击防线日直接确认该日事项——时间即任务。</p>
+    <div class="w3-card">
+      <div class="w3-card-head">
+        <span class="w3-badge" id="w3D-badge">窗口期 · 第 5/14 天</span>
+        <span class="w3-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="w3-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+      <div class="w3-grid" id="w3D-grid"></div>
+      <div class="w3-grid-legend"><span class="w3-legend-dot w3-ld-past"></span>已过<span class="w3-legend-dot w3-ld-today"></span>当日<span class="w3-legend-dot w3-ld-chip"></span>防线日<span class="w3-legend-dot w3-ld-dead"></span>截止</div>
+      <div class="w3-grid-detail" id="w3D-detail">点击带盾点的日期可确认该日防线项</div>
+      <div class="w3-row">
+        <span class="w3-strong" id="w3D-count">安全防线 2/4</span>
+        <span class="w3-due" id="w3D-due">截止 10-21</span>
+      </div>
+    </div>
+  </article>
+
+  <article class="w3-panel">
+    <h3 class="w3-dir-name">方向 E · 倒计时主视觉</h3>
+    <p class="w3-dir-note">剩余天数作为第一视觉：大数字 + 环形进度，防线清单压缩成一行胶囊——远看就知道紧急程度。</p>
+    <div class="w3-card">
+      <div class="w3-card-head">
+        <span class="w3-badge" id="w3E-badge">窗口期 · 第 5/14 天</span>
+        <span class="w3-head-actions">盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ⚙&nbsp;&nbsp; ✕</span>
+      </div>
+      <div class="w3-count-row">
+        <svg id="w3E-ring" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="窗口期剩余天数环形进度">
+          <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(148,163,184,.3)" stroke-width="8" />
+          <circle id="w3E-ring-fg" cx="48" cy="48" r="40" fill="none" stroke="#D97706" stroke-width="8" stroke-linecap="round" transform="rotate(-90 48 48)" stroke-dasharray="251.3" stroke-dashoffset="0" />
+          <text id="w3E-ring-num" x="48" y="56" text-anchor="middle" font-size="26" font-weight="700" fill="#1E293B">9</text>
+        </svg>
+        <div class="w3-count-body">
+          <div class="w3-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+          <div class="w3-sub" id="w3E-sub">已过 5 天 · 剩余 9 天 · 截止 10-21</div>
+          <div class="w3-chips" id="w3E-chips"></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="w3-panel">
+    <h3 class="w3-dir-name">方向 F · 翻转复合卡（A 正面 + B 背面）</h3>
+    <p class="w3-dir-note">今日流里展示阶段化正面；点击⚙翻转出里程碑时间线背面——两种交互保留在同一张卡内，与建议卡既有翻转手势同构。</p>
+    <div class="w3-flip-zone">
+      <div class="w3-flip-inner" id="w3F-inner">
+        <div class="w3-card w3-face w3-face-front" id="w3F-front">
+          <div class="w3-card-head">
+            <span class="w3-badge" id="w3F-badge">窗口期 · 第 5/14 天</span>
+            <span class="w3-head-actions">
+              <button type="button" class="w3-mini-btn" id="w3F-flip-btn" aria-label="翻到时间线背面">⚙</button>
+              <span>盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ✕</span>
+            </span>
+          </div>
+          <div class="w3-title">劳动仲裁申请：确认材料清单，别错过时效窗口</div>
+          <div class="w3-strip" id="w3F-strip" aria-hidden="true"></div>
+          <div class="w3-row">
+            <span class="w3-strong" id="w3F-count">安全防线 2/4</span>
+            <span class="w3-due">截止 10-21</span>
+          </div>
+          <div class="w3-chips" id="w3F-chips"></div>
+        </div>
+        <div class="w3-card w3-face w3-face-back">
+          <div class="w3-card-head">
+            <span class="w3-badge">里程碑时间线</span>
+            <span class="w3-head-actions">
+              <button type="button" class="w3-mini-btn" id="w3F-flip-back" aria-label="翻回阶段正面">⚙</button>
+              <span>盾&nbsp;&nbsp; ⓘ&nbsp;&nbsp; 分享&nbsp;&nbsp; ✕</span>
+            </span>
+          </div>
+          <div class="w3-timeline" id="w3F-timeline"></div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<style>
+#window-card-demo3 { --w3-canvas:#F9F8F5; --w3-surface:#FFFFFF; --w3-ink:#1E293B; --w3-sub:#475569; --w3-mute:#94A3B8; --w3-action:#2563EB; --w3-done:#059669; --w3-amber:#D97706; --w3-rose:#E11D48; --w3-hair:rgba(30,41,59,.10); font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; color:var(--w3-ink); }
+#window-card-demo3 .w3-scrub { display:flex; flex-direction:column; gap:8px; padding:14px 16px; border:1px solid var(--w3-hair); border-radius:16px; background:var(--w3-canvas); }
+#window-card-demo3 .w3-scrub-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+#window-card-demo3 .w3-strong { font-weight:600; }
+#window-card-demo3 .w3-readout { color:var(--w3-sub); font-size:13px; }
+#window-card-demo3 input[type="range"] { width:100%; accent-color:var(--w3-action); }
+#window-card-demo3 .w3-panel { display:flex; flex-direction:column; gap:10px; }
+#window-card-demo3 .w3-dir-name { margin:0; font-size:15px; }
+#window-card-demo3 .w3-dir-note { margin:0; color:var(--w3-sub); font-size:13px; }
+#window-card-demo3 .w3-card { background:var(--w3-surface); border:1px solid var(--w3-hair); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:10px; max-width:480px; }
+#window-card-demo3 .w3-card-head { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+#window-card-demo3 .w3-badge { padding:3px 9px; border-radius:9999px; font-size:11px; font-weight:700; background:rgba(37,99,235,.12); color:var(--w3-action); }
+#window-card-demo3 .w3-badge.is-closed { background:rgba(5,150,105,.14); color:var(--w3-done); }
+#window-card-demo3 .w3-badge.is-sprint { background:rgba(225,29,72,.10); color:var(--w3-rose); }
+#window-card-demo3 .w3-head-actions { color:var(--w3-mute); font-size:12px; white-space:nowrap; display:flex; align-items:center; gap:4px; }
+#window-card-demo3 .w3-mini-btn { border:1px solid var(--w3-hair); background:var(--w3-canvas); border-radius:6px; font-size:12px; padding:2px 6px; cursor:pointer; }
+#window-card-demo3 .w3-title { font-size:14px; font-weight:600; }
+#window-card-demo3 .w3-sub { font-size:12px; color:var(--w3-sub); }
+#window-card-demo3 .w3-row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+#window-card-demo3 .w3-due { color:var(--w3-mute); font-size:12px; }
+#window-card-demo3 .w3-chips { display:flex; flex-wrap:wrap; gap:8px; }
+#window-card-demo3 .w3-chip { padding:6px 12px; border-radius:9999px; font-size:12px; border:1.2px solid var(--w3-hair); background:var(--w3-surface); color:var(--w3-sub); cursor:pointer; transition:all .2s; }
+#window-card-demo3 .w3-chip.on { background:rgba(5,150,105,.12); border-color:var(--w3-done); color:var(--w3-done); font-weight:600; }
+#window-card-demo3 .w3-strip { display:flex; gap:3px; }
+#window-card-demo3 .w3-strip i { flex:1; height:6px; border-radius:2px; background:var(--w3-canvas); border:1.2px solid rgba(148,163,184,.5); }
+#window-card-demo3 .w3-strip i.past { background:var(--w3-amber); border-color:var(--w3-amber); }
+#window-card-demo3 .w3-strip i.past.is-late { background:var(--w3-rose); border-color:var(--w3-rose); }
+#window-card-demo3 .w3-strip i.today { background:transparent; border-color:var(--w3-amber); }
+#window-card-demo3 .w3-strip i.today.is-late { border-color:var(--w3-rose); }
+#window-card-demo3 .w3-grid { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; }
+#window-card-demo3 .w3-cell { position:relative; aspect-ratio:1; border-radius:10px; border:1.2px solid var(--w3-hair); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-size:11px; color:var(--w3-sub); }
+#window-card-demo3 .w3-cell.is-past { background:rgba(217,119,6,.08); }
+#window-card-demo3 .w3-cell.is-today { border-color:var(--w3-action); border-width:1.6px; color:var(--w3-action); font-weight:700; }
+#window-card-demo3 .w3-cell.is-deadline { border-color:var(--w3-rose); }
+#window-card-demo3 .w3-cell.has-chip { cursor:pointer; }
+#window-card-demo3 .w3-cell.has-chip:hover { border-color:var(--w3-action); }
+#window-card-demo3 .w3-cell .w3-cell-dot { width:6px; height:6px; border-radius:9999px; background:var(--w3-mute); }
+#window-card-demo3 .w3-cell .w3-cell-dot.confirmed { background:var(--w3-done); }
+#window-card-demo3 .w3-cell.confirmed { background:rgba(5,150,105,.10); border-color:var(--w3-done); }
+#window-card-demo3 .w3-grid-legend { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--w3-mute); flex-wrap:wrap; }
+#window-card-demo3 .w3-legend-dot { width:8px; height:8px; border-radius:3px; display:inline-block; margin-left:8px; }
+#window-card-demo3 .w3-legend-dot:first-child { margin-left:0; }
+#window-card-demo3 .w3-ld-past { background:rgba(217,119,6,.4); }
+#window-card-demo3 .w3-ld-today { border:1.4px solid var(--w3-action); background:var(--w3-surface); }
+#window-card-demo3 .w3-ld-chip { background:var(--w3-mute); border-radius:9999px; }
+#window-card-demo3 .w3-ld-dead { border:1.4px solid var(--w3-rose); background:var(--w3-surface); }
+#window-card-demo3 .w3-grid-detail { font-size:12px; color:var(--w3-sub); background:var(--w3-canvas); border-radius:10px; padding:8px 10px; }
+#window-card-demo3 .w3-count-row { display:flex; gap:14px; align-items:center; }
+#window-card-demo3 .w3-count-body { flex:1; display:flex; flex-direction:column; gap:8px; min-width:0; }
+#window-card-demo3 .w3-timeline { display:flex; flex-direction:column; }
+#window-card-demo3 .w3-node { display:flex; gap:12px; align-items:flex-start; padding:6px 0; }
+#window-card-demo3 .w3-node-rail { display:flex; flex-direction:column; align-items:center; width:18px; }
+#window-card-demo3 .w3-dot { width:14px; height:14px; border-radius:9999px; border:2px solid var(--w3-mute); background:var(--w3-surface); flex:none; }
+#window-card-demo3 .w3-dot.done { border-color:var(--w3-done); background:var(--w3-done); }
+#window-card-demo3 .w3-dot.overdue { border-color:var(--w3-rose); }
+#window-card-demo3 .w3-dot.today { border-color:var(--w3-action); box-shadow:inset 0 0 0 3px var(--w3-surface), inset 0 0 0 6px var(--w3-action); }
+#window-card-demo3 .w3-node-line { width:2px; flex:1; min-height:14px; background:var(--w3-hair); }
+#window-card-demo3 .w3-node-body { flex:1; display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap; }
+#window-card-demo3 .w3-node-label { font-size:13px; }
+#window-card-demo3 .w3-node-label.is-overdue { color:var(--w3-rose); font-weight:600; }
+#window-card-demo3 .w3-node-label.is-done { color:var(--w3-done); text-decoration:line-through; }
+#window-card-demo3 .w3-node-day { font-size:12px; color:var(--w3-mute); white-space:nowrap; }
+#window-card-demo3 .w3-node-day.is-today { color:var(--w3-action); font-weight:600; }
+#window-card-demo3 .w3-flip-zone { perspective:1200px; max-width:480px; }
+#window-card-demo3 .w3-flip-inner { position:relative; transition:transform .45s cubic-bezier(.3,.7,.3,1); transform-style:preserve-3d; }
+#window-card-demo3 .w3-flip-inner.is-flipped { transform:rotateY(180deg); }
+#window-card-demo3 .w3-face { backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#window-card-demo3 .w3-face-back { position:absolute; inset:0; transform:rotateY(180deg); }
+@media (prefers-reduced-motion: reduce) { #window-card-demo3 .w3-flip-inner { transition:none; } #window-card-demo3 .w3-chip, #window-card-demo3 .w3-cell, #window-card-demo3 .w3-strip i { transition:none; } }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('window-card-demo3');
+  var dayInput = root.querySelector('#w3-day');
+  var readout = root.querySelector('#w3-readout');
+  var CHIPS = ['仲裁时效自知情日起算', '工资流水与考勤已备份', '书面催告已留存', '企业注册信息已调取'];
+  var MILESTONE_DAYS = [3, 7, 10];
+  var state = { day: 5, chips: [true, true, false, false], fChips: [true, true, false, false] };
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function dueDate(day) { return '10-' + pad(7 + day); }
+  function dateLabel(d) { var day = 7 + d; return day <= 31 ? pad(day) : pad(day - 31); }
+
+  function renderD() {
+    var grid = root.querySelector('#w3D-grid');
+    grid.innerHTML = '';
+    for (var d = 1; d <= 14; d++) {
+      var cell = document.createElement('div');
+      cell.className = 'w3-cell' + (d < state.day ? ' is-past' : d === state.day ? ' is-today' : '') + (d === 14 ? ' is-deadline' : '');
+      var num = document.createElement('span');
+      num.textContent = dateLabel(d);
+      cell.appendChild(num);
+      var mi = MILESTONE_DAYS.indexOf(d);
+      if (mi !== -1) {
+        cell.classList.add('has-chip');
+        var dot = document.createElement('span');
+        dot.className = 'w3-cell-dot' + (state.chips[mi] ? ' confirmed' : '');
+        cell.appendChild(dot);
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('aria-label', '第 ' + d + ' 天防线项：' + CHIPS[mi] + (state.chips[mi] ? '（已确认）' : '（未确认）'));
+        cell.addEventListener('click', function (mi2) {
+          return function () {
+            state.chips[mi2] = !state.chips[mi2];
+            render();
+          };
+        }(mi));
+      }
+      grid.appendChild(cell);
+    }
+    var onCount = state.chips.filter(Boolean).length;
+    var closed = onCount === CHIPS.length;
+    root.querySelector('#w3D-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + onCount + '/4';
+    root.querySelector('#w3D-due').textContent = closed ? '原截止 10-21 · 提醒已解除' : '截止 10-21';
+    var badge = root.querySelector('#w3D-badge');
+    badge.textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + state.day + '/14 天';
+    badge.className = 'w3-badge' + (closed ? ' is-closed' : state.day >= 13 ? ' is-sprint' : '');
+  }
+
+  function renderE() {
+    var remain = 14 - state.day;
+    var onCount = state.chips.filter(Boolean).length;
+    var closed = onCount === CHIPS.length;
+    var ring = root.querySelector('#w3E-ring-fg');
+    ring.setAttribute('stroke-dashoffset', (251.3 * (state.day / 14)).toFixed(1));
+    ring.setAttribute('stroke', state.day >= 13 ? '#E11D48' : '#D97706');
+    root.querySelector('#w3E-ring-num').textContent = String(remain);
+    var badge = root.querySelector('#w3E-badge');
+    badge.textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + state.day + '/14 天';
+    badge.className = 'w3-badge' + (closed ? ' is-closed' : state.day >= 13 ? ' is-sprint' : '');
+    root.querySelector('#w3E-sub').textContent = closed
+      ? '全部确认 · 提醒已解除 · 截止 10-21'
+      : '已过 ' + state.day + ' 天 · 剩余 ' + remain + ' 天 · 截止 10-21';
+    var box = root.querySelector('#w3E-chips');
+    box.innerHTML = '';
+    CHIPS.forEach(function (label, idx) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'w3-chip' + (state.chips[idx] ? ' on' : '');
+      b.textContent = label;
+      b.addEventListener('click', function () {
+        state.chips[idx] = !state.chips[idx];
+        render();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderF() {
+    var day = state.day;
+    var onCount = state.fChips.filter(Boolean).length;
+    var closed = onCount === CHIPS.length;
+    var late = day >= 13;
+    var strip = root.querySelector('#w3F-strip');
+    if (strip.children.length === 0) {
+      for (var i = 0; i < 14; i++) strip.appendChild(document.createElement('i'));
+    }
+    Array.prototype.forEach.call(strip.children, function (seg, i) {
+      seg.className = i < day - 1 ? 'past' + (late ? ' is-late' : '') : i === day - 1 ? 'today' + (late ? ' is-late' : '') : '';
+    });
+    var badge = root.querySelector('#w3F-badge');
+    badge.textContent = closed ? '窗口期 · 已闭合' : '窗口期 · 第 ' + day + '/14 天';
+    badge.className = 'w3-badge' + (closed ? ' is-closed' : late ? ' is-sprint' : '');
+    root.querySelector('#w3F-count').textContent = closed ? '安全防线 4/4 · 已闭合' : '安全防线 ' + onCount + '/4';
+    var chipBox = root.querySelector('#w3F-chips');
+    if (chipBox.children.length === 0) {
+      CHIPS.forEach(function (label) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'w3-chip';
+        b.textContent = label;
+        b.addEventListener('click', function () {
+          var idx = CHIPS.indexOf(b.textContent);
+          state.fChips[idx] = !state.fChips[idx];
+          render();
+        });
+        chipBox.appendChild(b);
+      });
+    }
+    Array.prototype.forEach.call(chipBox.children, function (b, idx) {
+      b.className = 'w3-chip' + (state.fChips[idx] ? ' on' : '');
+    });
+  }
+
+  function renderFTimeline() {
+    var box = root.querySelector('#w3F-timeline');
+    box.innerHTML = '';
+    var NODES = [
+      { d: 1, label: '启动窗口 · 时效起算', kind: 'milestone' },
+      { d: 3, label: '确认防线一：备份工资流水', kind: 'chip' },
+      { d: 7, label: '确认防线二：书面催告留存', kind: 'chip' },
+      { d: 10, label: '确认防线三：调取企业信息', kind: 'chip' },
+      { d: 14, label: '截止 · 全部闭合即提前解除', kind: 'end' }
+    ];
+    NODES.forEach(function (node, idx) {
+      var ci = MILESTONE_DAYS.indexOf(node.d);
+      var confirmed = node.kind === 'chip' && state.fChips[ci];
+      var isPast = node.d < state.day;
+      var isToday = node.d === state.day;
+      var overdue = isPast && !confirmed && node.kind === 'chip';
+      var row = document.createElement('div');
+      row.className = 'w3-node';
+      var rail = document.createElement('div');
+      rail.className = 'w3-node-rail';
+      var dot = document.createElement('span');
+      dot.className = 'w3-dot' + (confirmed ? ' done' : overdue ? ' overdue' : isToday ? ' today' : '');
+      rail.appendChild(dot);
+      if (idx < NODES.length - 1) {
+        var line = document.createElement('span');
+        line.className = 'w3-node-line';
+        rail.appendChild(line);
+      }
+      var body = document.createElement('div');
+      body.className = 'w3-node-body';
+      var label = document.createElement('span');
+      label.className = 'w3-node-label' + (overdue ? ' is-overdue' : confirmed ? ' is-done' : '');
+      label.textContent = node.label + (overdue ? ' · 逾期' : '');
+      var dayTag = document.createElement('span');
+      dayTag.className = 'w3-node-day' + (isToday ? ' is-today' : '');
+      dayTag.textContent = 'D' + node.d + (isToday ? ' · 今天' : isPast ? ' · 已过' : '');
+      body.appendChild(label);
+      body.appendChild(dayTag);
+      row.appendChild(rail);
+      row.appendChild(body);
+      if (node.kind === 'chip') {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function () {
+          state.fChips[ci] = !state.fChips[ci];
+          render();
+        });
+      }
+      box.appendChild(row);
+    });
+  }
+
+  function render() {
+    readout.textContent = '第 ' + state.day + ' / 14 天 · 剩余 ' + (14 - state.day) + ' 天';
+    renderD();
+    renderE();
+    renderF();
+    renderFTimeline();
+  }
+
+  dayInput.addEventListener('input', function () {
+    state.day = parseInt(dayInput.value, 10);
+    render();
+  });
+  root.querySelector('#w3F-flip-btn').addEventListener('click', function () {
+    root.querySelector('#w3F-inner').classList.add('is-flipped');
+  });
+  root.querySelector('#w3F-flip-back').addEventListener('click', function () {
+    root.querySelector('#w3F-inner').classList.remove('is-flipped');
+  });
+  render();
+})();
+</script>

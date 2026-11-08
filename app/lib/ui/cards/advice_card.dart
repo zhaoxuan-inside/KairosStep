@@ -347,19 +347,25 @@ class _AdviceCardState extends State<AdviceCard>
 
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: timing.color.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(9999),
-          ),
-          child: Text(
-            timing.badge,
-            style: TextStyle(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w700,
-              color: timing.color,
-              letterSpacing: 0.2,
+        // 数字时间段比原文字徽章略宽：给徽章弹性上限（约 6/7 剩余宽度），
+        // 极窄屏下自动换行而非横向溢出
+        Flexible(
+          flex: 6,
+          fit: FlexFit.loose,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: timing.color.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(9999),
+            ),
+            child: Text(
+              timing.badge,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w700,
+                color: timing.color,
+                letterSpacing: 0.2,
+              ),
             ),
           ),
         ),
@@ -558,14 +564,40 @@ class _AdviceCardState extends State<AdviceCard>
       case TriggerMode.dormant:
         return (badge: '静默储备 · 指南中随查', color: const Color(0xFF838280));
       case TriggerMode.daily:
-        final periods = trig.dailyPeriods.map((pk) {
+        // 只用具体时间段：合并相邻/重叠时段（早晨+上午+午后 → 05:00-18:00），
+        // 模糊时段名（早晨/上午/午后/夜间）不再出现在任何徽章中。
+        final ranges = <(int, int)>[];
+        for (final pk in trig.dailyPeriods) {
           final def = PeriodDefinition.byKey(pk);
-          if (def != null) return def.name;
+          if (def != null) {
+            ranges.add((def.startMinute, def.endMinute));
+            continue;
+          }
           final custom = PeriodDefinition.parseCustomPeriod(pk);
-          if (custom != null) return custom.$3;
-          return pk;
-        }).join('/');
-        return (badge: periods.isEmpty ? '每天' : '每天 $periods', color: const Color(0xFF2A72DE));
+          if (custom != null) ranges.add((custom.$1, custom.$2));
+        }
+        ranges.sort((a, b) => a.$1.compareTo(b.$1));
+        final merged = <(int, int)>[];
+        for (final r in ranges) {
+          var end = r.$2;
+          if (end < r.$1) end += 1440; // 跨午夜（夜深 22:00-05:00）
+          if (merged.isEmpty || r.$1 > merged.last.$2) {
+            merged.add((r.$1, end));
+          } else if (end > merged.last.$2) {
+            merged[merged.length - 1] = (merged.last.$1, end);
+          }
+        }
+        String fmt(int m) {
+          final v = m % 1440;
+          return '${(v ~/ 60).toString().padLeft(2, '0')}:${(v % 60).toString().padLeft(2, '0')}';
+        }
+
+        final periods =
+            merged.map((r) => '${fmt(r.$1)}-${fmt(r.$2)}').join('/');
+        return (
+          badge: periods.isEmpty ? '每天' : '每天 $periods',
+          color: const Color(0xFF2A72DE),
+        );
       case TriggerMode.cadence:
         final s = switch (trig.cadenceScopeKey) {
           'weekly' => '每周循环',
@@ -713,7 +745,7 @@ class _BackPanelConfigFormState extends State<_BackPanelConfigForm> {
             runSpacing: 6,
             children: [
               for (final def in PeriodDefinition.standardPeriods)
-                _chip('${def.name} (${def.timeRangeLabel})', _periods.contains(def.key), () {
+                _chip(def.timeRangeLabel, _periods.contains(def.key), () {
                   setState(() {
                     if (_periods.contains(def.key)) {
                       _periods.remove(def.key);
