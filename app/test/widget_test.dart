@@ -106,7 +106,15 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
     // 卡牌流问答（借鉴《八十亿分之一》逐张揭示）：一次一屏一题
-    expect(find.text('第 1/20 题'), findsOneWidget, reason: '卡牌流首题（关注域不进卡流）');
+    final flowCount = catalog.onboarding
+        .visibleQuestions({})
+        .where((q) => q.id != 'focus_domains')
+        .length;
+    expect(
+      find.text('第 1/$flowCount 题'),
+      findsOneWidget,
+      reason: '卡牌流包含具体主题选择',
+    );
     expect(find.text('你的性别'), findsOneWidget);
     expect(find.textContaining('已为你聚焦'), findsOneWidget);
 
@@ -166,18 +174,16 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
     expect(find.textContaining('动态匹配'), findsOneWidget);
 
-    // 寻找系安全带卡并完成交互
-    final seatBeltCard = find.textContaining('车舱安全带锁止状态');
+    // 当当前日程包含安全带建议时，核对实际乘车事项；不存在预锁座位。
+    final seatBeltCard = find.text('确认本人安全带已系好');
     if (seatBeltCard.evaluate().isNotEmpty) {
-      await tester.ensureVisible(find.text('后排左: 扣上'));
-      await tester.pumpAndSettle(const Duration(milliseconds: 100));
-      await tester.tap(find.text('后排左: 扣上'));
-      await tester.pumpAndSettle(const Duration(milliseconds: 100));
-      await tester.ensureVisible(find.text('后排右: 扣上'));
-      await tester.pumpAndSettle(const Duration(milliseconds: 100));
-      await tester.tap(find.text('后排右: 扣上'));
-      await tester.pumpAndSettle(const Duration(milliseconds: 100));
-      expect(find.textContaining('四座全部锁止'), findsOneWidget);
+      for (final label
+          in catalog.displayBindings.bindingOf(1)!.stringListParam('items')) {
+        await tester.ensureVisible(find.text(label));
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle(const Duration(milliseconds: 100));
+      }
+      expect(store.cardState(PeriodScope.today, 1).isDone, isTrue);
     }
 
     // 3. 周期 Tab：真实每周/每月/每年动态条目
@@ -234,8 +240,11 @@ void main() {
       final cardTop = tester.getTopLeft(heroCards.first).dy;
       expect(rulerTop, lessThan(cardTop));
     } else {
-      expect(find.text('此 1.5 小时视窗内暂无计划行动'), findsOneWidget,
-          reason: '当前时段无窗口行动时应显示空态');
+      expect(
+        find.text('此 1.5 小时视窗内暂无计划行动'),
+        findsOneWidget,
+        reason: '当前时段无窗口行动时应显示空态',
+      );
     }
 
     // 模拟在时间尺上轻触进行时间推演

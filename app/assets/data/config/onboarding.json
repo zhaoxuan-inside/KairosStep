@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "_comment": "L7 画像引导配置（Phase 6，ONBOARDING_DESIGN §5）：引导即剪枝，先粗后细（tier-major：coarse 门禁题先行大剪枝，fine 场景题在小集合上精确收集），未答不剪（ADR-009）。profilePatch 键以 '+' 结尾=列表追加、'-' 结尾=列表移除（负面选择清除默认标签），否则 set；全部映射到现有 UserProfile 字段（零迁移）。",
+  "_comment": "宏观到微观的问题树：parentId 声明父节点，whenAny 匹配父题答案；未答不开放细分支，明确不适用时清理下级答案及其 resetPatch 所有事实。宏观多选入口不直接复述建议。",
   "pruning": {
-    "strategy": "max_yield",
+    "strategy": "conditional_tree",
     "minMarginalYield": 3,
-    "maxQuestions": 24
+    "maxQuestions": 26
   },
   "layers": [
     {
@@ -13,8 +13,7 @@
       "required": true,
       "questions": [
         "gender",
-        "birth_year",
-        "height_weight"
+        "birth_year"
       ],
       "granularity": "coarse"
     },
@@ -22,9 +21,12 @@
       "key": "family",
       "title": "家庭与责任",
       "questions": [
+        "family_context",
         "partner",
+        "pregnancy",
         "children",
         "aging_parents",
+        "disability",
         "cohabit",
         "pets"
       ],
@@ -46,6 +48,8 @@
       "title": "健康基线",
       "required": true,
       "questions": [
+        "height_weight",
+        "health_context",
         "smoking",
         "chronic",
         "medications"
@@ -74,10 +78,11 @@
     },
     {
       "key": "interest",
-      "title": "关注域",
+      "title": "关注领域与具体主题",
       "progressive": true,
       "questions": [
-        "focus_domains"
+        "focus_domains",
+        "focus_topics"
       ],
       "granularity": "fine"
     }
@@ -124,7 +129,7 @@
     },
     {
       "id": "height_weight",
-      "layer": "baseline",
+      "layer": "health",
       "required": true,
       "kind": "slider2",
       "prompt": "身高与体重（用于计算 BMI，匹配更准确的健康建议）",
@@ -134,7 +139,62 @@
         "weightField": "weightKg",
         "defaultHeight": 170,
         "defaultWeight": 65
+      },
+      "parentId": "health_context",
+      "whenAny": [
+        "weight"
+      ],
+      "resetPatch": {
+        "heightCm": null,
+        "weightKg": null
       }
+    },
+    {
+      "id": "family_context",
+      "layer": "family",
+      "kind": "multi_choice",
+      "prompt": "你目前涉及哪些家庭关系或照护责任？",
+      "skipAllowed": true,
+      "softOnly": true,
+      "options": [
+        {
+          "value": "partner",
+          "label": "伴侣关系",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "children",
+          "label": "子女养育",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "elderly",
+          "label": "老人照护",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "disability",
+          "label": "无障碍或残障照护",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "pets",
+          "label": "宠物照护",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "none",
+          "label": "目前没有这些情况",
+          "profilePatch": {},
+          "exclusive": true
+        }
+      ],
+      "required": true
     },
     {
       "id": "partner",
@@ -167,7 +227,63 @@
             "relationshipStatus": "married"
           }
         }
-      ]
+      ],
+      "parentId": "family_context",
+      "whenAny": [
+        "partner"
+      ],
+      "resetPatch": {
+        "relationshipStatus": "single",
+        "roles-": [
+          "伴侣"
+        ]
+      }
+    },
+    {
+      "id": "pregnancy",
+      "layer": "family",
+      "required": false,
+      "kind": "single_choice",
+      "prompt": "你本人目前是否处于备孕或孕产阶段？",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "trying",
+          "label": "备孕中",
+          "profilePatch": {
+            "roles+": [
+              "准父母"
+            ],
+            "isPregnantOrPlanning": true
+          }
+        },
+        {
+          "value": "expecting",
+          "label": "孕产中",
+          "profilePatch": {
+            "roles+": [
+              "孕产"
+            ],
+            "isPregnantOrPlanning": true
+          }
+        },
+        {
+          "value": "no",
+          "label": "没有，也暂无计划",
+          "profilePatch": {}
+        }
+      ],
+      "parentId": "gender",
+      "whenAny": [
+        "female"
+      ],
+      "resetPatch": {
+        "isPregnantOrPlanning": false,
+        "roles-": [
+          "孕产",
+          "准父母"
+        ]
+      }
     },
     {
       "id": "children",
@@ -216,7 +332,18 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "family_context",
+      "whenAny": [
+        "children"
+      ],
+      "resetPatch": {
+        "hasChildren": false,
+        "childAgeStage": "none",
+        "roles-": [
+          "家长"
+        ]
+      }
     },
     {
       "id": "aging_parents",
@@ -242,7 +369,65 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "family_context",
+      "whenAny": [
+        "elderly"
+      ],
+      "resetPatch": {
+        "hasAgingParents": false,
+        "livingConditions-": [
+          "家有老人"
+        ]
+      }
+    },
+    {
+      "id": "disability",
+      "layer": "family",
+      "required": false,
+      "kind": "single_choice",
+      "prompt": "家中是否有人需要无障碍或残障相关照护？（含自身）",
+      "skipAllowed": true,
+      "options": [
+        {
+          "value": "self",
+          "label": "有，自身需要",
+          "profilePatch": {
+            "roles+": [
+              "残障人士"
+            ],
+            "healthConcerns+": [
+              "残疾照护"
+            ]
+          }
+        },
+        {
+          "value": "family",
+          "label": "有，需要照护家人",
+          "profilePatch": {
+            "healthConcerns+": [
+              "残疾照护"
+            ]
+          }
+        },
+        {
+          "value": "no",
+          "label": "没有",
+          "profilePatch": {}
+        }
+      ],
+      "parentId": "family_context",
+      "whenAny": [
+        "disability"
+      ],
+      "resetPatch": {
+        "healthConcerns-": [
+          "残疾照护"
+        ],
+        "roles-": [
+          "残障人士"
+        ]
+      }
     },
     {
       "id": "cohabit",
@@ -278,7 +463,14 @@
             "livingAlone": false
           }
         }
-      ]
+      ],
+      "resetPatch": {
+        "livingAlone": false,
+        "livingConditions-": [
+          "独居",
+          "合租"
+        ]
+      }
     },
     {
       "id": "pets",
@@ -304,7 +496,17 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "family_context",
+      "whenAny": [
+        "pets"
+      ],
+      "resetPatch": {
+        "hasPets": false,
+        "livingConditions-": [
+          "养犬人"
+        ]
+      }
     },
     {
       "id": "living_type",
@@ -348,7 +550,15 @@
             ]
           }
         }
-      ]
+      ],
+      "resetPatch": {
+        "isTenant": false,
+        "hasMortgage": false,
+        "livingConditions-": [
+          "租房人",
+          "购房人"
+        ]
+      }
     },
     {
       "id": "piped_gas",
@@ -371,7 +581,9 @@
             "hasPipedGas": false
           }
         }
-      ]
+      ],
+      "parentId": "living_type",
+      "whenAny": []
     },
     {
       "id": "vehicle",
@@ -397,7 +609,13 @@
             ]
           }
         }
-      ]
+      ],
+      "resetPatch": {
+        "hasCar": false,
+        "roles-": [
+          "司机"
+        ]
+      }
     },
     {
       "id": "twowheeler",
@@ -423,6 +641,53 @@
       ]
     },
     {
+      "id": "health_context",
+      "layer": "health",
+      "kind": "multi_choice",
+      "prompt": "健康方面，目前有哪些情况需要纳入画像？",
+      "skipAllowed": true,
+      "softOnly": true,
+      "options": [
+        {
+          "value": "chronic",
+          "label": "已确诊的长期健康状况",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "medications",
+          "label": "长期或经常用药",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "weight",
+          "label": "体重与体形管理",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "digestive",
+          "label": "消化系统不适",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "pain",
+          "label": "反复疼痛",
+          "profilePatch": {},
+          "exclusive": false
+        },
+        {
+          "value": "none",
+          "label": "目前没有这些情况",
+          "profilePatch": {},
+          "exclusive": true
+        }
+      ],
+      "required": true
+    },
+    {
       "id": "smoking",
       "layer": "health",
       "required": true,
@@ -446,7 +711,13 @@
             ]
           }
         }
-      ]
+      ],
+      "resetPatch": {
+        "isSmoker": false,
+        "healthConcerns-": [
+          "吸烟者"
+        ]
+      }
     },
     {
       "id": "chronic",
@@ -516,7 +787,26 @@
           },
           "note": "相关干预只会在心情打卡时出现，日常不打扰"
         }
-      ]
+      ],
+      "parentId": "health_context",
+      "whenAny": [
+        "chronic"
+      ],
+      "resetPatch": {
+        "hasHypertension": false,
+        "hasDiabetes": false,
+        "hasGout": false,
+        "hasKidneyStones": false,
+        "hasCrisisOrMentalStress": false,
+        "healthConcerns-": [
+          "血压关注",
+          "血糖关注",
+          "痛风",
+          "尿酸高",
+          "肾结石",
+          "心理减压"
+        ]
+      }
     },
     {
       "id": "medications",
@@ -569,7 +859,22 @@
           "label": "无",
           "profilePatch": {}
         }
-      ]
+      ],
+      "parentId": "health_context",
+      "whenAny": [
+        "medications"
+      ],
+      "resetPatch": {
+        "medications": [],
+        "hasWeightLossGoal": false,
+        "hasGastroAcidOrStomach": false,
+        "hasFrequentPainOrAnalgesic": false,
+        "healthConcerns-": [
+          "减重管理",
+          "反酸胃炎",
+          "止痛用药"
+        ]
+      }
     },
     {
       "id": "work_status",
@@ -623,13 +928,21 @@
             ]
           }
         }
-      ]
+      ],
+      "resetPatch": {
+        "roles-": [
+          "上班族",
+          "学生",
+          "灵活就业者",
+          "退休"
+        ]
+      }
     },
     {
       "id": "roles",
       "layer": "career",
       "kind": "multi_choice",
-      "prompt": "职业角色（可多选）",
+      "prompt": "目前有哪些职业或学习方向与你相关？",
       "skipAllowed": true,
       "options": [
         {
@@ -667,7 +980,19 @@
           "label": "以上都不是",
           "profilePatch": {}
         }
-      ]
+      ],
+      "parentId": "work_status",
+      "whenAny": [],
+      "resetPatch": {
+        "isProgrammer": false,
+        "isEntrepreneur": false,
+        "hasAbroadTravelOrStudy": false,
+        "roles-": [
+          "程序员",
+          "创业者",
+          "出境者"
+        ]
+      }
     },
     {
       "id": "weight_goal",
@@ -693,7 +1018,17 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "health_context",
+      "whenAny": [
+        "weight"
+      ],
+      "resetPatch": {
+        "hasWeightLossGoal": false,
+        "healthConcerns-": [
+          "减重管理"
+        ]
+      }
     },
     {
       "id": "gastro",
@@ -719,7 +1054,17 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "health_context",
+      "whenAny": [
+        "digestive"
+      ],
+      "resetPatch": {
+        "hasGastroAcidOrStomach": false,
+        "healthConcerns-": [
+          "反酸胃炎"
+        ]
+      }
     },
     {
       "id": "painkillers",
@@ -745,7 +1090,17 @@
             ]
           }
         }
-      ]
+      ],
+      "parentId": "health_context",
+      "whenAny": [
+        "pain"
+      ],
+      "resetPatch": {
+        "hasFrequentPainOrAnalgesic": false,
+        "healthConcerns-": [
+          "止痛用药"
+        ]
+      }
     },
     {
       "id": "focus_domains",
@@ -810,6 +1165,16 @@
           }
         }
       ]
+    },
+    {
+      "id": "focus_topics",
+      "layer": "interest",
+      "kind": "topic_picker",
+      "required": true,
+      "skipAllowed": true,
+      "softOnly": true,
+      "prompt": "你想优先关注哪些具体主题？",
+      "options": []
     }
   ]
 }

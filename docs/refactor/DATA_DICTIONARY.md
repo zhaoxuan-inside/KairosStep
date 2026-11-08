@@ -99,6 +99,8 @@
 ### facets/tag.json — 标签字典
 `{tag, dimensionKey}`：274 种，每标签必属一个维度；未受控者归 theme（open）并在流水线报告列名。
 
+2026-11-08 补充：历史默认标签“通用”“泛指”带 `selectable: false, kind: legacyDefault`，保留原标签用于兼容现有画像门禁；有效分析与发现参数为 272 个。App 搜索使用 `AdviceFacets.effectiveTags`，不将这两个默认值作为主题检索词。
+
 ### facets/advice_tag.json — 保序联结表
 `{id, ordinal, tag}`：12871 行；按 (id, ordinal) 还原出与源数据 byte 级一致的 tags 列表（运行时依赖该顺序：搜索索引 join、stages/frequencies 过滤）。维度归类是附加视图，不改变存储顺序。
 
@@ -116,6 +118,18 @@
 | leadSentence | 由 detail.plain 首句截取（逐字对齐 advice_detail_sheet._lead：[。！？] ≤180 字符） |
 
 ## 6. L6 触发层（assets/data/triggers/advice_trigger.json）
+
+### views/advice_classification.json — 主题与触发入口分类
+
+由流水线 `steps/classification.dart` 根据主挂载、额外挂载与触发计划生成，737 条记录；字段为 `id / primaryTopic / topicPaths / domain / lane`。`primaryTopic` 为首个主题挂载，`domain` 为其根路径。`lane` 先取 emergency 标志（紧急速查），其余保留计划 mode：daily（每日计划）、cadence（周期计划）、dormant（按需储备）。当前覆盖 46 个主主题、100 个主题与触发入口组合；入口数量为每日 40、周期 67、紧急 116、按需 514。
+
+原始 trigger.mode=dormant 的紧急建议在分类视图中仍可进入 emergency 入口，分类不改变通知或触发计划。运行时装配为 `Advice.classification`；生活指南默认按领域与主题入口折叠，每组每页最多 20 条，不再全量平铺展开。
+
+### 用户画像具体主题字段
+
+`UserProfile.focusTopics: List<String>` 存储主题树路径，默认空数组；旧画像缺失此字段时按“不限定主题”兼容。`copyWith / toJson / fromJson` 均保留该字段。新引导题 `focus_topics` 使用 `kind: topic_picker`，按同一主题树动态生成选项和全库去重覆盖数量，支持多选、取消、清空、跳过和重配置。
+
+具体主题选择限制画像专属建议与日常推荐，不替代年龄、疾病与角色门禁；跨类建议需在同一条主题路径上同时满足关注范围和未隐藏条件。全量指南仍显示全部建议，父母适用清单独立于用户自己的主题关注。清空具体主题只撤销主题限制，不撤销已有画像条件。
 
 视图定义：流水线复刻 `effectiveTriggerOf`（app_store:807-1025）的默认推断；等价性由 `test/trigger_plan_equivalence_test.dart` 逐条证明。
 | 字段 | 说明 |

@@ -441,6 +441,9 @@ class UserProfile {
     ],
     this.prunedOnly = true,
     this.parentsOnly = false,
+    this.focusTopics = const [],
+    this.onboardingAnswers = const {},
+    this.scenes = const [],
     this.hasCar = false,
     this.hasTwowheeler = false,
     this.hasChildren = false,
@@ -482,6 +485,18 @@ class UserProfile {
   final List<String> focusDomains; // 关注的人生领域，默认 6 大支柱全覆盖
   final bool prunedOnly; // 全景库默认「画像专属」
   final bool parentsOnly; // 父母适用清单
+  final List<String> focusTopics;
+  final Map<String, List<String>> onboardingAnswers;
+  final List<String> scenes;
+
+  /// Empty means no topic restriction; cross-listed advice needs one matching route.
+  bool matchesTopics(Iterable<String> paths) =>
+      focusTopics.isEmpty ||
+      paths.any(
+        (path) => focusTopics.any(
+          (focus) => path == focus || path.startsWith('$focus/'),
+        ),
+      );
   final bool hasCar; // 是否拥有/常开机动车
   final bool hasTwowheeler; // 是否拥有/常骑电动车或摩托车
   final bool hasChildren; // 是否有子女/育儿中
@@ -583,6 +598,7 @@ class UserProfile {
 
   UserProfile copyWith({
     List<String>? medications,
+    List<String>? scenes,
     bool? livingAlone,
     String? gender,
     int? age,
@@ -590,6 +606,9 @@ class UserProfile {
     List<String>? livingConditions,
     List<String>? healthConcerns,
     List<String>? focusDomains,
+    List<String>? focusTopics,
+    Map<String, List<String>>? onboardingAnswers,
+    bool clearBodyMeasurements = false,
     bool? prunedOnly,
     bool? parentsOnly,
     bool? hasCar,
@@ -623,6 +642,7 @@ class UserProfile {
     List<int>? formedHabits,
   }) => UserProfile(
     medications: medications ?? this.medications,
+    scenes: scenes ?? this.scenes,
     livingAlone: livingAlone ?? this.livingAlone,
     gender: gender ?? this.gender,
     age: age ?? this.age,
@@ -630,6 +650,8 @@ class UserProfile {
     livingConditions: livingConditions ?? this.livingConditions,
     healthConcerns: healthConcerns ?? this.healthConcerns,
     focusDomains: focusDomains ?? this.focusDomains,
+    focusTopics: focusTopics ?? this.focusTopics,
+    onboardingAnswers: onboardingAnswers ?? this.onboardingAnswers,
     prunedOnly: prunedOnly ?? this.prunedOnly,
     parentsOnly: parentsOnly ?? this.parentsOnly,
     hasCar: hasCar ?? this.hasCar,
@@ -656,8 +678,8 @@ class UserProfile {
     hasDisabilityCare: hasDisabilityCare ?? this.hasDisabilityCare,
     hasCrisisOrMentalStress:
         hasCrisisOrMentalStress ?? this.hasCrisisOrMentalStress,
-    heightCm: heightCm ?? this.heightCm,
-    weightKg: weightKg ?? this.weightKg,
+    heightCm: clearBodyMeasurements ? null : heightCm ?? this.heightCm,
+    weightKg: clearBodyMeasurements ? null : weightKg ?? this.weightKg,
     hasWeightLossGoal: hasWeightLossGoal ?? this.hasWeightLossGoal,
     hasGastroAcidOrStomach:
         hasGastroAcidOrStomach ?? this.hasGastroAcidOrStomach,
@@ -675,6 +697,9 @@ class UserProfile {
     'livingConditions': livingConditions,
     'healthConcerns': healthConcerns,
     'focusDomains': focusDomains,
+    'focusTopics': focusTopics,
+    'onboardingAnswers': onboardingAnswers,
+    'scenes': scenes,
     'prunedOnly': prunedOnly,
     'parentsOnly': parentsOnly,
     'hasCar': hasCar,
@@ -711,6 +736,12 @@ class UserProfile {
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+    onboardingAnswers: {
+      for (final e in ((json['onboardingAnswers'] as Map?) ?? const {}).entries)
+        e.key as String: (e.value as List).cast<String>(),
+    },
+    scenes: (json['scenes'] as List?)?.cast<String>() ?? const [],
+    focusTopics: (json['focusTopics'] as List?)?.cast<String>() ?? const [],
     gender: json['gender'] as String? ?? '男',
     age: json['age'] as int? ?? 28,
     roles:
@@ -766,7 +797,6 @@ class UserProfile {
 }
 
 /// 父母适用清单（人工复核，来源 HowToLiveBetterFor35Dev.md，139 条）。
-
 
 /// 卡片交互状态：某个作用域内一张卡的完成部件集合 + 附加数据。
 ///

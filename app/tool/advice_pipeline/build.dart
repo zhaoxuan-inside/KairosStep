@@ -9,6 +9,8 @@ import 'dart:io';
 
 import 'common.dart';
 import 'steps/display.dart';
+import 'steps/classification.dart';
+import 'steps/interactions.dart';
 import 'steps/facets.dart';
 import 'steps/normalize.dart';
 import 'steps/validate.dart';
@@ -70,6 +72,10 @@ void main(List<String> args) {
   final files = serializeLayers(n);
   files.addAll(serializeFacets(facets));
   files.addAll(serializeDisplay(display));
+  files.addAll(serializeClassification(n));
+  files.addAll(
+    serializeInteractions(n: n, parts: partsByAdvice, report: report),
+  );
   // taxonomy 原样拷贝（字节级不重编码）
   files['dimensions/taxonomy.json'] = taxonomyRaw();
 
@@ -77,11 +83,13 @@ void main(List<String> args) {
   // ignore: avoid_print
   print('── advice_pipeline 报告 ──');
   // ignore: avoid_print
-  print('建议 ${n.adviceRows.length} 条；明细 ${n.detailRows.length} 条；'
-      '动作 ${n.actionRows.length} 行；挂载 ${n.nodeRows.length} 行；'
-      '标签 ${facets.tagRows.length} 种 / ${facets.adviceTagRows.length} 行；'
-      '徽章 ${n.badgeRows.length} 种；关联 ${n.relationRows.length} 行；'
-      '触发计划 ${n.triggerPlans.length} 条');
+  print(
+    '建议 ${n.adviceRows.length} 条；明细 ${n.detailRows.length} 条；'
+    '动作 ${n.actionRows.length} 行；挂载 ${n.nodeRows.length} 行；'
+    '标签 ${facets.tagRows.length} 种 / ${facets.adviceTagRows.length} 行；'
+    '徽章 ${n.badgeRows.length} 种；关联 ${n.relationRows.length} 行；'
+    '触发计划 ${n.triggerPlans.length} 条',
+  );
   final modes = <String, int>{};
   for (final p in n.triggerPlans) {
     modes[p['mode'] as String] = (modes[p['mode'] as String] ?? 0) + 1;

@@ -25,6 +25,7 @@ class RawAssets {
     required this.gateTraits,
     required this.nodePkg,
     required this.pinyin,
+    this.classification = '',
   });
 
   final String adviceBase;
@@ -47,6 +48,7 @@ class RawAssets {
   final String gateTraits;
   final String nodePkg;
   final String pinyin;
+  final String classification;
 }
 
 /// 主 isolate 读取资产字符串（平台通道）；解码交给调用方（可入后台 isolate）。
@@ -75,6 +77,7 @@ Future<RawAssets> readRawAssets() async {
     gateTraits: await raw('config/gate_traits').catchError((_) => ''),
     nodePkg: await raw('node_packages'),
     pinyin: await raw('pinyin'),
+    classification: await raw('views/advice_classification'),
   );
 }
 

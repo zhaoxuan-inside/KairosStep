@@ -27,7 +27,8 @@ void main() {
     final gatekeeper = GatekeeperEngine(catalog);
     final expected = {
       for (final a in catalog.adviceList)
-        if (gatekeeper.matchPersona(a, profile: p, topicFilter: (_) => true)) a.id,
+        if (gatekeeper.matchPersona(a, profile: p, topicFilter: (_) => true))
+          a.id,
     };
     expect(active, expected);
   });
@@ -39,10 +40,16 @@ void main() {
     final healthy = const UserProfile(age: 52).normalized();
     final goutActive = engine.activeAdviceIds(gout);
     expect(goutActive.containsAll({483, 484}), isTrue, reason: '中年痛风者应看到用药/饮食');
-    expect(engine.activeAdviceIds(youngGout).contains(483), isFalse,
-        reason: '青年阶段交集为空，被年龄规则拦截');
-    expect(engine.activeAdviceIds(healthy).contains(483), isFalse,
-        reason: '非痛风者被 0.6 门禁拦截');
+    expect(
+      engine.activeAdviceIds(youngGout).contains(483),
+      isFalse,
+      reason: '青年阶段交集为空，被年龄规则拦截',
+    );
+    expect(
+      engine.activeAdviceIds(healthy).contains(483),
+      isFalse,
+      reason: '非痛风者被 0.6 门禁拦截',
+    );
   });
 
   test('patch 应用正确：性别/慢病选项写入对应字段', () {
@@ -55,19 +62,30 @@ void main() {
 
   test('先粗后细：tier 主键排序，层内收益降序；fine 层低收益题保留（精确收集）', () {
     final p = const UserProfile().normalized();
-    final state = engine.onboardingState(p, {'gender', 'birth_year', 'height_weight', 'smoking'});
+    final state = engine.onboardingState(p, {
+      'gender',
+      'birth_year',
+      'height_weight',
+      'smoking',
+    });
     final cands = state.candidates;
     for (var i = 1; i < cands.length; i++) {
       final prev = cands[i - 1].question.tier;
       final cur = cands[i].question.tier;
       expect(prev <= cur, isTrue, reason: 'tier 必须非降序：$prev → $cur');
       if (prev == cur) {
-        expect(cands[i - 1].yieldCount >= cands[i].yieldCount, isTrue,
-            reason: '同层内收益降序');
+        expect(
+          cands[i - 1].yieldCount >= cands[i].yieldCount,
+          isTrue,
+          reason: '同层内收益降序',
+        );
       }
     }
-    expect(cands.any((c) => c.question.required), isFalse,
-        reason: 'required 题固定在前，不进收益榜');
+    expect(
+      cands.any((c) => c.question.required),
+      isFalse,
+      reason: 'required 题固定在前，不进收益榜',
+    );
     // fine 层（scene/interest）的精确收集题不被 minMarginalYield 淘汰
     final fineCands = cands.where((c) => c.question.tier == 2).length;
     expect(fineCands, greaterThanOrEqualTo(0));
@@ -104,8 +122,11 @@ void main() {
       }
     }
     expect(steps, lessThanOrEqualTo(24), reason: 'maxQuestions 上限生效');
-    expect(engine.activeAdviceIds(p).length, lessThan(catalog.adviceList.length),
-        reason: '引导后应产生实际聚焦');
+    expect(
+      engine.activeAdviceIds(p).length,
+      lessThan(catalog.adviceList.length),
+      reason: '引导后应产生实际聚焦',
+    );
   });
 
   OnboardingQuestion questionOf(String qid) =>
@@ -115,8 +136,10 @@ void main() {
       questionOf(qid).options.firstWhere((o) => o.label == label).value;
 
   test('replayDraft：单选重答无残留（婴幼儿 → 没有孩子，hasChildren/childAgeStage 复位）', () {
-    UserProfile answer(String value) =>
-        engine.replayDraft({'children': {value}});
+    UserProfile answer(String value) => engine.replayDraft({
+      'family_context': {'children'},
+      'children': {value},
+    });
 
     final infant = answer(valueOf('children', '婴幼儿期（0-3 岁）'));
     expect(infant.hasChildren, isTrue);
@@ -134,6 +157,7 @@ void main() {
 
     // 选两项
     final two = engine.replayDraft({
+      'health_context': {'medications'},
       'medications': {v('减重药物/针剂'), v('胃药/抑酸药')},
     });
     expect(two.hasWeightLossGoal, isTrue);
@@ -141,6 +165,7 @@ void main() {
 
     // 取消一项（再点取消语义由选择态维护：直接从集合移除后重放）
     final one = engine.replayDraft({
+      'health_context': {'medications'},
       'medications': {v('减重药物/针剂')},
     });
     expect(one.hasWeightLossGoal, isTrue);
@@ -148,6 +173,7 @@ void main() {
 
     // 「无」独占：清空其余选择
     final none = engine.replayDraft({
+      'health_context': {'medications'},
       'medications': {v('无')},
     });
     expect(none.hasWeightLossGoal, isFalse);
@@ -159,6 +185,7 @@ void main() {
     final draft = engine.replayDraft(
       {
         'gender': {valueOf('gender', '女')},
+        'health_context': {'weight'},
         'smoking': {valueOf('smoking', '吸烟')},
       },
       sliderPatches: {
@@ -178,8 +205,11 @@ void main() {
       'living_type': {valueOf('living_type', '自住（无贷）')},
     });
     expect(living.isTenant, isFalse);
-    expect(living.livingConditions.contains('租房人'), isFalse,
-        reason: '负面选择必须清除默认标签，否则租房门禁照推');
+    expect(
+      living.livingConditions.contains('租房人'),
+      isFalse,
+      reason: '负面选择必须清除默认标签，否则租房门禁照推',
+    );
 
     final work = engine.replayDraft({
       'work_status': {valueOf('work_status', '学生')},
@@ -188,6 +218,7 @@ void main() {
     expect(work.roles.contains('上班族'), isFalse);
 
     final single = engine.replayDraft({
+      'family_context': {'partner'},
       'partner': {valueOf('partner', '单身')},
     });
     expect(single.relationshipStatus, 'single');
@@ -221,7 +252,12 @@ void main() {
     final unanswered = engine.activeAdviceIds(base);
     final all = {
       for (final a in catalog.adviceList)
-        if (engine.gatekeeper.matchPersona(a, profile: base, topicFilter: (_) => true)) a.id,
+        if (engine.gatekeeper.matchPersona(
+          a,
+          profile: base,
+          topicFilter: (_) => true,
+        ))
+          a.id,
     };
     expect(unanswered, all);
 
@@ -233,7 +269,10 @@ void main() {
     final narrowed = engine.activeAdviceIds(healthOnly);
     expect(narrowed.length, lessThan(unanswered.length));
     for (final id in narrowed) {
-      expect(LifeDomain.ofChapter(catalog.adviceById(id)!.chapter).id, 'health');
+      expect(
+        LifeDomain.ofChapter(catalog.adviceById(id)!.chapter).id,
+        'health',
+      );
     }
   });
 
@@ -242,8 +281,16 @@ void main() {
     final defaults = const UserProfile();
     for (final a in catalog.adviceList) {
       expect(
-        engine.gatekeeper.matchPersona(a, profile: base, topicFilter: (_) => true),
-        engine.gatekeeper.matchPersona(a, profile: defaults, topicFilter: (_) => true),
+        engine.gatekeeper.matchPersona(
+          a,
+          profile: base,
+          topicFilter: (_) => true,
+        ),
+        engine.gatekeeper.matchPersona(
+          a,
+          profile: defaults,
+          topicFilter: (_) => true,
+        ),
         reason: '基线切换不得改变未答用户的准入口径：advice=${a.id}',
       );
     }

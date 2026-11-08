@@ -12,7 +12,6 @@ import '../domain/profile_engine.dart';
 import '../domain/semantic_search_engine.dart';
 import '../domain/stream_engine.dart';
 import '../domain/trigger_engine.dart';
-import '../core/sound.dart';
 import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import '../data/catalog.dart';
@@ -104,9 +103,12 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   /// 让用户看到完成态与礼花；豁免结束移除并通知，卡片再温和沉底。
   /// 否则打卡瞬间列表重排，卡片从眼前瞬移到底部，非常突兀。
   final Map<int, DateTime> _justDoneAt = {};
+  final Map<int, Timer> _justDoneTimers = {};
   void _markJustDone(int id) {
     _justDoneAt[id] = DateTime.now();
-    Timer(const Duration(milliseconds: 2600), () {
+    _justDoneTimers.remove(id)?.cancel();
+    _justDoneTimers[id] = Timer(const Duration(milliseconds: 2600), () {
+      _justDoneTimers.remove(id);
       if (_justDoneAt.remove(id) != null) notifyListeners();
     });
   }
@@ -128,15 +130,6 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   set themeMode(ThemeMode v) {
     _themeMode = v;
     prefs.setString('kThemeMode', v.name);
-    notifyListeners();
-  }
-
-  bool _soundEffects = true;
-  bool get soundEffects => _soundEffects;
-  set soundEffects(bool v) {
-    _soundEffects = v;
-    prefs.setBool('kSoundEffects', v);
-    SoundFx.enabled = v;
     notifyListeners();
   }
 
@@ -288,8 +281,13 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
     return null;
   }
 
-  bool matchesTopicPreferences(Advice a) =>
-      catalog.topics.isVisible(a, _excludedTopicPaths);
+  bool matchesTopicPreferences(Advice a) => a.topicPaths.any(
+    (path) =>
+        profile.matchesTopics([path]) &&
+        !_excludedTopicPaths.any(
+          (hidden) => TopicNode.containsPath(hidden, path),
+        ),
+  );
 
   void excludeTopic(String path) {
     if (!catalog.topics.byPath.containsKey(path)) {
@@ -544,6 +542,28 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
 
   CardState cardState(PeriodScope s, int id) => checkinEngine.cardState(s, id);
 
+  /// Measurements, plans and dates outlive daily/weekly check-in epochs.
+  Map<String, dynamic> interactionData(int id) {
+    final raw = prefs.getString('kInteractionV2:$id');
+    if (raw == null) return {};
+    try {
+      return (jsonDecode(raw) as Map).cast<String, dynamic>();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  void setInteractionValue(int id, String key, Object? value) {
+    final data = interactionData(id);
+    if (value == null) {
+      data.remove(key);
+    } else {
+      data[key] = value;
+    }
+    prefs.setString('kInteractionV2:$id', jsonEncode(data));
+    notifyListeners();
+  }
+
   StreakState streakOf(int id) => checkinEngine.streakOf(id);
 
   DateTime? windowAnchorOf(int id) => checkinEngine.windowAnchorOf(id);
@@ -637,8 +657,9 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
       );
 
   /// 健康节点包条目的硬条件求值（性别 / 年龄），不通过则不渲染。
-  ({bool show, String? reason, String? note}) evalNodeItem(NodePackageItem it) =>
-      gatekeeperEngine.evalNodeItem(it, _profile);
+  ({bool show, String? reason, String? note}) evalNodeItem(
+    NodePackageItem it,
+  ) => gatekeeperEngine.evalNodeItem(it, _profile);
 
   // ---------- 打卡持久化 Port 实现（state 层写 SharedPreferences，键名冻结） ----------
   @override
@@ -676,6 +697,11 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
   /// 释放引擎心跳定时器（测试收尾/宿主回收用；应用生命周期内通常不调用）。
   @override
   void dispose() {
+    for (final timer in _justDoneTimers.values) {
+      timer.cancel();
+    }
+    _justDoneTimers.clear();
+    _justDoneAt.clear();
     reminderRegistry.dispose();
     probeScheduler.dispose();
     super.dispose();
@@ -690,8 +716,7 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
         orElse: () => ThemeMode.system,
       );
     }
-    _soundEffects = prefs.getBool('kSoundEffects') ?? true;
-    SoundFx.enabled = _soundEffects;
+
     final completed = prefs.getBool('kHasCompletedOnboarding') ?? false;
     final p = prefs.getString('kProfile');
     if (p != null) {
@@ -769,9 +794,7 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
         map.forEach((k, v) {
           final id = int.tryParse(k);
           if (id != null) {
-            restored[canonicalAdviceId(
-              id,
-            )] = CustomTriggerConfig.fromJson(
+            restored[canonicalAdviceId(id)] = CustomTriggerConfig.fromJson(
               jsonDecode(v as String) as Map<String, dynamic>,
             );
           }
@@ -854,7 +877,10 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
             final m = jsonDecode(raw) as Map<String, dynamic>;
             checkinEngine.restoreStreak(
               canonicalAdviceId(id),
-              StreakState(lastDay: m['lastDay'] as String, days: m['days'] as int),
+              StreakState(
+                lastDay: m['lastDay'] as String,
+                days: m['days'] as int,
+              ),
             );
           } catch (_) {}
         }
@@ -868,6 +894,27 @@ class AppStore extends ChangeNotifier implements CheckinPersistence {
           }
         }
       }
+    }
+    if ((prefs.getInt('kInteractionSchema') ?? 0) < 2) {
+      for (final scope in PeriodScope.values) {
+        for (final id in checkinEngine.cardsOf(scope).keys.toList()) {
+          final completion = catalog.displayBindings
+              .bindingOf(id)
+              ?.params['completion'];
+          if (const {
+            'acknowledgement',
+            'record',
+            'planning',
+          }.contains(completion)) {
+            checkinEngine.updateCard(
+              scope,
+              id,
+              (state) => state.completionRatio = 0,
+            );
+          }
+        }
+      }
+      await prefs.setInt('kInteractionSchema', 2);
     }
     syncReminderRegistry();
   }

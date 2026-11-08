@@ -69,7 +69,7 @@ class CatalogIndex {
         a.title,
         a.chapter,
         ...a.parts,
-        ...a.tags,
+        ...a.facets.effectiveTags,
         a.timingBadge,
         ...topics.termsOf(a),
         if (details[a.id] case final detail?) ...[

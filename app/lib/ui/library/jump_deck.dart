@@ -12,8 +12,6 @@ class DeckResult {
   final String mode;
 }
 
-
-
 /// 跳转矩阵：拼音字母 / 34 章节 / 交互形态，点击方块即时聚焦。
 Future<DeckResult?> openJumpDeck(
   BuildContext context, {
@@ -57,8 +55,7 @@ class _JumpDeckState extends State<_JumpDeck> {
   late String _chapter = widget.chapter;
   late String _mode = widget.mode;
 
-  void _pop() => Navigator.pop(
-      context, DeckResult(_letter, _chapter, _mode));
+  void _pop() => Navigator.pop(context, DeckResult(_letter, _chapter, _mode));
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +74,10 @@ class _JumpDeckState extends State<_JumpDeck> {
               children: [
                 Icon(Icons.grid_view_outlined, size: 15, color: p.action),
                 const SizedBox(width: 6),
-                Text('快速聚焦筛选中枢',
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  '快速聚焦筛选中枢',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const Spacer(),
                 InkWell(
                   borderRadius: BorderRadius.circular(9999),
@@ -105,23 +104,28 @@ class _JumpDeckState extends State<_JumpDeck> {
             // 「全部」重置行
             Row(
               children: [
-                _resetPill(context, '全部', sub: switch (_tab) {
-                  0 => '${catalog.adviceList.length}条',
-                  1 => '全域',
-                  _ => '全量',
-                }, onTap: () {
-                  setState(() {
-                    switch (_tab) {
-                      case 0:
-                        _letter = 'all';
-                      case 1:
-                        _chapter = '全部';
-                      default:
-                        _mode = 'all';
-                    }
-                  });
-                  _pop();
-                }),
+                _resetPill(
+                  context,
+                  '全部',
+                  sub: switch (_tab) {
+                    0 => '${catalog.adviceList.length}条',
+                    1 => '全域',
+                    _ => '全量',
+                  },
+                  onTap: () {
+                    setState(() {
+                      switch (_tab) {
+                        case 0:
+                          _letter = 'all';
+                        case 1:
+                          _chapter = '全部';
+                        default:
+                          _mode = 'all';
+                      }
+                    });
+                    _pop();
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -133,7 +137,10 @@ class _JumpDeckState extends State<_JumpDeck> {
               },
             ),
             const SizedBox(height: 10),
-            Text('点击方块即可即时聚焦', style: TextStyle(fontSize: 10.5, color: p.inkMute)),
+            Text(
+              '点击方块即可即时聚焦',
+              style: TextStyle(fontSize: 10.5, color: p.inkMute),
+            ),
           ],
         ),
       ),
@@ -164,8 +171,12 @@ class _JumpDeckState extends State<_JumpDeck> {
     );
   }
 
-  Widget _resetPill(BuildContext context, String label,
-      {String? sub, required VoidCallback onTap}) {
+  Widget _resetPill(
+    BuildContext context,
+    String label, {
+    String? sub,
+    required VoidCallback onTap,
+  }) {
     final p = AppPalettes.of(context);
     return InkWell(
       borderRadius: BorderRadius.circular(9999),
@@ -179,7 +190,14 @@ class _JumpDeckState extends State<_JumpDeck> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: p.ink)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: p.ink,
+              ),
+            ),
             if (sub != null) ...[
               const SizedBox(width: 5),
               Text(sub, style: TextStyle(fontSize: 10, color: p.inkMute)),
@@ -195,7 +213,10 @@ class _JumpDeckState extends State<_JumpDeck> {
     final letters = catalog.letterCounts.keys.toList();
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5, mainAxisSpacing: 8, crossAxisSpacing: 8),
+        crossAxisCount: 5,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
       itemCount: letters.length,
       itemBuilder: (context, i) {
         final l = letters[i];
@@ -241,7 +262,10 @@ class _JumpDeckState extends State<_JumpDeck> {
     final p = AppPalettes.of(context);
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 160, mainAxisSpacing: 8, crossAxisSpacing: 8),
+        maxCrossAxisExtent: 160,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
       itemCount: catalog.chapters.length,
       itemBuilder: (context, i) {
         final c = catalog.chapters[i];
@@ -258,7 +282,9 @@ class _JumpDeckState extends State<_JumpDeck> {
               color: on ? p.action.withValues(alpha: 0.14) : p.pillBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                  color: on ? p.action : Colors.transparent, width: 1.2),
+                color: on ? p.action : Colors.transparent,
+                width: 1.2,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,12 +319,15 @@ class _JumpDeckState extends State<_JumpDeck> {
     final modes = actionTypes.skip(1).toList();
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 140, mainAxisSpacing: 8, crossAxisSpacing: 8),
+        maxCrossAxisExtent: 140,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
       itemCount: modes.length,
       itemBuilder: (context, i) {
         final m = modes[i];
         final on = _mode == m.id;
-        final count = catalog.modeCounts[m.id] ?? 0;
+        final count = catalog.interactionCounts[m.id] ?? 0;
         return InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
@@ -311,7 +340,9 @@ class _JumpDeckState extends State<_JumpDeck> {
               color: on ? p.action.withValues(alpha: 0.14) : p.pillBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                  color: on ? p.action : Colors.transparent, width: 1.2),
+                color: on ? p.action : Colors.transparent,
+                width: 1.2,
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -328,7 +359,10 @@ class _JumpDeckState extends State<_JumpDeck> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text('$count 条', style: TextStyle(fontSize: 9, color: p.inkMute)),
+                Text(
+                  '$count 条',
+                  style: TextStyle(fontSize: 9, color: p.inkMute),
+                ),
               ],
             ),
           ),

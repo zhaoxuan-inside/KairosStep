@@ -9,6 +9,11 @@ import '../../models/style.dart';
 import '../../state/app_store.dart';
 import '../widgets/confetti_burst.dart';
 import 'spotlight_interactors.dart';
+import 'task_interactors.dart';
+import '../emergency/emergency_sheet.dart';
+
+import 'package:url_launcher/url_launcher.dart';
+
 import '../now/breathing_practice.dart';
 
 /// 卡片交互控制器：交互器与持久化状态的唯一通道。
@@ -37,11 +42,29 @@ class CardCtl {
 
   /// 该卡的目标部件（默认 parts；特殊卡可覆写）。
   List<String> get targetParts =>
-      advice.parts.isNotEmpty ? advice.parts : [advice.title];
+      store.catalog.displayBindings
+          .bindingOf(advice.id)
+          ?.stringListParam('items') ??
+      (advice.parts.isNotEmpty ? advice.parts : [advice.title]);
 
-  T? extra<T>(String key) => st.extra[key] as T?;
+  bool get _durable =>
+      store.catalog.displayBindings
+              .bindingOf(advice.id)
+              ?.params['completion'] ==
+          'acknowledgement' ||
+      const {
+        'record',
+        'deadline',
+        'writing',
+      }.contains(store.catalog.displayBindings.bindingOf(advice.id)?.override);
+  T? extra<T>(String key) =>
+      (_durable ? store.interactionData(advice.id)[key] : st.extra[key]) as T?;
 
   void setExtra(String key, Object? value) {
+    if (_durable) {
+      store.setInteractionValue(advice.id, key, value);
+      return;
+    }
     store.updateCard(scope, advice.id, (s) => s.extra[key] = value);
   }
 
@@ -79,9 +102,15 @@ class AdviceInteractor extends StatelessWidget {
         return BloodPressureInteractor(advice: advice, scope: scope);
       case 'wage-calc':
         return WageCalcInteractor(advice: advice, scope: scope);
+      case 'record':
+        return NumericRecordInteractor(advice: advice, scope: scope);
+      case 'deadline':
+        return DeadlineInteractor(advice: advice, scope: scope);
+      case 'writing':
+        return WrittenPlanInteractor(advice: advice, scope: scope);
     }
 
-    return switch (advice.actType) {
+    return switch (binding?.style ?? advice.actType) {
       'haptic-toggle' => ToggleChipsInteractor(
         advice: advice,
         scope: scope,
@@ -105,12 +134,23 @@ class AdviceInteractor extends StatelessWidget {
         advice: advice,
         scope: scope,
       ),
-      'slider-calc' => SliderCalcInteractor(advice: advice, scope: scope),
+      'slider-calc' => NumericRecordInteractor(advice: advice, scope: scope),
       'wage-calc' => WageCalcInteractor(advice: advice, scope: scope),
       'zen-timer' => ZenTimerInteractor(advice: advice, scope: scope),
       _ => QuickCheckinInteractor(advice: advice, scope: scope),
     };
   }
+}
+
+List<String> interactionItems(BuildContext context, Advice advice) {
+  final items = catalogOf(context).displayBindings
+      .bindingOf(advice.id)
+      ?.stringListParam('items');
+  return items != null && items.isNotEmpty
+      ? items
+      : advice.parts.isNotEmpty
+      ? advice.parts
+      : [advice.title];
 }
 
 // ============================================================
@@ -277,7 +317,7 @@ class ToggleChipsInteractor extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        for (final part in advice.parts)
+        for (final part in interactionItems(context, advice))
           ActionChip(
             label: part,
             on: ctl.has(part),
@@ -309,9 +349,13 @@ class QuickCheckinInteractor extends StatelessWidget {
     return PrimaryAction(
       label: done
           ? '已完成 · 点击撤销'
-          : advice.coreAction.length > 14
-          ? '完成此项'
-          : '完成：${advice.coreAction}',
+          : catalogOf(context).displayBindings
+                        .bindingOf(advice.id)
+                        ?.params['actionLabel']
+                    as String? ??
+                (advice.coreAction.length > 14
+                    ? '完成此项'
+                    : '完成：${advice.coreAction}'),
       on: done,
       icon: done ? Icons.task_alt : Icons.check,
       onTap: () {
@@ -382,62 +426,67 @@ class _RedlineStampInteractorState extends State<RedlineStampInteractor>
     final p = AppPalettes.of(context);
     final store = storeOf(context);
     final ctl = CardCtl(store, widget.scope, widget.advice);
-    final stamped = ctl.has('stamp');
+    final stamped = ctl.extra<bool>('readAcknowledged') ?? ctl.has('stamp');
 
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () {
-            HapticFeedback.heavyImpact();
-            ctl.mark('stamp', !stamped, ratio: stamped ? 0 : 1);
-            if (!stamped) _pop.forward(from: 0);
-          },
-          child: ScaleTransition(
-            scale: Tween(
-              begin: 0.72,
-              end: 1.0,
-            ).animate(CurvedAnimation(parent: _pop, curve: Curves.elasticOut)),
-            child: Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: stamped ? p.rose : p.rose.withValues(alpha: 0.1),
-                border: Border.all(
-                  color: stamped ? p.rose : p.rose.withValues(alpha: 0.5),
-                  width: stamped ? 2.2 : 1.4,
-                ),
+    void toggle() {
+      ctl.setExtra('readAcknowledged', !stamped);
+      ctl.mark('stamp', !stamped, ratio: 0);
+      setState(() {});
+      if (!stamped) _pop.forward(from: 0);
+    }
+
+    return InkWell(
+      onTap: toggle,
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: toggle,
+            child: ScaleTransition(
+              scale: Tween(begin: 0.72, end: 1.0).animate(
+                CurvedAnimation(parent: _pop, curve: Curves.elasticOut),
               ),
-              child: Icon(
-                stamped ? Icons.verified_user : Icons.gpp_maybe_outlined,
-                size: 22,
-                color: stamped ? Colors.white : p.rose,
+              child: Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: stamped ? p.rose : p.rose.withValues(alpha: 0.1),
+                  border: Border.all(
+                    color: stamped ? p.rose : p.rose.withValues(alpha: 0.5),
+                    width: stamped ? 2.2 : 1.4,
+                  ),
+                ),
+                child: Icon(
+                  stamped ? Icons.verified_user : Icons.gpp_maybe_outlined,
+                  size: 22,
+                  color: stamped ? Colors.white : p.rose,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                stamped ? '已铭记红线 · 背熟即防' : '点击盖章铭记',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                  color: stamped ? p.rose : p.ink,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  stamped ? '已标记阅读 · 点击撤销' : '标记已阅读',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: stamped ? p.rose : p.ink,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                stamped ? '命中场景时会直接弹出速查卡' : '高频高后果内容 · 盖章后进入长期记忆',
-                style: TextStyle(fontSize: 10.5, color: p.inkMute),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  '阅读标记仅保存在本机，不代表已掌握或风险已解除',
+                  style: TextStyle(fontSize: 10.5, color: p.inkMute),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -563,7 +612,10 @@ class DailyStreakInteractor extends StatelessWidget {
               ctl.checkinStreak();
               // 完成建议：上行双音 + 自被打卡卡片位置迸发礼花
               SoundFx.play(Sfx.success);
-              ConfettiBurst.show(context, origin: ConfettiBurst.originOf(context));
+              ConfettiBurst.show(
+                context,
+                origin: ConfettiBurst.originOf(context),
+              );
             }
           },
         ),
@@ -661,109 +713,11 @@ class WindowCadenceInteractor extends StatelessWidget {
     required this.advice,
     required this.scope,
   });
-
   final Advice advice;
   final PeriodScope scope;
-
-  static const windowDays = 14;
-
   @override
-  Widget build(BuildContext context) {
-    final p = AppPalettes.of(context);
-    final store = storeOf(context);
-    final ctl = CardCtl(store, scope, advice);
-    final anchor = store.ensureWindowAnchor(advice.id, DateTime.now());
-    final elapsed = DateTime.now().difference(anchor).inDays + 1;
-    final day = elapsed.clamp(1, windowDays);
-    final chips = advice.caveats.isNotEmpty ? advice.caveats : ['完成主行动'];
-    final chipsOn = chips.where(ctl.has).length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              '窗口期 · 第 $day/$windowDays 天',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: day >= windowDays - 2 ? p.rose : p.amber,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              '剩余 ${windowDays - day} 天',
-              style: TextStyle(fontSize: 10.5, color: p.inkMute),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        // 逐日刻度带：已过天数实心填充、当日高亮描边（你在这里）、
-        // 剩余天数空心——比一条进度线更直读「进度 + 当下位置 + 还剩多少」。
-        Row(
-          children: [
-            for (var i = 0; i < windowDays; i++) ...[
-              if (i > 0) const SizedBox(width: 3),
-              Expanded(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 260),
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: i < day - 1
-                        ? (day >= windowDays - 2 ? p.rose : p.amber)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
-                    border: Border.all(
-                      width: 1.2,
-                      color: i == day - 1
-                          ? (day >= windowDays - 2 ? p.rose : p.amber)
-                          : (i < day - 1
-                                ? Colors.transparent
-                                : p.inkMute.withValues(alpha: 0.35)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 10),
-        Text(
-          '安全防线 $chipsOn/${chips.length}',
-          style: TextStyle(
-            fontSize: 10.5,
-            color: p.inkSub,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final chip in chips)
-              ActionChip(
-                label: chip,
-                on: ctl.has(chip),
-                accent: p.amber,
-                icon: Icons.shield_outlined,
-            onTap: () {
-                  ctl.mark(
-                    chip,
-                    !ctl.has(chip),
-                    ratio: _dynamicRatio(chips, chip, ctl),
-                  );
-                  if (chips.every(ctl.has)) {
-                    HapticFeedback.heavyImpact();
-                  }
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) =>
+      DeadlineInteractor(advice: advice, scope: scope);
 }
 
 // ============================================================
@@ -784,7 +738,7 @@ class ProcessStepsInteractor extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final ctl = CardCtl(storeOf(context), scope, advice);
-    final steps = advice.parts;
+    final steps = interactionItems(context, advice);
 
     return Column(
       children: [
@@ -813,7 +767,7 @@ class ProcessStepsInteractor extends StatelessWidget {
               Icon(Icons.verified, size: 13, color: p.indigo),
               const SizedBox(width: 4),
               Text(
-                '全部步骤完成，行动已闭环',
+                '已核对当前全部步骤',
                 style: TextStyle(
                   fontSize: 10.5,
                   color: p.indigo,
@@ -917,7 +871,7 @@ class DecisionCheckInteractor extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final ctl = CardCtl(storeOf(context), scope, advice);
-    final rules = advice.parts;
+    final rules = interactionItems(context, advice);
 
     return Column(
       children: [
@@ -983,7 +937,7 @@ class DecisionCheckInteractor extends StatelessWidget {
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                '决策场景触发时逐条核对 · 全勾即闭环',
+                '逐条核对相关条件 · 勾选不代表决策结果正确',
                 style: TextStyle(fontSize: 10, color: p.inkMute),
               ),
             ),
@@ -1012,7 +966,7 @@ class ContextGuardInteractor extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final ctl = CardCtl(storeOf(context), scope, advice);
-    final guards = advice.parts;
+    final guards = interactionItems(context, advice);
     final allOn = guards.every(ctl.has);
 
     return Column(
@@ -1035,7 +989,7 @@ class ContextGuardInteractor extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                allOn ? '情境已确认 · 拦截解除' : '情境命中 · 先确认再行动',
+                allOn ? '已核对 · 仍需遵守上述限制' : '请先核对适用情境与限制',
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
@@ -1058,11 +1012,7 @@ class ContextGuardInteractor extends StatelessWidget {
                 icon: Icons.front_hand_outlined,
                 onTap: () {
                   HapticFeedback.mediumImpact();
-                  ctl.mark(
-                    g,
-                    !ctl.has(g),
-                    ratio: _dynamicRatio(guards, g, ctl),
-                  );
+                  ctl.mark(g, !ctl.has(g), ratio: 0);
                 },
               ),
           ],
@@ -1082,117 +1032,48 @@ class EmergencyActionInteractor extends StatelessWidget {
     required this.advice,
     required this.scope,
   });
-
   final Advice advice;
   final PeriodScope scope;
-
   @override
   Widget build(BuildContext context) {
-    final p = AppPalettes.of(context);
-    final ctl = CardCtl(storeOf(context), scope, advice);
-
+    final phones = RegExp(r'(?<![0-9])(?:110|119|120)(?![0-9])')
+        .allMatches(advice.title)
+        .map((m) => m.group(0)!)
+        .toSet();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        for (final text in interactionItems(context, advice))
+          Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(text)),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            Expanded(
-              child: _EmergencyBtn(
-                icon: Icons.phone_in_talk,
-                label: '求助热线',
-                color: p.rose,
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('示例数据 · 热线拨打需真机权限')),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _EmergencyBtn(
-                icon: Icons.stop_circle_outlined,
-                label: '立即止付',
-                color: p.amber,
-                onTap: () {
-                  HapticFeedback.heavyImpact();
-                  ctl.mark('止付', true, ratio: 1);
+            for (final phone in phones)
+              FilledButton.icon(
+                icon: const Icon(Icons.phone),
+                label: Text('拨打 $phone'),
+                onPressed: () async {
+                  final opened = await launchUrl(
+                    Uri(scheme: 'tel', path: phone),
+                  );
+                  if (!opened && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('未能打开拨号界面，请使用系统电话拨打 $phone')),
+                    );
+                  }
                 },
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _EmergencyBtn(
-                icon: Icons.shield_outlined,
-                label: '保存证据',
-                color: p.action,
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  ctl.mark('证据', true, ratio: 1);
-                },
-              ),
+            OutlinedButton.icon(
+              icon: const Icon(Icons.emergency_outlined),
+              label: const Text('打开紧急求助'),
+              onPressed: () => EmergencySheet.show(context),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        PrimaryAction(
-          label: ctl.st.isDone ? '紧急动作已执行 · 点击复位' : '已按指引处理完毕',
-          on: ctl.st.isDone,
-          color: p.rose,
-          icon: Icons.emergency,
-          onTap: () {
-            if (ctl.st.isDone) {
-              ctl.setRatio(0);
-              storeOf(context)
-                  .updateCard(scope, advice.id, (s) => s.doneParts.clear());
-            } else {
-              ctl.mark('处理完毕', true, ratio: 1);
-            }
-          },
-        ),
+        const SizedBox(height: 6),
+        const Text('此卡提供求助入口与指引，不将点击按钮记为已经脱险或处理完成。'),
       ],
-    );
-  }
-}
-
-class _EmergencyBtn extends StatelessWidget {
-  const _EmergencyBtn({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: Container(
-        height: 52,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.45)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 17, color: color),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -1215,9 +1096,7 @@ class EvidenceChecklistInteractor extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final ctl = CardCtl(storeOf(context), scope, advice);
-    final slots = advice.parts.length >= 4
-        ? advice.parts.take(4).toList()
-        : [...advice.parts, '其他关键凭证', '备份位置索引'].take(4).toList();
+    final slots = interactionItems(context, advice);
 
     return GridView.count(
       crossAxisCount: 2,
@@ -1297,126 +1176,11 @@ class SliderCalcInteractor extends StatelessWidget {
     required this.advice,
     required this.scope,
   });
-
   final Advice advice;
   final PeriodScope scope;
-
   @override
-  Widget build(BuildContext context) {
-    final p = AppPalettes.of(context);
-    final store = storeOf(context);
-    final ctl = CardCtl(store, scope, advice);
-    final t = advice.title;
-
-    // 变体匹配数据化于 L2 act_styles.json（variants 声明序即优先级）；
-    // 判定读数公式属机制，按 variant key 分派保留在代码。
-    final styleDef = store.catalog.actStyles.style('slider-calc');
-    final variant = _pickVariant(styleDef, t);
-    final (label, unit, max, fmt) = switch (variant.key) {
-      'alcohol' => (
-          variant.label,
-          variant.unit,
-          variant.max,
-          (double v) => '约 ${_alcoholHours(v)} 小时代谢完毕',
-        ),
-      'sun' => (
-          variant.label,
-          variant.unit,
-          variant.max,
-          (double v) => v >= 15 && v <= 30
-              ? '15-30 分钟 · 合成维 D 足量'
-              : v < 15
-              ? '偏短 · 维 D 合成不足'
-              : '偏长 · 注意晒伤风险',
-        ),
-      'dog' => (
-          variant.label,
-          variant.unit,
-          variant.max,
-          (double v) => v >= 30 ? '达标 · 中等强度活动计入' : '偏短 · 建议 30 分钟起',
-        ),
-      _ => (variant.label, variant.unit, variant.max, (double v) => '当前 ${v.round()} 档'),
-    };
-    final value = ctl.extra<double>('slider') ?? (max * 0.3);
-    final readout = fmt(value);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  trackHeight: 4,
-                  overlayShape: const RoundSliderOverlayShape(
-                    overlayRadius: 16,
-                  ),
-                ),
-                child: Slider(
-                  value: value,
-                  max: max.toDouble(),
-                  divisions: max.toInt() * 2,
-                  activeColor: p.action,
-                  onChanged: (v) {
-                    HapticFeedback.selectionClick();
-                    ctl.setExtra('slider', v);
-                    ctl.setRatio((v / max).clamp(0.0, 1.0) * 0.4);
-                  },
-                  onChangeEnd: (_) => ctl.setRatio(0.4),
-                ),
-              ),
-            ),
-            Text(
-              '${value.round()} $unit',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: p.action,
-              ),
-            ),
-          ],
-        ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: p.pillBg,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(readout, style: TextStyle(fontSize: 11, color: p.inkSub)),
-        ),
-        const SizedBox(height: 8),
-        PrimaryAction(
-          label: ctl.has('applied') ? '已记录本次测算' : '记录本次测算',
-          on: ctl.has('applied'),
-          color: p.action,
-          icon: Icons.calculate_outlined,
-          onTap: () => ctl.mark(
-            'applied',
-            !ctl.has('applied'),
-            ratio: ctl.has('applied') ? 0.4 : 1,
-          ),
-        ),
-      ],
-    );
-  }
-
-  static SliderVariant _pickVariant(ActStyleDef? styleDef, String title) {
-    final params = styleDef?.params ?? const {};
-    final variants = ((params['variants'] as List?) ?? const [])
-        .map((e) => SliderVariant.fromJson(e as Map<String, dynamic>))
-        .toList();
-    for (final v in variants) {
-      if (v.matches(title)) return v;
-    }
-    final d = params['default'] as Map<String, dynamic>?;
-    return d == null
-        ? SliderVariant(key: 'generic', match: const [], label: '强度', unit: '档位', max: 10)
-        : SliderVariant.fromJson(d);
-  }
-
-  static int _alcoholHours(double cups) => (cups * 1.5).ceil().clamp(1, 15);
+  Widget build(BuildContext context) =>
+      NumericRecordInteractor(advice: advice, scope: scope);
 }
 
 // ============================================================

@@ -33,10 +33,11 @@ class GatekeeperEngine {
       final hash = bundle?.sourceHash;
       if (bundle != null &&
           bundle.adviceCount == catalog.adviceList.length &&
-          hash == gateTraitsSourceFingerprint(
-            catalog.adviceList,
-            catalog.gates.ruleIdSets,
-          )) {
+          hash ==
+              gateTraitsSourceFingerprint(
+                catalog.adviceList,
+                catalog.gates.ruleIdSets,
+              )) {
         _usedAsset = true;
         return bundle.traits;
       }
@@ -58,10 +59,10 @@ class GatekeeperEngine {
     bool includeTopicPreferences = true,
   }) {
     if (includeTopicPreferences && !topicFilter(a)) return false;
-    return matchPersonaByTraits(
-      _traits[a.id]!,
-      profile,
-    );
+    if (includeTopicPreferences && !profile.matchesTopics(a.topicPaths)) {
+      return false;
+    }
+    return matchPersonaByTraits(_traits[a.id]!, profile);
   }
 
   /// 原实现（逐字保留，仅作等价性对照）：
@@ -76,6 +77,9 @@ class GatekeeperEngine {
   }) {
     final p = profile;
     if (includeTopicPreferences && !topicFilter(a)) return false;
+    if (includeTopicPreferences && !profile.matchesTopics(a.topicPaths)) {
+      return false;
+    }
 
     // 0. 关注领域过滤（若设置了特定关注领域且未全选）
     if (p.focusDomains.isNotEmpty && p.focusDomains.length < 6) {

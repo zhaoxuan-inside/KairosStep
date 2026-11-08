@@ -11,6 +11,7 @@ import '../data/style_library.dart';
 import '../data/tag_library.dart';
 import '../domain/profile_engine.dart' show OnboardingConfig;
 import '../models/advice.dart';
+import '../models/advice_classification.dart';
 import '../models/style.dart';
 import '../models/topic_tree.dart';
 
@@ -53,26 +54,63 @@ class AssembledCatalogData {
 
 AssembledCatalogData assembleCatalog(RawAssets raw) {
   // ── 数据层:各表拆分记录 ──
-  final entities = loadAdviceEntities(decodeJson(raw.adviceBase, 'entity/advice'));
-  final actions = loadAdviceActions(decodeJson(raw.action, 'entity/advice_action'));
-  final tagLinks = loadAdviceTagLinks(decodeJson(raw.tagRows, 'facets/advice_tag'));
-  final detailRows = loadAdviceDetails(decodeJson(raw.detail, 'entity/advice_detail'));
-  final sourceRows = loadDetailSources(decodeJson(raw.source, 'entity/detail_source'));
-  final relationRows = loadAdviceRelations(decodeJson(raw.relation, 'entity/advice_relation'));
+  final entities = loadAdviceEntities(
+    decodeJson(raw.adviceBase, 'entity/advice'),
+  );
+  final classifications = <int, AdviceClassification>{
+    if (raw.classification.isNotEmpty)
+      for (final row
+          in (decodeJson(
+                    raw.classification,
+                    'views/advice_classification',
+                  )['list']
+                  as List)
+              .cast<Map<String, dynamic>>())
+        row['id'] as int: AdviceClassification.fromJson(row),
+  };
+  final actions = loadAdviceActions(
+    decodeJson(raw.action, 'entity/advice_action'),
+  );
+  final tagLinks = loadAdviceTagLinks(
+    decodeJson(raw.tagRows, 'facets/advice_tag'),
+  );
+  final detailRows = loadAdviceDetails(
+    decodeJson(raw.detail, 'entity/advice_detail'),
+  );
+  final sourceRows = loadDetailSources(
+    decodeJson(raw.source, 'entity/detail_source'),
+  );
+  final relationRows = loadAdviceRelations(
+    decodeJson(raw.relation, 'entity/advice_relation'),
+  );
   final nodeRows = loadAdviceNodes(decodeJson(raw.node, 'entity/advice_node'));
-  final taxonomyJson = decodeJson(raw.taxonomy, 'dimensions/taxonomy', requireSchemaV1: false);
+  final taxonomyJson = decodeJson(
+    raw.taxonomy,
+    'dimensions/taxonomy',
+    requireSchemaV1: false,
+  );
   final engines = loadEngineConfig(decodeJson(raw.engines, 'config/engines'));
   final gates = loadGateConfig(decodeJson(raw.gates, 'config/gates'));
   final probes = loadProbeContent(decodeJson(raw.probes, 'config/probes'));
-  final actStyles = loadActStyles(decodeJson(raw.actStyles, 'styles/act_styles'));
-  final displayBindings = loadDisplayBindings(decodeJson(raw.displayBindings, 'styles/display_bindings'));
-  final embeddingManifest = loadEmbeddingManifest(decodeJson(raw.models, 'config/models', requireSchemaV1: false));
+  final actStyles = loadActStyles(
+    decodeJson(raw.actStyles, 'styles/act_styles'),
+  );
+  final displayBindings = loadDisplayBindings(
+    decodeJson(raw.displayBindings, 'styles/display_bindings'),
+  );
+  final embeddingManifest = loadEmbeddingManifest(
+    decodeJson(raw.models, 'config/models', requireSchemaV1: false),
+  );
   final onboarding = OnboardingConfig.fromJson(
     decodeJson(raw.onboarding, 'config/onboarding'),
   ).withTierResolved();
   final gateTraitsManifest = loadGateTraits(raw.gateTraits);
-  final nodePackages = loadNodePackages(decodeJson(raw.nodePkg, 'node_packages', requireSchemaV1: false));
-  final pinyin = loadPinyin(decodeJson(raw.pinyin, 'pinyin', requireSchemaV1: false));
+  final nodePackages = loadNodePackages(
+    decodeJson(raw.nodePkg, 'node_packages', requireSchemaV1: false),
+  );
+  final pinyin = loadPinyin(
+    decodeJson(raw.pinyin, 'pinyin', requireSchemaV1: false),
+  );
 
   // ── 关联:子表按 id 聚合(行已按 (id, ordinal) 排序,聚合即保序)──
   final partsById = <int, List<String>>{};
@@ -104,10 +142,10 @@ AssembledCatalogData assembleCatalog(RawAssets raw) {
   final merges = <int, Map<int, double>>{};
   for (final row in relationRows) {
     if (row.kind != 'merge_candidate') continue;
-    merges.putIfAbsent(row.fromId, () => {})[row.toId] =
-        (row.weight ?? 0).toDouble();
-    merges.putIfAbsent(row.toId, () => {})[row.fromId] =
-        (row.weight ?? 0).toDouble();
+    merges.putIfAbsent(row.fromId, () => {})[row.toId] = (row.weight ?? 0)
+        .toDouble();
+    merges.putIfAbsent(row.toId, () => {})[row.fromId] = (row.weight ?? 0)
+        .toDouble();
   }
 
   // 维度树先行构建(空建议集不触发逐条校验),仅为面包屑重算;
@@ -119,11 +157,7 @@ AssembledCatalogData assembleCatalog(RawAssets raw) {
     final paths = pathsById[e.id] ?? const <String>[];
     adviceList.add(
       Advice(
-        raw: RawAdvice(
-          id: e.id,
-          chapter: e.chapterCode,
-          title: e.title,
-        ),
+        raw: RawAdvice(id: e.id, chapter: e.chapterCode, title: e.title),
         facets: AdviceFacets(tags: tagsById[e.id] ?? const []),
         presentation: AdvicePresentation(
           parts: partsById[e.id] ?? const [],
@@ -137,6 +171,7 @@ AssembledCatalogData assembleCatalog(RawAssets raw) {
         treePaths: paths,
         prerequisites: e.prerequisites,
         cron: e.cron,
+        classification: classifications[e.id],
       ),
     );
   }

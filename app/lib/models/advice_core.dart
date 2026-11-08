@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'facets.dart';
+import 'advice_classification.dart';
 import 'presentation.dart';
 
 // ============================================================================
@@ -81,6 +82,7 @@ class Advice {
     this.treePaths = const [],
     this.prerequisites = const {},
     this.cron = '* * * * *',
+    this.classification,
   });
 
   final RawAdvice raw;
@@ -94,6 +96,7 @@ class Advice {
   List<String> get topicPaths => treePaths.isEmpty ? [treePath] : treePaths;
   final Map<String, dynamic> prerequisites;
   final String cron;
+  final AdviceClassification? classification;
 
   // 向下兼容代理
   int get id => raw.id;

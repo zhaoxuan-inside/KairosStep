@@ -24,8 +24,9 @@ class MeView extends StatelessWidget {
     final store = storeOf(context);
     final profile = store.profile;
     final packages = catalogOf(context).nodePackages;
-    final activePackages =
-        packages.where((pkg) => profile.age >= pkg.trigger).length;
+    final activePackages = packages
+        .where((pkg) => profile.age >= pkg.trigger)
+        .length;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -41,112 +42,113 @@ class MeView extends StatelessWidget {
         // ---- 身份卡（点击进入画像详情二级页） ----
         StaggerIn(
           child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            HapticFeedback.selectionClick();
-            ProfileDetailView.show(context);
-          },
-          child: _card(
-            context,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.badge_outlined, size: 15, color: p.action),
-                    const SizedBox(width: 6),
-                    Text('我的画像', style: _cardTitle(context)),
-                    const Spacer(),
-                    Text(
-                      profile.label,
-                      style: TextStyle(fontSize: 10.5, color: p.inkMute),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(Icons.chevron_right, size: 16, color: p.inkMute),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '${profile.gender} · ${profile.age} 岁 · '
-                  '${(profile.heightCm ?? 170).round()} cm / '
-                  '${(profile.weightKg ?? 65).toStringAsFixed(1)} kg · '
-                  'BMI ${(profile.bmi ?? 22.0).toStringAsFixed(1)}'
-                  '${profile.isOverweightOrObese ? ' · 超重/需管理' : ' · 健康范围'}',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: p.ink,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: p.action.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () {
+              HapticFeedback.selectionClick();
+              ProfileDetailView.show(context);
+            },
+            child: _card(
+              context,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Icon(Icons.tune, size: 14, color: p.action),
+                      Icon(Icons.badge_outlined, size: 15, color: p.action),
                       const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          '当前画像专属匹配：${catalogOf(context).adviceList.where(store.matchPersona).length} / 737 条',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: p.action,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      Text('我的画像', style: _cardTitle(context)),
+                      const Spacer(),
+                      Text(
+                        profile.label,
+                        style: TextStyle(fontSize: 10.5, color: p.inkMute),
                       ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.chevron_right, size: 16, color: p.inkMute),
                     ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: p.hairline),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${profile.gender} · ${profile.age} 岁 · '
+                    '${(profile.heightCm ?? 170).round()} cm / '
+                    '${(profile.weightKg ?? 65).toStringAsFixed(1)} kg · '
+                    'BMI ${(profile.bmi ?? 22.0).toStringAsFixed(1)}'
+                    '${profile.isOverweightOrObese ? ' · 超重/需管理' : ' · 健康范围'}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: p.ink,
                     ),
-                    icon: Icon(
-                      Icons.explore_outlined,
-                      size: 15,
-                      color: p.action,
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    label: Text(
-                      '重设画像 · 进入全息引导向导',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: p.ink,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    decoration: BoxDecoration(
+                      color: p.action.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => OnboardingView(
-                            isReconfiguring: true,
-                            // 带入当前画像：选择态据此推断，重配置不再从空白起步
-                            initialProfile: storeOf(context).profile,
+                    child: Row(
+                      children: [
+                        Icon(Icons.tune, size: 14, color: p.action),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            '当前画像专属匹配：${catalogOf(context).adviceList.where(store.matchPersona).length} / 737 条\n'
+                            '${store.profile.focusTopics.isEmpty ? '具体主题未限定' : '已关注 ${store.profile.focusTopics.length} 个具体主题'} · 可重设画像调整',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: p.action,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 40,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: p.hairline),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(9999),
+                        ),
+                      ),
+                      icon: Icon(
+                        Icons.explore_outlined,
+                        size: 15,
+                        color: p.action,
+                      ),
+                      label: Text(
+                        '重设画像 · 进入全息引导向导',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: p.ink,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => OnboardingView(
+                              isReconfiguring: true,
+                              // 带入当前画像：选择态据此推断，重配置不再从空白起步
+                              initialProfile: storeOf(context).profile,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
         ),
         const SizedBox(height: 12),
 
@@ -154,35 +156,35 @@ class MeView extends StatelessWidget {
         StaggerIn(
           delay: const Duration(milliseconds: 50),
           child: _card(
-          context,
-          child: Column(
-            children: [
-              _entryRow(
-                context,
-                Icons.shield_outlined,
-                p.emerald,
-                '我的生活防线',
-                '已筑牢 ${store.formedHabits.length} 项本能 · 自动免打扰',
-                () {
-                  HapticFeedback.selectionClick();
-                  DefenseLineView.show(context);
-                },
-              ),
-              Divider(color: p.hairline, height: 16),
-              _entryRow(
-                context,
-                Icons.monitor_heart_outlined,
-                p.rose,
-                '健康节点筛查包',
-                '活跃 $activePackages / 共 ${packages.length} 项 · 按年龄触发',
-                () {
-                  HapticFeedback.selectionClick();
-                  NodePackagesView.show(context);
-                },
-              ),
-            ],
+            context,
+            child: Column(
+              children: [
+                _entryRow(
+                  context,
+                  Icons.shield_outlined,
+                  p.emerald,
+                  '我的生活防线',
+                  '已筑牢 ${store.formedHabits.length} 项本能 · 自动免打扰',
+                  () {
+                    HapticFeedback.selectionClick();
+                    DefenseLineView.show(context);
+                  },
+                ),
+                Divider(color: p.hairline, height: 16),
+                _entryRow(
+                  context,
+                  Icons.monitor_heart_outlined,
+                  p.rose,
+                  '健康节点筛查包',
+                  '活跃 $activePackages / 共 ${packages.length} 项 · 按年龄触发',
+                  () {
+                    HapticFeedback.selectionClick();
+                    NodePackagesView.show(context);
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
         ),
         const SizedBox(height: 12),
 
@@ -190,194 +192,192 @@ class MeView extends StatelessWidget {
         StaggerIn(
           delay: const Duration(milliseconds: 100),
           child: _card(
-          context,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.palette_outlined, size: 15, color: p.indigo),
-                  const SizedBox(width: 6),
-                  Text('外观', style: _cardTitle(context)),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _pill(
-                    context,
-                    '深邃曜石黑',
-                    on: store.themeMode == ThemeMode.dark,
-                    onTap: () => store.themeMode = ThemeMode.dark,
-                  ),
-                  const SizedBox(width: 6),
-                  _pill(
-                    context,
-                    '极简暖纸白',
-                    on: store.themeMode == ThemeMode.light,
-                    onTap: () => store.themeMode = ThemeMode.light,
-                  ),
-                  const SizedBox(width: 6),
-                  _pill(
-                    context,
-                    '跟随系统',
-                    on: store.themeMode == ThemeMode.system,
-                    onTap: () => store.themeMode = ThemeMode.system,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Icon(Icons.volume_up_rounded, size: 15, color: p.indigo),
-                  const SizedBox(width: 6),
-                  Expanded(child: Text('音效', style: _cardTitle(context))),
-                  Switch(
-                    value: store.soundEffects,
-                    activeThumbColor: p.action,
-                    onChanged: (v) => store.soundEffects = v,
-                  ),
-                ],
-              ),
-              Divider(color: p.hairline, height: 16),
-              // ListTile 需自有 Material 承载墨水，避免被外层带背景色的
-              // 卡片容器遮挡并触发框架断言
-              Material(
-                type: MaterialType.transparency,
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.account_tree_outlined, color: p.action),
-                  title: const Text('主题分类与剪枝'),
-                  subtitle: Text(
-                    '已隐藏 ${store.excludedTopicPaths.length} 个分支 · 可展开与恢复',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () =>
-                      showTopicTree(context, manage: true, personalized: true),
+            context,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.palette_outlined, size: 15, color: p.indigo),
+                    const SizedBox(width: 6),
+                    Text('外观', style: _cardTitle(context)),
+                  ],
                 ),
-              ),
-              InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: () => ExcludedAdvicesView.show(context),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.visibility_off_outlined,
-                        size: 15,
-                        color: p.inkSub,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '已排除建议管理',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '当前已手动移出日常视图：${store.excludedAdviceIds.length} 条 · 可随时恢复',
-                              style: TextStyle(fontSize: 11, color: p.inkMute),
-                            ),
-                          ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _pill(
+                      context,
+                      '深邃曜石黑',
+                      on: store.themeMode == ThemeMode.dark,
+                      onTap: () => store.themeMode = ThemeMode.dark,
+                    ),
+                    const SizedBox(width: 6),
+                    _pill(
+                      context,
+                      '极简暖纸白',
+                      on: store.themeMode == ThemeMode.light,
+                      onTap: () => store.themeMode = ThemeMode.light,
+                    ),
+                    const SizedBox(width: 6),
+                    _pill(
+                      context,
+                      '跟随系统',
+                      on: store.themeMode == ThemeMode.system,
+                      onTap: () => store.themeMode = ThemeMode.system,
+                    ),
+                  ],
+                ),
+                // 音效直接跟随手机系统音量/静音状态，应用内不设开关
+                Divider(color: p.hairline, height: 16),
+                // ListTile 需自有 Material 承载墨水，避免被外层带背景色的
+                // 卡片容器遮挡并触发框架断言
+                Material(
+                  type: MaterialType.transparency,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.account_tree_outlined, color: p.action),
+                    title: const Text('主题分类与剪枝'),
+                    subtitle: Text(
+                      '已隐藏 ${store.excludedTopicPaths.length} 个分支 · 可展开与恢复',
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => showTopicTree(
+                      context,
+                      manage: true,
+                      personalized: true,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => ExcludedAdvicesView.show(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.visibility_off_outlined,
+                          size: 15,
+                          color: p.inkSub,
                         ),
-                      ),
-                      Icon(Icons.chevron_right, size: 16, color: p.inkMute),
-                    ],
-                  ),
-                ),
-              ),
-              Divider(color: p.hairline, height: 16),
-              InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: () => DecisionTreeSheet.show(context),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.account_tree_outlined,
-                        size: 15,
-                        color: p.action,
-                      ),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '离线决策树向导',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '已排除建议管理',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            Text(
-                              '劳动争议与欠薪、租房押金退还、工伤认定维权',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey,
+                              Text(
+                                '当前已手动移出日常视图：${store.excludedAdviceIds.length} 条 · 可随时恢复',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: p.inkMute,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(Icons.chevron_right, size: 16, color: p.inkMute),
-                    ],
+                        Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Divider(color: p.hairline, height: 16),
-              InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: () => ToolsSheet.show(context),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calculate_outlined, size: 15, color: p.amber),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '实用精算工具箱',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '个税测算、房贷月供对比、补充养老金、基本养老金领取',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                Divider(color: p.hairline, height: 16),
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => DecisionTreeSheet.show(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.account_tree_outlined,
+                          size: 15,
+                          color: p.action,
                         ),
-                      ),
-                      Icon(Icons.chevron_right, size: 16, color: p.inkMute),
-                    ],
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '离线决策树向导',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '劳动争议与欠薪、租房押金退还、工伤认定维权',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Divider(color: p.hairline, height: 16),
-              const _PrivacyDisclosure(),
-            ],
+                Divider(color: p.hairline, height: 16),
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => ToolsSheet.show(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calculate_outlined,
+                          size: 15,
+                          color: p.amber,
+                        ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '实用精算工具箱',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '个税测算、房贷月供对比、补充养老金、基本养老金领取',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right, size: 16, color: p.inkMute),
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(color: p.hairline, height: 16),
+                const _PrivacyDisclosure(),
+              ],
+            ),
           ),
-        ),
         ),
         const SizedBox(height: 12),
         Center(
           child: Text(
-            '数字阶跃 KairosStep v1.0.23 · Flutter 跨平台构建',
+            '数字阶跃 KairosStep v1.0.24 (25) · Flutter 跨平台构建',
             style: TextStyle(fontSize: 10, color: p.inkMute),
           ),
         ),
@@ -431,7 +431,10 @@ class MeView extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(subtitle, style: TextStyle(fontSize: 11, color: p.inkMute)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: p.inkMute),
+                  ),
                 ],
               ),
             ),

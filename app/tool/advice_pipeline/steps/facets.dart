@@ -50,7 +50,14 @@ Facets buildFacets({
       dim = 'theme';
       unclassified.add(tag);
     }
-    tagRows.add({'tag': tag, 'dimensionKey': dim});
+    tagRows.add({
+      'tag': tag,
+      'dimensionKey': dim,
+      if (const {'通用', '泛指'}.contains(tag)) ...{
+        'selectable': false,
+        'kind': 'legacyDefault',
+      },
+    });
   }
   if (unclassified.isNotEmpty) {
     report.note(
@@ -69,7 +76,9 @@ Facets buildFacets({
   }
   adviceTagRows.sort((a, b) {
     final byId = (a['id'] as int).compareTo(b['id'] as int);
-    return byId != 0 ? byId : (a['ordinal'] as int).compareTo(b['ordinal'] as int);
+    return byId != 0
+        ? byId
+        : (a['ordinal'] as int).compareTo(b['ordinal'] as int);
   });
 
   return Facets(

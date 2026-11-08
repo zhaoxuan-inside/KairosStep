@@ -5,6 +5,7 @@ import '../models/advice.dart';
 import '../models/topic_tree.dart';
 import 'advice_assembler.dart';
 import 'catalog_index.dart';
+import 'action_types.dart' show actionTypes;
 import '../data/engine_config.dart';
 import '../domain/profile_engine.dart' show OnboardingConfig;
 import '../models/style.dart';
@@ -90,6 +91,14 @@ class Catalog {
 
   /// 每种交互形态的条数。
   Map<String, int> get modeCounts => _index.modeCounts;
+  String interactionStyleOf(Advice a) =>
+      displayBindings.bindingOf(a.id)?.style ?? a.actType;
+  Map<String, int> get interactionCounts => {
+    for (final style in actionTypes.skip(1))
+      style.id: adviceList
+          .where((a) => interactionStyleOf(a) == style.id)
+          .length,
+  };
 
   static Future<Catalog> load() async {
     // 资产字符串主 isolate 异步读取(平台通道),JSON 解码与模型装配移入
@@ -127,8 +136,7 @@ class Catalog {
   List<Advice> underTopic(
     String path, {
     Iterable<String> hiddenTopics = const [],
-  }) =>
-      _index.underTopic(path, hiddenTopics: hiddenTopics);
+  }) => _index.underTopic(path, hiddenTopics: hiddenTopics);
 
   /// Parent topics include descendants. Search can be combined with a subtree and
   /// an explicit persona filter; global lookup remains available for helping others.
@@ -137,6 +145,10 @@ class Catalog {
     String? topicPath,
     bool Function(Advice)? include,
     Iterable<String> hiddenTopics = const [],
-  }) =>
-      _index.search(query, topicPath: topicPath, include: include, hiddenTopics: hiddenTopics);
+  }) => _index.search(
+    query,
+    topicPath: topicPath,
+    include: include,
+    hiddenTopics: hiddenTopics,
+  );
 }

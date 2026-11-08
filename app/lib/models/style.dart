@@ -10,12 +10,13 @@ class ActStylesConfig {
 
   ActStyleDef? style(String key) => styles[key];
 
-  factory ActStylesConfig.fromJson(Map<String, dynamic> json) => ActStylesConfig(
-    styles: {
-      for (final e in (json['styles'] as List).cast<Map<String, dynamic>>())
-        e['style'] as String: ActStyleDef.fromJson(e),
-    },
-  );
+  factory ActStylesConfig.fromJson(Map<String, dynamic> json) =>
+      ActStylesConfig(
+        styles: {
+          for (final e in (json['styles'] as List).cast<Map<String, dynamic>>())
+            e['style'] as String: ActStyleDef.fromJson(e),
+        },
+      );
 }
 
 class ActStyleDef {
@@ -75,8 +76,12 @@ class DisplayBinding {
   int intParam(String key, int fallback) =>
       (params[key] as num?)?.toInt() ?? fallback;
 
-  List<int> intListParam(String key) =>
-      ((params[key] as List?) ?? const []).map((e) => (e as num).toInt()).toList();
+  List<int> intListParam(String key) => ((params[key] as List?) ?? const [])
+      .map((e) => (e as num).toInt())
+      .toList();
+
+  List<String> stringListParam(String key) =>
+      ((params[key] as List?) ?? const []).cast<String>();
 
   factory DisplayBinding.fromJson(Map<String, dynamic> json) => DisplayBinding(
     adviceId: (json['id'] as num).toInt(),

@@ -7,10 +7,10 @@ import '../../app.dart';
 import '../../core/theme.dart';
 import '../../data/catalog.dart';
 import '../../models/advice.dart';
-import '../cards/advice_card.dart';
 import 'guidance_sheet.dart';
 import 'jump_deck.dart';
 import 'topic_tree_sheet.dart';
+import 'classified_advice_list.dart';
 
 /// 生活指南：737 条建议的可筛选列表。
 ///
@@ -30,7 +30,6 @@ class _LibraryViewState extends State<LibraryView> {
   String _chapter = '全部';
   String _mode = 'all';
   String _topicPath = '';
-  int _limit = 40;
   bool _indexVisible = false;
   Timer? _indexHide;
 
@@ -52,7 +51,6 @@ class _LibraryViewState extends State<LibraryView> {
     HapticFeedback.selectionClick();
     setState(() {
       _letter = letter;
-      _limit = 40;
     });
     _showIndex();
   }
@@ -68,7 +66,6 @@ class _LibraryViewState extends State<LibraryView> {
     _chapter = '全部';
     _mode = 'all';
     _topicPath = '';
-    _limit = 40;
   });
 
   List<Advice> _candidates(
@@ -80,7 +77,9 @@ class _LibraryViewState extends State<LibraryView> {
     var list = catalog.adviceList.toList();
     if (store.profile.prunedOnly) {
       list = store.profile.parentsOnly
-          ? list.where((a) => catalog.gates.parentsAdviceIds.contains(a.id)).toList()
+          ? list
+                .where((a) => catalog.gates.parentsAdviceIds.contains(a.id))
+                .toList()
           : list
                 .where(
                   (a) => store.matchPersona(
@@ -90,7 +89,13 @@ class _LibraryViewState extends State<LibraryView> {
                 )
                 .toList();
       if (applyTopicPreferences) {
-        list = list.where(store.matchesTopicPreferences).toList();
+        list = list
+            .where(
+              (a) => store.profile.parentsOnly
+                  ? catalog.topics.isVisible(a, store.excludedTopicPaths)
+                  : store.matchesTopicPreferences(a),
+            )
+            .toList();
       }
     }
     if (_letter != 'all') {
@@ -99,7 +104,9 @@ class _LibraryViewState extends State<LibraryView> {
     if (_chapter != '全部') {
       list = list.where((a) => a.chapter == _chapter).toList();
     }
-    if (_mode != 'all') list = list.where((a) => a.actType == _mode).toList();
+    if (_mode != 'all') {
+      list = list.where((a) => catalog.interactionStyleOf(a) == _mode).toList();
+    }
     return list;
   }
 
@@ -133,9 +140,17 @@ class _LibraryViewState extends State<LibraryView> {
   Widget build(BuildContext context) {
     final p = AppPalettes.of(context);
     final store = storeOf(context);
-    final groups = _groups(context);
-    final total = groups.fold<int>(0, (n, g) => n + g.$2.length);
-    final shown = total.clamp(0, _limit);
+    final groups = classifyAdvice(
+      _groups(context).expand((g) => g.$2),
+      selectedTopic: _topicPath,
+      hiddenTopics: store.profile.prunedOnly
+          ? store.excludedTopicPaths
+          : const [],
+      focusTopics: store.profile.prunedOnly && !store.profile.parentsOnly
+          ? store.profile.focusTopics
+          : const [],
+    );
+    final total = groups.fold<int>(0, (n, g) => n + g.items.length);
 
     return Column(
       children: [
@@ -217,7 +232,6 @@ class _LibraryViewState extends State<LibraryView> {
                         onSelectDomainChapter: (ch) {
                           setState(() {
                             _chapter = ch;
-                            _limit = 40;
                           });
                         },
                       );
@@ -280,7 +294,6 @@ class _LibraryViewState extends State<LibraryView> {
                   if (!mounted) return;
                   setState(() {
                     if (path != null) _topicPath = path;
-                    _limit = 40;
                   });
                 },
               ),
@@ -304,7 +317,6 @@ class _LibraryViewState extends State<LibraryView> {
                       if (v != null) {
                         setState(() {
                           _applyDeck(v);
-                          _limit = 40;
                         });
                       }
                     },
@@ -326,7 +338,6 @@ class _LibraryViewState extends State<LibraryView> {
                       if (v != null) {
                         setState(() {
                           _applyDeck(v);
-                          _limit = 40;
                         });
                       }
                     },
@@ -364,79 +375,12 @@ class _LibraryViewState extends State<LibraryView> {
             children: [
               total == 0
                   ? _empty(context)
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                      itemCount: groups.length + 1,
-                      itemBuilder: (context, i) {
-                        if (i == groups.length) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            child: Center(
-                              child: Text(
-                                shown >= total
-                                    ? '已平铺展开当前全部 $total 条建议交互微工具'
-                                    : '已展示 $shown / $total 条',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: p.inkMute,
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        final (_, items) = groups[i];
-                        final preceding = groups
-                            .take(i)
-                            .fold<int>(0, (n, g) => n + g.$2.length);
-                        if (preceding >= _limit) return const SizedBox.shrink();
-                        final take = items.length.clamp(0, _limit - preceding);
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 10),
-                            for (final a in items.take(take))
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: AdviceCard(
-                                  advice: a,
-                                  scope: PeriodScope.today,
-                                  compact: true,
-                                ),
-                              ),
-                            if (preceding + take >= _limit && shown < total)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        onPressed: () =>
-                                            setState(() => _limit += 60),
-                                        child: const Text(
-                                          '+ 60 条',
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        onPressed: () =>
-                                            setState(() => _limit = total),
-                                        child: Text(
-                                          '全展开 ($total)',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        );
-                      },
+                  : ClassifiedAdviceList(
+                      key: ValueKey(
+                        '$_topicPath|$_letter|$_chapter|$_mode|${store.profile.prunedOnly}|${store.profile.parentsOnly}|${store.profile.focusTopics.join(",")}|${store.excludedTopicPaths.join(",")}',
+                      ),
+                      groups: groups,
+                      topics: catalogOf(context).topics,
                     ),
               Positioned(
                 right: 0,

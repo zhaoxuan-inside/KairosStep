@@ -12,6 +12,11 @@ class AdviceFacets {
 
   final List<String> tags;
 
+  /// Historical defaults stay available to legacy gates, never to discovery UI.
+  static const legacyDefaults = {'通用', '泛指'};
+  List<String> get effectiveTags =>
+      tags.where((tag) => !legacyDefaults.contains(tag)).toList();
+
   /// 人生阶段标签（少年/青年/中年/老年/全民）
   List<String> get stages => tags
       .where((t) => const ['少年', '青年', '中年', '老年', '全民'].contains(t))

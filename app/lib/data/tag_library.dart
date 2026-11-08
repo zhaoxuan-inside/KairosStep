@@ -12,10 +12,15 @@ class TagDimensionRow {
 }
 
 class TagRow {
-  const TagRow({required this.tag, required this.dimensionKey});
+  const TagRow({
+    required this.tag,
+    required this.dimensionKey,
+    this.selectable = true,
+  });
 
   final String tag;
   final String dimensionKey;
+  final bool selectable;
 }
 
 class TagLinkRow {
@@ -43,7 +48,11 @@ List<TagRow> loadTags(Map<String, dynamic> json) {
   final out = <TagRow>[];
   for (final row in (json['list'] as List).cast<Map<String, dynamic>>()) {
     out.add(
-      TagRow(tag: row['tag'] as String, dimensionKey: row['dimensionKey'] as String),
+      TagRow(
+        tag: row['tag'] as String,
+        dimensionKey: row['dimensionKey'] as String,
+        selectable: row['selectable'] as bool? ?? true,
+      ),
     );
   }
   return out;

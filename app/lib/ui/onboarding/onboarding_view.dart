@@ -15,6 +15,7 @@ import '../../core/theme.dart';
 import '../../domain/profile_engine.dart';
 import '../../models/advice.dart';
 import '../../models/user.dart';
+import '../../models/topic_tree.dart';
 import '../../state/app_store.dart';
 
 class OnboardingView extends StatefulWidget {
@@ -51,10 +52,9 @@ class _OnboardingViewState extends State<OnboardingView> {
   final Map<String, Map<String, dynamic>> _sliderPatches = {};
 
   // ── 预编译缓存（build 路径零引擎调用）──
-  // _frozenOrder：进引导时 rankQuestions 算一次定死（主干固定）；
+  // 问题树按父答案动态展开；根节点先行，分支内保持配置顺序。
   // _state：activeCount/candidates 等仅在离散作答时经 _recompute 重算。
   OnboardingState? _state;
-  List<String>? _frozenOrder;
 
   UserProfile _draft = ProfileEngine.onboardingBaseline;
   int _page = 0;
@@ -89,10 +89,54 @@ class _OnboardingViewState extends State<OnboardingView> {
   /// 由既有画像推断初始选择态（重配置入口）：选项 patch 的全部效果均已体现在
   /// 画像中即视为已选；单选取首个命中，多选取全部命中。
   void _inferSelections(UserProfile p) {
+    if (p.heightCm != null && p.weightKg != null) {
+      _sliderPatches['height_weight'] = {
+        'heightCm': p.heightCm,
+        'weightKg': p.weightKg,
+      };
+    }
+    _selected.addAll({
+      for (final e in p.onboardingAnswers.entries) e.key: e.value.toSet(),
+    });
+    // Migrate old profiles by positive facts only; defaults are not evidence of
+    // an explicitly answered macro question.
+    _selected.putIfAbsent(
+      'family_context',
+      () => {
+        if (p.relationshipStatus != 'single') 'partner',
+        if (p.hasChildren) 'children',
+        if (p.hasAgingParents) 'elderly',
+        if (p.healthConcerns.contains('残疾照护') || p.roles.contains('残障人士'))
+          'disability',
+        if (p.hasPets) 'pets',
+      },
+    );
+    _selected.putIfAbsent(
+      'health_context',
+      () => {
+        if (p.hasHypertension ||
+            p.hasDiabetes ||
+            p.hasGout ||
+            p.hasKidneyStones ||
+            p.hasCrisisOrMentalStress)
+          'chronic',
+        if (p.medications.isNotEmpty) 'medications',
+        if (p.hasWeightLossGoal || p.heightCm != null || p.weightKg != null)
+          'weight',
+        if (p.hasGastroAcidOrStomach) 'digestive',
+        if (p.hasFrequentPainOrAnalgesic) 'pain',
+      },
+    );
+    if (p.focusTopics.isNotEmpty) {
+      _selected['focus_topics'] = p.focusTopics.toSet();
+      _sliderPatches['focus_topics'] = {'focusTopics': p.focusTopics};
+    }
     for (final q in _engine.onboarding.questions) {
+      if (_selected[q.id]?.isNotEmpty == true) continue;
       final hits = [
         for (final o in q.options)
-          if (o.profilePatch.isNotEmpty && _matchesProfile(p, o.profilePatch)) o.value,
+          if (o.profilePatch.isNotEmpty && _matchesProfile(p, o.profilePatch))
+            o.value,
       ];
       if (hits.isEmpty) continue;
       _selected[q.id] = q.kind == 'multi_choice'
@@ -104,7 +148,30 @@ class _OnboardingViewState extends State<OnboardingView> {
   /// 选项 patch 是否已完整生效于画像（仅用于初始选择态推断）。
   static bool _matchesProfile(UserProfile p, Map<String, dynamic> patch) {
     for (final e in patch.entries) {
-      final key = e.key.endsWith('+') ? e.key.substring(0, e.key.length - 1) : e.key;
+      final append = e.key.endsWith('+');
+      final remove = e.key.endsWith('-');
+      final key = append || remove
+          ? e.key.substring(0, e.key.length - 1)
+          : e.key;
+      final list = switch (key) {
+        'roles' => p.roles,
+        'livingConditions' => p.livingConditions,
+        'healthConcerns' => p.healthConcerns,
+        'focusDomains' => p.focusDomains,
+        'focusTopics' => p.focusTopics,
+        'medications' => p.medications,
+        _ => null,
+      };
+      if (list != null) {
+        final expected = (e.value as List).cast<String>();
+        if (remove
+            ? expected.any(list.contains)
+            : !expected.every(list.contains)) {
+          return false;
+        }
+        if (!append && !remove && list.length != expected.length) return false;
+        continue;
+      }
       switch (key) {
         case 'gender':
           if (p.gender != e.value) return false;
@@ -112,16 +179,6 @@ class _OnboardingViewState extends State<OnboardingView> {
           if (p.relationshipStatus != e.value) return false;
         case 'childAgeStage':
           if (p.childAgeStage != e.value) return false;
-        case 'roles+':
-          if (!p.roles.contains(e.value)) return false;
-        case 'livingConditions+':
-          if (!p.livingConditions.contains(e.value)) return false;
-        case 'healthConcerns+':
-          if (!p.healthConcerns.contains(e.value)) return false;
-        case 'focusDomains+':
-          if (!p.focusDomains.contains(e.value)) return false;
-        case 'medications+':
-          if (!p.medications.contains(e.value)) return false;
         default:
           if (e.value is bool) {
             final current = switch (key) {
@@ -165,18 +222,20 @@ class _OnboardingViewState extends State<OnboardingView> {
   /// 重算引导状态（离散作答时调用；build 内首次惰性触发）。
   /// 编译门禁下全量重算为纯字段判定（亚毫秒级）。
   void _recompute() {
+    final visible = _config
+        .visibleQuestions(_selected)
+        .map((q) => q.id)
+        .toSet();
+    _selected.removeWhere((id, _) => !visible.contains(id));
+    _sliderPatches.removeWhere((id, _) => !visible.contains(id));
+    _answered.removeWhere((id) => !visible.contains(id));
     _draft = _computeDraft();
-    _frozenOrder ??= [
-      for (final y in _engine
-          .rankQuestions(_draft, _engine.activeAdviceIds(_draft), _answered))
-        y.question.id,
-    ];
-    _state = _engine.onboardingState(_draft, _answered, frozenOrder: _frozenOrder);
+    _state = _engine.onboardingState(_draft, _answered);
   }
 
   bool _emptyPatchOption(OnboardingQuestion q, String value) {
     for (final o in q.options) {
-      if (o.value == value) return o.profilePatch.isEmpty;
+      if (o.value == value) return o.exclusive;
     }
     return false;
   }
@@ -188,8 +247,8 @@ class _OnboardingViewState extends State<OnboardingView> {
       if (q.kind == 'multi_choice') {
         if (selected.contains(o.value)) {
           // 再点取消（「无」这类空 patch 独占项不参与取消）
-          if (o.profilePatch.isNotEmpty) selected.remove(o.value);
-        } else if (o.profilePatch.isEmpty) {
+          if (!o.exclusive) selected.remove(o.value);
+        } else if (o.exclusive) {
           // 「无」独占：清除本题其他选择
           selected
             ..clear()
@@ -204,6 +263,14 @@ class _OnboardingViewState extends State<OnboardingView> {
         selected
           ..clear()
           ..add(o.value);
+      }
+      if (selected.isEmpty) {
+        for (final option in q.options) {
+          if (option.exclusive && option.value == 'none') {
+            selected.add(option.value);
+            break;
+          }
+        }
       }
       _answered.add(q.id);
       _recompute();
@@ -270,24 +337,26 @@ class _OnboardingViewState extends State<OnboardingView> {
       transitionBuilder: (child, anim) => FadeTransition(
         opacity: anim,
         child: SlideTransition(
-          position: Tween(begin: const Offset(0, 0.02), end: Offset.zero)
-              .animate(anim),
+          position: Tween(
+            begin: const Offset(0, 0.02),
+            end: Offset.zero,
+          ).animate(anim),
           child: child,
         ),
       ),
       child: switch (_stage) {
         _OnbStage.privacy when !widget.isReconfiguring => KeyedSubtree(
-            key: const ValueKey('privacy-intro'),
-            child: _privacyIntro(p),
-          ),
+          key: const ValueKey('privacy-intro'),
+          child: _privacyIntro(p),
+        ),
         _OnbStage.cards => KeyedSubtree(
-            key: const ValueKey('question-cards'),
-            child: _cardFlowScreen(p, config),
-          ),
+          key: const ValueKey('question-cards'),
+          child: _cardFlowScreen(p, config),
+        ),
         _ => KeyedSubtree(
-            key: const ValueKey('onboarding-body'),
-            child: _onboardingScaffold(p, config),
-          ),
+          key: const ValueKey('onboarding-body'),
+          child: _onboardingScaffold(p, config),
+        ),
       },
     );
   }
@@ -349,7 +418,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                   color: p.action.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.verified_user_rounded, size: 30, color: p.action),
+                child: Icon(
+                  Icons.verified_user_rounded,
+                  size: 30,
+                  color: p.action,
+                ),
               ),
               const SizedBox(height: 18),
               Text(
@@ -378,7 +451,10 @@ class _OnboardingViewState extends State<OnboardingView> {
               ),
               const SizedBox(height: 22),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: p.surface,
                   borderRadius: BorderRadius.circular(16),
@@ -386,11 +462,26 @@ class _OnboardingViewState extends State<OnboardingView> {
                 ),
                 child: Column(
                   children: [
-                    _promiseRow(p, Icons.wifi_off_rounded, '永不联网', '无任何网络请求与云端同步'),
+                    _promiseRow(
+                      p,
+                      Icons.wifi_off_rounded,
+                      '永不联网',
+                      '无任何网络请求与云端同步',
+                    ),
                     const SizedBox(height: 10),
-                    _promiseRow(p, Icons.phone_iphone_rounded, '仅存本地', '数据不出这台设备'),
+                    _promiseRow(
+                      p,
+                      Icons.phone_iphone_rounded,
+                      '仅存本地',
+                      '数据不出这台设备',
+                    ),
                     const SizedBox(height: 10),
-                    _promiseRow(p, Icons.auto_delete_rounded, '卸载即除', '随应用删除，不留痕迹'),
+                    _promiseRow(
+                      p,
+                      Icons.auto_delete_rounded,
+                      '卸载即除',
+                      '随应用删除，不留痕迹',
+                    ),
                   ],
                 ),
               ),
@@ -401,7 +492,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: p.action,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () {
                     HapticFeedback.lightImpact();
@@ -421,18 +514,30 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 
-  Widget _promiseRow(AppPalettes p, IconData icon, String title, String subtitle) {
+  Widget _promiseRow(
+    AppPalettes p,
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
     return Row(
       children: [
         Icon(icon, size: 18, color: p.emerald),
         const SizedBox(width: 10),
         Text(
           title,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: p.ink),
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: p.ink,
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(subtitle, style: TextStyle(fontSize: 11.5, color: p.inkMute)),
+          child: Text(
+            subtitle,
+            style: TextStyle(fontSize: 11.5, color: p.inkMute),
+          ),
         ),
       ],
     );
@@ -441,8 +546,10 @@ class _OnboardingViewState extends State<OnboardingView> {
   // ── 卡牌流：借鉴《八十亿分之一》的逐张揭示——一次一屏一题，
   // 大字排版 + 方向感切换 + 实时聚焦反馈；跳过即未答不剪。──
 
-  List<OnboardingQuestion> _flowQuestions(OnboardingConfig config) =>
-      [for (final q in config.questions) if (q.id != 'focus_domains') q];
+  List<OnboardingQuestion> _flowQuestions(OnboardingConfig config) => [
+    for (final q in config.visibleQuestions(_selected))
+      if (q.id != 'focus_domains') q,
+  ];
 
   void _advanceCard(int from) {
     if (!mounted || _stage != _OnbStage.cards || _cardIdx != from) return;
@@ -465,7 +572,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                 orElse: () => config.layers.first,
               )
               .title;
-    final single = q != null && q.kind != 'multi_choice';
+    final single =
+        q != null && q.kind != 'multi_choice' && q.kind != 'topic_picker';
 
     return Scaffold(
       backgroundColor: p.canvas,
@@ -480,7 +588,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                   Row(
                     children: [
                       Text(
-                        done ? '画像已成形' : '第 ${_cardIdx + 1}/${questions.length} 题',
+                        done
+                            ? '画像已成形'
+                            : '第 ${_cardIdx + 1}/${questions.length} 题',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -489,7 +599,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                       ),
                       const SizedBox(width: 8),
                       if (!done)
-                        Text(layerTitle, style: TextStyle(fontSize: 11, color: p.amber)),
+                        Text(
+                          layerTitle,
+                          style: TextStyle(fontSize: 11, color: p.amber),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -535,15 +648,21 @@ class _OnboardingViewState extends State<OnboardingView> {
                   final incoming = child.key == ValueKey(_cardIdx);
                   return ClipRect(
                     child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: Offset(_cardDir * (incoming ? 0.08 : -0.08), 0),
-                        end: Offset.zero,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: anim,
-                          curve: incoming ? Curves.easeOutCubic : Curves.easeIn,
-                        ),
-                      ),
+                      position:
+                          Tween<Offset>(
+                            begin: Offset(
+                              _cardDir * (incoming ? 0.08 : -0.08),
+                              0,
+                            ),
+                            end: Offset.zero,
+                          ).animate(
+                            CurvedAnimation(
+                              parent: anim,
+                              curve: incoming
+                                  ? Curves.easeOutCubic
+                                  : Curves.easeIn,
+                            ),
+                          ),
                       child: FadeTransition(opacity: anim, child: child),
                     ),
                   );
@@ -573,7 +692,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                           _cardDir = -1;
                           _cardIdx -= 1;
                         }),
-                        child: Text('上一步', style: TextStyle(fontSize: 13, color: p.inkMute)),
+                        child: Text(
+                          '上一步',
+                          style: TextStyle(fontSize: 13, color: p.inkMute),
+                        ),
                       ),
                     const Spacer(),
                     if (!done && !answered)
@@ -582,7 +704,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                           _cardDir = 1;
                           _cardIdx += 1;
                         }),
-                        child: Text('跳过此题', style: TextStyle(fontSize: 12.5, color: p.inkMute)),
+                        child: Text(
+                          '跳过此题',
+                          style: TextStyle(fontSize: 12.5, color: p.inkMute),
+                        ),
                       ),
                     if (!done && !single)
                       SizedBox(
@@ -590,14 +715,22 @@ class _OnboardingViewState extends State<OnboardingView> {
                         child: FilledButton(
                           style: FilledButton.styleFrom(
                             backgroundColor: p.action,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9999)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9999),
+                            ),
                             padding: const EdgeInsets.symmetric(horizontal: 22),
                           ),
                           onPressed: () => setState(() {
                             _cardDir = 1;
                             _cardIdx += 1;
                           }),
-                          child: const Text('下一题', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                          child: const Text(
+                            '下一题',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ),
                   ],
@@ -615,18 +748,40 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (q.parentId != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              '细分：${_config.questions.firstWhere((parent) => parent.id == q.parentId).prompt}',
+              style: TextStyle(fontSize: 12, color: p.inkSub),
+            ),
+          ),
         Text(
           q.prompt,
-          style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800, height: 1.3, color: p.ink),
+          style: TextStyle(
+            fontSize: 21,
+            fontWeight: FontWeight.w800,
+            height: 1.3,
+            color: p.ink,
+          ),
         ),
         const SizedBox(height: 22),
         if (q.options.isNotEmpty)
           for (final o in q.options)
-            _bigOption(p, q, o, selected: _isOptionActive(q, o), single: single, idx: idx)
+            _bigOption(
+              p,
+              q,
+              o,
+              selected: _isOptionActive(q, o),
+              single: single,
+              idx: idx,
+            )
         else if (q.id == 'birth_year')
           _ageSlider(p)
         else if (q.id == 'height_weight')
-          _heightWeightSliders(p),
+          _heightWeightSliders(p)
+        else if (q.kind == 'topic_picker')
+          _topicChoices(),
         if (q.id == 'birth_year' || q.id == 'height_weight')
           Padding(
             padding: const EdgeInsets.only(top: 18),
@@ -636,17 +791,88 @@ class _OnboardingViewState extends State<OnboardingView> {
               child: FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: p.action,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => setState(() {
                   _cardDir = 1;
                   _cardIdx += 1;
                 }),
-                child: const Text('下一题', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+                child: const Text(
+                  '下一题',
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
           ),
       ],
+    );
+  }
+
+  Widget _topicChoices() {
+    final catalog = catalogOf(context);
+    final chosen = _selected['focus_topics'] ?? <String>{};
+    final counts = catalog.topics.countsFor(catalog.adviceList);
+
+    void update(Set<String> paths) {
+      setState(() {
+        _selected['focus_topics'] = paths;
+        _sliderPatches['focus_topics'] = {'focusTopics': paths.toList()};
+        _answered.add('focus_topics');
+        _recompute();
+      });
+    }
+
+    Iterable<TopicNode> leaves(TopicNode node) sync* {
+      if (node.children.isEmpty) {
+        yield node;
+      } else {
+        for (final child in node.children) {
+          yield* leaves(child);
+        }
+      }
+    }
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '展开领域选择具体主题。数量为全库主题覆盖，可能交叉；实际推荐仍受年龄、健康与角色条件限制。未选择则不限定主题，全量指南始终可查。',
+          ),
+          TextButton(
+            onPressed: () => update({}),
+            child: Text(chosen.isEmpty ? '暂不限定主题' : '清空 ${chosen.length} 项选择'),
+          ),
+          for (final root in catalog.topics.roots)
+            ExpansionTile(
+              key: ValueKey('onboarding-topics-${root.path}'),
+              title: Text(root.name),
+              subtitle: Text(
+                '${counts[root.path] ?? 0} 条建议 · 已选 ${chosen.where((p) => TopicNode.containsPath(root.path, p)).length} 项',
+              ),
+              children: [
+                for (final leaf in leaves(root))
+                  if ((counts[leaf.path] ?? 0) > 0)
+                    CheckboxListTile(
+                      key: ValueKey('onboarding-topic-${leaf.path}'),
+                      title: Text(leaf.name),
+                      subtitle: Text('${counts[leaf.path]} 条建议'),
+                      value: chosen.contains(leaf.path),
+                      onChanged: (value) {
+                        final next = {...chosen};
+                        value == true
+                            ? next.add(leaf.path)
+                            : next.remove(leaf.path);
+                        update(next);
+                      },
+                    ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 
@@ -662,7 +888,10 @@ class _OnboardingViewState extends State<OnboardingView> {
       onTap: () {
         _applyOption(q, o);
         if (single) {
-          Future.delayed(const Duration(milliseconds: 420), () => _advanceCard(idx));
+          Future.delayed(
+            const Duration(milliseconds: 420),
+            () => _advanceCard(idx),
+          );
         }
       },
       child: AnimatedContainer(
@@ -702,7 +931,14 @@ class _OnboardingViewState extends State<OnboardingView> {
       children: [
         Icon(Icons.verified_rounded, size: 44, color: p.done),
         const SizedBox(height: 14),
-        Text('画像已成形', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: p.ink)),
+        Text(
+          '画像已成形',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: p.ink,
+          ),
+        ),
         const SizedBox(height: 10),
         Text(
           '已确认 ${_answered.length}/${_flowQuestions(config).length} 项 · '
@@ -710,19 +946,30 @@ class _OnboardingViewState extends State<OnboardingView> {
           style: TextStyle(fontSize: 12.5, height: 1.5, color: p.inkSub),
         ),
         const SizedBox(height: 24),
+        Text(
+          _draft.focusTopics.isEmpty
+              ? '具体主题：暂不限定'
+              : '已选择 ${_draft.focusTopics.length} 个具体主题，可在画像中随时修改',
+        ),
+        const SizedBox(height: 12),
         SizedBox(
           width: double.infinity,
           height: 48,
           child: FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: p.action,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             onPressed: () {
               HapticFeedback.lightImpact();
               _complete();
             },
-            child: const Text('以此配置直接开启', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            child: const Text(
+              '以此配置直接开启',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
           ),
         ),
       ],
@@ -758,10 +1005,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(
-                '已为你聚焦 ',
-                style: TextStyle(fontSize: 11.5, color: p.action),
-              ),
+              Text('已为你聚焦 ', style: TextStyle(fontSize: 11.5, color: p.action)),
               // 聚焦计数变化时淡入上滑，避免数字跳变
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 280),
@@ -769,8 +1013,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                 transitionBuilder: (child, anim) => FadeTransition(
                   opacity: anim,
                   child: SlideTransition(
-                    position: Tween(begin: const Offset(0, 0.4), end: Offset.zero)
-                        .animate(anim),
+                    position: Tween(
+                      begin: const Offset(0, 0.4),
+                      end: Offset.zero,
+                    ).animate(anim),
                     child: child,
                   ),
                 ),
@@ -820,13 +1066,15 @@ class _OnboardingViewState extends State<OnboardingView> {
     OnboardingLayer layer,
   ) {
     final byId = {for (final q in config.questions) q.id: q};
+    final visible = config.visibleQuestions(_selected).map((q) => q.id).toSet();
     // 题序严格按配置的层内固定顺序渲染：作答不改变位次（引擎只负责聚焦
     // 计数与下一题建议，不再驱动卡片重排——作答后内容跳位被用户否决）。
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       children: [
         for (final qid in layer.questions)
-          if (byId[qid] case final q?) _questionCard(p, config, q),
+          if (visible.contains(qid))
+            if (byId[qid] case final q?) _questionCard(p, config, q),
       ],
     );
   }
@@ -875,6 +1123,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               ],
             ),
           ],
+          if (q.kind == 'topic_picker') _topicChoices(),
           if (q.id == 'birth_year') ...[
             const SizedBox(height: 8),
             _ageSlider(p),
@@ -922,10 +1171,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         decoration: BoxDecoration(
           color: active ? p.action : p.pillBg,
           borderRadius: BorderRadius.circular(9999),
-          border: Border.all(
-            color: active ? p.action : p.hairline,
-            width: 1.2,
-          ),
+          border: Border.all(color: active ? p.action : p.hairline, width: 1.2),
         ),
         child: Text(
           o.label,
@@ -971,7 +1217,10 @@ class _OnboardingViewState extends State<OnboardingView> {
       children: [
         Row(
           children: [
-            Text('身高 ${h.round()}cm', style: TextStyle(fontSize: 12, color: p.ink)),
+            Text(
+              '身高 ${h.round()}cm',
+              style: TextStyle(fontSize: 12, color: p.ink),
+            ),
             Expanded(
               child: Slider(
                 value: h,
@@ -995,7 +1244,10 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
         Row(
           children: [
-            Text('体重 ${w.round()}kg', style: TextStyle(fontSize: 12, color: p.ink)),
+            Text(
+              '体重 ${w.round()}kg',
+              style: TextStyle(fontSize: 12, color: p.ink),
+            ),
             Expanded(
               child: Slider(
                 value: w,
@@ -1032,7 +1284,10 @@ class _OnboardingViewState extends State<OnboardingView> {
           if (_page > 0)
             TextButton(
               onPressed: _prevPage,
-              child: Text('上一步', style: TextStyle(fontSize: 13, color: p.inkMute)),
+              child: Text(
+                '上一步',
+                style: TextStyle(fontSize: 13, color: p.inkMute),
+              ),
             ),
           const Spacer(),
           TextButton(
